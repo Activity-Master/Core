@@ -1,12 +1,13 @@
 package com.guicedee.activitymaster.fsdm.injections.updates;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
+import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.address.*;
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
+import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
@@ -25,27 +26,28 @@ public class AddressBaseSetup implements ISystemUpdate
 	@Inject
 	private IClassificationService<?> service;
 
-	@Inject
-	@Named(ActivityMasterSystemName)
-	private ISystems<?,?> activityMasterSystem;
-
-
 	@Override
 	public Uni<Boolean> update(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		log.info("📋 Starting sequential creation of address classifications with session: {}", session.hashCode());
 
-		// Chain all the classification creation operations sequentially
-		return createDefaultTelephones(session, enterprise)
-			.chain(() -> createDefaultInternetAddresses(session, enterprise))
-			.chain(() -> createDefaultPhysicalAddresses(session, enterprise))
-			.onItem().invoke(() -> log.info("✅ Successfully completed all address classification operations"))
-			.onFailure().invoke(error -> log.error("❌ Error creating address classifications: {}", error.getMessage(), error))
-			.map(result -> true); // Return Boolean
+		// Get the SystemsService and then the ActivityMaster system
+		ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+		
+		// Get the ActivityMaster system and then chain all the classification creation operations sequentially
+		return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+			.chain(activityMasterSystem -> {
+				return createDefaultTelephones(session, enterprise, activityMasterSystem)
+					.chain(() -> createDefaultInternetAddresses(session, enterprise, activityMasterSystem))
+					.chain(() -> createDefaultPhysicalAddresses(session, enterprise, activityMasterSystem))
+					.onItem().invoke(() -> log.info("✅ Successfully completed all address classification operations"))
+					.onFailure().invoke(error -> log.error("❌ Error creating address classifications: {}", error.getMessage(), error))
+					.map(result -> true); // Return Boolean
+			});
 	}
 
 	@SuppressWarnings("Duplicates")
-	private Uni<Void> createDefaultTelephones(Mutiny.Session session, IEnterprise<?,?> enterprise)
+	private Uni<Void> createDefaultTelephones(Mutiny.Session session, IEnterprise<?,?> enterprise, ISystems<?,?> activityMasterSystem)
 	{
 		log.info("Creating telephone address classifications");
 
@@ -103,7 +105,7 @@ public class AddressBaseSetup implements ISystemUpdate
 	}
 
 	@SuppressWarnings("Duplicates")
-	private Uni<Void> createDefaultInternetAddresses(Mutiny.Session session, IEnterprise<?,?> enterprise)
+	private Uni<Void> createDefaultInternetAddresses(Mutiny.Session session, IEnterprise<?,?> enterprise, ISystems<?,?> activityMasterSystem)
 	{
 		log.info("Creating internet address classifications");
 		logProgress("Address System", "Starting Internet Address Checks");
@@ -214,7 +216,7 @@ public class AddressBaseSetup implements ISystemUpdate
 	}
 
 	@SuppressWarnings("Duplicates")
-	private Uni<Void> createDefaultPhysicalAddresses(Mutiny.Session session, IEnterprise<?,?> enterprise)
+	private Uni<Void> createDefaultPhysicalAddresses(Mutiny.Session session, IEnterprise<?,?> enterprise, ISystems<?,?> activityMasterSystem)
 	{
 		log.info("Creating physical address classifications");
 		logProgress("Address System", "Starting Physical Address Checks");
@@ -281,5 +283,4 @@ public class AddressBaseSetup implements ISystemUpdate
 			.onFailure().invoke(error -> log.error("❌ Error creating physical address classifications: {}", error.getMessage(), error))
 			.replaceWithVoid();
 	}
-
 }

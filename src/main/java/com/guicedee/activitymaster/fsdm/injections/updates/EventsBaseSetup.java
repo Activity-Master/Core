@@ -1,12 +1,13 @@
 package com.guicedee.activitymaster.fsdm.injections.updates;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
+import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.*;
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
+import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
@@ -19,10 +20,6 @@ public class EventsBaseSetup implements ISystemUpdate
 {
 	@Inject
 	private IClassificationService<?> service;
-
-	@Inject
-	@Named(ActivityMasterSystemName)
-	private ISystems<?,?> activityMasterSystem;
 
 	@Override
 	public Uni<Boolean> update(Mutiny.Session session, IEnterprise<?,?> enterprise)
@@ -45,34 +42,41 @@ public class EventsBaseSetup implements ISystemUpdate
 	{
 		log.info("Creating involved party event classifications");
 
-		// Create the base InvolvedPartyEvents classification first
-		return service.create(session, EventInvolvedPartiesClassifications.InvolvedPartyEvents, activityMasterSystem)
-			.chain(baseClassification -> {
-				log.info("📋 Creating involved party event classifications sequentially");
-				
-				// Chain involved party event classification creation operations sequentially
-				return service.create(session, EventInvolvedPartiesClassifications.PerformedBy, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents)
-					.chain(() -> service.create(session, EventInvolvedPartiesClassifications.OnBehalfOf, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
-					.chain(() -> service.create(session, EventInvolvedPartiesClassifications.For, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
-					.chain(() -> service.create(session, EventInvolvedPartiesClassifications.OwnedBy, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
-					.chain(() -> service.create(session, EventInvolvedPartiesClassifications.Created, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
-					.chain(() -> service.create(session, EventInvolvedPartiesClassifications.Added, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
-					.chain(() -> service.create(session, EventInvolvedPartiesClassifications.Updated, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
-					.chain(() -> service.create(session, EventInvolvedPartiesClassifications.CreatedBy, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
-					.chain(() -> service.create(session, EventInvolvedPartiesClassifications.CompletedBy, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
-					.chain(() -> service.create(session, EventInvolvedPartiesClassifications.UpdatedBy, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
-					.chain(() -> service.create(session, EventInvolvedPartiesClassifications.SecurityCredentialsOf, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
-					.chain(() -> service.create(session, EventInvolvedPartiesClassifications.Notifies, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
-					.chain(() -> service.create(session, EventInvolvedPartiesClassifications.MeantFor, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
-					.chain(() -> service.create(session, EventClassifications.NotifiesInvolvedParty, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
-					.chain(() -> service.create(session, EventClassifications.UpdatedPassword, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
-					.chain(() -> service.create(session, EventClassifications.UpdatedUsername, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
-					.onItem().invoke(() -> {
-						log.info("✅ Successfully created all involved party event classifications");
-						logProgress("Events System", "Loaded Event InvolvedParty Classifications...", 1);
-					})
-					.onFailure().invoke(error -> log.error("❌ Error creating involved party event classifications: {}", error.getMessage(), error))
-					.replaceWithVoid();
+		// Get the SystemsService and then the ActivityMaster system
+		ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+		
+		// Get the ActivityMaster system and then create classifications
+		return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+			.chain(activityMasterSystem -> {
+				// Create the base InvolvedPartyEvents classification first
+				return service.create(session, EventInvolvedPartiesClassifications.InvolvedPartyEvents, activityMasterSystem)
+					.chain(baseClassification -> {
+						log.info("📋 Creating involved party event classifications sequentially");
+						
+						// Chain involved party event classification creation operations sequentially
+						return service.create(session, EventInvolvedPartiesClassifications.PerformedBy, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents)
+							.chain(() -> service.create(session, EventInvolvedPartiesClassifications.OnBehalfOf, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
+							.chain(() -> service.create(session, EventInvolvedPartiesClassifications.For, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
+							.chain(() -> service.create(session, EventInvolvedPartiesClassifications.OwnedBy, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
+							.chain(() -> service.create(session, EventInvolvedPartiesClassifications.Created, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
+							.chain(() -> service.create(session, EventInvolvedPartiesClassifications.Added, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
+							.chain(() -> service.create(session, EventInvolvedPartiesClassifications.Updated, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
+							.chain(() -> service.create(session, EventInvolvedPartiesClassifications.CreatedBy, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
+							.chain(() -> service.create(session, EventInvolvedPartiesClassifications.CompletedBy, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
+							.chain(() -> service.create(session, EventInvolvedPartiesClassifications.UpdatedBy, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
+							.chain(() -> service.create(session, EventInvolvedPartiesClassifications.SecurityCredentialsOf, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
+							.chain(() -> service.create(session, EventInvolvedPartiesClassifications.Notifies, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
+							.chain(() -> service.create(session, EventInvolvedPartiesClassifications.MeantFor, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
+							.chain(() -> service.create(session, EventClassifications.NotifiesInvolvedParty, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
+							.chain(() -> service.create(session, EventClassifications.UpdatedPassword, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
+							.chain(() -> service.create(session, EventClassifications.UpdatedUsername, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents))
+							.onItem().invoke(() -> {
+								log.info("✅ Successfully created all involved party event classifications");
+								logProgress("Events System", "Loaded Event InvolvedParty Classifications...", 1);
+							})
+							.onFailure().invoke(error -> log.error("❌ Error creating involved party event classifications: {}", error.getMessage(), error))
+							.replaceWithVoid();
+					});
 			});
 	}
 
@@ -81,30 +85,37 @@ public class EventsBaseSetup implements ISystemUpdate
 	{
 		log.info("Creating address event classifications");
 
-		// Create the base AddressEvents classification first
-		return service.create(session, EventAddressClassifications.AddressEvents, activityMasterSystem)
-			.chain(baseClassification -> {
-				log.info("📋 Creating address event classifications sequentially");
-				
-				// Chain address event classification creation operations sequentially
-				return service.create(session, EventAddressClassifications.SignedAt, activityMasterSystem, EventAddressClassifications.AddressEvents)
-					.chain(() -> service.create(session, EventAddressClassifications.OccurredAt, activityMasterSystem, EventAddressClassifications.AddressEvents))
-					.chain(() -> service.create(session, EventAddressClassifications.RemoteAddress, activityMasterSystem, EventAddressClassifications.AddressEvents))
-					.chain(() -> service.create(session, EventAddressClassifications.LocalAddress, activityMasterSystem, EventAddressClassifications.AddressEvents))
-					.chain(() -> service.create(session, EventAddressClassifications.PhonedNumber, activityMasterSystem, EventAddressClassifications.AddressEvents))
-					.chain(() -> service.create(session, EventAddressClassifications.SentAFax, activityMasterSystem, EventAddressClassifications.AddressEvents))
-					.chain(() -> service.create(session, EventAddressClassifications.Emailed, activityMasterSystem, EventAddressClassifications.AddressEvents))
-					.chain(() -> service.create(session, EventAddressClassifications.SMSd, activityMasterSystem, EventAddressClassifications.AddressEvents))
-					.chain(() -> service.create(session, EventAddressClassifications.MMSd, activityMasterSystem, EventAddressClassifications.AddressEvents))
-					.chain(() -> service.create(session, EventAddressClassifications.Posted, activityMasterSystem, EventAddressClassifications.AddressEvents))
-					.chain(() -> service.create(session, EventAddressClassifications.RegisteredPost, activityMasterSystem, EventAddressClassifications.AddressEvents))
-					.chain(() -> service.create(session, EventAddressClassifications.AddedAddress, activityMasterSystem, EventAddressClassifications.AddressEvents))
-					.onItem().invoke(() -> {
-						log.info("✅ Successfully created all address event classifications");
-						logProgress("Events System", "Loaded Event Address Classifications...", 1);
-					})
-					.onFailure().invoke(error -> log.error("❌ Error creating address event classifications: {}", error.getMessage(), error))
-					.replaceWithVoid();
+		// Get the SystemsService and then the ActivityMaster system
+		ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+		
+		// Get the ActivityMaster system and then create classifications
+		return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+			.chain(activityMasterSystem -> {
+				// Create the base AddressEvents classification first
+				return service.create(session, EventAddressClassifications.AddressEvents, activityMasterSystem)
+					.chain(baseClassification -> {
+						log.info("📋 Creating address event classifications sequentially");
+						
+						// Chain address event classification creation operations sequentially
+						return service.create(session, EventAddressClassifications.SignedAt, activityMasterSystem, EventAddressClassifications.AddressEvents)
+							.chain(() -> service.create(session, EventAddressClassifications.OccurredAt, activityMasterSystem, EventAddressClassifications.AddressEvents))
+							.chain(() -> service.create(session, EventAddressClassifications.RemoteAddress, activityMasterSystem, EventAddressClassifications.AddressEvents))
+							.chain(() -> service.create(session, EventAddressClassifications.LocalAddress, activityMasterSystem, EventAddressClassifications.AddressEvents))
+							.chain(() -> service.create(session, EventAddressClassifications.PhonedNumber, activityMasterSystem, EventAddressClassifications.AddressEvents))
+							.chain(() -> service.create(session, EventAddressClassifications.SentAFax, activityMasterSystem, EventAddressClassifications.AddressEvents))
+							.chain(() -> service.create(session, EventAddressClassifications.Emailed, activityMasterSystem, EventAddressClassifications.AddressEvents))
+							.chain(() -> service.create(session, EventAddressClassifications.SMSd, activityMasterSystem, EventAddressClassifications.AddressEvents))
+							.chain(() -> service.create(session, EventAddressClassifications.MMSd, activityMasterSystem, EventAddressClassifications.AddressEvents))
+							.chain(() -> service.create(session, EventAddressClassifications.Posted, activityMasterSystem, EventAddressClassifications.AddressEvents))
+							.chain(() -> service.create(session, EventAddressClassifications.RegisteredPost, activityMasterSystem, EventAddressClassifications.AddressEvents))
+							.chain(() -> service.create(session, EventAddressClassifications.AddedAddress, activityMasterSystem, EventAddressClassifications.AddressEvents))
+							.onItem().invoke(() -> {
+								log.info("✅ Successfully created all address event classifications");
+								logProgress("Events System", "Loaded Event Address Classifications...", 1);
+							})
+							.onFailure().invoke(error -> log.error("❌ Error creating address event classifications: {}", error.getMessage(), error))
+							.replaceWithVoid();
+					});
 			});
 	}
 
@@ -113,24 +124,31 @@ public class EventsBaseSetup implements ISystemUpdate
 	{
 		log.info("Creating arrangement event classifications");
 
-		// Create the base ArrangementEvents classification first
-		return service.create(session, EventArrangementClassifications.ArrangementEvents, activityMasterSystem)
-			.chain(baseClassification -> {
-				log.info("📋 Creating arrangement event classifications sequentially");
-				
-				// Chain arrangement event classification creation operations sequentially
-				return service.create(session, EventArrangementClassifications.Started, activityMasterSystem, EventArrangementClassifications.ArrangementEvents)
-					.chain(() -> service.create(session, EventArrangementClassifications.Concluded, activityMasterSystem, EventArrangementClassifications.ArrangementEvents))
-					.chain(() -> service.create(session, EventArrangementClassifications.AffectedThe, activityMasterSystem, EventArrangementClassifications.ArrangementEvents))
-					.chain(() -> service.create(session, EventArrangementClassifications.RestartedThe, activityMasterSystem, EventArrangementClassifications.ArrangementEvents))
-					.chain(() -> service.create(session, EventArrangementClassifications.SkippedThe, activityMasterSystem, EventArrangementClassifications.ArrangementEvents))
-					.chain(() -> service.create(session, EventArrangementClassifications.AlteredRiskValue, activityMasterSystem, EventArrangementClassifications.ArrangementEvents))
-					.onItem().invoke(() -> {
-						log.info("✅ Successfully created all arrangement event classifications");
-						logProgress("Events System", "Loaded Event Arrangements Classifications...", 1);
-					})
-					.onFailure().invoke(error -> log.error("❌ Error creating arrangement event classifications: {}", error.getMessage(), error))
-					.replaceWithVoid();
+		// Get the SystemsService and then the ActivityMaster system
+		ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+		
+		// Get the ActivityMaster system and then create classifications
+		return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+			.chain(activityMasterSystem -> {
+				// Create the base ArrangementEvents classification first
+				return service.create(session, EventArrangementClassifications.ArrangementEvents, activityMasterSystem)
+					.chain(baseClassification -> {
+						log.info("📋 Creating arrangement event classifications sequentially");
+						
+						// Chain arrangement event classification creation operations sequentially
+						return service.create(session, EventArrangementClassifications.Started, activityMasterSystem, EventArrangementClassifications.ArrangementEvents)
+							.chain(() -> service.create(session, EventArrangementClassifications.Concluded, activityMasterSystem, EventArrangementClassifications.ArrangementEvents))
+							.chain(() -> service.create(session, EventArrangementClassifications.AffectedThe, activityMasterSystem, EventArrangementClassifications.ArrangementEvents))
+							.chain(() -> service.create(session, EventArrangementClassifications.RestartedThe, activityMasterSystem, EventArrangementClassifications.ArrangementEvents))
+							.chain(() -> service.create(session, EventArrangementClassifications.SkippedThe, activityMasterSystem, EventArrangementClassifications.ArrangementEvents))
+							.chain(() -> service.create(session, EventArrangementClassifications.AlteredRiskValue, activityMasterSystem, EventArrangementClassifications.ArrangementEvents))
+							.onItem().invoke(() -> {
+								log.info("✅ Successfully created all arrangement event classifications");
+								logProgress("Events System", "Loaded Event Arrangements Classifications...", 1);
+							})
+							.onFailure().invoke(error -> log.error("❌ Error creating arrangement event classifications: {}", error.getMessage(), error))
+							.replaceWithVoid();
+					});
 			});
 	}
 
@@ -139,20 +157,27 @@ public class EventsBaseSetup implements ISystemUpdate
 	{
 		log.info("Creating event type classifications");
 
-		// Create the base TypeOfEvents classification first
-		return service.create(session, EventTypeClassifications.TypeOfEvents, activityMasterSystem)
-			.chain(baseClassification -> {
-				log.info("📋 Creating event type classifications sequentially");
-				
-				// Chain event type classification creation operations sequentially
-				return service.create(session, EventTypeClassifications.HasTheType, activityMasterSystem, EventTypeClassifications.TypeOfEvents)
-					.chain(() -> service.create(session, EventTypeClassifications.CanBeIdentifiedBy, activityMasterSystem, EventTypeClassifications.TypeOfEvents))
-					.onItem().invoke(() -> {
-						log.info("✅ Successfully created all event type classifications");
-						logProgress("Events System", "Loaded Event Event Types Classifications...", 1);
-					})
-					.onFailure().invoke(error -> log.error("❌ Error creating event type classifications: {}", error.getMessage(), error))
-					.replaceWithVoid();
+		// Get the SystemsService and then the ActivityMaster system
+		ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+		
+		// Get the ActivityMaster system and then create classifications
+		return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+			.chain(activityMasterSystem -> {
+				// Create the base TypeOfEvents classification first
+				return service.create(session, EventTypeClassifications.TypeOfEvents, activityMasterSystem)
+					.chain(baseClassification -> {
+						log.info("📋 Creating event type classifications sequentially");
+						
+						// Chain event type classification creation operations sequentially
+						return service.create(session, EventTypeClassifications.HasTheType, activityMasterSystem, EventTypeClassifications.TypeOfEvents)
+							.chain(() -> service.create(session, EventTypeClassifications.CanBeIdentifiedBy, activityMasterSystem, EventTypeClassifications.TypeOfEvents))
+							.onItem().invoke(() -> {
+								log.info("✅ Successfully created all event type classifications");
+								logProgress("Events System", "Loaded Event Event Types Classifications...", 1);
+							})
+							.onFailure().invoke(error -> log.error("❌ Error creating event type classifications: {}", error.getMessage(), error))
+							.replaceWithVoid();
+					});
 			});
 	}
 
@@ -161,32 +186,39 @@ public class EventsBaseSetup implements ISystemUpdate
 	{
 		log.info("Creating product event classifications");
 
-		// Create the base ProductEvent classification first
-		return service.create(session, EventProductClassifications.ProductEvent, activityMasterSystem)
-			.chain(baseClassification -> {
-				log.info("📋 Creating product event classifications sequentially");
-				
-				// Chain product event classification creation operations sequentially
-				return service.create(session, EventProductClassifications.ShowedInterestIn, activityMasterSystem, EventProductClassifications.ProductEvent)
-					.chain(() -> service.create(session, EventProductClassifications.Bought, activityMasterSystem, EventProductClassifications.ProductEvent))
-					.chain(() -> service.create(session, EventProductClassifications.Sold, activityMasterSystem, EventProductClassifications.ProductEvent))
-					.chain(() -> service.create(session, EventProductClassifications.MadeBidFor, activityMasterSystem, EventProductClassifications.ProductEvent))
-					.chain(() -> service.create(session, EventProductClassifications.ChangedBidFor, activityMasterSystem, EventProductClassifications.ProductEvent))
-					.chain(() -> service.create(session, EventProductClassifications.RemovedBidFor, activityMasterSystem, EventProductClassifications.ProductEvent))
-					.chain(() -> service.create(session, EventProductClassifications.Cancelled, activityMasterSystem, EventProductClassifications.ProductEvent))
-					.chain(() -> service.create(session, EventProductClassifications.DontShowProduct, activityMasterSystem, EventProductClassifications.ProductEvent))
-					.chain(() -> service.create(session, EventProductClassifications.RemindMeOfTheProduct, activityMasterSystem, EventProductClassifications.ProductEvent))
-					.chain(() -> service.create(session, EventProductClassifications.ChangedTheCostOf, activityMasterSystem, EventProductClassifications.ProductEvent))
-					.chain(() -> service.create(session, EventProductClassifications.AddedTheInterestOf, activityMasterSystem, EventProductClassifications.ProductEvent))
-					.chain(() -> service.create(session, EventProductClassifications.ChangedTheInterestOf, activityMasterSystem, EventProductClassifications.ProductEvent))
-					.chain(() -> service.create(session, EventProductClassifications.RatedTheProduct, activityMasterSystem, EventProductClassifications.ProductEvent))
-					.chain(() -> service.create(session, EventProductClassifications.ChangedTheRatingOfTheProduct, activityMasterSystem, EventProductClassifications.ProductEvent))
-					.onItem().invoke(() -> {
-						log.info("✅ Successfully created all product event classifications");
-						logProgress("Events System", "Loaded Event Product Default Classifications...", 1);
-					})
-					.onFailure().invoke(error -> log.error("❌ Error creating product event classifications: {}", error.getMessage(), error))
-					.replaceWithVoid();
+		// Get the SystemsService and then the ActivityMaster system
+		ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+		
+		// Get the ActivityMaster system and then create classifications
+		return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+			.chain(activityMasterSystem -> {
+				// Create the base ProductEvent classification first
+				return service.create(session, EventProductClassifications.ProductEvent, activityMasterSystem)
+					.chain(baseClassification -> {
+						log.info("📋 Creating product event classifications sequentially");
+						
+						// Chain product event classification creation operations sequentially
+						return service.create(session, EventProductClassifications.ShowedInterestIn, activityMasterSystem, EventProductClassifications.ProductEvent)
+							.chain(() -> service.create(session, EventProductClassifications.Bought, activityMasterSystem, EventProductClassifications.ProductEvent))
+							.chain(() -> service.create(session, EventProductClassifications.Sold, activityMasterSystem, EventProductClassifications.ProductEvent))
+							.chain(() -> service.create(session, EventProductClassifications.MadeBidFor, activityMasterSystem, EventProductClassifications.ProductEvent))
+							.chain(() -> service.create(session, EventProductClassifications.ChangedBidFor, activityMasterSystem, EventProductClassifications.ProductEvent))
+							.chain(() -> service.create(session, EventProductClassifications.RemovedBidFor, activityMasterSystem, EventProductClassifications.ProductEvent))
+							.chain(() -> service.create(session, EventProductClassifications.Cancelled, activityMasterSystem, EventProductClassifications.ProductEvent))
+							.chain(() -> service.create(session, EventProductClassifications.DontShowProduct, activityMasterSystem, EventProductClassifications.ProductEvent))
+							.chain(() -> service.create(session, EventProductClassifications.RemindMeOfTheProduct, activityMasterSystem, EventProductClassifications.ProductEvent))
+							.chain(() -> service.create(session, EventProductClassifications.ChangedTheCostOf, activityMasterSystem, EventProductClassifications.ProductEvent))
+							.chain(() -> service.create(session, EventProductClassifications.AddedTheInterestOf, activityMasterSystem, EventProductClassifications.ProductEvent))
+							.chain(() -> service.create(session, EventProductClassifications.ChangedTheInterestOf, activityMasterSystem, EventProductClassifications.ProductEvent))
+							.chain(() -> service.create(session, EventProductClassifications.RatedTheProduct, activityMasterSystem, EventProductClassifications.ProductEvent))
+							.chain(() -> service.create(session, EventProductClassifications.ChangedTheRatingOfTheProduct, activityMasterSystem, EventProductClassifications.ProductEvent))
+							.onItem().invoke(() -> {
+								log.info("✅ Successfully created all product event classifications");
+								logProgress("Events System", "Loaded Event Product Default Classifications...", 1);
+							})
+							.onFailure().invoke(error -> log.error("❌ Error creating product event classifications: {}", error.getMessage(), error))
+							.replaceWithVoid();
+					});
 			});
 	}
 
@@ -195,36 +227,43 @@ public class EventsBaseSetup implements ISystemUpdate
 	{
 		log.info("Creating resource item event classifications");
 
-		// Create the base ResourceItemEvent classification first
-		return service.create(session, EventResourceItemClassifications.ResourceItemEvent, activityMasterSystem)
-			.chain(baseClassification -> {
-				log.info("📋 Creating resource item event classifications sequentially");
-				
-				// Chain resource item event classification creation operations sequentially
-				return service.create(session, EventResourceItemClassifications.AddedResourceItem, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent)
-					.chain(() -> service.create(session, EventResourceItemClassifications.ChangedTheResourceItem, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.chain(() -> service.create(session, EventResourceItemClassifications.UpdatedTheResourceItem, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.chain(() -> service.create(session, EventResourceItemClassifications.RemovedTheResourceItem, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.chain(() -> service.create(session, EventResourceItemClassifications.RegisteredTheResourceItem, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.chain(() -> service.create(session, EventResourceItemClassifications.RemovedTheResourceItemRegistration, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.chain(() -> service.create(session, EventResourceItemClassifications.LodgedTheResourceItemRegistration, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.chain(() -> service.create(session, EventResourceItemClassifications.DeliveredTheResourceItemRegistration, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.chain(() -> service.create(session, EventResourceItemClassifications.DestroyedTheResourceItemRegistration, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.chain(() -> service.create(session, EventResourceItemClassifications.JSONCallRequest, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.chain(() -> service.create(session, EventResourceItemClassifications.JSONCallResponse, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.chain(() -> service.create(session, EventResourceItemClassifications.WebServiceCallResponse, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.chain(() -> service.create(session, EventResourceItemClassifications.WebServiceCallRequest, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.chain(() -> service.create(session, EventResourceItemClassifications.HttpCallRequest, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.chain(() -> service.create(session, EventResourceItemClassifications.HttpCallResponse, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.chain(() -> service.create(session, EventResourceItemClassifications.HttpSession, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.chain(() -> service.create(session, EventResourceItemClassifications.HttpSessionProperties, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.chain(() -> service.create(session, EventResourceItemClassifications.UserAgent, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
-					.onItem().invoke(() -> {
-						log.info("✅ Successfully created all resource item event classifications");
-						logProgress("Events System", "Loaded Event Resource Item Default Classifications...", 1);
-					})
-					.onFailure().invoke(error -> log.error("❌ Error creating resource item event classifications: {}", error.getMessage(), error))
-					.replaceWithVoid();
+		// Get the SystemsService and then the ActivityMaster system
+		ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+		
+		// Get the ActivityMaster system and then create classifications
+		return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+			.chain(activityMasterSystem -> {
+				// Create the base ResourceItemEvent classification first
+				return service.create(session, EventResourceItemClassifications.ResourceItemEvent, activityMasterSystem)
+					.chain(baseClassification -> {
+						log.info("📋 Creating resource item event classifications sequentially");
+						
+						// Chain resource item event classification creation operations sequentially
+						return service.create(session, EventResourceItemClassifications.AddedResourceItem, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent)
+							.chain(() -> service.create(session, EventResourceItemClassifications.ChangedTheResourceItem, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.chain(() -> service.create(session, EventResourceItemClassifications.UpdatedTheResourceItem, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.chain(() -> service.create(session, EventResourceItemClassifications.RemovedTheResourceItem, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.chain(() -> service.create(session, EventResourceItemClassifications.RegisteredTheResourceItem, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.chain(() -> service.create(session, EventResourceItemClassifications.RemovedTheResourceItemRegistration, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.chain(() -> service.create(session, EventResourceItemClassifications.LodgedTheResourceItemRegistration, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.chain(() -> service.create(session, EventResourceItemClassifications.DeliveredTheResourceItemRegistration, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.chain(() -> service.create(session, EventResourceItemClassifications.DestroyedTheResourceItemRegistration, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.chain(() -> service.create(session, EventResourceItemClassifications.JSONCallRequest, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.chain(() -> service.create(session, EventResourceItemClassifications.JSONCallResponse, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.chain(() -> service.create(session, EventResourceItemClassifications.WebServiceCallResponse, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.chain(() -> service.create(session, EventResourceItemClassifications.WebServiceCallRequest, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.chain(() -> service.create(session, EventResourceItemClassifications.HttpCallRequest, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.chain(() -> service.create(session, EventResourceItemClassifications.HttpCallResponse, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.chain(() -> service.create(session, EventResourceItemClassifications.HttpSession, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.chain(() -> service.create(session, EventResourceItemClassifications.HttpSessionProperties, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.chain(() -> service.create(session, EventResourceItemClassifications.UserAgent, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent))
+							.onItem().invoke(() -> {
+								log.info("✅ Successfully created all resource item event classifications");
+								logProgress("Events System", "Loaded Event Resource Item Default Classifications...", 1);
+							})
+							.onFailure().invoke(error -> log.error("❌ Error creating resource item event classifications: {}", error.getMessage(), error))
+							.replaceWithVoid();
+					});
 			});
 	}
 }

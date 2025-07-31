@@ -47,8 +47,8 @@ public class TestDatabaseConnectivity extends TestDatabaseSetup
   @AfterAll
   public void afterAll()
   {
-    JtaPersistService ps = (JtaPersistService) IGuiceContext.get(Key.get(PersistService.class, Names.named("ActivityMaster-Test")));
-    ps.stop();
+   // JtaPersistService ps = (JtaPersistService) IGuiceContext.get(Key.get(PersistService.class, Names.named("ActivityMaster-Test")));
+    //ps.stop();
   }
 
 
@@ -70,6 +70,7 @@ public class TestDatabaseConnectivity extends TestDatabaseSetup
   }
 
   @Nested
+  @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
   public class TestEnterprise
   {
 
@@ -107,33 +108,60 @@ public class TestDatabaseConnectivity extends TestDatabaseSetup
     {
       ITimeSystem timeService = IGuiceContext.get(ITimeSystem.class);
       timeService.loadTimeRange(2025, 2025)
-          .await().atMost(Duration.ofMinutes(1));
+          .await()
+          .atMost(Duration.ofMinutes(1))
+      ;
 
     }
 
-    @Test
-    @Order(3)
-    public void testUpdates()
+    @Nested
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    class EnterpriseSetup
     {
-      IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
-      var updates = Multi.createFrom()
-                        .items(
-                            sessionFactory.withTransaction(session -> {
-                              return enterpriseService.getEnterprise(session, TestEnterprise.name())
-                                         .chain(enterprise -> {
-                                           return enterpriseService.loadUpdates(session, enterprise)
-                                                      .onFailure()
-                                                      .invoke(a -> log.fatal("Cannot load updates", a));
-                                         });
-                            }));
-      updates.onFailure().invoke(a -> log.fatal("Cannot load updates", a));
-      updates.onItem()
-          .invoke(a -> log.info("loaded updates"));
-      updates.toUni().await().atMost(Duration.ofMinutes(1));
+      @Test
+      @Order(1)
+      public void testEnterpriseUpdates()
+      {
+        IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+        var updates = sessionFactory.withTransaction(session -> {
+                                return enterpriseService.getEnterprise(session, TestEnterprise.name())
+                                           .chain(enterprise -> {
+                                             return enterpriseService.loadUpdates(session, enterprise)
+                                                        .onFailure()
+                                                        .invoke(a -> log.fatal("Cannot load updates", a));
+                                           });
+                              });
+        updates.onFailure()
+            .invoke(a -> log.fatal("Cannot load updates", a));
+        updates.onItem()
+            .invoke(a -> log.info("loaded updates"));
+        updates.await()
+            .atMost(Duration.ofMinutes(1))
+        ;
+      }
 
-
+           @Test
+      @Order(2)
+      public void testStartNewEnterprise()
+      {
+        IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+        var updates = sessionFactory.withTransaction(session -> {
+                                return enterpriseService.getEnterprise(session, TestEnterprise.name())
+                                           .chain(enterprise -> {
+                                             return enterpriseService.startNewEnterprise(session,TestEnterprise.name(),"admin","!@adminadmin")
+                                                        .onFailure()
+                                                        .invoke(a -> log.fatal("Cannot load updates", a));
+                                           });
+                              });
+        updates.onFailure()
+            .invoke(a -> log.fatal("Cannot load updates", a));
+        updates.onItem()
+            .invoke(a -> log.info("loaded updates"));
+        updates.await()
+            .atMost(Duration.ofMinutes(1))
+        ;
+      }
     }
   }
-
 
 }

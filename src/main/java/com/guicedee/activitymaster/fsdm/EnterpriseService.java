@@ -207,28 +207,11 @@ public class EnterpriseService
                .chain(activityMasterSystem -> {
                  // Explicitly cast to ISystems<?, ?>
                  ISystems<?, ?> system = (ISystems<?, ?>) activityMasterSystem;
-
-                 // Convert Vert.x Future to Mutiny Uni
-                 return Uni.createFrom()
-                            .emitter(emitter -> {
-                              o.update(session, enterprise)
-                                  .onItemOrFailure()
-                                  .invoke((result, error) -> {
-                                    if (error != null)
-                                    {
-                                      emitter.fail(error);
-                                    }
-                                    else
-                                    {
-                                      emitter.complete(true);
-                                    }
-                                  })
-                              ;
-                            })
+                 return o.update(session, enterprise)
                             .chain(updateResult -> {
                               return enterprise.addClassification(session, UpdateClass.toString(), o.getClass()
                                                                                                        .getCanonicalName(), system)
-                                         .map(result -> null);
+                                         .replaceWithVoid();
                             });
                });
   }

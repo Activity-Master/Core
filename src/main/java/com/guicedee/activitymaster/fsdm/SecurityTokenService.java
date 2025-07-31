@@ -159,24 +159,10 @@ public class SecurityTokenService
                                                         return session.persist(st)
                                                                    .replaceWith(Uni.createFrom()
                                                                                     .item(st))
-                                                                   .map(persisted -> {
+                                                                   .chain(persisted -> {
                                                                      // Start createDefaultSecurity in parallel without waiting for it
-                                                                     persisted.createDefaultSecurity(session, system, identityToken)
-                                                                         .subscribe()
-                                                                         .with(
-                                                                             result -> {
-                                                                               // Security setup completed successfully
-                                                                               log.debug("✅ Default security created for token: '{}'", name);
-                                                                             },
-                                                                             error -> {
-                                                                               // Log error but don't fail the main operation
-                                                                               log.warn("⚠️ Error in createDefaultSecurity for token '{}': {}", name, error.getMessage(), error);
-                                                                             }
-                                                                         )
-                                                                     ;
-                                                                     // Return the persisted token immediately without waiting for security setup
-                                                                     return (SecurityToken) persisted;
-                                                                   });
+                                                                     return persisted.createDefaultSecurity(session, system, identityToken);
+                                                                   }).replaceWith(st);
                                                       });
                                          });
                             })
@@ -228,10 +214,8 @@ public class SecurityTokenService
                               return session.persist(root)
                                          .replaceWith(Uni.createFrom()
                                                           .item(root))
-                                         .map(v -> {
+                                         .invoke(v -> {
                                            updateSecurityHierarchy(child.getId());
-                                           log.debug("✅ Created security token link: parent '{}' -> child '{}'", parent.getName(), child.getName());
-                                           return root;
                                          });
                             });
                })
