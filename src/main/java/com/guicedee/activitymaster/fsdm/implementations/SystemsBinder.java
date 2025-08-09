@@ -1,24 +1,15 @@
 package com.guicedee.activitymaster.fsdm.implementations;
 
-import com.google.inject.*;
-import com.google.inject.name.Names;
+import com.google.inject.Key;
+import com.google.inject.PrivateModule;
+import com.google.inject.TypeLiteral;
 import com.guicedee.activitymaster.fsdm.SystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
-import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
-import com.guicedee.activitymaster.fsdm.db.entities.systems.builders.SystemsQueryBuilder;
-import com.guicedee.activitymaster.fsdm.services.providers.SystemsProvider;
-import com.guicedee.activitymaster.fsdm.services.providers.SystemsTokenProvider;
-import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
-import io.github.classgraph.ClassInfo;
-import io.github.classgraph.ClassInfoList;
 import lombok.extern.java.Log;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Log
 public class SystemsBinder extends PrivateModule implements IGuiceModule<SystemsBinder>

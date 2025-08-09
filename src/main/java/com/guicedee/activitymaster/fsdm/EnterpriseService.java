@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
 import com.guicedee.activitymaster.fsdm.client.services.IPasswordsService;
 import com.guicedee.activitymaster.fsdm.client.services.IRelationshipValue;
@@ -44,15 +45,11 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.E
 
 @SuppressWarnings("DuplicatedCode")
 @Log4j2
+@Singleton
 public class EnterpriseService
     implements IProgressable,
                    IEnterpriseService<EnterpriseService>
 {
-  @Inject
-  private ActivityMasterConfiguration configuration;
-
-  @Inject
-  Mutiny.SessionFactory sessionFactory;
 
   public IEnterprise<?, ?> get()
   {
@@ -84,7 +81,7 @@ public class EnterpriseService
 
     return getUpdates(session, enterprise)
                .chain(availableUpdates -> {
-                 log.info(MessageFormat.format("There are {0} required updates", availableUpdates.size()));
+                 log.info(MessageFormat.format("There are {0} required updates - {1}", availableUpdates.size(),availableUpdates));
 
                  setCurrentTask(0);
                  int tasks = 0;
@@ -194,7 +191,7 @@ public class EnterpriseService
   //@jakarta.transaction.Transactional
   Uni<? extends IWarehouseRelationshipClassificationTable<?, ?, ?, IClassification<?, ?>, UUID, ?>> updateLastUpdateDate(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system)
   {
-    return enterprise.addOrUpdateClassification(session, EnterpriseClassifications.LastUpdateDate.toString(), DateTimeFormatter.ofPattern("yyyy/MM/dd")
+    return enterprise.addClassification(session, EnterpriseClassifications.LastUpdateDate.toString(), DateTimeFormatter.ofPattern("yyyy/MM/dd")
                                                                                                                   .format(LocalDate.now()), system);
   }
 
@@ -463,7 +460,7 @@ public class EnterpriseService
     com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
         .setSecurityEnabled(false);
 
-    Set<IActivityMasterSystem<?>> allSystems = configuration.getAllSystems();
+    Set<IActivityMasterSystem<?>> allSystems = ActivityMasterConfiguration.get().getAllSystems();
 
     int totalTasks = allSystems.stream()
                          .mapToInt(IActivityMasterSystem::totalTasks)
@@ -471,7 +468,12 @@ public class EnterpriseService
 
     logProgress("Create Enterprise", "Creating Enterprise", 0, totalTasks);
 
+    // Go through all systems in order and run the registerSystem() method
+    List<IActivityMasterSystem<?>> orderedSystems = new ArrayList<>(allSystems);
+    
     return installEnterprise(session, enterpriseName)
+               .chain(enterprise -> registerSystemsSequentially(session, orderedSystems, enterprise)
+               .map(v -> enterprise))
                .chain(enterprise -> {
                  return createNewEnterprise(session, enterprise)
                             .chain(() -> {
@@ -511,7 +513,7 @@ public class EnterpriseService
     IGuiceContext.get(ActivityMasterConfiguration.class)
         .setSecurityEnabled(false);
 
-    Set<IActivityMasterSystem<?>> allSystems = configuration.getAllSystems();
+    Set<IActivityMasterSystem<?>> allSystems = ActivityMasterConfiguration.get().getAllSystems();
 
     return create(session, enterprise.getName(), enterprise.getName())
                .chain(entUni -> {

@@ -1,4 +1,3 @@
-import com.guicedee.activitymaster.ActivityMasterTestBinder;
 import com.guicedee.activitymaster.PostgreSQLTestDBModule;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 
@@ -23,6 +22,6 @@ open module activity.master.test {
     requires io.vertx.sql.client.pg;
     requires com.guicedee.activitymaster.fsdm;
 
-    provides IGuiceModule with ActivityMasterTestBinder, PostgreSQLTestDBModule;
+    provides IGuiceModule with PostgreSQLTestDBModule;
 
 }

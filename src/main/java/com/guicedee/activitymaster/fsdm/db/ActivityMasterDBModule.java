@@ -39,7 +39,7 @@ public class ActivityMasterDBModule
         connectionInfo.setPort(Environment.getProperty("FSDM_DBPORT","5432"));
         connectionInfo.setDatabaseName(Environment.getProperty("FSDM_DBNAME","fsdm"));
         connectionInfo.setUsername(Environment.getProperty("FSDM_USER","fsdm"));
-        connectionInfo.setPassword(Environment.getProperty("FSDM_DBNAME","fsdm"));
+        connectionInfo.setPassword(Environment.getProperty("FSDM_PASSWORD","fsdm"));
         connectionInfo.setDefaultConnection(true);
         connectionInfo.setReactive(true);
         return connectionInfo;

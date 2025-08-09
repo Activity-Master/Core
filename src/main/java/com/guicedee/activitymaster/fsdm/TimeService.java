@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm;
 
 //import com.google.inject.persist.Transactional;
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.ITimeService;
 import com.guicedee.activitymaster.fsdm.db.entities.time.DayParts;
 import io.smallrye.mutiny.Uni;
@@ -16,7 +17,7 @@ import java.util.Date;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.types.DateTimeFormats.*;
 
-
+@Singleton
 public class TimeService<J extends TimeService<J>>
 		implements ITimeService
 {

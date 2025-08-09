@@ -1,4 +1,4 @@
-#com.guicedee.activitymaster.fsdm.db.ActivityMasterDBModule
+com.guicedee.activitymaster.fsdm.db.ActivityMasterDBModule
 com.guicedee.activitymaster.fsdm.implementations.ActivityMasterBinder
 com.guicedee.activitymaster.fsdm.implementations.EnterpriseBinder
 com.guicedee.activitymaster.fsdm.implementations.ClassificationConceptsBinder
@@ -16,4 +16,3 @@ com.guicedee.activitymaster.fsdm.implementations.RulesBinder
 com.guicedee.activitymaster.fsdm.implementations.ActivityMasterSystemBinder
 com.guicedee.activitymaster.fsdm.implementations.PasswordsServiceBinder
 com.guicedee.activitymaster.fsdm.implementations.EventInterceptorsBinder
-#com.guicedee.activitymaster.fsdm.db.entityassist.EntityAssistReactiveModule

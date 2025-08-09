@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 //import com.google.inject.persist.Transactional;
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.products.IProduct;
@@ -24,6 +25,7 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.D
 
 @SuppressWarnings("unchecked")
 @Log4j2
+@Singleton
 public class ProductService
 		implements IProductService<ProductService>
 {

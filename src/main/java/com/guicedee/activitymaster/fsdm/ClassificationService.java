@@ -30,6 +30,7 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
 //import com.google.inject.persist.Transactional;
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
@@ -52,6 +53,7 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.S
 
 
 @Log4j2
+@Singleton
 public class ClassificationService
     implements IClassificationService<ClassificationService>
 {

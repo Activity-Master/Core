@@ -29,6 +29,7 @@ package com.guicedee.activitymaster.fsdm;
  */
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
@@ -59,6 +60,7 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.S
 
 @SuppressWarnings("unchecked")
 @Log4j2
+@Singleton
 public class SystemsService
     implements ISystemsService<SystemsService>
 {

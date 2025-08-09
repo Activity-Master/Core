@@ -34,6 +34,7 @@ import com.entityassist.enumerations.OrderByType;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IArrangementsService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
@@ -75,6 +76,7 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.D
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 @Log4j2
+@Singleton
 public class ArrangementsService
         implements IArrangementsService<ArrangementsService>
 {
@@ -1051,15 +1053,7 @@ public class ArrangementsService
                              .inDateRange()
                              .withEnterprise(enterprise)
                              //   .canRead(system, tokens)
-                             .get()
-                             .onItem()
-                             .ifNull()
-                             .failWith(() ->
-                                               new ArrangementException("Cannot find active or visible arrangement type - " + idType))
-                             .map(result -> (IArrangementType<?, ?>) result)
-                             .onFailure()
-                             .invoke(error ->
-                                             log.error("Error finding arrangement type by name: {}", idType, error));
+                             .get();
     }
 
 
@@ -1071,15 +1065,7 @@ public class ArrangementsService
         Arrangement xr = new Arrangement();
         return (Uni)xr.builder(session)
                        .where(Arrangement_.id, Equals, id)
-                       .get()
-                       .onItem()
-                       .ifNull()
-                       .failWith(() ->
-                                         new ArrangementException("Cannot find active or visible arrangement with ID " + id))
-                       .map(result -> (IArrangement<?, ?>) result)
-                       .onFailure()
-                       .invoke(error ->
-                                       log.error("Error finding arrangement by ID: {}", id, error));
+                       .get();
     }
 
 
@@ -1091,15 +1077,7 @@ public class ArrangementsService
         Arrangement xr = new Arrangement();
         return (Uni)xr.builder(session)
                        .where(Arrangement_.id, Equals, id)
-                       .get()
-                       .onItem()
-                       .ifNull()
-                       .failWith(() ->
-                                         new ArrangementException("Cannot find arrangement with ID " + id))
-                       .map(result -> (IArrangement<?, ?>) result)
-                       .onFailure()
-                       .invoke(error ->
-                                       log.error("Error finding arrangement by ID (no system): {}", id, error));
+                       .get();
     }
 
 
@@ -1123,10 +1101,7 @@ public class ArrangementsService
                                                   arrOut.add(arr.getArrangement());
                                               }
                                               return arrOut;
-                                          })
-                                          .onFailure()
-                                          .invoke(error ->
-                                                          log.error("Error finding all arrangements of type: {}", arrangementType, error));
+                                          });
 
                        });
     }

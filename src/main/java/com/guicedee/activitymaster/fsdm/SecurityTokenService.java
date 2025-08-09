@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
 //import com.google.inject.persist.Transactional;
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
@@ -27,6 +28,7 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.U
 
 @SuppressWarnings("Duplicates")
 @Log4j2
+@Singleton
 public class SecurityTokenService
     implements ISecurityTokenService<SecurityTokenService>
 {

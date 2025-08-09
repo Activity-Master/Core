@@ -30,6 +30,7 @@ package com.guicedee.activitymaster.fsdm;
  */
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
@@ -51,6 +52,7 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.D
 import static com.guicedee.client.IGuiceContext.get;
 
 @Log
+@Singleton
 public class EventsService
         implements IEventService<EventsService>
 {

@@ -1,6 +1,7 @@
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemInstall;
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemUpdate;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
+import com.guicedee.activitymaster.fsdm.db.ActivityMasterDBModule;
 import com.guicedee.activitymaster.fsdm.implementations.*;
 import com.guicedee.activitymaster.fsdm.injections.*;
 import com.guicedee.activitymaster.fsdm.systems.*;
@@ -15,21 +16,18 @@ module com.guicedee.activitymaster.fsdm {
   exports com.guicedee.activitymaster.fsdm.services.system;
   exports com.guicedee.activitymaster.fsdm.db.entities.time;
 
-  //exports com.guicedee.activitymaster.fsdm.threads;
-  //todo exports com.guicedee.activitymaster.fsdm.implementations.interceptors;
-
   requires transitive com.fasterxml.jackson.databind;
 
   requires transitive io.vertx.sql.client.pg;
-  requires com.guicedee.guicedinjection;
+  requires transitive com.guicedee.guicedinjection;
 
   requires com.guicedee.jsonrepresentation;
   requires com.guicedee.xmlrepresentation;
 
-  requires com.entityassist;
+  requires transitive com.entityassist;
 
-  requires io.vertx.core;
-  requires org.hibernate.reactive;
+  requires transitive io.vertx.core;
+  requires transitive org.hibernate.reactive;
 
   requires com.google.common;
 
@@ -50,13 +48,13 @@ module com.guicedee.activitymaster.fsdm {
   requires org.jboss.logging;
   requires org.apache.logging.log4j.core;
 
-  requires com.ehcache;
+  requires transitive com.ehcache;
 
   requires transitive org.hibernate.orm.jcache;
 
   provides IGuiceModule with
                             EventInterceptorsBinder,
-                            //	ActivityMasterDBModule,
+                            ActivityMasterDBModule,
                             ActivityMasterBinder,
                             EnterpriseBinder,
                             ClassificationConceptsBinder,
@@ -210,8 +208,8 @@ module com.guicedee.activitymaster.fsdm {
   opens com.guicedee.activitymaster.fsdm.services to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy;
 
 
-  exports com.guicedee.activitymaster.fsdm.services.providers;
-  opens com.guicedee.activitymaster.fsdm.services.providers to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy;
+  //exports com.guicedee.activitymaster.fsdm.services.providers;
+  //opens com.guicedee.activitymaster.fsdm.services.providers to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy;
 
 
   opens com.guicedee.activitymaster.fsdm.services.system to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy;

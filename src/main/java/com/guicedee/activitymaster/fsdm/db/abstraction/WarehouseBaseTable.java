@@ -12,6 +12,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @MappedSuperclass()
@@ -37,7 +38,16 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
   public WarehouseBaseTable()
   {
     setId((I) UUID.randomUUID());
-    setWarehouseFromDate(getEffectiveFromDate().toLocalDate());
+    if (getEffectiveFromDate() == null)
+    {
+      setEffectiveFromDate(OffsetDateTime.now());
+      setWarehouseFromDate(OffsetDateTime.now()
+                               .toLocalDate());
+    }
+    else
+    {
+      setWarehouseFromDate(getEffectiveFromDate().toLocalDate());
+    }
   }
 
   @Override

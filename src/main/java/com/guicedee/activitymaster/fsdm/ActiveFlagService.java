@@ -28,6 +28,7 @@ package com.guicedee.activitymaster.fsdm;
  * See ReactivityMigrationGuide.md for more details on these rules.
  */
 
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -46,6 +47,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Log4j2
+@Singleton
 public class ActiveFlagService
 		implements IActiveFlagService<ActiveFlagService>
 {

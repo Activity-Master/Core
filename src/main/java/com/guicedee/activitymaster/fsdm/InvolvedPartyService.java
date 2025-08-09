@@ -29,6 +29,7 @@ package com.guicedee.activitymaster.fsdm;
  */
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
@@ -58,6 +59,7 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.t
 
 @SuppressWarnings("unchecked")
 @Log4j2
+@Singleton
 public class InvolvedPartyService implements IInvolvedPartyService<InvolvedPartyService>
 {
 

@@ -30,6 +30,7 @@ package com.guicedee.activitymaster.fsdm;
  */
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService;
 import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -43,6 +44,7 @@ import java.sql.Connection;
 import static com.guicedee.client.IGuiceContext.*;
 
 @Log4j2
+@Singleton
 public class ActivityMasterService
 		implements IProgressable,
 		           IActivityMasterService<ActivityMasterService>

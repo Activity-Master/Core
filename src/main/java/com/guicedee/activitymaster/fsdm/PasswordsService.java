@@ -30,6 +30,7 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
 //import com.google.inject.persist.Transactional;
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.api.Passwords;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
@@ -61,6 +62,7 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.t
 import static com.guicedee.client.IGuiceContext.*;
 
 @Log4j2
+@Singleton
 public class PasswordsService implements IPasswordsService<PasswordsService>
 {
 

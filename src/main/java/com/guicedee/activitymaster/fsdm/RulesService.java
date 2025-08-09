@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -24,6 +25,7 @@ import java.util.UUID;
 
 @SuppressWarnings("unchecked")
 @Log4j2
+@Singleton
 public class RulesService
 		implements IRulesService<RulesService>
 {
