@@ -461,7 +461,10 @@ public class ResourceItemService
 
                    // Get the result from the builder using reactive pattern
                    return builder.get()
-                              .map(exists -> exists != null ? exists.getResourceItemID() : null);
+                              .chain(exists -> exists != null ?
+                                                   session.fetch(exists.getResourceItemID()) :
+                                                   Uni.createFrom()
+                                                       .failure(new ResourceItemException("Cannot find resource item for classification: %s".formatted(classification))));
                  }
                  catch (Exception e)
                  {
@@ -607,13 +610,17 @@ public class ResourceItemService
                .withType(type, systems, identityToken)
                .withValue(value)
                .getAll()
-               .map(results -> {
-                 List<IResourceItem<?, ?>> resourceItems = new ArrayList<>();
+               .chain(results -> {
+                 List<Uni<IResourceItem<?, ?>>> resourceItemUnis = new ArrayList<>();
                  for (ResourceItemXResourceItemType result : results)
                  {
-                   resourceItems.add(result.getResourceItemID());
+                   // Wrap the lazy fetch with session.fetch()
+                   resourceItemUnis.add(session.fetch(result.getResourceItemID()));
                  }
-                 return resourceItems;
+                 // Process all fetches sequentially
+                 return Uni.join()
+                            .all(resourceItemUnis)
+                            .andCollectFailures();
                })
                .onFailure()
                .invoke(e ->
