@@ -15,6 +15,64 @@ import java.util.List;
 
 public class FSDMMigrateGUI {
 
+    // Controls global enable/disable state of all buttons during background tasks
+    private final Object uiStateLock = new Object();
+    private int runningTasks = 0; // number of active background tasks
+
+    private void markTaskStart() {
+        synchronized (uiStateLock) {
+            boolean wasIdle = (runningTasks == 0);
+            runningTasks++;
+            if (wasIdle) {
+                setAllButtonsEnabled(false);
+            }
+        }
+    }
+
+    private void markTaskEnd() {
+        synchronized (uiStateLock) {
+            if (runningTasks > 0) {
+                runningTasks--;
+            }
+            if (runningTasks == 0) {
+                setAllButtonsEnabled(true);
+            }
+        }
+    }
+
+    private void setAllButtonsEnabled(boolean enabled) {
+        // Ensure this runs on the EDT
+        if (!SwingUtilities.isEventDispatchThread()) {
+            SwingUtilities.invokeLater(() -> setAllButtonsEnabled(enabled));
+            return;
+        }
+        Window window = SwingUtilities.getWindowAncestor(progressBar != null ? progressBar : logArea);
+        if (window == null) {
+            // Fallback to any known component
+            JRootPane rootPane = SwingUtilities.getRootPane(logArea);
+            if (rootPane != null) {
+                toggleButtonsRecursive(rootPane.getContentPane(), enabled);
+            }
+            return;
+        }
+        if (window instanceof JFrame frame) {
+            toggleButtonsRecursive(frame.getContentPane(), enabled);
+        } else if (window instanceof JDialog dialog) {
+            toggleButtonsRecursive(dialog.getContentPane(), enabled);
+        }
+    }
+
+    private void toggleButtonsRecursive(Container container, boolean enabled) {
+        for (Component comp : container.getComponents()) {
+            if (comp instanceof AbstractButton) {
+                comp.setEnabled(enabled);
+            }
+            if (comp instanceof Container) {
+                toggleButtonsRecursive((Container) comp, enabled);
+            }
+        }
+    }
+
     // Text fields for user inputs
     private JTextField sourceUrlField;
     private JTextField sourceUserField;
@@ -55,6 +113,16 @@ public class FSDMMigrateGUI {
         JFrame frame = new JFrame("FSDM Data Migration Tool");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1200, 800);
+        // Set application icon
+        try {
+            java.net.URL iconUrl = FSDMMigrateGUI.class.getResource("/logo_activitymaster.png");
+            if (iconUrl != null) {
+                ImageIcon appIcon = new ImageIcon(iconUrl);
+                frame.setIconImage(appIcon.getImage());
+            }
+        } catch (Exception ignore) {
+            // If the icon cannot be loaded, continue without setting it
+        }
 
         // Main panel
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -203,12 +271,13 @@ public class FSDMMigrateGUI {
         JButton createDbButton = new JButton("Create DB");
 
         JButton partitionDbButton = new JButton("Partition DB");
+        partitionDbButton.setEnabled(false);
         JButton structureDbButton = new JButton("Structure DB");
         JButton structureFsdmDbButton = new JButton("Structure FSDM DB");
 
         buttonPanel.add(backupDbButton);
 
-        JButton removeConstraintsButton = new JButton("Remove Source Constraints");
+        JButton removeConstraintsButton = new JButton("Remove Constraints");
         buttonPanel.add(removeConstraintsButton);
         removeConstraintsButton.addActionListener(e -> executeSQLScript("META-INF/scripts/drop_foreign_keys.sql", "Remove Constraints",false));
 
@@ -218,12 +287,12 @@ public class FSDMMigrateGUI {
         deleteIndexes.addActionListener(e -> executeSQLScript("META-INF/scripts/delete_indexes.sql", "Delete Indexes",false));
 
 
-        JButton updateOriginSystemIDButton = new JButton("Update Origin Source IDs");
+        JButton updateOriginSystemIDButton = new JButton("Update Origin");
         updateOriginSystemIDButton.setEnabled(true);
         buttonPanel.add(updateOriginSystemIDButton);
         updateOriginSystemIDButton.addActionListener(e -> executeSQLScript("META-INF/scripts/update_orirgin_system_id.sql", "Update Origin System IDs",false));
 
-        JButton updateVarcharToUUIDButton = new JButton("Update VARCHAR to UUID");
+        JButton updateVarcharToUUIDButton = new JButton("Update VARCHAR");
         buttonPanel.add(updateVarcharToUUIDButton);
         updateVarcharToUUIDButton.addActionListener(e -> executeSQLScript("META-INF/scripts/update_to_uuid.sql", "Update UUIDs",false));
 
@@ -299,6 +368,7 @@ public class FSDMMigrateGUI {
     }
 
     private void backupDb() {
+            markTaskStart();
         // Build the command to execute a full backup
         String command = "pg_dump.exe --file \"" + backupDirectory.getText() + "\\fullbackup.backup\" --host \"localhost\" --port \"5432\" --username \"postgres\" --no-password --format=c --large-objects --verbose \"" + sourceDbNameField.getText() + "\"";
 
@@ -352,12 +422,17 @@ public class FSDMMigrateGUI {
 
             @Override
             protected void done() {
-                appendLog("Backup process finished.");
+                try {
+                    appendLog("Backup process finished.");
+                } finally {
+                    markTaskEnd();
+                }
             }
         }.execute();
     }
 
     private void backupData() {
+            markTaskStart();
         String command = "pg_dump.exe --file \"" + backupDirectory.getText() + "\\data.backup\" --host \"localhost\" --port \"5432\" --username \"" + sourceUserField.getText()+
                 "\" --no-password --format=t --large-objects --data-only --no-owner --no-privileges --no-tablespaces --no-unlogged-table-data --no-comments --no-publications --no-subscriptions --no-security-labels --no-toast-compression --no-table-access-method --inserts --on-conflict-do-nothing --column-inserts --verbose --exclude-schema \"information_schema\" --exclude-schema \"postgres\" --exclude-schema \"pg_toast\" \"" + sourceDbNameField.getText() + "\"";
 
@@ -401,6 +476,8 @@ public class FSDMMigrateGUI {
                     }
                 } catch (Exception ex) {
                     appendLog("Error during backup: " + ex.getMessage());
+                } finally {
+                    markTaskEnd();
                 }
             }
         };
@@ -411,6 +488,7 @@ public class FSDMMigrateGUI {
 
 
     private void restoreData() {
+            markTaskStart();
         String command = "pg_restore.exe --host \"localhost\" --port \"5432\" --username \"" + destUserField.getText()+ "\"" +
                 " --no-password --dbname \"" + destDbNameField.getText()+ "\" --data-only --verbose \"" + backupDirectory.getText() + "\\data.backup" + "\"";
 
@@ -453,6 +531,8 @@ public class FSDMMigrateGUI {
                     }
                 } catch (Exception ex) {
                     appendLog("Error during restore: " + ex.getMessage());
+                } finally {
+                    markTaskEnd();
                 }
             }
         };
@@ -465,6 +545,7 @@ public class FSDMMigrateGUI {
 
 
     private void executeSQLScript(String filePath, String actionName, boolean destination) {
+            markTaskStart();
         // Use SwingWorker to handle the execution asynchronously
         SwingWorker<Void, String> worker = new SwingWorker<>() {
             @Override
@@ -569,10 +650,14 @@ public class FSDMMigrateGUI {
             @Override
             protected void done() {
                 // This runs on the EDT after the background task completes
-                progressBar.setVisible(false); // Hide the progress bar
-                progressBar.setIndeterminate(false); // Reset indeterminate state
-                setProgress(0); // Reset progress
-                appendLog(actionName + " process complete.");
+                try {
+                    progressBar.setVisible(false); // Hide the progress bar
+                    progressBar.setIndeterminate(false); // Reset indeterminate state
+                    setProgress(0); // Reset progress
+                    appendLog(actionName + " process complete.");
+                } finally {
+                    markTaskEnd();
+                }
             }
         };
 
@@ -586,23 +671,18 @@ public class FSDMMigrateGUI {
      * Executes all migration functions in the specified order
      */
     private void runAllFunctions() {
+            markTaskStart();
         appendLog("Starting Run All process...");
-
-        // Disable the Run All button to prevent multiple clicks
-        JButton source = (JButton) SwingUtilities.getAncestorOfClass(JPanel.class, 
-                                  SwingUtilities.getDeepestComponentAt(
-                                      SwingUtilities.getRootPane(logArea).getContentPane(), 
-                                      0, 0))
-                                  .getComponent(0);
-        source.setEnabled(false);
 
         // Create a sequential executor for the tasks
         executeSequentialTasks(0, () -> {
-            // Re-enable the Run All button when all tasks are complete
-            source.setEnabled(true);
-            appendLog("Run All process finished.");
-            progressBar.setVisible(false);
-            progressBar.setIndeterminate(false);
+            try {
+                appendLog("Run All process finished.");
+                progressBar.setVisible(false);
+                progressBar.setIndeterminate(false);
+            } finally {
+                markTaskEnd();
+            }
         });
     }
 
@@ -808,6 +888,7 @@ public class FSDMMigrateGUI {
      * Helper method to execute a task with a callback when complete
      */
     private void executeWithCallback(Runnable task, Runnable callback) {
+            markTaskStart();
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -817,7 +898,11 @@ public class FSDMMigrateGUI {
 
             @Override
             protected void done() {
-                callback.run();
+                try {
+                    callback.run();
+                } finally {
+                    markTaskEnd();
+                }
             }
         };
         worker.execute();
@@ -827,6 +912,7 @@ public class FSDMMigrateGUI {
      * Helper method to execute an SQL script with a callback when complete
      */
     private void executeSQLScriptWithCallback(String filePath, String actionName, boolean destination, Runnable callback) {
+            markTaskStart();
         // Use SwingWorker to handle the execution asynchronously
         SwingWorker<Void, String> worker = new SwingWorker<>() {
             @Override
@@ -931,7 +1017,11 @@ public class FSDMMigrateGUI {
             @Override
             protected void done() {
                 // Call the callback when done
-                callback.run();
+                try {
+                    callback.run();
+                } finally {
+                    markTaskEnd();
+                }
             }
         };
 
