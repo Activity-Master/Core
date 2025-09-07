@@ -363,9 +363,7 @@ public class EnterpriseService
   //@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
   public Uni<IEnterprise<?, ?>> getEnterprise(Mutiny.Session session, String name)
   {
-    log.debug("🔍 Starting fetch for enterprise: {}", name);
-
-    log.debug("📦 Session & transaction started for enterprise lookup: {}", name);
+    log.trace("📦 Session & transaction started for enterprise lookup: {}", name);
 
     return (Uni) new Enterprise().builder(session)
                      .withName(name)
