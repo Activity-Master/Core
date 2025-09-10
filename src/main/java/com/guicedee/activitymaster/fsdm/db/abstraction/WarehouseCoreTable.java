@@ -58,10 +58,10 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
   @Override
   public Uni<Void> createDefaultSecurity(Mutiny.Session session, ISystems<?, ?> system, UUID... identity)
   {
-    log.debug("🛡️ Creating default security for system: {} with session: {}", system.getName(), session.hashCode());
+    log.trace("🛡️ Creating default security for system: {} with session: {}", system.getName(), session.hashCode());
 
     // Use the provided session and execute operations sequentially
-    log.debug("📋 Starting sequential security operations with session: {}", session.hashCode());
+    log.trace("📋 Starting sequential security operations with session: {}", session.hashCode());
     if (false)
       // Chain all security operations sequentially
       return createDefaultAdministratorSecurityAccess(session, system, identity)
@@ -72,7 +72,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                  .chain(() -> createDefaultPluginsSecurityAccess(session, system, identity))
                  .chain(() -> createDefaultGuestReadSecurityAccess(session, system, identity))
                  .onItem()
-                 .invoke(() -> log.debug("✅ All security operations completed successfully"))
+                 .invoke(() -> log.trace("✅ All security operations completed successfully"))
                  .onFailure()
                  .invoke(error -> log.error("❌ Failed to complete security operations: {}", error.getMessage(), error))
                  .replaceWithVoid();
@@ -85,7 +85,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 
   public Uni<Void> updateSecurity(Mutiny.Session session, J newCoreTable, Systems system)
   {
-    log.debug("🔄 Updating security for table with system: {}", system.getName());
+    log.trace("🔄 Updating security for table with system: {}", system.getName());
 
     S stAdmin = get(findPersistentSecurityClass());
     @SuppressWarnings("rawtypes")

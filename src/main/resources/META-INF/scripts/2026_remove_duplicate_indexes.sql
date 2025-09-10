@@ -3,7 +3,7 @@
 -- (table, columns, type, uniqueness) rather than just name patterns
 
 -- Step 1: Create a function to generate DROP statements for duplicate indexes
-CREATE OR REPLACE FUNCTION remove_duplicate_indexes(dry_run BOOLEAN DEFAULT TRUE)
+CREATE OR REPLACE FUNCTION remove_duplicate_indexes(dry_run BOOLEAN DEFAULT FALSE)
 RETURNS TABLE(
     action_type TEXT,
     schema_name TEXT,
@@ -139,7 +139,7 @@ SELECT
     index_name,
     columns,
     reason
-FROM remove_duplicate_indexes(dry_run := TRUE)
+FROM remove_duplicate_indexes(dry_run := FALSE)
 ORDER BY schema_name, table_name, index_name;
 
 -- Step 3: Uncomment the line below to actually remove the duplicates

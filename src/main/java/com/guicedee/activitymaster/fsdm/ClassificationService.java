@@ -112,13 +112,13 @@ public class ClassificationService
     var sessionFactory = IGuiceContext.get(Mutiny.SessionFactory.class);
 
     log.info("🚀 Creating new classification: '{}' for system: '{}' with external session", name, system.getName());
-    log.debug("📝 Classification details - Name: '{}', Description: '{}', System ID: {}, Session: {}",
+    log.trace("📝 Classification details - Name: '{}', Description: '{}', System ID: {}, Session: {}",
         name, description, system.getId(), session.hashCode());
 
     Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassificationDataConcept<?, ?>> dataConceptUni;
     if (conceptName != null)
     {
-      log.debug("📋 Finding data concept: '{}' for system: '{}' with session: {}", conceptName, system.getName(), session.hashCode());
+      log.trace("📋 Finding data concept: '{}' for system: '{}' with session: {}", conceptName, system.getName(), session.hashCode());
       dataConceptUni = dataConceptService.find(session, conceptName, system, identityToken);
     }
     else
@@ -129,18 +129,18 @@ public class ClassificationService
 
     var enterprise = system.getEnterprise();
 
-    log.debug("🔍 Checking if classification '{}' already exists with session: {}", name, session.hashCode());
+    log.trace("🔍 Checking if classification '{}' already exists with session: {}", name, session.hashCode());
     return find(session, name, conceptName, system, identityToken)
                .onItem()
                .invoke(existing ->
-                           log.debug("✅ Found existing classification: '{}' with ID: {}", existing.getName(), existing.getId())
+                           log.trace("✅ Found existing classification: '{}' with ID: {}", existing.getName(), existing.getId())
                )
                .onFailure()
                .recoverWithUni(error -> {
-                 log.debug("📋 Classification '{}' not found, creating new one", name);
-                 log.debug("🏛️ Opening new session and transaction for classification creation");
+                 log.info("📋 Classification '{}' not found, creating new one", name);
+                 log.trace("🏛️ Opening new session and transaction for classification creation");
 
-                 log.debug("📋 Preparing classification entity with session: {}", session.hashCode());
+                 log.trace("📋 Preparing classification entity with session: {}", session.hashCode());
 
                  Classification rootCl = new Classification();
                  rootCl.setName(name);
@@ -155,7 +155,7 @@ public class ClassificationService
 
                  return dataConceptUni
                             .onItem()
-                            .invoke(dataConcept -> log.debug("✅ Data concept retrieved for classification '{}'", name))
+                            .invoke(dataConcept -> log.trace("✅ Data concept retrieved for classification '{}'", name))
                             .onFailure()
                             .invoke(dataConceptError ->
                                         log.error("❌ Failed to retrieve data concept for classification '{}': {}", name, dataConceptError.getMessage(), dataConceptError)
@@ -258,7 +258,7 @@ public class ClassificationService
   @Override
   public Uni<IClassification<?, ?>> find(Mutiny.Session session, String name, ISystems<?, ?> system, UUID... identityToken)
   {
-    log.debug("🔍 Finding classification '{}' for system: '{}' with session: {}",
+    log.trace("🔍 Finding classification '{}' for system: '{}' with session: {}",
         name, system.getName(), session.hashCode());
     return find(session, name, null, system, identityToken);
   }
@@ -269,12 +269,12 @@ public class ClassificationService
   @SuppressWarnings("unchecked")
   public Uni<IClassification<?, ?>> find(Mutiny.Session session, String name, EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system, UUID... identityToken)
   {
-    log.debug("🔍 Finding classification '{}' with concept: '{}' for system: '{}' with session: {}",
+    log.trace("🔍 Finding classification '{}' with concept: '{}' for system: '{}' with session: {}",
         name, concept != null ? concept : "null", system.getName(), session.hashCode());
 
     var enterprise = system.getEnterprise();
     Classification search = new Classification();
-    log.debug("📋 Preparing classification query for name: '{}', enterprise: '{}'",
+    log.trace("📋 Preparing classification query for name: '{}', enterprise: '{}'",
         name, enterprise.getName());
 
     return (Uni) search.builder(session)
@@ -288,11 +288,11 @@ public class ClassificationService
                      .invoke(result -> {
                        if (result != null)
                        {
-                         log.debug("✅ Found classification '{}' with ID: {}", name, result.getId());
+                         log.trace("✅ Found classification '{}' with ID: {}", name, result.getId());
                        }
                        else
                        {
-                         log.debug("⚠️ Classification '{}' not found", name);
+                         log.warn("⚠️ Classification '{}' not found", name);
                        }
                      })
 		               /*.onFailure().invoke(findError ->
@@ -306,7 +306,7 @@ public class ClassificationService
   @Override
   public Uni<IClassification<?, ?>> getHierarchyType(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken)
   {
-    log.debug("🔍 Getting hierarchy type classification for system: '{}' with session: {}",
+    log.trace("🔍 Getting hierarchy type classification for system: '{}' with session: {}",
         system.getName(), session.hashCode());
     return find(session,
         HierarchyTypeClassification.toString(),
@@ -332,7 +332,7 @@ public class ClassificationService
   @Override
   public Uni<IClassification<?, ?>> getNoClassification(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken)
   {
-    log.debug("🔍 Getting 'NoClassification' for system: '{}' with session: {}",
+    log.trace("🔍 Getting 'NoClassification' for system: '{}' with session: {}",
         system.getName(), session.hashCode());
     return find(session,
         NoClassification.toString(),
@@ -358,7 +358,7 @@ public class ClassificationService
   @Override
   public Uni<IClassification<?, ?>> getIdentityType(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken)
   {
-    log.debug("🔍 Getting identity type classification for system: '{}' with session: {}",
+    log.trace("🔍 Getting identity type classification for system: '{}' with session: {}",
         system.getName(), session.hashCode());
     return find(session,
         Identity.name(),

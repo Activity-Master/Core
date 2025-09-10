@@ -90,7 +90,7 @@ public class ResourceItemService
   @Override
   public IResourceItem<?, ?> get()
   {
-    log.debug("Getting new ResourceItem instance");
+    log.trace("Getting new ResourceItem instance");
     return new ResourceItem();
   }
 
@@ -103,7 +103,7 @@ public class ResourceItemService
   @Override
   public IResourceData<?, ?, ?> getData()
   {
-    log.debug("Getting new ResourceItemData instance");
+    log.trace("Getting new ResourceItemData instance");
     return new ResourceItemData();
   }
 
@@ -116,14 +116,14 @@ public class ResourceItemService
   @Override
   public IResourceItemType<?, ?> getType()
   {
-    log.debug("Getting new ResourceItemType instance");
+    log.trace("Getting new ResourceItemType instance");
     return new ResourceItemType();
   }
 
   @Override
   public Uni<IResourceItemType<?, ?>> createType(Mutiny.Session session, String value, String description, ISystems<?, ?> system, UUID... identityToken)
   {
-    log.debug("Creating resource type with value: {}, description: {}", value, description);
+    log.trace("Creating resource type with value: {}, description: {}", value, description);
     return createType(session, value, null, description, system, identityToken);
   }
 
@@ -424,7 +424,7 @@ public class ResourceItemService
                                                        ISystems<?, ?> systems,
                                                        UUID... identityToken)
   {
-    log.debug("Finding resource by classification - resourceType: {}, classification: {}, value: {}", resourceType, classification, value);
+    log.trace("Finding resource by classification - resourceType: {}, classification: {}, value: {}", resourceType, classification, value);
 
     // First get the classification using reactive pattern
     return classificationService.find(session, classification, systems, identityToken)
@@ -485,7 +485,7 @@ public class ResourceItemService
                                                                                                               ISystems<?, ?> systems,
                                                                                                               UUID... identityToken)
   {
-    log.debug("Finding all resources by classification - resourceType: {}, classification: {}, value: {}", resourceType, classification, value);
+    log.trace("Finding all resources by classification - resourceType: {}, classification: {}, value: {}", resourceType, classification, value);
 
     // First get the classification using reactive pattern
     return classificationService.find(session, classification, systems, identityToken)
@@ -537,7 +537,7 @@ public class ResourceItemService
   @Override
   public Uni<IResourceItem<?, ?>> findByUUID(Mutiny.Session session, UUID uuid)
   {
-    log.debug("Finding resource by UUID: {}", uuid);
+    log.trace("Finding resource by UUID: {}", uuid);
     ResourceItem res = new ResourceItem();
     return (Uni) res.builder(session)
                      .where(ResourceItem_.id, Equals, uuid)
@@ -566,7 +566,7 @@ public class ResourceItemService
   @Override
   public Uni<byte[]> getDataForResourceItemValue(Mutiny.Session session, IRelationshipValue<IResourceItem<?, ?>, IResourceData<?, ?, ?>, ?> data)
   {
-    log.debug("Getting data for resource item value");
+    log.trace("Getting data for resource item value");
     ResourceItemData d = (ResourceItemData) data.getSecondary();
     return Uni.createFrom()
                .item(d.getResourceItemData());
@@ -575,7 +575,7 @@ public class ResourceItemService
   @Override
   public Uni<IResourceItemType<?, ?>> findResourceItemType(Mutiny.Session session, String type, ISystems<?, ?> system, UUID... identityToken)
   {
-    log.debug("Finding resource item type: {}", type);
+    log.trace("Finding resource item type: {}", type);
 
     // Not in cache, need to query the database
     ResourceItemType xr = new ResourceItemType();
@@ -592,7 +592,7 @@ public class ResourceItemService
   @Override
   public Uni<List<IResourceItem<?, ?>>> findByResourceItemType(Mutiny.Session session, String type, ISystems<?, ?> systems, UUID... identityToken)
   {
-    log.debug("Finding resources by type: {}", type);
+    log.trace("Finding resources by type: {}", type);
     return findByResourceItemType(session, type, null, systems, identityToken);
   }
 
@@ -600,7 +600,7 @@ public class ResourceItemService
   @Override
   public Uni<List<IResourceItem<?, ?>>> findByResourceItemType(Mutiny.Session session, String type, String value, ISystems<?, ?> systems, UUID... identityToken)
   {
-    log.debug("Finding resources by type: {} and value: {}", type, value);
+    log.trace("Finding resources by type: {} and value: {}", type, value);
     var enterprise = systems.getEnterprise();
     return new ResourceItemXResourceItemType().builder(session)
                .withEnterprise(enterprise)
@@ -643,7 +643,7 @@ public class ResourceItemService
   public Uni<IResourceItem<?, ?>> createAndFind(Mutiny.Session session, String identityResourceType, String resourceItemDataValue,
                                                 ISystems<?, ?> system, UUID... identityToken)
   {
-    log.debug("Creating and finding resource item - type: {}, value: {}", identityResourceType, resourceItemDataValue);
+    log.trace("Creating and finding resource item - type: {}, value: {}", identityResourceType, resourceItemDataValue);
 
     // Generate a UUID for the new resource item
     UUID key = UUID.randomUUID();

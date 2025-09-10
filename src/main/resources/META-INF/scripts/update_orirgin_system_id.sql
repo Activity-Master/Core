@@ -37,7 +37,17 @@ BEGIN
                     schema_name, table_name, target_column_name, target_column_name
                             );
             EXECUTE update_query;
+            RAISE NOTICE 'Updated empty strings to 0-UUID in %.% column %.', schema_name, table_name, target_column_name;
+
+			-- Update empty strings to NULL
+            update_query := FORMAT(
+                    'UPDATE %I.%I SET %I = ''00000000-0000-0000-0000-000000000000'' WHERE %I = '''';',
+                    schema_name, table_name, target_column_name, target_column_name
+                            );
+            EXECUTE update_query;
             RAISE NOTICE 'Updated empty strings to NULL in %.% column %.', schema_name, table_name, target_column_name;
+
+
         END LOOP;
 
     RAISE NOTICE 'UUID column update completed successfully.';

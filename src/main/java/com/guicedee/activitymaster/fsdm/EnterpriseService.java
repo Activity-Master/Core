@@ -377,7 +377,7 @@ public class EnterpriseService
                      .invoke(ent -> {
                        if (ent != null)
                        {
-                         log.debug("✅ Enterprise found: {} (ID: {})", ent.getName(), ent.getId());
+                         log.trace("✅ Enterprise found: {} (ID: {})", ent.getName(), ent.getId());
                        }
                        else
                        {
