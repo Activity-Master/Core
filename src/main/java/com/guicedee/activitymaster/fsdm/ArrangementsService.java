@@ -56,6 +56,7 @@ import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.Vertx;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
@@ -1042,7 +1043,7 @@ public class ArrangementsService
 
     /// /@CacheResult(cacheName = "ArrangementArrangementTypeString")
     @Override
-    public Uni<IArrangementType<?, ?>> find(Mutiny.Session session, String idType, ISystems<?, ?> system, UUID... identityToken)
+    public @NotNull Uni<IArrangementType<?, ?>> find(Mutiny.Session session, String idType, ISystems<?, ?> system, UUID... identityToken)
     {
         log.debug("Finding arrangement type by name: {}", idType);
         var enterprise = system.getEnterprise();
@@ -1059,7 +1060,7 @@ public class ArrangementsService
 
     @Override
     ////@CacheResult
-    public Uni<IArrangement<?, ?>> find(Mutiny.Session session, UUID id, ISystems<?, ?> system, UUID... identityToken)
+    public @NotNull Uni<IArrangement<?, ?>> find(Mutiny.Session session, UUID id, ISystems<?, ?> system, UUID... identityToken)
     {
         log.debug("Finding arrangement by ID: {}", id);
         Arrangement xr = new Arrangement();
@@ -1071,7 +1072,7 @@ public class ArrangementsService
 
     @Override
     ////@CacheResult
-    public Uni<IArrangement<?, ?>> find(Mutiny.Session session, UUID id)
+    public @NotNull Uni<IArrangement<?, ?>> find(Mutiny.Session session, UUID id)
     {
         log.debug("Finding arrangement by ID (no system): {}", id);
         Arrangement xr = new Arrangement();

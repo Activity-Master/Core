@@ -53,7 +53,7 @@ import static jakarta.persistence.FetchType.EAGER;
 @SuppressWarnings({"unused", "rawtypes"})
 @Entity
 @Table(schema = "Resource",
-        name = "ResourceItem")
+    name = "ResourceItem")
 @XmlRootElement
 
 @Access(AccessType.FIELD)
@@ -61,317 +61,322 @@ import static jakarta.persistence.FetchType.EAGER;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+    generator = ObjectIdGenerators.PropertyGenerator.class,
+    property = "id")
 @Log
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResourceItem
-        extends WarehouseSCDTable<ResourceItem, ResourceItemQueryBuilder, UUID, ResourceItemSecurityToken>
-        implements IResourceItem<ResourceItem, ResourceItemQueryBuilder>
+    extends WarehouseSCDTable<ResourceItem, ResourceItemQueryBuilder, UUID, ResourceItemSecurityToken>
+    implements IResourceItem<ResourceItem, ResourceItemQueryBuilder>
 {
-    @Serial
-    private static final long serialVersionUID = 1L;
+  @Serial
+  private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(nullable = false,
-            name = "ResourceItemID")
-    @JsonValue
-    private UUID id;
-    @Basic(optional = false,
-            fetch = EAGER)
-    @Column(nullable = false,
-            name = "ResourceItemDataType",
-            length = 150)
-    @Size(max = 150)
-    private String resourceItemDataType;
+  @Id
+  @Column(nullable = false,
+      name = "ResourceItemID")
+  @JsonValue
+  private UUID id;
+  @Basic(optional = false,
+      fetch = EAGER)
+  @Column(nullable = false,
+      name = "ResourceItemDataType",
+      length = 150)
+  @Size(max = 150)
+  private String resourceItemDataType;
 
-    @OneToMany(
-            mappedBy = "resourceItemID",
-            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private List<ResourceItemXClassification> classifications;
+  @OneToMany(
+      mappedBy = "resourceItemID",
+      fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+  private List<ResourceItemXClassification> classifications;
 
-    @OneToMany(
-            mappedBy = "resourceItemID",
-            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private List<ResourceItemXResourceItemType> types;
+  @OneToMany(
+      mappedBy = "resourceItemID",
+      fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+  private List<ResourceItemXResourceItemType> types;
 
-    @OneToMany(
-            mappedBy = "resourceItemID",
-            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private List<InvolvedPartyXResourceItem> parties;
-    @OneToMany(
-            mappedBy = "resourceItemID",
-            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private List<ArrangementXResourceItem> arrangements;
+  @OneToMany(
+      mappedBy = "resourceItemID",
+      fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+  private List<InvolvedPartyXResourceItem> parties;
+  @OneToMany(
+      mappedBy = "resourceItemID",
+      fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+  private List<ArrangementXResourceItem> arrangements;
 
-    @OneToMany(
-            mappedBy = "resource",
-            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private List<ResourceItemData> data;
+  @OneToMany(
+      mappedBy = "resource",
+      fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+  private List<ResourceItemData> data;
 
-    @OneToMany(
-            mappedBy = "resourceItemID",
-            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private List<AddressXResourceItem> addresses;
-    @OneToMany(
-            mappedBy = "resourceItemID",
-            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private List<EventXResourceItem> events;
-    @OneToMany(
-            mappedBy = "resourceItemID",
-            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private List<ProductXResourceItem> products;
+  @OneToMany(
+      mappedBy = "resourceItemID",
+      fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+  private List<AddressXResourceItem> addresses;
+  @OneToMany(
+      mappedBy = "resourceItemID",
+      fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+  private List<EventXResourceItem> events;
+  @OneToMany(
+      mappedBy = "resourceItemID",
+      fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+  private List<ProductXResourceItem> products;
 
-    @OneToMany(
-            mappedBy = "resourceItemID",
-            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private List<ClassificationDataConceptXResourceItem> concept;
-    @OneToMany(
-            mappedBy = "resourceItemID",
-            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private List<ClassificationXResourceItem> classificationXResourceItemList;
-    @OneToMany(
-            mappedBy = "base",
-            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private List<ResourceItemSecurityToken> securities;
-    @OneToMany(
-            mappedBy = "resourceItemID",
-            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private List<GeographyXResourceItem> geographies;
+  @OneToMany(
+      mappedBy = "resourceItemID",
+      fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+  private List<ClassificationDataConceptXResourceItem> concept;
+  @OneToMany(
+      mappedBy = "resourceItemID",
+      fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+  private List<ClassificationXResourceItem> classificationXResourceItemList;
+  @OneToMany(
+      mappedBy = "base",
+      fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+  private List<ResourceItemSecurityToken> securities;
+  @OneToMany(
+      mappedBy = "resourceItemID",
+      fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+  private List<GeographyXResourceItem> geographies;
 
 
-    @Override
-    public void configureSecurityEntity(ResourceItemSecurityToken securityEntity)
+  @Override
+  public void configureSecurityEntity(ResourceItemSecurityToken securityEntity)
+  {
+    securityEntity.setBase(this);
+  }
+
+  @Override
+  public Uni<IResourceItem<?, ?>> updateDataTypeValue(Mutiny.Session session, String newValue)
+  {
+    setResourceItemDataType(newValue);
+    return builder(session).find(getId())
+               .update()
+               .replaceWith(Uni.createFrom()
+                                .item(this));
+  }
+
+  @Override
+  public Uni<byte[]> getData(Mutiny.Session session, UUID... identityToken)
+  {
+    ResourceItemData rid = new ResourceItemData();
+    return rid.builder(session)
+               .inActiveRange()
+               .inDateRange()
+               .where(ResourceItemData_.resource, Equals, this)
+               .latestFirst()
+               .setReturnFirst(true)
+               .selectColumn(ResourceItemData_.resourceItemData)
+               .get(byte[].class)
+               .onItem()
+               .ifNotNull()
+               .transform(data -> unzip(data))
+               .onItem()
+               .ifNull()
+               .continueWith(() -> {
+                 log.log(Level.SEVERE, "No resource item data exists");
+                 return new byte[]{};
+               });
+  }
+
+  @Override
+  public Uni<String> getFilename(Mutiny.Session session)
+  {
+    ResourceItemData rid = new ResourceItemData();
+    return rid.builder(session)
+               .inActiveRange()
+               .inDateRange()
+               .where(ResourceItemData_.resource, Equals, this)
+               .get()
+               .onItem()
+               .ifNotNull()
+               .transform(r -> "data/" + r.getId() + ".dat")
+               .onItem()
+               .ifNull()
+               .continueWith(() -> null);
+  }
+
+  @Override
+  public Uni<IResourceData<?, ?, ?>> getDataRow(Mutiny.Session session, UUID... identityToken)
+  {
+    ResourceItemData rid = new ResourceItemData();
+    return rid.builder(session)
+               .inActiveRange()
+               .inDateRange()
+               .where(ResourceItemData_.resource, Equals, this)
+               .get()
+               .map(ridd -> ridd);
+  }
+
+  /**
+   * GZip to ensure that the compressed file is always the same given the same input,
+   * zips change headers
+   *
+   * @param data
+   * @return
+   */
+  byte[] zip(byte[] data)
+  {
+    return data;
+  }
+
+  /**
+   * UnGZIP - maybe add a tarball for password?
+   *
+   * @param data
+   * @return
+   */
+  byte[] unzip(byte[] data)
+  {
+    byte[] outcome = data;
+    return outcome;
+  }
+
+
+  @Override
+  public Uni<Void> updateData(Mutiny.Session session, byte[] data, ISystems<?, ?> system, UUID... identityToken)
+  {
+    if (data == null || data.length == 0)
     {
-        securityEntity.setBase(this);
+      return Uni.createFrom()
+                 .failure(new RuntimeException("Cannot store 0 data into a resource item"));
     }
+    ResourceItemData rid = new ResourceItemData();
+    return rid.builder(session)
+               .inActiveRange()
+               .where(ResourceItemData_.resource, Equals, this)
+               .latestFirst()
+               .setReturnFirst(true)
+               .get()
+               .chain(resourceItemData -> {
+                 resourceItemData.setResourceItemData(data);
+                 return session.merge(resourceItemData);
+               })
+               .replaceWithVoid();
+  }
 
-    @Override
-    public Uni<IResourceItem<?, ?>> updateDataTypeValue(Mutiny.Session session, String newValue)
+  @Override
+  public Uni<Void> updateAndKeepHistoryData(Mutiny.Session session, byte[] data, ISystems<?, ?> system, UUID... identityToken)
+  {
+    final byte[] zippedData = zip(data);
+
+    ResourceItemData rid = new ResourceItemData();
+    return rid.builder(session)
+               .inActiveRange()
+               .where(ResourceItemData_.resource, Equals, this)
+               .latestFirst()
+               .setReturnFirst(true)
+               .get()
+               .onItem()
+               .ifNotNull()
+               .invoke(resourceItemData -> {
+                 resourceItemData.archive(session);
+               })
+               .onItem()
+               .transformToUni(item -> {
+                 ResourceItemData newRid = new ResourceItemData();
+                 newRid.setResource(this);
+                 newRid.setEffectiveFromDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+                 newRid.setWarehouseCreatedTimestamp(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+                 newRid.setEffectiveToDate(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
+                 newRid.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+                 newRid.setResourceItemData(zippedData);
+                 newRid.setActiveFlagID(getActiveFlagID());
+                 newRid.setOriginalSourceSystemID(getSystemID());
+                 newRid.setSystemID(getSystemID());
+                 newRid.setEnterpriseID(system.getEnterpriseID());
+                 return session.persist(newRid);
+               });
+  }
+
+  @Override
+  public boolean equals(Object o)
+  {
+    if (this == o)
     {
-            setResourceItemDataType(newValue);
-            return builder(session).find(getId())
-                    .update()
-                       .replaceWith(Uni.createFrom().item(this));
+      return true;
     }
-
-    @Override
-    public Uni<byte[]> getData(Mutiny.Session session, UUID... identityToken)
+    if (o == null || getClass() != o.getClass())
     {
-            ResourceItemData rid = new ResourceItemData();
-            return rid.builder(session)
-                           .inActiveRange()
-                           .inDateRange()
-                           .where(ResourceItemData_.resource, Equals, this)
-                           .selectColumn(ResourceItemData_.resourceItemData)
-                           .get(byte[].class)
-                           .onItem()
-                           .ifNotNull()
-                           .transform(data -> unzip(data))
-                           .onItem()
-                           .ifNull()
-                           .continueWith(() -> {
-                               log.log(Level.SEVERE, "No resource item data exists");
-                               return new byte[]{};
-                           });
+      return false;
     }
+    ResourceItem that = (ResourceItem) o;
+    return Objects.equals(getId(), that.getId());
+  }
 
-    @Override
-    public Uni<String> getFilename(Mutiny.Session session)
-    {
-            ResourceItemData rid = new ResourceItemData();
-            return rid.builder(session)
-                           .inActiveRange()
-                           .inDateRange()
-                           .where(ResourceItemData_.resource, Equals, this)
-                           .get()
-                           .onItem()
-                           .ifNotNull()
-                           .transform(r -> "data/" + r.getId() + ".dat")
-                           .onItem()
-                           .ifNull()
-                           .continueWith(() -> null);
-    }
+  @Override
+  public int hashCode()
+  {
+    return Objects.hash(getId());
+  }
 
-    @Override
-    public Uni<IResourceData<?, ?, ?>> getDataRow(Mutiny.Session session, UUID... identityToken)
-    {
-            ResourceItemData rid = new ResourceItemData();
-            return rid.builder(session)
-                           .inActiveRange()
-                           .inDateRange()
-                           .where(ResourceItemData_.resource, Equals, this)
-                           .get()
-                           .map(ridd -> ridd);
-    }
+  @Override
+  public String toString()
+  {
+    return getId() + "";
+  }
 
-    /**
-     * GZip to ensure that the compressed file is always the same given the same input,
-     * zips change headers
-     *
-     * @param data
-     * @return
-     */
-    byte[] zip(byte[] data)
-    {
-        return data;
-    }
+  /**
+   * Archives the entity by setting its active flag to archived.
+   * This method is reactive as it performs a database operation.
+   *
+   * @return A Uni that completes when the archiving is done
+   */
+  @SuppressWarnings("unchecked")
+  public Uni<ResourceItem> archive(Mutiny.Session session)
+  {
+    IEnterprise<?, ?> enterprise = getEnterpriseID();
+    ActiveFlagSystem activeSystem = com.guicedee.client.IGuiceContext.get(ActiveFlagSystem.class);
+    return activeSystem.getSystemToken(session, enterprise)
+               .chain(systemToken -> {
+                 return com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
+                            .getArchivedFlag(session, enterprise, systemToken)
+                            .chain(archivedFlag -> {
+                              setActiveFlagID((IActiveFlag<?, ?>) archivedFlag);
+                              return session.merge(this);
+                            });
+               });
+  }
 
-    /**
-     * UnGZIP - maybe add a tarball for password?
-     *
-     * @param data
-     * @return
-     */
-    byte[] unzip(byte[] data)
-    {
-        byte[] outcome = data;
-        return outcome;
-    }
+  @Override
+  public Uni<String> getResourceItemDataType()
+  {
+    return Uni.createFrom()
+               .item(this.resourceItemDataType);
+  }
 
+  public ResourceItem setResourceItemDataType(@Size(max = 150) String resourceItemDataType)
+  {
+    this.resourceItemDataType = resourceItemDataType;
+    return this;
+  }
 
-    @Override
-    public Uni<Void> updateData(Mutiny.Session session, byte[] data, ISystems<?, ?> system, UUID... identityToken)
-    {
-        if (data == null || data.length == 0)
-        {
-            return Uni.createFrom()
-                           .failure(new RuntimeException("Cannot store 0 data into a resource item"));
-        }
-                    ResourceItemData rid = new ResourceItemData();
-                    return rid.builder(session)
-                               .inActiveRange()
-                               .where(ResourceItemData_.resource, Equals, this)
-                               .latestFirst()
-                               .setReturnFirst(true)
-                               .get()
-                               .chain(resourceItemData -> {
-                                   resourceItemData.setResourceItemData(data);
-                                   return session.merge(resourceItemData);
-                               })
-                               .onItem().transformToUni(item -> Uni.createFrom().voidItem());
+  @Override
+  public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, ResourceItem, ResourceItem, UUID, ?> newLink, ResourceItem parent, ResourceItem child, String value)
+  {
+    ResourceItemXResourceItem ri = (ResourceItemXResourceItem) newLink;
+    ri.setParentResourceItemID(parent);
+    ri.setChildResourceItemID(child);
+    ri.setValue(value);
+  }
 
-    }
+  @Override
+  public void configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+  {
+    ResourceItemXClassification rxc = (ResourceItemXClassification) linkTable;
+    rxc.setResourceItemID(this);
+  }
 
-    @Override
-    public Uni<Void> updateAndKeepHistoryData(Mutiny.Session session, byte[] data, ISystems<?, ?> system, UUID... identityToken)
-    {
-        final byte[] zippedData = zip(data);
-        
-            ResourceItemData rid = new ResourceItemData();
-            return rid.builder(session)
-                       .inActiveRange()
-                       .where(ResourceItemData_.resource, Equals, this)
-                       .latestFirst()
-                       .setReturnFirst(true)
-                       .get()
-                       .onItem().ifNotNull().invoke(resourceItemData -> {
-                           resourceItemData.archive(session);
-                       })
-                       .onItem().transformToUni(item -> {
-                           ResourceItemData newRid = new ResourceItemData();
-                           newRid.setResource(this);
-                           newRid.setEffectiveFromDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-                           newRid.setWarehouseCreatedTimestamp(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-                           newRid.setEffectiveToDate(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
-                           newRid.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-                           newRid.setResourceItemData(zippedData);
-                           newRid.setActiveFlagID(getActiveFlagID());
-                           newRid.setOriginalSourceSystemID(getSystemID());
-                           newRid.setSystemID(getSystemID());
-                           newRid.setEnterpriseID(system.getEnterpriseID());
-                           return session.persist(newRid);
-                       });
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass())
-        {
-            return false;
-        }
-        ResourceItem that = (ResourceItem) o;
-        return Objects.equals(getId(), that.getId());
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash(getId());
-    }
-
-    @Override
-    public String toString()
-    {
-        return getId() + "";
-    }
-
-    /**
-     * Archives the entity by setting its active flag to archived.
-     * This method is reactive as it performs a database operation.
-     *
-     * @return A Uni that completes when the archiving is done
-     */
-    @SuppressWarnings("unchecked")
-    public Uni<ResourceItem> archive(Mutiny.Session session)
-    {
-        IEnterprise<?, ?> enterprise = getEnterpriseID();
-        ActiveFlagSystem activeSystem = com.guicedee.client.IGuiceContext.get(ActiveFlagSystem.class);
-        return activeSystem.getSystemToken(session, enterprise)
-                .chain(systemToken -> {
-                    return com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
-                       .getArchivedFlag(session, enterprise, systemToken)
-                       .chain(archivedFlag -> {
-                           setActiveFlagID((IActiveFlag<?, ?>) archivedFlag);
-                           return session.merge(this);
-                       });
-                });
-    }
-
-    @Override
-    public Uni<String> getResourceItemDataType()
-    {
-        return Uni.createFrom()
-                       .item(this.resourceItemDataType);
-    }
-
-    public ResourceItem setResourceItemDataType(@Size(max = 150) String resourceItemDataType)
-    {
-        this.resourceItemDataType = resourceItemDataType;
-        return this;
-    }
-
-    @Override
-    public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, ResourceItem, ResourceItem, UUID, ?> newLink, ResourceItem parent, ResourceItem child, String value)
-    {
-        ResourceItemXResourceItem ri = (ResourceItemXResourceItem) newLink;
-        ri.setParentResourceItemID(parent);
-        ri.setChildResourceItemID(child);
-        ri.setValue(value);
-    }
-
-    @Override
-    public void configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
-    {
-        ResourceItemXClassification rxc = (ResourceItemXClassification) linkTable;
-        rxc.setResourceItemID(this);
-    }
-
-    @Override
-    public void configureResourceItemTypeLinkValue(IWarehouseRelationshipTable linkTable, ResourceItem primary, IResourceItemType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?, ?> enterprise)
-    {
-        ResourceItemXResourceItemType rix = (ResourceItemXResourceItemType) linkTable;
-        rix.setResourceItemID(primary);
-        rix.setResourceItemTypeID((ResourceItemType) secondary);
-        rix.setClassificationID(classificationValue);
-        rix.setValue(value);
-    }
+  @Override
+  public void configureResourceItemTypeLinkValue(IWarehouseRelationshipTable linkTable, ResourceItem primary, IResourceItemType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?, ?> enterprise)
+  {
+    ResourceItemXResourceItemType rix = (ResourceItemXResourceItemType) linkTable;
+    rix.setResourceItemID(primary);
+    rix.setResourceItemTypeID((ResourceItemType) secondary);
+    rix.setClassificationID(classificationValue);
+    rix.setValue(value);
+  }
 }

@@ -573,7 +573,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
   {
     log.debug("Finding InvolvedParty by UUID token: {}", token);
     var enterprise = system.getEnterprise();
-    return (Uni) findInvolvedPartyIdentificationType(session, IdentificationTypeUUID.toString(), system, identityToken)
+    return findInvolvedPartyIdentificationType(session, IdentificationTypeUUID.toString(), system, identityToken)
                .chain(id -> {
                  InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();
                  return idType.builder(session)
@@ -583,6 +583,9 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                             .withEnterprise(enterprise)
                             .canRead(system, identityToken)
                             .get();
+               })
+               .chain(idxid->{
+                 return session.fetch(idxid.getInvolvedPartyID());
                });
 
   }
