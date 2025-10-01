@@ -2,7 +2,9 @@ package com.guicedee.activitymaster.tests;
 
 import com.google.inject.Key;
 import com.google.inject.name.Names;
+import com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConceptService;
 import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
+import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.ITimeService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
@@ -162,6 +164,41 @@ public class TestDatabaseConnectivity extends TestDatabaseSetup
         ;
       }
     }
-  }
 
+    @Nested
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    class ClassificationDataConcept
+    {
+      @Test
+      @Order(1)
+      public void testClassificationDataConceptFindAfterStartup()
+      {
+        // This test intentionally runs AFTER EnterpriseSetup.testStartNewEnterprise() to rely on startup-created defaults
+        var foundConcept = sessionFactory.withTransaction(session -> {
+          IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
+          ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
+          IClassificationDataConceptService<?> conceptService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConceptService.class);
+
+          return enterpriseService.getEnterprise(session, TestEnterprise.name())
+              .chain(ent -> systemsService.getActivityMaster(session,
+                  (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent))
+              .chain(sys -> {
+
+                // After startup, the Global concept should exist; verify via interface-only API
+                return conceptService.find(session,
+                        com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.GlobalClassificationsDataConceptName,
+                        sys)
+                    .invoke(foundObj -> {
+                      com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassificationDataConcept<?, ?> found =
+                          (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassificationDataConcept<?, ?>) foundObj;
+                      assertNotNull(found, "Found classification data concept should not be null");
+                      log.info("Found concept id={} name={}", found.getId(), found.getName());
+                    });
+              });
+        });
+
+        foundConcept.await().atMost(Duration.ofMinutes(2));
+      }
+    }
+  }
 }

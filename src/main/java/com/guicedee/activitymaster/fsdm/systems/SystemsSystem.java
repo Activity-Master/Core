@@ -34,9 +34,6 @@ public class SystemsSystem
   @Inject
   private ISystemsService<?> systemsService;
 
-  @Inject
-  private Mutiny.SessionFactory sessionFactory;
-
   /**
    * Creates all the applicable systems that are required before the actual activity master system can be created.
    * After the user groups setup then security controls kick in

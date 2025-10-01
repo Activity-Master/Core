@@ -111,7 +111,7 @@ public class ClassificationService
   {
     var sessionFactory = IGuiceContext.get(Mutiny.SessionFactory.class);
 
-    log.info("🚀 Creating new classification: '{}' for system: '{}' with external session", name, system.getName());
+    log.trace("🚀 Creating new classification: '{}' for system: '{}' with external session", name, system.getName());
     log.trace("📝 Classification details - Name: '{}', Description: '{}', System ID: {}, Session: {}",
         name, description, system.getId(), session.hashCode());
 
@@ -123,7 +123,7 @@ public class ClassificationService
     }
     else
     {
-      log.debug("📋 Finding default 'NoClassification' data concept for system: '{}' with session: {}", system.getName(), session.hashCode());
+      log.trace("📋 Finding default 'NoClassification' data concept for system: '{}' with session: {}", system.getName(), session.hashCode());
       dataConceptUni = dataConceptService.find(session, "NoClassification", system, identityToken);
     }
 
