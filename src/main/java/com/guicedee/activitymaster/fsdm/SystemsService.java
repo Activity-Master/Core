@@ -79,7 +79,7 @@ public class SystemsService
   //@CacheResult(cacheName = "GetActivityMaster")
   public Uni<ISystems<?, ?>> getActivityMaster(Mutiny.Session session, ISystems<?, ?> requestingSystem, UUID... identityToken)
   {
-    return findSystem(session, requestingSystem, ActivityMasterSystemName, identityToken);
+    return findSystem(session, requestingSystem.getEnterprise(), ActivityMasterSystemName, identityToken);
   }
 
   @Override

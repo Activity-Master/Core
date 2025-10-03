@@ -1,17 +1,8 @@
 package com.guicedee.activitymaster.tests;
 
-import com.google.inject.Key;
-import com.google.inject.name.Names;
-import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
-import com.guicedee.client.IGuiceContext;
-import com.guicedee.vertxpersistence.PersistService;
-import com.guicedee.vertxpersistence.bind.JtaPersistService;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
-import org.hibernate.engine.config.spi.ConfigurationService;
 import org.hibernate.reactive.mutiny.Mutiny;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.guicedee.activitymaster.fsdm.DefaultEnterprise.TestEnterprise;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Log4j2
@@ -32,7 +22,7 @@ public abstract class TestDatabaseSetup
     static void runScript(Mutiny.SessionFactory sessionFactory, String resourcePath)
     {
         String sql;
-        try (InputStream in = TestDatabaseConnectivity.class.getClassLoader()
+        try (InputStream in = TestActivityMaster.class.getClassLoader()
                                       .getResourceAsStream(resourcePath))
         {
             if (in == null)
