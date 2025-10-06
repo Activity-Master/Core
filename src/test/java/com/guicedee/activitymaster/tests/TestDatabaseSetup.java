@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public abstract class TestDatabaseSetup
 {
 
-    static void runScript(Mutiny.SessionFactory sessionFactory, String resourcePath)
+    public static void runScript(Mutiny.SessionFactory sessionFactory, String resourcePath)
     {
         String sql;
         try (InputStream in = TestActivityMaster.class.getClassLoader()

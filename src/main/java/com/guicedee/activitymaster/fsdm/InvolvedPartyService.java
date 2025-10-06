@@ -227,7 +227,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                });
   }
 
-  public Uni<InvolvedPartyOrganicType> createOrganicType(Mutiny.Session session, ISystems<?, ?> system, UUID key, String name, String description, UUID... identityToken)
+  private Uni<InvolvedPartyOrganicType> createOrganicType(Mutiny.Session session, ISystems<?, ?> system, UUID key, String name, String description, UUID... identityToken)
   {
     log.debug("Creating InvolvedPartyOrganicType: name={}, description={}", name, description);
     var enterprise = system.getEnterprise();

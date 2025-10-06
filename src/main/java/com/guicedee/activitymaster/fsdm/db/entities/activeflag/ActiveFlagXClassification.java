@@ -60,14 +60,7 @@ public class ActiveFlagXClassification
 	
 	private java.util.UUID id;
 	
-	@JoinColumn(name = "SystemID",
-	            referencedColumnName = "SystemID",
-	            nullable = false)
-	@ManyToOne(optional = false,
-	           fetch = FetchType.LAZY)
-	
-	private Systems systemID;
-	
+
 @OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
@@ -79,36 +72,26 @@ public class ActiveFlagXClassification
 		securityEntity.setBase(this);
 	}
 
-	
-	public ActiveFlagXClassification setSystemID(Systems systemID)
-	{
-		this.systemID = systemID;
-		return this;
-	}
-	
+
+
 	public ActiveFlagXClassification setSecurities(List<ActiveFlagXClassificationSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-	
+
 	@Override
 	public ActiveFlag getPrimary()
 	{
 		return getActiveFlagID();
 	}
-	
+
 	@Override
 	public Classification getSecondary()
 	{
 		return getClassificationID();
 	}
 
-	@Override
-	public Systems getSystemID()
-	{
-		return systemID;
-	}
 	
 	public List<ActiveFlagXClassificationSecurityToken> getSecurities()
 	{

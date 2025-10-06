@@ -36,7 +36,9 @@ public class ResourceItemXResourceItemTypeQueryBuilder
 		if (typeValue != null)
 		{
 			IResourceItemService<?> service = com.guicedee.client.IGuiceContext.get(IResourceItemService.class);
-			ResourceItemType at = (ResourceItemType) service.findResourceItemType(getEntityManager(), typeValue, system, identityToken);
+			// Bridge reactive call synchronously only for query-building context
+			ResourceItemType at = (ResourceItemType) service.findResourceItemType(getEntityManager(), typeValue, system, identityToken)
+				.await().atMost(java.time.Duration.ofMinutes(1));
 			where(ResourceItemXResourceItemType_.resourceItemTypeID, Operand.Equals, at);
 		}
 		return this;

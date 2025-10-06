@@ -18,9 +18,9 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemXClassificationQueryBuilder;
+import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemXResourceItemTypeQueryBuilder;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
-import io.vertx.core.Vertx;
 import jakarta.persistence.criteria.*;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
@@ -77,9 +77,6 @@ public class ResourceItemService
 
   @Inject
   private IClassificationService<?> classificationService;
-
-  @Inject
-  private Vertx vertx;
 
   /**
    * Gets a new ResourceItem instance.
@@ -330,14 +327,15 @@ public class ResourceItemService
   /**
    * Helper method to update resource item data
    */
-  private Uni<Void> findResourceItemDataForUpdate(Mutiny.Session session, ResourceItem resourceItem, byte[] data, ISystems<?, ?> system, UUID... identityToken)
+  @Override
+  public Uni<Void> findResourceItemDataForUpdate(Mutiny.Session session, IResourceItem<?,?> resourceItem, byte[] data, ISystems<?, ?> system, UUID... identityToken)
   {
     log.debug("Updating data for resource item: {}", resourceItem.getId());
     var enterprise = system.getEnterprise();
     // Find the existing data relationship
     ResourceItemData rid = new ResourceItemData();
     return rid.builder(session)
-               .withResource(resourceItem)
+               .withResource((ResourceItem) resourceItem)
                .inActiveRange()
                .inDateRange()
                .get()
@@ -346,7 +344,7 @@ public class ResourceItemService
                  {
                    // Create new data if none exists
                    ResourceItemData newData = new ResourceItemData();
-                   newData.setResource(resourceItem);
+                   newData.setResource((ResourceItem) resourceItem);
                    LocalDateTime now = RootEntity.getNow();
                    newData.setEffectiveFromDate(convertToUTCDateTime(now));
                    newData.setWarehouseCreatedTimestamp(convertToUTCDateTime(now));
@@ -376,7 +374,8 @@ public class ResourceItemService
   /**
    * Helper method to add resource item type relationship
    */
-  private Uni<Void> addResourceItemTypeRelationship(Mutiny.Session session, ResourceItem resourceItem, String typeName, String value, ISystems<?, ?> system, UUID... identityToken)
+  @Override
+  public Uni<Void> addResourceItemTypeRelationship(Mutiny.Session session, IResourceItem<?,?> resourceItem, String typeName, String value, ISystems<?, ?> system, UUID... identityToken)
   {
     log.debug("Adding resource item type relationship: {} for item: {}", typeName, resourceItem.getId());
     var enterprise = system.getEnterprise();
@@ -385,7 +384,7 @@ public class ResourceItemService
                  return classificationService.find(session, DefaultClassifications.NoClassification.toString(), system, identityToken)
                             .chain(classification -> {
                               ResourceItemXResourceItemType relationship = new ResourceItemXResourceItemType();
-                              relationship.setResourceItemID(resourceItem);
+                              relationship.setResourceItemID((ResourceItem) resourceItem);
                               relationship.setResourceItemTypeID((ResourceItemType) resourceItemType);
                               relationship.setClassificationID(classification);
                               relationship.setValue("");
@@ -602,30 +601,30 @@ public class ResourceItemService
   {
     log.trace("Finding resources by type: {} and value: {}", type, value);
     var enterprise = systems.getEnterprise();
-    return new ResourceItemXResourceItemType().builder(session)
-               .withEnterprise(enterprise)
-               .inActiveRange()
-               .inDateRange()
-               .canRead(systems, identityToken)
-               .withType(type, systems, identityToken)
-               .withValue(value)
-               .getAll()
-               .chain(results -> {
-                 List<Uni<IResourceItem<?, ?>>> resourceItemUnis = new ArrayList<>();
-                 for (ResourceItemXResourceItemType result : results)
-                 {
-                   // Wrap the lazy fetch with session.fetch()
-                   resourceItemUnis.add(session.fetch(result.getResourceItemID()));
-                 }
-                 // Process all fetches sequentially
-                 return Uni.join()
-                            .all(resourceItemUnis)
-                            .andCollectFailures();
-               })
-               .onFailure()
-               .invoke(e ->
-                           log.error("Error finding resources by type: {} and value: {}", type, value, e));
 
+    // Build query by joining ResourceItem to its types and filtering by type name without blocking
+    ResourceItemQueryBuilder aqb = new ResourceItem().builder(session);
+    aqb.withEnterprise(enterprise)
+       .inActiveRange()
+       .inDateRange();
+
+    com.entityassist.querybuilder.builders.JoinExpression<?,?,?> joinExpression = new com.entityassist.querybuilder.builders.JoinExpression<>();
+    ResourceItemXResourceItemTypeQueryBuilder qb = new ResourceItemXResourceItemType().builder(session);
+    qb.withEnterprise(enterprise)
+      .inActiveRange()
+      .inDateRange();
+    if (value != null)
+    {
+      qb.withValue(value);
+    }
+    // Filter by the ResourceItemType name without resolving the entity
+    qb.where(qb.getAttribute("resourceItemTypeID.name"), Equals, type);
+
+    aqb.join(ResourceItem_.types, qb, jakarta.persistence.criteria.JoinType.INNER, joinExpression);
+
+    return (Uni) aqb.getAll()
+              .onFailure()
+              .invoke(e -> log.error("Error finding resources by type: {} and value: {}", type, value, e));
   }
 
   /**
@@ -640,6 +639,7 @@ public class ResourceItemService
    * @param identityToken         The identity token
    * @return A Uni containing the found resource item
    */
+  @Override
   public Uni<IResourceItem<?, ?>> createAndFind(Mutiny.Session session, String identityResourceType, String resourceItemDataValue,
                                                 ISystems<?, ?> system, UUID... identityToken)
   {
