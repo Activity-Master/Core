@@ -42,7 +42,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.events.EventType;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.Vertx;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.util.NoSuchElementException;
@@ -51,14 +51,11 @@ import java.util.UUID;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification;
 import static com.guicedee.client.IGuiceContext.get;
 
-@Log
+@Log4j2
 @Singleton
 public class EventsService
         implements IEventService<EventsService>
 {
-    @Inject
-    private Vertx vertx;
-
     @Override
     public Uni<IEvent<?, ?>> get()
     {
@@ -109,7 +106,7 @@ public class EventsService
                            // Chain the createDefaultSecurity operation properly
                            return persistedEvent.createDefaultSecurity(session, system, identityToken)
                                .onItem().invoke(() -> log.info("Security setup completed successfully for event"))
-                               .onFailure().invoke(error -> log.warning("Error in createDefaultSecurity for event: " + error.getMessage()))
+                               .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for event: " + error.getMessage()))
                                .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
                                .chain(() -> persistedEvent.addEventTypes(session, eventType, "", NoClassification.toString(), system, identityToken)
                                           .map(result -> persistedEvent));
@@ -154,8 +151,8 @@ public class EventsService
                                               .chain(persistedEt -> {
                                                   // Chain the createDefaultSecurity operation properly
                                                   return persistedEt.createDefaultSecurity(session, system, identityToken)
-                                                      .onItem().invoke(() -> log.info("Security setup completed successfully for event type"))
-                                                      .onFailure().invoke(error -> log.warning("Error in createDefaultSecurity for event type: " + error.getMessage()))
+                                                      .onItem().invoke(() -> log.trace("Security setup completed successfully for event type"))
+                                                      .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for event type: " + error.getMessage()))
                                                       .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
                                                       .map(result -> persistedEt);
                                               });

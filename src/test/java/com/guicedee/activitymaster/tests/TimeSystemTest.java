@@ -8,7 +8,7 @@ import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 import com.guicedee.activitymaster.fsdm.systems.TimeSystem;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 import org.junit.jupiter.api.*;
 
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Test class for the TimeSystemAdapter
  */
-@Log
+@Log4j2
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TimeSystemTest extends TestDatabaseSetup
 {

@@ -6,12 +6,12 @@ import com.google.inject.TypeLiteral;
 import com.guicedee.activitymaster.fsdm.SystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Log
+@Log4j2
 public class SystemsBinder extends PrivateModule implements IGuiceModule<SystemsBinder>
 {
 	private static Set<String> loadedSystems = new HashSet<String>();

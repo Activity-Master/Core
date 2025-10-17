@@ -30,14 +30,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.logging.Level;
 
 import static com.entityassist.enumerations.Operand.Equals;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
@@ -63,7 +62,7 @@ import static jakarta.persistence.FetchType.EAGER;
 @JsonIdentityInfo(
     generator = ObjectIdGenerators.PropertyGenerator.class,
     property = "id")
-@Log
+@Log4j2
 @Getter
 @Setter
 @NoArgsConstructor
@@ -177,9 +176,9 @@ public class ResourceItem
                .onItem()
                .ifNull()
                .continueWith(() -> {
-                 log.log(Level.SEVERE, "No resource item data exists");
-                 return new byte[]{};
-               });
+                log.error("No resource item data exists");
+                return new byte[]{};
+              });
   }
 
   @Override

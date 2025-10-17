@@ -1,8 +1,8 @@
 package com.guicedee.activitymaster.fsdm.services;
 
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 
-@Log
+@Log4j2
 public class ActivityMasterSystemsManager
 {
 	private ActivityMasterSystemsManager()

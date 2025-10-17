@@ -9,14 +9,14 @@ import com.guicedee.activitymaster.fsdm.client.services.deserializers.*;
 import com.guicedee.guicedinjection.interfaces.IGuicePostStartup;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static com.guicedee.guicedinjection.interfaces.ObjectBinderKeys.*;
 
-@Log
+@Log4j2
 public class ActivityMasterPostStartup implements IGuicePostStartup<ActivityMasterPostStartup>
 {
 	@Inject
