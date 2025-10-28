@@ -106,43 +106,20 @@ public class ClassificationsSystem
 
     return sessionFactory.withTransaction((newSession, tx) ->
                                               service.create(newSession, DefaultClassifications.HierarchyTypeClassification, system)
-                                                  .onItem()
-                                                  .invoke(result -> log.debug("✅ Created HierarchyTypeClassification with ID: {}", result.getId()))
-                                                  .onFailure()
-                                                  .invoke(error -> log.error("❌ Failed to create HierarchyTypeClassification: {}",
-                                                      error.getMessage(), error))
-                                                  .chain(v -> {
-                                                    log.debug("📋 Creating HierarchyTypeClassification with enterprise name");
-                                                    return service.create(newSession, DefaultClassifications.HierarchyTypeClassification, system, enterprise.getName());
-                                                  })
-                                                  .onItem()
-                                                  .invoke(result -> log.debug("✅ Created HierarchyTypeClassification with enterprise name, ID: {}", result.getId()))
-                                                  .onFailure()
-                                                  .invoke(error -> log.error("❌ Failed to create HierarchyTypeClassification with enterprise name: {}",
-                                                      error.getMessage(), error))
                                                   .chain(v -> {
                                                     log.debug("📋 Creating NoClassification");
                                                     return service.create(newSession, DefaultClassifications.NoClassification, system, enterprise.getName());
                                                   })
-                                                  .onItem()
-                                                  .invoke(result -> log.debug("✅ Created NoClassification with ID: {}", result.getId()))
-                                                  .onFailure()
-                                                  .invoke(error -> log.error("❌ Failed to create NoClassification: {}",
-                                                      error.getMessage(), error))
                                                   .chain(v -> {
                                                     log.debug("📋 Creating DefaultClassification");
                                                     return service.create(newSession, DefaultClassifications.DefaultClassification, system, enterprise.getName());
                                                   })
-                                                  .onItem()
-                                                  .invoke(result -> log.debug("✅ Created DefaultClassification with ID: {}", result.getId()))
-                                                  .onFailure()
-                                                  .invoke(error -> log.error("❌ Failed to create DefaultClassification: {}",
-                                                      error.getMessage(), error))
-        )
-               .chain(v -> {
-                 log.debug("🔄 Base classifications created, proceeding to security classifications");
-                 return createSecurityClassifications(session, enterprise, system);
-               });
+                                                  .chain(v -> {
+                                                    log.debug("🔄 Base classifications created, proceeding to security classifications");
+                                                    return createSecurityClassifications(session, enterprise, system);
+                                                  })
+
+    );
   }
 
 

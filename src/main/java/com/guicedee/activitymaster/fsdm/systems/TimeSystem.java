@@ -1203,7 +1203,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
     log.info("🚀 Creating time entities");
 
     // First check if Hours entities already exist
-    return sessionFactory.withStatelessTransaction(session ->
+    return sessionFactory.withTransaction(session ->
                                                        new Hours().builder(session)
                                                            .where(Hours_.id, Equals, 1)
                                                            .get()
@@ -1241,7 +1241,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                                                                // Add hour persistence to the chain
                                                                chain = chain.chain(() -> {
                                                                  log.debug("📋 Creating hour: {}", hour);
-                                                                 return session.insert(hourEntity)
+                                                                 return session.persist(hourEntity)
                                                                             .onItem()
                                                                             .invoke(() -> {
                                                                               log.debug("✅ Created hour: {}", hour);
@@ -1273,7 +1273,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                                                                  final Time finalTime = time;
                                                                  chain = chain.chain(() -> {
                                                                    log.debug("📋 Creating time: {}", finalTime.getId());
-                                                                   return session.insert(finalTime)
+                                                                   return session.persist(finalTime)
                                                                               .onItem()
                                                                               .invoke(() -> {
                                                                                 log.debug("✅ Created time: {}", finalTime.getId());
@@ -1299,7 +1299,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                                                                    final HalfHours finalHalfHour = halfHour;
                                                                    chain = chain.chain(() -> {
                                                                      log.debug("📋 Creating half-hour: {}", finalHalfHour.getId());
-                                                                     return session.insert(finalHalfHour)
+                                                                     return session.persist(finalHalfHour)
                                                                                 .chain(() -> {
                                                                                   // Create HalfHourDayParts entity
                                                                                   int currentDayPartCount = dayPartCount.getAndIncrement();
@@ -1316,7 +1316,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                                                                                       finalHalfHour.getId()
                                                                                           .getMinuteID());
                                                                                   log.debug("📋 Finding DayPart: {}", dayPartId);
-                                                                                  return session.get(DayParts.class, dayPartId)
+                                                                                  return session.find(DayParts.class, dayPartId)
                                                                                              .chain(dayPart -> {
                                                                                                if (dayPart == null)
                                                                                                {
@@ -1353,12 +1353,12 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                                                                                                  newDayPart.setDayPartDescription(dayPartDesc);
                                                                                                  newDayPart.setDayPartSortOrder(dayPartId);
 
-                                                                                                 return session.insert(newDayPart)
+                                                                                                 return session.persist(newDayPart)
                                                                                                             .chain(() -> {
                                                                                                               log.info("✅ Created DayPart: " + dayPartId);
                                                                                                               halfHourDayParts.setDayPartID(newDayPart);
                                                                                                               log.info("📋 Creating HalfHourDayParts: {}", halfHourDayParts.getId());
-                                                                                                              return session.insert(halfHourDayParts)
+                                                                                                              return session.persist(halfHourDayParts)
                                                                                                                          .onItem()
                                                                                                                          .invoke(() -> {
                                                                                                                            log.info("✅ Created HalfHourDayParts: {}", halfHourDayParts.getId());
@@ -1379,7 +1379,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                                                                                                {
                                                                                                  halfHourDayParts.setDayPartID(dayPart);
                                                                                                  log.info("📋 Creating HalfHourDayParts with existing DayPart: {}", halfHourDayParts.getId());
-                                                                                                 return session.insert(halfHourDayParts)
+                                                                                                 return session.persist(halfHourDayParts)
                                                                                                             .onItem()
                                                                                                             .invoke(() -> {
                                                                                                               log.info("✅ Created HalfHourDayParts: {}", halfHourDayParts.getId());
@@ -1519,49 +1519,48 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
   public Uni<Void> populateTransformationTables(Mutiny.StatelessSession session, Date date, int fiscalLag)
   {
     log.info("Populating transformation tables for date: " + date + " with fiscal lag: " + fiscalLag);
-    
-    // Get all entities from the four methods
+
+    // Build all entities first (pure in-memory), then persist them using a stateful session
     Uni<List<TransYtd>> ytdUni = getDayYTD(session, date);
     Uni<List<TransQtd>> qtdUni = getDayQTD(session, date);
     Uni<List<TransMtd>> mtdUni = getDayMTD(session, date);
     Uni<List<TransFiscal>> fiscalUni = getDayFiscal(session, date, fiscalLag);
-    
-    // Combine all four Unis to get all entities at once
+
     return Uni.combine().all().unis(ytdUni, qtdUni, mtdUni, fiscalUni)
-              .asTuple()
-              .chain(tuple -> {
-                List<TransYtd> ytdEntities = tuple.getItem1();
-                List<TransQtd> qtdEntities = tuple.getItem2();
-                List<TransMtd> mtdEntities = tuple.getItem3();
-                List<TransFiscal> fiscalEntities = tuple.getItem4();
-                
-                // Log the number of entities for each type
-                log.info("Created {} YTD relationships", ytdEntities.size());
-                log.info("Created {} QTD relationships", qtdEntities.size());
-                log.info("Created {} MTD relationships", mtdEntities.size());
-                log.info("Created {} fiscal relationships", fiscalEntities.size());
-                
-                // Combine all entities into a single array
-                List<Object> allEntities = new ArrayList<>();
-                allEntities.addAll(ytdEntities);
-                allEntities.addAll(qtdEntities);
-                allEntities.addAll(mtdEntities);
-                allEntities.addAll(fiscalEntities);
-                
-                // Log the total number of entities being inserted
-                log.info("Inserting {} total relationships in a single batch", allEntities.size());
-                
-                // Insert all entities in a single batch
-                return session.insertAll(allEntities.toArray());
-              })
-              .onItem()
-              .invoke(() -> {
-                log.info("Transformation tables populated for date: " + date);
-              })
-              .onFailure()
-              .invoke(error -> {
-                log.error("❌ Failed to populate transformation tables: {}", error.getMessage(), error);
-              });
+        .asTuple()
+        .chain(tuple -> {
+          List<TransYtd> ytdEntities = tuple.getItem1();
+          List<TransQtd> qtdEntities = tuple.getItem2();
+          List<TransMtd> mtdEntities = tuple.getItem3();
+          List<TransFiscal> fiscalEntities = tuple.getItem4();
+
+          log.info("Created {} YTD relationships", ytdEntities.size());
+          log.info("Created {} QTD relationships", qtdEntities.size());
+          log.info("Created {} MTD relationships", mtdEntities.size());
+          log.info("Created {} fiscal relationships", fiscalEntities.size());
+
+          List<Object> allEntities = new ArrayList<>();
+          allEntities.addAll(ytdEntities);
+          allEntities.addAll(qtdEntities);
+          allEntities.addAll(mtdEntities);
+          allEntities.addAll(fiscalEntities);
+
+          log.info("Inserting {} total relationships using stateful session (sequential persist)", allEntities.size());
+
+          // Use a stateful session for persisting composite-id entities to avoid stateless reflection issues
+          return sessionFactory.withTransaction((Mutiny.Session s) -> {
+            Uni<Void> chain = Uni.createFrom().voidItem();
+            for (Object entity : allEntities)
+            {
+              chain = chain.chain(() -> s.persist(entity));
+            }
+            return chain.replaceWithVoid();
+          });
+        })
+        .onItem()
+        .invoke(() -> log.info("Transformation tables populated for date: {}", date))
+        .onFailure()
+        .invoke(error -> log.error("❌ Failed to populate transformation tables: {}", error.getMessage(), error));
   }
 
   /**

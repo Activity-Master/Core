@@ -43,7 +43,8 @@ public class TestActivityMasterManageClassifications {
             var ent = enterpriseService.get();
             ent.setName(TestEnterprise.name());
             ent.setDescription("Enterprise for MC tests");
-            return enterpriseService.createNewEnterprise(session, ent);
+            return enterpriseService.createNewEnterprise(session, ent)
+                       .chain(enter-> enterpriseService.startNewEnterprise(session,TestEnterprise.name(),"admin","adminadmin!@"));
           })
           .chain(ent -> systemsService.getActivityMaster(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent)
               .onFailure().recoverWithUni(t -> systemsService.create(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent,
@@ -298,5 +299,32 @@ public class TestActivityMasterManageClassifications {
               )
           );
     })).await().atMost(Duration.ofMinutes(2));
+  }
+  
+  @Test
+  public void testClassification_CreateWithParent_AddsChildLink() {
+    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+      IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+      ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+      IClassificationService<?> classificationService = IGuiceContext.get(IClassificationService.class);
+      return enterpriseService.getEnterprise(session, TestEnterprise.name())
+          .chain(ent -> systemsService.getActivityMaster(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent))
+          .chain(sys -> {
+            String parentName = "MC_ClassParent_1";
+            String childName = "MC_ClassChild_1";
+            return classificationService.create(session, parentName, "descP", EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, sys)
+                .chain(parent -> classificationService.create(session, childName, "descC", EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, sys, 1, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification<?, ?>) parent)
+                    .replaceWith(parent))
+                .chain(parent -> ((com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification<?, ?>) parent)
+                    .findChildren(session, com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification.name(), null, sys)
+                    .invoke(children -> {
+                      Assertions.assertNotNull(children, "Children list should not be null");
+                      boolean found = children.stream().anyMatch(rv -> childName.equals(rv.getSecondary().getName()));
+                      Assertions.assertTrue(found, "Expected to find child classification linked to parent");
+                    })
+                    .replaceWith(parent))
+                .replaceWithVoid();
+          });
+    })).await().atMost(java.time.Duration.ofMinutes(2));
   }
 }

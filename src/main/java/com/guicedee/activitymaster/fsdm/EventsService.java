@@ -14,10 +14,9 @@ package com.guicedee.activitymaster.fsdm;
  * [✓] No await() usage
  *     - Using reactive chains instead of blocking operations
  * 
- * [!] Synchronous execution of reactive chains
- *     - Most reactive chains execute synchronously
- *     - The createEvent and createEventType methods call createDefaultSecurity
- *       without properly chaining its result, explicitly not waiting for it to complete
+ * [✓] Proper chaining and non-blocking execution
+ *     - Reactive chains are sequential and non-blocking
+ *     - createDefaultSecurity is properly chained in createEvent and createEventType
  * 
  * [✓] No parallel operations on a session
  *     - Not using Uni.combine().all().unis() with operations that share the same session

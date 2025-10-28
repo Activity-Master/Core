@@ -90,7 +90,7 @@ public class ArrangementsService
     @Override
     public IArrangement<?, ?> get()
     {
-        log.debug("Getting new Arrangement instance");
+        log.trace("Getting new Arrangement instance");
         return new Arrangement();
     }
 
@@ -134,7 +134,7 @@ public class ArrangementsService
                        .chain(persisted -> {
                            // Step 2: Create default security with proper chaining
                            return persisted.createDefaultSecurity(session, system, identityToken)
-                               .onItem().invoke(() -> log.debug("Security setup completed successfully for arrangement"))
+                               .onItem().invoke(() -> log.trace("Security setup completed successfully for arrangement"))
                                .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for arrangement", error))
                                .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
                                .chain(() -> find(session, type, system));
@@ -162,7 +162,7 @@ public class ArrangementsService
     @Override
     public Uni<IArrangementType<?, ?>> createArrangementType(Mutiny.Session session, String type, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.debug("Creating arrangement type: {}", type);
+        log.trace("Creating arrangement type: {}", type);
         return createArrangementType(session, type, null, system, identityToken);
     }
 
@@ -171,7 +171,7 @@ public class ArrangementsService
     //
     public Uni<IArrangementType<?, ?>> createArrangementType(Mutiny.Session session, String type, UUID key, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.debug("Creating arrangement type: {}, key: {}", type, key);
+        log.trace("Creating arrangement type: {}, key: {}", type, key);
         ArrangementType xr = new ArrangementType();
         xr.setId(key);
         xr.setName(type);
@@ -190,7 +190,7 @@ public class ArrangementsService
                        .chain(persisted -> {
                            // Create default security with proper chaining
                            return persisted.createDefaultSecurity(session, system, identityToken)
-                               .onItem().invoke(() -> log.debug("Security setup completed successfully for arrangement type"))
+                               .onItem().invoke(() -> log.trace("Security setup completed successfully for arrangement type"))
                                .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for arrangement type", error))
                                .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
                                .map(result -> (IArrangementType<?, ?>) persisted);
@@ -206,7 +206,7 @@ public class ArrangementsService
     @Override
     public Uni<IArrangementType<?, ?>> findArrangementType(Mutiny.Session session, String type, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.debug("Finding arrangement type: {}", type);
+        log.trace("Finding arrangement type: {}", type);
         ArrangementType xr = new ArrangementType();
         var enterprise = system.getEnterprise();
         return (Uni) xr.builder(session)
@@ -229,7 +229,7 @@ public class ArrangementsService
     @Override
     public Uni<List<IArrangement<?, ?>>> findInvolvedPartyArrangements(Mutiny.Session session, IInvolvedParty<?, ?> ip, String arrType, ISystems<?, ?> systems, UUID... identityToken)
     {
-        log.debug("Finding involved party arrangements for IP: {}, type: {}", ip.getId(), arrType);
+        log.trace("Finding involved party arrangements for IP: {}, type: {}", ip.getId(), arrType);
         var enterprise = systems.getEnterprise();
         return new ArrangementXInvolvedParty()
                        .builder(session)
@@ -246,7 +246,7 @@ public class ArrangementsService
                                                                                           .isBefore(a.getEffectiveToDate()))
                                                                      .collect(Collectors.toList())
                                    ;
-                           log.debug("Found {} arrangements for involved party", result.size());
+                           log.trace("Found {} arrangements for involved party", result.size());
                            return result;
                        })
                        .onFailure()
@@ -258,7 +258,7 @@ public class ArrangementsService
     @Override
     public Uni<List<IArrangement<?, ?>>> findArrangementsByClassification(Mutiny.Session session, String classificationName, String value, ISystems<?, ?> systems, UUID... identityToken)
     {
-        log.debug("Finding arrangements by classification - name: {}, value: {}", classificationName, value);
+        log.trace("Finding arrangements by classification - name: {}, value: {}", classificationName, value);
         var enterprise = systems.getEnterprise();
         // First get the classification using reactive pattern
         return classificationService.find(session, classificationName, systems, identityToken)
@@ -292,7 +292,7 @@ public class ArrangementsService
                            return aqb.getAll()
                                           .map(arrangementList -> {
                                               List<IArrangement<?, ?>> result = new ArrayList<>(arrangementList);
-                                              log.debug("Found {} arrangements for classification {}", result.size(), classificationName);
+                                              log.trace("Found {} arrangements for classification {}", result.size(), classificationName);
                                               return result;
                                           });
                        })
@@ -305,7 +305,7 @@ public class ArrangementsService
     @Override
     public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationGT(Mutiny.Session session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
     {
-        log.debug("Finding arrangements by classification GT - type: {}, value: {}", arrType, value);
+        log.trace("Finding arrangements by classification GT - type: {}, value: {}", arrType, value);
       var enterprise = systems.getEnterprise();
         // First get the classification using reactive pattern
         return classificationService.find(session, arrType, systems, identityToken)
@@ -354,7 +354,7 @@ public class ArrangementsService
                            return aqb.getAll()
                                           .map(arrangementList -> {
                                               List<IArrangement<?, ?>> result = new ArrayList<>(arrangementList);
-                                              log.debug("Found {} arrangements for classification GT {}", result.size(), arrType);
+                                              log.trace("Found {} arrangements for classification GT {}", result.size(), arrType);
                                               return result;
                                           });
                        })
@@ -367,7 +367,7 @@ public class ArrangementsService
     @Override
     public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationGTE(Mutiny.Session session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
     {
-        log.debug("Finding arrangements by classification GTE - type: {}, value: {}", arrType, value);
+        log.trace("Finding arrangements by classification GTE - type: {}, value: {}", arrType, value);
       var enterprise = systems.getEnterprise();
         // First get the classification using reactive pattern
         return classificationService.find(session, arrType, systems, identityToken)
@@ -415,7 +415,7 @@ public class ArrangementsService
                            return aqb.getAll()
                                           .map(arrangementList -> {
                                               List<IArrangement<?, ?>> result = new ArrayList<>(arrangementList);
-                                              log.debug("Found {} arrangements for classification GTE {}", result.size(), arrType);
+                                              log.trace("Found {} arrangements for classification GTE {}", result.size(), arrType);
                                               return result;
                                           });
 
@@ -436,7 +436,7 @@ public class ArrangementsService
                                                                                    String value, ISystems<?, ?> system,
                                                                                    UUID... identityToken)
     {
-        log.debug("Finding arrangements by classification GTE with IP - type: {}, classification: {}, value: {}",
+        log.trace("Finding arrangements by classification GTE with IP - type: {}, classification: {}, value: {}",
                 arrangementType, classificationName, value);
 
         // First get the classification using reactive pattern if classificationName is provided
@@ -561,7 +561,7 @@ public class ArrangementsService
     @Override
     public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationLT(Mutiny.Session session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
     {
-        log.debug("Finding arrangements by classification LT - type: {}, value: {}", arrType, value);
+        log.trace("Finding arrangements by classification LT - type: {}, value: {}", arrType, value);
       var enterprise = systems.getEnterprise();
         // First get the classification using reactive pattern
         return (Uni) classificationService.find(session, arrType, systems, identityToken)
@@ -624,7 +624,7 @@ public class ArrangementsService
     @Override
     public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationLTE(Mutiny.Session session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
     {
-        log.debug("Finding arrangements by classification LTE - type: {}, value: {}", arrType, value);
+        log.trace("Finding arrangements by classification LTE - type: {}, value: {}", arrType, value);
       var enterprise = systems.getEnterprise();
         // First get the classification using reactive pattern
         return classificationService.find(session, arrType, systems, identityToken)
@@ -691,7 +691,7 @@ public class ArrangementsService
     @Override
     public Uni<List<IArrangement<?, ?>>> findArrangementsByClassification(Mutiny.Session session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
     {
-        log.debug("Finding arrangements by classification - type: {}, withParent: {}, value: {}",
+        log.trace("Finding arrangements by classification - type: {}, withParent: {}, value: {}",
                 arrType, withParent != null ? withParent.getId() : "null", value);
       var enterprise = systems.getEnterprise();
         // First get the classification using reactive pattern
@@ -752,7 +752,7 @@ public class ArrangementsService
                            return aqb.getAll()
                                           .map(arrangementList -> {
                                               List<IArrangement<?, ?>> result = new ArrayList<>(arrangementList);
-                                              log.debug("Found {} arrangements for classification {} with parent",
+                                              log.trace("Found {} arrangements for classification {} with parent",
                                                       result.size(), arrType);
                                               return result;
                                           });
@@ -767,7 +767,7 @@ public class ArrangementsService
     @Override
     public Uni<IArrangement<?, ?>> findArrangementByResourceItem(Mutiny.Session session, IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.debug("Finding arrangement by resource item: {}, classification: {}, value: {}",
+        log.trace("Finding arrangement by resource item: {}, classification: {}, value: {}",
                 resourceItem.getId(), classificationName, value);
 
         if (Strings.isNullOrEmpty(classificationName))
@@ -789,7 +789,7 @@ public class ArrangementsService
                                                 .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
                                                 .get()
                                                 .map(result -> {
-                                                    log.debug("Found arrangement for resource item: {}, classification: {}",
+                                                    log.trace("Found arrangement for resource item: {}, classification: {}",
                                                             resourceItem.getId(), finalClassificationName);
                                                     return result != null ? result.getArrangementID() : null;
                                                 });
@@ -803,7 +803,7 @@ public class ArrangementsService
     @Override
     public Uni<IArrangement<?, ?>> findArrangementByInvolvedParty(Mutiny.Session session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.debug("Finding arrangement by involved party: {}, classification: {}, value: {}",
+        log.trace("Finding arrangement by involved party: {}, classification: {}, value: {}",
                 involvedParty.getId(), classificationName, value);
 
         if (Strings.isNullOrEmpty(classificationName))
@@ -826,7 +826,7 @@ public class ArrangementsService
                                                 .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
                                                 .get()
                                                 .map(result -> {
-                                                    log.debug("Found arrangement for involved party: {}, classification: {}",
+                                                    log.trace("Found arrangement for involved party: {}, classification: {}",
                                                             involvedParty.getId(), finalClassificationName);
                                                     return result.getArrangementID();
                                                 });
@@ -841,7 +841,7 @@ public class ArrangementsService
     @Override
     public Uni<List<IArrangement<?, ?>>> findArrangementsByRulesType(Mutiny.Session session, IRulesType<?, ?> ruleType, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.debug("Finding arrangements by rules type: {}, classification: {}, value: {}", ruleType.getId(), classificationName, value);
+        log.trace("Finding arrangements by rules type: {}, classification: {}, value: {}", ruleType.getId(), classificationName, value);
 
         if (Strings.isNullOrEmpty(classificationName))
         {
@@ -866,7 +866,7 @@ public class ArrangementsService
                                                                                               .map(ArrangementXRulesType::getArrangement)
                                                                                               .collect(Collectors.toList())
                                                       ;
-                                              log.debug("Found {} arrangements for rules type: {}, classification: {}",
+                                              log.trace("Found {} arrangements for rules type: {}, classification: {}",
                                                       arrangements.size(), ruleType.getId(), finalClassificationName);
                                               return arrangements;
                                           });
@@ -881,7 +881,7 @@ public class ArrangementsService
     @Override
     public Uni<List<IArrangement<?, ?>>> findArrangementsByInvolvedParty(Mutiny.Session session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.debug("Finding arrangements by involved party: {}, classification: {}, value: {}, startDate: {}",
+        log.trace("Finding arrangements by involved party: {}, classification: {}, value: {}, startDate: {}",
                 involvedParty.getId(), classificationName, value, startDate);
 
         if (Strings.isNullOrEmpty(classificationName))
@@ -907,7 +907,7 @@ public class ArrangementsService
                                                                                               .map(ArrangementXInvolvedParty::getArrangementID)
                                                                                               .collect(Collectors.toList())
                                                       ;
-                                              log.debug("Found {} arrangements for involved party: {}, classification: {}",
+                                              log.trace("Found {} arrangements for involved party: {}, classification: {}",
                                                       arrangements.size(), involvedParty.getId(), finalClassificationName);
                                               return arrangements;
                                           });
@@ -922,7 +922,7 @@ public class ArrangementsService
     @Override
     public Uni<List<IArrangement<?, ?>>> findArrangementsByInvolvedParty(Mutiny.Session session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, LocalDateTime endDate, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.debug("Finding arrangements by involved party: {}, classification: {}, value: {}, startDate: {}, endDate: {}",
+        log.trace("Finding arrangements by involved party: {}, classification: {}, value: {}, startDate: {}, endDate: {}",
                 involvedParty.getId(), classificationName, value, startDate, endDate);
 
         if (Strings.isNullOrEmpty(classificationName))
@@ -948,7 +948,7 @@ public class ArrangementsService
                                                                                               .map(ArrangementXInvolvedParty::getArrangementID)
                                                                                               .collect(Collectors.toList())
                                                       ;
-                                              log.debug("Found {} arrangements for involved party: {}, classification: {}, with date range",
+                                              log.trace("Found {} arrangements for involved party: {}, classification: {}, with date range",
                                                       arrangements.size(), involvedParty.getId(), finalClassificationName);
                                               return arrangements;
                                           });
@@ -963,7 +963,7 @@ public class ArrangementsService
     @Override
     public Uni<List<IArrangement<?, ?>>> findArrangementsByInvolvedParty(Mutiny.Session session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.debug("Finding arrangements by involved party: {}, classification: {}, value: {}",
+        log.trace("Finding arrangements by involved party: {}, classification: {}, value: {}",
                 involvedParty.getId(), classificationName, value);
 
         if (Strings.isNullOrEmpty(classificationName))
@@ -989,7 +989,7 @@ public class ArrangementsService
                                                                                               .<IArrangement<?, ?>>map(ArrangementXInvolvedParty::getArrangementID)
                                                                                               .collect(Collectors.toList())
                                                       ;
-                                              log.debug("Found {} arrangements for involved party: {}, classification: {}",
+                                              log.trace("Found {} arrangements for involved party: {}, classification: {}",
                                                       arrangements.size(), involvedParty.getId(), finalClassificationName);
                                               return arrangements;
                                           });
@@ -1003,7 +1003,7 @@ public class ArrangementsService
     @Override
     public Uni<List<IInvolvedParty<?, ?>>> findArrangementInvolvedParties(Mutiny.Session session, IArrangement<?, ?> arrangement, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.debug("Finding involved parties for arrangement: {}, classification: {}, value: {}",
+        log.trace("Finding involved parties for arrangement: {}, classification: {}, value: {}",
                 arrangement.getId(), classificationName, value);
 
         if (Strings.isNullOrEmpty(classificationName))
@@ -1029,7 +1029,7 @@ public class ArrangementsService
                                                                                                    .<IInvolvedParty<?, ?>>map(ArrangementXInvolvedParty::getInvolvedPartyID)
                                                                                                    .collect(Collectors.toList())
                                                       ;
-                                              log.debug("Found {} involved parties for arrangement: {}, classification: {}",
+                                              log.trace("Found {} involved parties for arrangement: {}, classification: {}",
                                                       involvedParties.size(), arrangement.getId(), finalClassificationName);
                                               return involvedParties;
                                           });
@@ -1045,7 +1045,7 @@ public class ArrangementsService
     @Override
     public @NotNull Uni<IArrangementType<?, ?>> find(Mutiny.Session session, String idType, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.debug("Finding arrangement type by name: {}", idType);
+        log.trace("Finding arrangement type by name: {}", idType);
         var enterprise = system.getEnterprise();
         ArrangementType xr = new ArrangementType();
         return (Uni) xr.builder(session)
@@ -1062,7 +1062,7 @@ public class ArrangementsService
     ////@CacheResult
     public @NotNull Uni<IArrangement<?, ?>> find(Mutiny.Session session, UUID id, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.debug("Finding arrangement by ID: {}", id);
+        log.trace("Finding arrangement by ID: {}", id);
         Arrangement xr = new Arrangement();
         return (Uni)xr.builder(session)
                        .where(Arrangement_.id, Equals, id)
@@ -1074,7 +1074,7 @@ public class ArrangementsService
     ////@CacheResult
     public @NotNull Uni<IArrangement<?, ?>> find(Mutiny.Session session, UUID id)
     {
-        log.debug("Finding arrangement by ID (no system): {}", id);
+        log.trace("Finding arrangement by ID (no system): {}", id);
         Arrangement xr = new Arrangement();
         return (Uni)xr.builder(session)
                        .where(Arrangement_.id, Equals, id)
@@ -1085,7 +1085,7 @@ public class ArrangementsService
     @Override
     public Uni<List<IArrangement<?, ?>>> findAll(Mutiny.Session session, String arrangementType, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.debug("Finding all arrangements of type: {}", arrangementType);
+        log.trace("Finding all arrangements of type: {}", arrangementType);
 
         return find(session, arrangementType, system, identityToken)
                        .chain(type -> {
@@ -1110,7 +1110,7 @@ public class ArrangementsService
     @Override
     public Uni<IArrangement<?, ?>> completeArrangement(Mutiny.Session session, IArrangement<?, ?> arrangement, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.debug("Completing arrangement: {}", arrangement.getId());
+        log.trace("Completing arrangement: {}", arrangement.getId());
         Arrangement arr = (Arrangement) arrangement;
         return (Uni) arr.expire(Duration.ZERO);
 

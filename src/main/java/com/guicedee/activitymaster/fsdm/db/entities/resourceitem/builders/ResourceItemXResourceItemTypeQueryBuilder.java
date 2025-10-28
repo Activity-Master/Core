@@ -1,14 +1,15 @@
 package com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders;
 
-import com.entityassist.enumerations.Operand;
-import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
+import com.entityassist.querybuilder.builders.JoinExpression;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 import java.util.UUID;
 
+import static com.entityassist.enumerations.Operand.*;
 
 public class ResourceItemXResourceItemTypeQueryBuilder
 		extends QueryBuilderRelationshipClassificationTypes<ResourceItem,
@@ -35,11 +36,10 @@ public class ResourceItemXResourceItemTypeQueryBuilder
 	{
 		if (typeValue != null)
 		{
-			IResourceItemService<?> service = com.guicedee.client.IGuiceContext.get(IResourceItemService.class);
-			// Bridge reactive call synchronously only for query-building context
-			ResourceItemType at = (ResourceItemType) service.findResourceItemType(getEntityManager(), typeValue, system, identityToken)
-				.await().atMost(java.time.Duration.ofMinutes(1));
-			where(ResourceItemXResourceItemType_.resourceItemTypeID, Operand.Equals, at);
+			JoinExpression<?, ?, ?> joinExpression = new JoinExpression<>();
+			join(getAttribute(ResourceItemXResourceItemType_.RESOURCE_ITEM_TYPE_ID), JoinType.INNER, joinExpression);
+			var nameFilter = joinExpression.getFilter(ResourceItemType_.NAME, Equals, typeValue);
+			getFilters().add(nameFilter);
 		}
 		return this;
 	}

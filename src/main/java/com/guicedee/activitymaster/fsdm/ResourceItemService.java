@@ -21,6 +21,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.Resour
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemXResourceItemTypeQueryBuilder;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.*;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
@@ -249,7 +250,7 @@ public class ResourceItemService
     var enterprise = system.getEnterprise();
 
     return findByUUID(session, key)
-               .onFailure()
+               .onFailure(NoResultException.class)
                .recoverWithUni(e -> {
 // Step 1: Create the resource item
                  ResourceItem xr = new ResourceItem();
@@ -296,14 +297,14 @@ public class ResourceItemService
                                                             })
                                                             .chain(resourceItem -> {
                                                               // Step 3: Add resource item types
-                                                              log.debug("Adding resource item type: {}", identityResourceType);
+                                                              log.trace("Adding resource item type: {}", identityResourceType);
                                                               return addResourceItemTypeRelationship(session, persisted, identityResourceType, resourceItemDataValue, system, identityToken);
                                                             })
                                                             .chain(resourceItem -> {
                                                               // Step 2: Update data if provided
                                                               if (data != null)
                                                               {
-                                                                log.debug("Updating resource item data");
+                                                                log.trace("Updating resource item data");
                                                                 // Find the appropriate method to update data
                                                                 // This might need to be adjusted based on the actual implementation
                                                                 return findResourceItemDataForUpdate(session, persisted, data, system, identityToken)
@@ -330,7 +331,7 @@ public class ResourceItemService
   @Override
   public Uni<Void> findResourceItemDataForUpdate(Mutiny.Session session, IResourceItem<?,?> resourceItem, byte[] data, ISystems<?, ?> system, UUID... identityToken)
   {
-    log.debug("Updating data for resource item: {}", resourceItem.getId());
+    log.trace("Updating data for resource item: {}", resourceItem.getId());
     var enterprise = system.getEnterprise();
     // Find the existing data relationship
     ResourceItemData rid = new ResourceItemData();
@@ -377,7 +378,7 @@ public class ResourceItemService
   @Override
   public Uni<Void> addResourceItemTypeRelationship(Mutiny.Session session, IResourceItem<?,?> resourceItem, String typeName, String value, ISystems<?, ?> system, UUID... identityToken)
   {
-    log.debug("Adding resource item type relationship: {} for item: {}", typeName, resourceItem.getId());
+    log.trace("Adding resource item type relationship: {} for item: {}", typeName, resourceItem.getId());
     var enterprise = system.getEnterprise();
     return findResourceItemType(session, typeName, system, identityToken)
                .chain(resourceItemType -> {
@@ -552,7 +553,7 @@ public class ResourceItemService
                                                                ISystems<?, ?> systems,
                                                                UUID... identityToken)
   {
-    log.debug("Finding resource by original source unique ID: {}", originalSourceUniqueID);
+    log.trace("Finding resource by original source unique ID: {}", originalSourceUniqueID);
     ResourceItem res = new ResourceItem();
     return (Uni) res.builder(session)
                      .where(ResourceItem_.originalSourceSystemUniqueID, Equals, originalSourceUniqueID)
@@ -652,7 +653,7 @@ public class ResourceItemService
     return create(session, identityResourceType, key, resourceItemDataValue, system, identityToken)
                // Step 2: Find the resource item by UUID
                .chain(resourceItem -> {
-                 log.debug("Resource item created, now finding by UUID: {}", key);
+                 log.trace("Resource item created, now finding by UUID: {}", key);
                  return findByUUID(session, key);
                })
                // Step 3: Handle errors

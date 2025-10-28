@@ -298,10 +298,10 @@ public class FSDMMigrateGUI {
 
         buttonPanel2.add(backupDataButton);
         buttonPanel2.add(createDbButton);
-        buttonPanel2.add(partitionDbButton);
+        //buttonPanel2.add(partitionDbButton);
         buttonPanel2.add(restoreDataButton);
         buttonPanel2.add(structureDbButton);
-        buttonPanel2.add(structureFsdmDbButton);
+     //   buttonPanel2.add(structureFsdmDbButton);
 
         backupDbButton.addActionListener(new ActionListener() {
             @Override

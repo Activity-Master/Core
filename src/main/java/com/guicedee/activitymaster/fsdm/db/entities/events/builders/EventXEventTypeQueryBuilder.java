@@ -1,14 +1,15 @@
 package com.guicedee.activitymaster.fsdm.db.entities.events.builders;
 
-import com.entityassist.enumerations.Operand;
-import com.guicedee.activitymaster.fsdm.client.services.IEventService;
+import com.entityassist.querybuilder.builders.JoinExpression;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.fsdm.db.entities.events.*;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 import java.util.UUID;
 
+import static com.entityassist.enumerations.Operand.*;
 
 public class EventXEventTypeQueryBuilder
 		extends QueryBuilderRelationshipClassificationTypes<Event,
@@ -36,9 +37,10 @@ public class EventXEventTypeQueryBuilder
 	{
 		if (typeValue != null)
 		{
-			IEventService<?> service = com.guicedee.client.IGuiceContext.get(IEventService.class);
-			EventType at = (EventType) service.findEventType(getEntityManager(), typeValue, system, identityToken);
-			where(EventXEventType_.eventTypeID, Operand.Equals, at);
+			JoinExpression<?, ?, ?> joinExpression = new JoinExpression<>();
+			join(getAttribute(EventXEventType_.EVENT_TYPE_ID), JoinType.INNER, joinExpression);
+			var nameFilter = joinExpression.getFilter(EventType_.NAME, Equals, typeValue);
+			getFilters().add(nameFilter);
 		}
 		return this;
 	}

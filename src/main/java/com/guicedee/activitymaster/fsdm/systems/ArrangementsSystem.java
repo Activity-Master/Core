@@ -22,15 +22,12 @@ public class ArrangementsSystem
 {
   @Inject
   private ISystemsService<?> systemsService;
-
-  @Inject
-  private Mutiny.SessionFactory sessionFactory;
-
+		
   @Override
   public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Registering Arrangements System for enterprise: '{}'", enterprise.getName());
-    log.debug("📋 Creating Arrangements System with session: {}", session.hashCode());
+    log.trace("📋 Creating Arrangements System with session: {}", session.hashCode());
 
     return systemsService
                .create(session, enterprise, getSystemName(), getSystemDescription())
@@ -60,8 +57,8 @@ public class ArrangementsSystem
   public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {
     logProgress("Arrangements System", "Starting Arrangements Checks");
-    log.info("🚀 Creating arrangement defaults for enterprise: '{}'", enterprise.getName());
-    log.debug("📋 Starting with session: {}", session.hashCode());
+    log.trace("🚀 Creating arrangement defaults for enterprise: '{}'", enterprise.getName());
+    log.trace("📋 Starting with session: {}", session.hashCode());
     // No actual operations needed, just return a void item
     log.debug("✅ No specific defaults needed for Arrangements System");
     return Uni.createFrom()
@@ -76,8 +73,8 @@ public class ArrangementsSystem
   @Override
   public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {
-    log.info("🚀 Starting reactive postStartup for Arrangements System");
-    log.debug("📋 Beginning postStartup operations for enterprise: '{}' with session: {}",
+    log.trace("🚀 Starting reactive postStartup for Arrangements System");
+    log.trace("📋 Beginning postStartup operations for enterprise: '{}' with session: {}",
         enterprise.getName(), session.hashCode());
 
     // Create a reactive chain for the postStartup operations

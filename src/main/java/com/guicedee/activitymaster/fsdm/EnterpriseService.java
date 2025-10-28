@@ -175,8 +175,8 @@ public class EnterpriseService
                               }
                             })
                             .onFailure()
-                            .recoverWithItem(() -> {
-                              log.error("Unable to perform update");
+                            .recoverWithItem((err) -> {
+                              log.error("Unable to perform update",err);
                               for (IOnSystemUpdate<?> a : systemUpdateEventHandlers)
                               {
                                 a.onSystemUpdateFail(value);

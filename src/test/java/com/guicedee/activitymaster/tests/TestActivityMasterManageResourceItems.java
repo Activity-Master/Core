@@ -47,7 +47,8 @@ public class TestActivityMasterManageResourceItems {
                 var ent = enterpriseService.get();
                 ent.setName(TestEnterprise.name());
                 ent.setDescription("Enterprise for MRI tests");
-                return enterpriseService.createNewEnterprise(session, ent);
+                return enterpriseService.createNewEnterprise(session, ent)
+                       .chain(enter-> enterpriseService.startNewEnterprise(session,TestEnterprise.name(),"admin","adminadmin!@"));
               })
               .chain(ent -> systemsService.getActivityMaster(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent)
                   .onFailure().recoverWithUni(t -> systemsService.create(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent,

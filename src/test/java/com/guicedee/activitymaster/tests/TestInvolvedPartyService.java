@@ -46,7 +46,8 @@ public class TestInvolvedPartyService {
                                 var ent = enterpriseService.get();
                                 ent.setName(TestEnterprise.name());
                                 ent.setDescription("Enterprise Entity for InvolvedPartyService Testing");
-                                return enterpriseService.createNewEnterprise(session, ent);
+                                return enterpriseService.createNewEnterprise(session, ent)
+                       .chain(enter-> enterpriseService.startNewEnterprise(session,TestEnterprise.name(),"admin","adminadmin!@"));
                             })
                             .chain(ent -> systemsService.getActivityMaster(session, (IEnterprise<?, ?>) ent)
                                     .onFailure().recoverWithUni(t -> systemsService.create(session, (IEnterprise<?, ?>) ent,

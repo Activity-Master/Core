@@ -173,36 +173,36 @@ public class ClassificationService
                                         .getName());
                               }
 
-                              log.debug("📋 Retrieving active flag for enterprise: '{}' with session: {}", enterprise.getName(), session.hashCode());
+                              log.trace("📋 Retrieving active flag for enterprise: '{}' with session: {}", enterprise.getName(), session.hashCode());
                               return acService.getActiveFlag(session, enterprise);
                             })
                             .onItem()
-                            .invoke(activeFlag -> log.debug("✅ Active flag retrieved: {}", activeFlag.getId()))
+                            .invoke(activeFlag -> log.trace("✅ Active flag retrieved: {}", activeFlag.getId()))
                             .onFailure()
                             .invoke(activeFlagError ->
                                         log.error("❌ Failed to retrieve active flag for enterprise '{}': {}", enterprise.getName(), activeFlagError.getMessage(), activeFlagError)
                             )
                             .chain(activeFlag -> {
                               rootCl.setActiveFlagID(activeFlag);
-                              log.debug("🔗 Linked active flag to classification '{}'", name);
-                              log.info("💾 Persisting classification '{}' to database using session: {}", name, session.hashCode());
+                              log.trace("🔗 Linked active flag to classification '{}'", name);
+                              log.trace("💾 Persisting classification '{}' to database using session: {}", name, session.hashCode());
                               return rootCl.builder(session)
                                          .persist(rootCl);
                             })
                             .onItem()
                             .invoke(persisted ->
-                                        log.info("✅ Classification '{}' successfully persisted with ID: {}", name, persisted.getId())
+                                        log.trace("✅ Classification '{}' successfully persisted with ID: {}", name, persisted.getId())
                             )
                             .onFailure()
                             .invoke(persistError ->
                                         log.error("❌ Failed to persist classification '{}': {}", name, persistError.getMessage(), persistError)
                             )
                             .chain(persisted -> {
-                              log.debug("🔐 Starting security creation for classification '{}'", name);
+                              log.trace("🔐 Starting security creation for classification '{}'", name);
                               // Use chain instead of await for reactive flow
                               return rootCl.createDefaultSecurity(session, system, identityToken)
                                          .onItem()
-                                         .invoke(result -> log.info("🛡️ Security setup completed successfully for classification '{}'", name))
+                                         .invoke(result -> log.trace("🛡️ Security setup completed successfully for classification '{}'", name))
                                          .onFailure()
                                          .recoverWithItem(securityError -> {
                                            log.warn("⚠️ Security creation failed for classification '{}': {}", name, securityError.getMessage());
@@ -213,7 +213,7 @@ public class ClassificationService
                                            if (parent != null && !NoClassification.toString()
                                                                       .equals(name))
                                            {
-                                             log.debug("👶 Setting up parent-child relationship for classification '{}' with parent '{}'", name, parent.getName());
+                                             log.trace("👶 Setting up parent-child relationship for classification '{}' with parent '{}'", name, parent.getName());
                                              return find(session, parent.getName(), system, identityToken)
                                                         .onFailure()
                                                         .recoverWithItem(e -> {
@@ -223,14 +223,17 @@ public class ClassificationService
                                                         .chain(foundParent -> {
                                                           if (foundParent != null)
                                                           {
-                                                            log.debug("✅ Found parent classification: '{}'", parent.getName());
+                                                            log.trace("✅ Found parent classification: '{}'", parent.getName());
                                                             try
                                                             {
                                                               @SuppressWarnings("unchecked")
                                                               IClassification<Classification, ClassificationQueryBuilder> pp =
                                                                   (IClassification<Classification, ClassificationQueryBuilder>) foundParent;
-                                                              pp.addChild(session, rootCl, NoClassification.toString(), null, system, identityToken);
-                                                              log.debug("🔗 Added classification '{}' as child to parent '{}'", name, parent.getName());
+                                                              // Ensure reactive addChild is chained so the link is created before we complete
+                                                              return pp.addChild(session, rootCl, NoClassification.toString(), null, system, identityToken)
+                                                                      .onItem().invoke(v -> log.trace("🔗 Added classification '{}' as child to parent '{}'", name, parent.getName()))
+                                                                      .onFailure().invoke(e -> log.warn("⚠️ Error adding child to parent: {}", e.getMessage(), e))
+                                                                      .replaceWith((IClassification<?, ?>) rootCl);
                                                             }
                                                             catch (Exception e)
                                                             {
@@ -315,11 +318,11 @@ public class ClassificationService
                .invoke(result -> {
                  if (result != null)
                  {
-                   log.debug("✅ Found hierarchy type classification with ID: {}", result.getId());
+                   log.trace("✅ Found hierarchy type classification with ID: {}", result.getId());
                  }
                  else
                  {
-                   log.debug("⚠️ Hierarchy type classification not found");
+                   log.warn("⚠️ Hierarchy type classification not found");
                  }
                })
                .onFailure()
@@ -341,7 +344,7 @@ public class ClassificationService
                .invoke(result -> {
                  if (result != null)
                  {
-                   log.debug("✅ Found 'NoClassification' with ID: {}", result.getId());
+                   log.trace("✅ Found 'NoClassification' with ID: {}", result.getId());
                  }
                  else
                  {
@@ -367,7 +370,7 @@ public class ClassificationService
                .invoke(result -> {
                  if (result != null)
                  {
-                   log.debug("✅ Found identity type classification with ID: {}", result.getId());
+                   log.trace("✅ Found identity type classification with ID: {}", result.getId());
                  }
                  else
                  {

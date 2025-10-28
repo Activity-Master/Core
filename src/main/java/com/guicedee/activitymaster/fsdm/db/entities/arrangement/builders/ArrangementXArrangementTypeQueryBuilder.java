@@ -1,14 +1,15 @@
 package com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders;
 
-import com.entityassist.enumerations.Operand;
-import com.guicedee.activitymaster.fsdm.client.services.IArrangementsService;
+import com.entityassist.querybuilder.builders.JoinExpression;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.*;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 import java.util.UUID;
 
+import static com.entityassist.enumerations.Operand.*;
 
 public class ArrangementXArrangementTypeQueryBuilder
 		extends QueryBuilderRelationshipClassificationTypes<Arrangement,
@@ -35,9 +36,10 @@ public class ArrangementXArrangementTypeQueryBuilder
 	{
 		if (typeValue != null)
 		{
-			IArrangementsService<?> service = com.guicedee.client.IGuiceContext.get(IArrangementsService.class);
-			ArrangementType at = (ArrangementType) service.find(getEntityManager(), typeValue, system, identityToken);
-			where(ArrangementXArrangementType_.type, Operand.Equals, at);
+			JoinExpression<?, ?, ?> joinExpression = new JoinExpression<>();
+			join(getAttribute(ArrangementXArrangementType_.TYPE), JoinType.INNER, joinExpression);
+			var nameFilter = joinExpression.getFilter(ArrangementType_.NAME, Equals, typeValue);
+			getFilters().add(nameFilter);
 		}
 		return this;
 	}
