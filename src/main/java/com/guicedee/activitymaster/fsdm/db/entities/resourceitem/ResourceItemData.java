@@ -56,7 +56,7 @@ public class ResourceItemData
     @JoinColumn(name = "ResourceItemID",
             referencedColumnName = "ResourceItemID",
             nullable = false)
-    @ManyToOne(optional = false,
+    @OneToOne(optional = false,
             fetch = FetchType.LAZY)
     private ResourceItem resource;
 

@@ -106,10 +106,10 @@ public class ResourceItem
       fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
   private List<ArrangementXResourceItem> arrangements;
 
-  @OneToMany(
+  @OneToOne(
       mappedBy = "resource",
       fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-  private List<ResourceItemData> data;
+  private ResourceItemData data;
 
   @OneToMany(
       mappedBy = "resourceItemID",
