@@ -56,6 +56,13 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.D
 public class ProductService
 	implements IProductService<ProductService>
 {
+		// Local cache: key = enterpriseId + '|' + systemId + '|' + productTypeName → ProductType UUID
+		private final java.util.Map<String, java.util.UUID> productTypeKeyToId = new java.util.concurrent.ConcurrentHashMap<>();
+
+		// UUID-based lookup to leverage Hibernate 2nd-level cache
+		public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.products.IProductType<?, ?>> getProductTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id) {
+				return (io.smallrye.mutiny.Uni) session.find(com.guicedee.activitymaster.fsdm.db.entities.product.ProductType.class, id);
+		}
 		@Inject
 		private IClassificationService<?> classificationService;
 		
@@ -247,14 +254,50 @@ public class ProductService
 		public Uni<IProductType<?, ?>> findProductTypeForProduct(Mutiny.Session session, String productType, ISystems<?, ?> system, UUID... identityToken)
 		{
 				var enterprise = system.getEnterprise();
+				java.util.UUID enterpriseId = null;
+				java.util.UUID systemId = null;
+				if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
+						enterpriseId = ent.getId();
+				}
+				if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys) {
+						systemId = sys.getId();
+				}
+				String key = enterpriseId + "|" + systemId + "|" + productType;
+				java.util.UUID cachedId = productTypeKeyToId.get(key);
+				if (cachedId != null) {
+						log.trace("🔁 ProductType cache hit for key '{}': {} — loading by UUID", key, cachedId);
+						return (Uni) getProductTypeById(session, cachedId)
+								.flatMap(found -> {
+										if (found != null) {
+												return Uni.createFrom().item(found);
+										}
+										productTypeKeyToId.remove(key);
+										return (Uni) new ProductType()
+												.builder(session)
+												.withName(productType)
+												.withEnterprise(enterprise)
+												.inActiveRange()
+												.inDateRange()
+												.get()
+												.invoke(res -> {
+														if (res != null && res.getId() != null) {
+																productTypeKeyToId.put(key, (java.util.UUID) res.getId());
+														}
+												});
+								});
+				}
 				return (Uni) new ProductType()
-																		.builder(session)
-																		.withName(productType)
-																		.withEnterprise(enterprise)
-																		.inActiveRange()
-																		.inDateRange()
-																		// .canRead(system, identityToken)
-																		.get();
+												.builder(session)
+												.withName(productType)
+												.withEnterprise(enterprise)
+												.inActiveRange()
+												.inDateRange()
+												.get()
+												.invoke(res -> {
+														if (res != null && res.getId() != null) {
+																productTypeKeyToId.put(key, (java.util.UUID) res.getId());
+														}
+												});
 		}
 		
 		//@Transactional()

@@ -15,6 +15,8 @@ import org.hibernate.reactive.mutiny.Mutiny;
 
 
 import java.util.UUID;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
 
@@ -23,6 +25,8 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.E
 public class ClassificationsDataConceptService
     implements IClassificationDataConceptService<ClassificationsDataConceptService>
 {
+  // Local cache: key = enterpriseId + '|' + systemId + '|' + conceptName, value = ClassificationDataConcept UUID
+  private final Map<String, UUID> conceptKeyToId = new ConcurrentHashMap<>();
 
   @Override
   public IClassificationDataConcept<?, ?> get()
@@ -89,14 +93,60 @@ public class ClassificationsDataConceptService
   @SuppressWarnings("unchecked")
   public Uni<IClassificationDataConcept<?, ?>> find(Mutiny.Session session, String name, ISystems<?, ?> system, UUID... identityToken)
   {
-    ClassificationDataConcept cdc = new ClassificationDataConcept();
     var enterprise = system.getEnterprise();
+    UUID enterpriseId = null;
+    UUID systemId = null;
+    if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
+      enterpriseId = ent.getId();
+    }
+    if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys) {
+      systemId = sys.getId();
+    }
+    String key = enterpriseId + "|" + systemId + "|" + name;
+    UUID cachedId = conceptKeyToId.get(key);
+    if (cachedId != null) {
+      log.trace("🔁 Concept cache hit for key '{}': {} — loading by UUID", key, cachedId);
+      return (Uni) getConceptById(session, cachedId)
+        .flatMap(found -> {
+          if (found != null) {
+            return Uni.createFrom().item(found);
+          }
+          // Stale mapping: remove and fallback to name+enterprise+system query
+          conceptKeyToId.remove(key);
+          ClassificationDataConcept cdc = new ClassificationDataConcept();
+          return (Uni) cdc.builder(session)
+                   .withName(name)
+                   .withEnterprise(enterprise)
+                   .inActiveRange()
+                   .inDateRange()
+                   .get()
+                   .invoke(dc -> {
+                     if (dc != null && dc.getId() != null) {
+                       conceptKeyToId.put(key, (UUID) dc.getId());
+                     }
+                   });
+        });
+    }
+
+    // Cold path: query by name+enterprise and remember UUID
+    ClassificationDataConcept cdc = new ClassificationDataConcept();
     return (Uni) cdc.builder(session)
                      .withName(name)
                      .withEnterprise(enterprise)
                      .inActiveRange()
                      .inDateRange()
-                     .get();
+                     .get()
+                     .invoke(dc -> {
+                       if (dc != null && dc.getId() != null) {
+                         conceptKeyToId.put(key, (UUID) dc.getId());
+                       }
+                     });
+  }
+
+  // UUID-based lookup to leverage L2 cache (@Cacheable on entity + L2 cache enabled)
+  public Uni<IClassificationDataConcept<?, ?>> getConceptById(Mutiny.Session session, UUID id) {
+    //noinspection unchecked
+    return (Uni) session.find(ClassificationDataConcept.class, id);
   }
 
   @Override

@@ -63,6 +63,67 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.t
 @Singleton
 public class InvolvedPartyService implements IInvolvedPartyService<InvolvedPartyService>
 {
+  // Local caches for type lookups to enable ID-based L2 cache hits
+  // Bounded caches (access-order LRU) sized under an aggregate configurable memory budget (default ~300MB)
+  private static final double DEFAULT_SPLIT_PARTY = parseDoubleProp("fsdm.ip.cache.split.party", 0.4);
+  private static final double DEFAULT_SPLIT_TYPE = parseDoubleProp("fsdm.ip.cache.split.type", 0.2);
+  private static final double DEFAULT_SPLIT_NAME_TYPE = parseDoubleProp("fsdm.ip.cache.split.nameType", 0.2);
+  private static final double DEFAULT_SPLIT_IDENT_TYPE = parseDoubleProp("fsdm.ip.cache.split.identType", 0.2);
+  private static final long TOTAL_MB = parseLongProp("fsdm.ip.cache.total.mb", 300);
+  private static final long ENTRY_EST_BYTES = parseLongProp("fsdm.ip.cache.entry.estimate.bytes", 256);
+  private static final double[] SPLITS = normalizeSplits(new double[]{DEFAULT_SPLIT_PARTY, DEFAULT_SPLIT_TYPE, DEFAULT_SPLIT_NAME_TYPE, DEFAULT_SPLIT_IDENT_TYPE});
+  private static final int PARTY_MAX = computeMaxEntries(SPLITS[0], TOTAL_MB, ENTRY_EST_BYTES);
+  private static final int TYPE_MAX = computeMaxEntries(SPLITS[1], TOTAL_MB, ENTRY_EST_BYTES);
+  private static final int NAME_TYPE_MAX = computeMaxEntries(SPLITS[2], TOTAL_MB, ENTRY_EST_BYTES);
+  private static final int IDENT_TYPE_MAX = computeMaxEntries(SPLITS[3], TOTAL_MB, ENTRY_EST_BYTES);
+
+  // New: cache for InvolvedParty entity lookups by identification key
+  private final com.guicedee.activitymaster.fsdm.util.BoundedLruCache<String, java.util.UUID> involvedPartyKeyToId = new com.guicedee.activitymaster.fsdm.util.BoundedLruCache<>(PARTY_MAX);
+  private final com.guicedee.activitymaster.fsdm.util.BoundedLruCache<String, java.util.UUID> involvedPartyTypeKeyToId = new com.guicedee.activitymaster.fsdm.util.BoundedLruCache<>(TYPE_MAX);
+  private final com.guicedee.activitymaster.fsdm.util.BoundedLruCache<String, java.util.UUID> involvedPartyNameTypeKeyToId = new com.guicedee.activitymaster.fsdm.util.BoundedLruCache<>(NAME_TYPE_MAX);
+  private final com.guicedee.activitymaster.fsdm.util.BoundedLruCache<String, java.util.UUID> involvedPartyIdentificationTypeKeyToId = new com.guicedee.activitymaster.fsdm.util.BoundedLruCache<>(IDENT_TYPE_MAX);
+
+  // --- Cache configuration helpers & static log ---
+  private static long mbToBytes(long mb) { return mb * 1024L * 1024L; }
+  private static long parseLongProp(String key, long def) {
+    try { return Long.parseLong(System.getProperty(key, String.valueOf(def))); } catch (Exception e) { return def; }
+  }
+  private static double parseDoubleProp(String key, double def) {
+    try { return Double.parseDouble(System.getProperty(key, String.valueOf(def))); } catch (Exception e) { return def; }
+  }
+  private static double[] normalizeSplits(double[] s) {
+    double sum = 0.0; for (double v : s) { sum += Math.max(0.0, v); }
+    if (sum <= 0.0) { return new double[]{1.0, 0.0, 0.0, 0.0}; }
+    double[] out = new double[s.length];
+    for (int i = 0; i < s.length; i++) { out[i] = Math.max(0.0, s[i]) / sum; }
+    return out;
+  }
+  private static int computeMaxEntries(double split, long totalMb, long entryEstBytes) {
+    long budgetBytes = (long) (mbToBytes(totalMb) * split);
+    if (budgetBytes <= 0L || entryEstBytes <= 0L) { return 1000; }
+    long n = budgetBytes / Math.max(1L, entryEstBytes);
+    if (n < 1L) n = 1L; if (n > Integer.MAX_VALUE) n = Integer.MAX_VALUE; return (int) n;
+  }
+  static {
+    log.info("InvolvedParty caches configured: totalMb={}, entryEstBytes={}, splits=[party:{}, type:{}, nameType:{}, identType:{}], maxEntries=[party:{}, type:{}, nameType:{}, identType:{}]",
+      TOTAL_MB, ENTRY_EST_BYTES, SPLITS[0], SPLITS[1], SPLITS[2], SPLITS[3], PARTY_MAX, TYPE_MAX, NAME_TYPE_MAX, IDENT_TYPE_MAX);
+  }
+
+  // Helper to load InvolvedParty by ID (eligible for Hibernate 2nd-level cache)
+  public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedParty<?, ?>> getInvolvedPartyById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id) {
+    return (io.smallrye.mutiny.Uni) session.find(com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty.class, id);
+  }
+
+  // UUID-based helpers delegating to session.find(...)
+  public io.smallrye.mutiny.Uni getInvolvedPartyTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id) {
+    return (io.smallrye.mutiny.Uni) session.find(com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyType.class, id);
+  }
+  public io.smallrye.mutiny.Uni getInvolvedPartyNameTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id) {
+    return (io.smallrye.mutiny.Uni) session.find(com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyNameType.class, id);
+  }
+  public io.smallrye.mutiny.Uni getInvolvedPartyIdentificationTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id) {
+    return (io.smallrye.mutiny.Uni) session.find(com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyIdentificationType.class, id);
+  }
 
   @Inject
   private IClassificationService<?> classificationService;
@@ -84,9 +145,8 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
   public Uni<IInvolvedParty<?, ?>> findByID(Mutiny.Session session, UUID id)
   {
     log.debug("🔍 Finding InvolvedParty by ID: {} with session: {}", id, session.hashCode());
-    return (Uni) new InvolvedParty().builder(session)
-                     .find(id)
-                     .get();
+    // Use session.find to leverage Hibernate 2nd-level cache on repeat loads
+    return (Uni) session.find(InvolvedParty.class, id);
   }
 
   @Override
@@ -260,14 +320,51 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
   public Uni<IInvolvedPartyIdentificationType<?, ?>> findInvolvedPartyIdentificationType(Mutiny.Session session, String idType, ISystems<?, ?> system, UUID... identityToken)
   {
     log.debug("Finding InvolvedPartyIdentificationType by name: {}", idType);
-    InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
     var enterprise = system.getEnterprise();
+    java.util.UUID enterpriseId = null;
+    java.util.UUID systemId = null;
+    if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
+      enterpriseId = ent.getId();
+    }
+    if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys) {
+      systemId = sys.getId();
+    }
+    String key = enterpriseId + "|" + systemId + "|" + idType;
+    java.util.UUID cachedId = involvedPartyIdentificationTypeKeyToId.get(key);
+    if (cachedId != null) {
+      log.trace("🔁 InvolvedPartyIdentificationType cache hit for key '{}': {} — loading by UUID", key, cachedId);
+      return (Uni) getInvolvedPartyIdentificationTypeById(session, cachedId)
+        .flatMap(found -> {
+          if (found != null) {
+            return Uni.createFrom().item(found);
+          }
+          involvedPartyIdentificationTypeKeyToId.remove(key);
+          InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
+          return (Uni) xr.builder(session)
+                     .withName(idType)
+                     .inActiveRange()
+                     .inDateRange()
+                     .withEnterprise(enterprise)
+                     .get()
+                     .invoke(res -> {
+                       if (res != null && res.getId() != null) {
+                         involvedPartyIdentificationTypeKeyToId.put(key, (java.util.UUID) res.getId());
+                       }
+                     });
+        });
+    }
+    InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
     return (Uni) xr.builder(session)
                      .withName(idType)
                      .inActiveRange()
                      .inDateRange()
                      .withEnterprise(enterprise)
-                     .get();
+                     .get()
+                     .invoke(res -> {
+                       if (res != null && res.getId() != null) {
+                         involvedPartyIdentificationTypeKeyToId.put(key, (java.util.UUID) res.getId());
+                       }
+                     });
   }
 
   @Override
@@ -424,16 +521,51 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
   public Uni<IInvolvedPartyType<?, ?>> findType(Mutiny.Session session, String nameType, ISystems<?, ?> system, UUID... identityToken)
   {
     log.debug("Finding InvolvedPartyType by name: {}", nameType);
-    InvolvedPartyType xr = new InvolvedPartyType();
     var enterprise = system.getEnterprise();
+    java.util.UUID enterpriseId = null;
+    java.util.UUID systemId = null;
+    if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
+      enterpriseId = ent.getId();
+    }
+    if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys) {
+      systemId = sys.getId();
+    }
+    String key = enterpriseId + "|" + systemId + "|" + nameType;
+    java.util.UUID cachedId = involvedPartyTypeKeyToId.get(key);
+    if (cachedId != null) {
+      log.trace("🔁 InvolvedPartyType cache hit for key '{}': {} — loading by UUID", key, cachedId);
+      return (Uni) getInvolvedPartyTypeById(session, cachedId)
+        .flatMap(found -> {
+          if (found != null) {
+            return Uni.createFrom().item(found);
+          }
+          involvedPartyTypeKeyToId.remove(key);
+          InvolvedPartyType xr = new InvolvedPartyType();
+          return (Uni) xr.builder(session)
+              .withName(nameType)
+              .inActiveRange()
+              .withEnterprise(enterprise)
+              .inDateRange()
+              .get()
+              .invoke(res -> {
+                if (res != null && res.getId() != null) {
+                  involvedPartyTypeKeyToId.put(key, (java.util.UUID) res.getId());
+                }
+              });
+        });
+    }
+    InvolvedPartyType xr = new InvolvedPartyType();
     return (Uni) xr.builder(session)
                .withName(nameType)
                .inActiveRange()
                .withEnterprise(enterprise)
                .inDateRange()
                .get()
-        ;
-
+               .invoke(res -> {
+                 if (res != null && res.getId() != null) {
+                   involvedPartyTypeKeyToId.put(key, (java.util.UUID) res.getId());
+                 }
+               });
   }
 
   @Override
@@ -442,6 +574,38 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
   {
     log.debug("Finding InvolvedPartyNameType by name: {}", nameType);
     var enterprise = system.getEnterprise();
+    java.util.UUID enterpriseId = null;
+    java.util.UUID systemId = null;
+    if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
+      enterpriseId = ent.getId();
+    }
+    if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys) {
+      systemId = sys.getId();
+    }
+    String key = enterpriseId + "|" + systemId + "|" + nameType;
+    java.util.UUID cachedId = involvedPartyNameTypeKeyToId.get(key);
+    if (cachedId != null) {
+      log.trace("🔁 InvolvedPartyNameType cache hit for key '{}': {} — loading by UUID", key, cachedId);
+      return (Uni) getInvolvedPartyNameTypeById(session, cachedId)
+        .flatMap(found -> {
+          if (found != null) {
+            return Uni.createFrom().item(found);
+          }
+          involvedPartyNameTypeKeyToId.remove(key);
+          InvolvedPartyNameType xr = new InvolvedPartyNameType();
+          return (Uni) xr.builder(session)
+                     .withName(nameType)
+                     .inActiveRange()
+                     .inDateRange()
+                     .withEnterprise(enterprise)
+                     .get()
+                     .invoke(res -> {
+                       if (res != null && res.getId() != null) {
+                         involvedPartyNameTypeKeyToId.put(key, (java.util.UUID) res.getId());
+                       }
+                     });
+        });
+    }
     InvolvedPartyNameType xr = new InvolvedPartyNameType();
     return (Uni) xr.builder(session)
                      .withName(nameType)
@@ -449,8 +613,11 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                      .inDateRange()
                      .withEnterprise(enterprise)
                      .get()
-        ;
-
+                     .invoke(res -> {
+                       if (res != null && res.getId() != null) {
+                         involvedPartyNameTypeKeyToId.put(key, (java.util.UUID) res.getId());
+                       }
+                     });
   }
 
   @Override
@@ -458,19 +625,45 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
   {
     log.debug("Finding InvolvedParty by token: {}", token.getSecurityToken());
 
+    var sys = ((SecurityToken) token).getSystemID();
+    var enterprise = sys.getEnterprise();
+    java.util.UUID enterpriseId = null; java.util.UUID systemId = null;
+    if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) { enterpriseId = ent.getId(); }
+    if (sys instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems s) { systemId = s.getId(); }
+    String identTypeName = IdentificationTypeUUID.toString();
+    String key = enterpriseId + "|" + systemId + "|" + identTypeName + "|" + token.getSecurityToken();
+
+    java.util.UUID cachedId = involvedPartyKeyToId.get(key);
+    if (cachedId != null) {
+      log.trace("🔁 InvolvedParty cache hit for key '{}' → {} — loading by UUID", key, cachedId);
+      return (Uni) getInvolvedPartyById(session, cachedId)
+        .flatMap(found -> {
+          if (found != null) { return Uni.createFrom().item(found); }
+          involvedPartyKeyToId.remove(key); // stale
+          return proceedFindByTokenColdPath(session, token, identityToken)
+            .invoke(p -> { if (p != null && p.getId() != null) { involvedPartyKeyToId.put(key, (java.util.UUID) p.getId()); } });
+        });
+    }
+
+    // Cold path
+    return proceedFindByTokenColdPath(session, token, identityToken)
+      .invoke(p -> { if (p != null && p.getId() != null) { involvedPartyKeyToId.put(key, (java.util.UUID) p.getId()); } });
+  }
+
+  private Uni<IInvolvedParty<?, ?>> proceedFindByTokenColdPath(Mutiny.Session session, ISecurityToken<?, ?> token, UUID... identityToken)
+  {
     return findInvolvedPartyIdentificationType(session, IdentificationTypeUUID.toString(), ((SecurityToken) token).getSystemID(), identityToken)
-               .chain(id -> {
-                 InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();
-                 return idType.builder(session)
-                            .findLink(null, (InvolvedPartyIdentificationType) id, token.getSecurityToken())
-                            .inActiveRange()
-                            .inDateRange()
-                            //.withEnterprise(enterprise)
-                            .canRead(((SecurityToken) token).getSystemID(), identityToken)
-                            .get()
-                            .onItem()
-                            .transform(item -> (IInvolvedParty<?, ?>) item.getInvolvedPartyID());
-               });
+      .chain(id -> {
+        InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();
+        return idType.builder(session)
+          .findLink(null, (InvolvedPartyIdentificationType) id, token.getSecurityToken())
+          .inActiveRange()
+          .inDateRange()
+          .canRead(((SecurityToken) token).getSystemID(), identityToken)
+          .get()
+          .onItem()
+          .transform(item -> (IInvolvedParty<?, ?>) item.getInvolvedPartyID());
+      });
   }
 
   @Override
@@ -560,21 +753,44 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
   {
     log.debug("Finding InvolvedParty by UUID token: {}", token);
     var enterprise = system.getEnterprise();
-    return findInvolvedPartyIdentificationType(session, IdentificationTypeUUID.toString(), system, identityToken)
-               .chain(id -> {
-                 InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();
-                 return idType.builder(session)
-                            .findLink(null, (InvolvedPartyIdentificationType) id, token.toString())
-                            .inActiveRange()
-                            .inDateRange()
-                            .withEnterprise(enterprise)
-                            .canRead(system, identityToken)
-                            .get();
-               })
-               .chain(idxid -> {
-                 return session.fetch(idxid.getInvolvedPartyID());
-               });
+    java.util.UUID enterpriseId = null; java.util.UUID systemId = null;
+    if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) { enterpriseId = ent.getId(); }
+    if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems s) { systemId = s.getId(); }
+    String identTypeName = IdentificationTypeUUID.toString();
+    String key = enterpriseId + "|" + systemId + "|" + identTypeName + "|" + token.toString();
 
+    java.util.UUID cachedId = involvedPartyKeyToId.get(key);
+    if (cachedId != null) {
+      log.trace("🔁 InvolvedParty cache hit for key '{}' → {} — loading by UUID", key, cachedId);
+      return (Uni) getInvolvedPartyById(session, cachedId)
+        .flatMap(found -> {
+          if (found != null) { return Uni.createFrom().item(found); }
+          involvedPartyKeyToId.remove(key);
+          return proceedFindByUUIDColdPath(session, token, system, identityToken)
+            .invoke(p -> { if (p != null && p.getId() != null) { involvedPartyKeyToId.put(key, (java.util.UUID) p.getId()); } });
+        });
+    }
+
+    // Cold path
+    return proceedFindByUUIDColdPath(session, token, system, identityToken)
+      .invoke(p -> { if (p != null && p.getId() != null) { involvedPartyKeyToId.put(key, (java.util.UUID) p.getId()); } });
+  }
+
+  private Uni<IInvolvedParty<?, ?>> proceedFindByUUIDColdPath(Mutiny.Session session, UUID token, ISystems<?, ?> system, UUID... identityToken)
+  {
+    var enterprise = system.getEnterprise();
+    return findInvolvedPartyIdentificationType(session, IdentificationTypeUUID.toString(), system, identityToken)
+      .chain(id -> {
+        InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();
+        return idType.builder(session)
+          .findLink(null, (InvolvedPartyIdentificationType) id, token.toString())
+          .inActiveRange()
+          .inDateRange()
+          .withEnterprise(enterprise)
+          .canRead(system, identityToken)
+          .get();
+      })
+      .chain(idxid -> session.fetch(idxid.getInvolvedPartyID()));
   }
 
   @Override

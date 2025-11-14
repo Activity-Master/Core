@@ -81,6 +81,13 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.D
 public class ArrangementsService
         implements IArrangementsService<ArrangementsService>
 {
+    // Local cache: key = enterpriseId + '|' + systemId + '|' + arrangementTypeName → ArrangementType UUID
+    private final java.util.Map<String, java.util.UUID> arrangementTypeKeyToId = new java.util.concurrent.ConcurrentHashMap<>();
+
+    // UUID-based lookup to leverage Hibernate 2nd-level cache
+    public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangementType<?, ?>> getArrangementTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id) {
+        return (io.smallrye.mutiny.Uni) session.find(com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementType.class, id);
+    }
     @Inject
     private IClassificationService<?> classificationService;
 
@@ -207,22 +214,61 @@ public class ArrangementsService
     public Uni<IArrangementType<?, ?>> findArrangementType(Mutiny.Session session, String type, ISystems<?, ?> system, UUID... identityToken)
     {
         log.trace("Finding arrangement type: {}", type);
-        ArrangementType xr = new ArrangementType();
         var enterprise = system.getEnterprise();
+        java.util.UUID enterpriseId = null;
+        java.util.UUID systemId = null;
+        if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
+            enterpriseId = ent.getId();
+        }
+        if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys) {
+            systemId = sys.getId();
+        }
+        String key = enterpriseId + "|" + systemId + "|" + type;
+        java.util.UUID cachedId = arrangementTypeKeyToId.get(key);
+        if (cachedId != null) {
+            log.trace("🔁 ArrangementType cache hit for key '{}': {} — loading by UUID", key, cachedId);
+            return (Uni) getArrangementTypeById(session, cachedId)
+                .flatMap(found -> {
+                    if (found != null) {
+                        return Uni.createFrom().item(found);
+                    }
+                    arrangementTypeKeyToId.remove(key);
+                    ArrangementType xr = new ArrangementType();
+                    return (Uni) xr.builder(session)
+                                     .withName(type)
+                                     .inActiveRange()
+                                     .inDateRange()
+                                     .withEnterprise(enterprise)
+                                     .get()
+                                     .invoke(res -> {
+                                         if (res != null && res.getId() != null) {
+                                             arrangementTypeKeyToId.put(key, (java.util.UUID) res.getId());
+                                         }
+                                     })
+                                     .onItem()
+                                     .ifNull()
+                                     .failWith(() -> new ArrangementException("Unable to find arrangement type - " + type))
+                                     .map(result -> (IArrangementType<?, ?>) result);
+                });
+        }
+        ArrangementType xr = new ArrangementType();
         return (Uni) xr.builder(session)
                              .withName(type)
                              .inActiveRange()
                              .inDateRange()
                              .withEnterprise(enterprise)
                              .get()
+                             .invoke(res -> {
+                                 if (res != null && res.getId() != null) {
+                                     arrangementTypeKeyToId.put(key, (java.util.UUID) res.getId());
+                                 }
+                             })
                              .onItem()
                              .ifNull()
-                             .failWith(() ->
-                                               new ArrangementException("Unable to find arrangement type - " + type))
+                             .failWith(() -> new ArrangementException("Unable to find arrangement type - " + type))
                              .map(result -> (IArrangementType<?, ?>) result)
                              .onFailure()
-                             .invoke(error ->
-                                             log.error("Error finding arrangement type: {}", type, error));
+                             .invoke(error -> log.error("Error finding arrangement type: {}", type, error));
     }
 
 

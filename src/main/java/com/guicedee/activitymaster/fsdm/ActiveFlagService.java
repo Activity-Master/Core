@@ -45,12 +45,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Log4j2
 @Singleton
 public class ActiveFlagService
 		implements IActiveFlagService<ActiveFlagService>
 {
+	// Local cache: key = enterpriseId + '|' + flagName, value = ActiveFlag UUID
+	private final Map<String, UUID> flagKeyToId = new ConcurrentHashMap<>();
 
 	@Override
 	public IActiveFlag<?,?> get()
@@ -86,12 +90,53 @@ public class ActiveFlagService
 	@Override
 	public Uni<IActiveFlag<?,?>> findFlagByName(Mutiny.Session session, String flag, IEnterprise<?,?> enterprise, UUID... identifyingToken)
 	{
+		UUID enterpriseId = null;
+		if (enterprise instanceof Enterprise ent) {
+			enterpriseId = ent.getId();
+		}
+		String key = enterpriseId + "|" + flag;
+		UUID cachedId = flagKeyToId.get(key);
+		if (cachedId != null) {
+			log.trace("🔁 ActiveFlag cache hit for key '{}': {} — loading by UUID", key, cachedId);
+			return (Uni) getFlagById(session, cachedId)
+				.flatMap(found -> {
+					if (found != null) {
+						return Uni.createFrom().item(found);
+					}
+					// Stale mapping: remove and fallback to name+enterprise query
+					flagKeyToId.remove(key);
+					return (Uni) new ActiveFlag().builder(session)
+							.withName(flag)
+							.inDateRange()
+							//    .canRead(enterprise, identifyingToken)
+							.withEnterprise(enterprise)
+							.get()
+							.invoke(ent -> {
+								if (ent != null && ent.getId() != null) {
+									flagKeyToId.put(key, ent.getId());
+								}
+							});
+				});
+		}
+
+		// Cold path: query by name+enterprise and remember UUID
 		return (Uni) new ActiveFlag().builder(session)
-		                       .withName(flag)
-		                       .inDateRange()
-		                       //    .canRead(enterprise, identifyingToken)
-		                       .withEnterprise(enterprise)
-		                       .get();
+						.withName(flag)
+						.inDateRange()
+						//    .canRead(enterprise, identifyingToken)
+						.withEnterprise(enterprise)
+						.get()
+						.invoke(ent -> {
+							if (ent != null && ent.getId() != null) {
+								flagKeyToId.put(key, ent.getId());
+							}
+						});
+	}
+
+	// UUID-based lookup to leverage L2 cache (@Cacheable on entity + L2 cache enabled)
+	public Uni<IActiveFlag<?,?>> getFlagById(Mutiny.Session session, UUID id) {
+		//noinspection unchecked
+		return (Uni) session.find(ActiveFlag.class, id);
 	}
 
 	//@Transactional()

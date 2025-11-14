@@ -166,7 +166,7 @@ SET
 
 CREATE TABLE address.address
 (
-    addressid                     UUID                        NOT NULL,
+    addressid                     UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -189,7 +189,7 @@ CREATE TABLE address.address
 
 CREATE TABLE address.addresssecuritytoken
 (
-    addresssecuritytokenid        UUID                        NOT NULL,
+    addresssecuritytokenid        UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -217,7 +217,7 @@ CREATE TABLE address.addresssecuritytoken
 
 CREATE TABLE address.addressxclassification
 (
-    addressxclassificationid      UUID                        NOT NULL,
+    addressxclassificationid      UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -242,7 +242,7 @@ CREATE TABLE address.addressxclassification
 
 CREATE TABLE address.addressxclassificationsecuritytoken
 (
-    addressxclassificationsecuritytokenid UUID                        NOT NULL,
+    addressxclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                     timestamp(6) with time zone NOT NULL,
     effectivetodate                       timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp             timestamp(6) with time zone NOT NULL,
@@ -271,7 +271,7 @@ CREATE TABLE address.addressxclassificationsecuritytoken
 
 CREATE TABLE address.addressxgeography
 (
-    addressxgeographyid           UUID                        NOT NULL,
+    addressxgeographyid           UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -298,7 +298,7 @@ CREATE TABLE address.addressxgeography
 
 CREATE TABLE address.addressxgeographysecuritytoken
 (
-    addressxgeographysecuritytokenid UUID                        NOT NULL,
+    addressxgeographysecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                timestamp(6) with time zone NOT NULL,
     effectivetodate                  timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp        timestamp(6) with time zone NOT NULL,
@@ -327,7 +327,7 @@ CREATE TABLE address.addressxgeographysecuritytoken
 
 CREATE TABLE address.addressxresourceitem
 (
-    addressxresourceitemid        UUID                        NOT NULL,
+    addressxresourceitemid        UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -353,7 +353,7 @@ CREATE TABLE address.addressxresourceitem
 
 CREATE TABLE address.addressxresourceitemsecuritytoken
 (
-    addressxresourceitemsecuritytokenid UUID                        NOT NULL,
+    addressxresourceitemsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                   timestamp(6) with time zone NOT NULL,
     effectivetodate                     timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp           timestamp(6) with time zone NOT NULL,
@@ -381,7 +381,7 @@ CREATE TABLE address.addressxresourceitemsecuritytoken
 
 CREATE TABLE arrangement.arrangement
 (
-    arrangementid                 UUID                        NOT NULL,
+    arrangementid                 UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -403,7 +403,7 @@ CREATE TABLE arrangement.arrangement
 
 CREATE TABLE arrangement.arrangementsecuritytoken
 (
-    arrangementsecuritytokenid    UUID                        NOT NULL,
+    arrangementsecuritytokenid    UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -431,7 +431,7 @@ CREATE TABLE arrangement.arrangementsecuritytoken
 
 CREATE TABLE arrangement.arrangementtype
 (
-    arrangementtypeid             UUID                        NOT NULL,
+    arrangementtypeid             UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -455,7 +455,7 @@ CREATE TABLE arrangement.arrangementtype
 
 CREATE TABLE arrangement.arrangementtypesecuritytoken
 (
-    arrangementtypesecuritytokenid UUID                        NOT NULL,
+    arrangementtypesecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate              timestamp(6) with time zone NOT NULL,
     effectivetodate                timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp      timestamp(6) with time zone NOT NULL,
@@ -483,7 +483,7 @@ CREATE TABLE arrangement.arrangementtypesecuritytoken
 
 CREATE TABLE arrangement.arrangementtypexclassification
 (
-    arrangementtypexclassificationid UUID                        NOT NULL,
+    arrangementtypexclassificationid UUID                        NOT NULL primary key ,
     effectivefromdate                timestamp(6) with time zone NOT NULL,
     effectivetodate                  timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp        timestamp(6) with time zone NOT NULL,
@@ -508,7 +508,7 @@ CREATE TABLE arrangement.arrangementtypexclassification
 
 CREATE TABLE arrangement.arrangementtypexclassificationsecuritytoken
 (
-    arrangementtypexclassificationsecuritytokenid UUID                        NOT NULL,
+    arrangementtypexclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                             timestamp(6) with time zone NOT NULL,
     effectivetodate                               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                     timestamp(6) with time zone NOT NULL,
@@ -536,7 +536,7 @@ CREATE TABLE arrangement.arrangementtypexclassificationsecuritytoken
 
 CREATE TABLE arrangement.arrangementxarrangement
 (
-    arrangementxarrangementid     UUID                        NOT NULL,
+    arrangementxarrangementid     UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -562,7 +562,7 @@ CREATE TABLE arrangement.arrangementxarrangement
 
 CREATE TABLE arrangement.arrangementxarrangementsecuritytoken
 (
-    arrangementxarrangementsecuritytokenid UUID                        NOT NULL,
+    arrangementxarrangementsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                      timestamp(6) with time zone NOT NULL,
     effectivetodate                        timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp              timestamp(6) with time zone NOT NULL,
@@ -590,7 +590,7 @@ CREATE TABLE arrangement.arrangementxarrangementsecuritytoken
 
 CREATE TABLE arrangement.arrangementxarrangementtype
 (
-    arrangementxarrangementtypeid UUID                        NOT NULL,
+    arrangementxarrangementtypeid UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -616,7 +616,7 @@ CREATE TABLE arrangement.arrangementxarrangementtype
 
 CREATE TABLE arrangement.arrangementxarrangementtypesecuritytoken
 (
-    arrangementxarrangementtypesecuritytokenid UUID                        NOT NULL,
+    arrangementxarrangementtypesecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                          timestamp(6) with time zone NOT NULL,
     effectivetodate                            timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                  timestamp(6) with time zone NOT NULL,
@@ -644,7 +644,7 @@ CREATE TABLE arrangement.arrangementxarrangementtypesecuritytoken
 
 CREATE TABLE arrangement.arrangementxclassification
 (
-    arrangementxclassificationid  UUID                        NOT NULL,
+    arrangementxclassificationid  UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -669,7 +669,7 @@ CREATE TABLE arrangement.arrangementxclassification
 
 CREATE TABLE arrangement.arrangementxclassificationsecuritytoken
 (
-    arrangementxclassificationsecuritytokenid UUID                        NOT NULL,
+    arrangementxclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                         timestamp(6) with time zone NOT NULL,
     effectivetodate                           timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                 timestamp(6) with time zone NOT NULL,
@@ -697,7 +697,7 @@ CREATE TABLE arrangement.arrangementxclassificationsecuritytoken
 
 CREATE TABLE arrangement.arrangementxinvolvedparty
 (
-    arrangementxinvolvedpartyid   UUID                        NOT NULL,
+    arrangementxinvolvedpartyid   UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -723,7 +723,7 @@ CREATE TABLE arrangement.arrangementxinvolvedparty
 
 CREATE TABLE arrangement.arrangementxinvolvedpartysecuritytoken
 (
-    arrangementxinvolvedpartysecuritytokenid UUID                        NOT NULL,
+    arrangementxinvolvedpartysecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                        timestamp(6) with time zone NOT NULL,
     effectivetodate                          timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                timestamp(6) with time zone NOT NULL,
@@ -751,7 +751,7 @@ CREATE TABLE arrangement.arrangementxinvolvedpartysecuritytoken
 
 CREATE TABLE arrangement.arrangementxproduct
 (
-    arrangementxproductid         UUID                        NOT NULL,
+    arrangementxproductid         UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -777,7 +777,7 @@ CREATE TABLE arrangement.arrangementxproduct
 
 CREATE TABLE arrangement.arrangementxproductsecuritytoken
 (
-    arrangementxproductsecuritytokenid UUID                        NOT NULL,
+    arrangementxproductsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                  timestamp(6) with time zone NOT NULL,
     effectivetodate                    timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp          timestamp(6) with time zone NOT NULL,
@@ -805,7 +805,7 @@ CREATE TABLE arrangement.arrangementxproductsecuritytoken
 
 CREATE TABLE arrangement.arrangementxresourceitem
 (
-    arrangementxresourceitemid    UUID                        NOT NULL,
+    arrangementxresourceitemid    UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -831,7 +831,7 @@ CREATE TABLE arrangement.arrangementxresourceitem
 
 CREATE TABLE arrangement.arrangementxresourceitemsecuritytoken
 (
-    arrangementxresourceitemsecuritytokenid UUID                        NOT NULL,
+    arrangementxresourceitemsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                       timestamp(6) with time zone NOT NULL,
     effectivetodate                         timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp               timestamp(6) with time zone NOT NULL,
@@ -859,7 +859,7 @@ CREATE TABLE arrangement.arrangementxresourceitemsecuritytoken
 
 CREATE TABLE arrangement.arrangementxrules
 (
-    arrangementxrulesid           UUID                        NOT NULL,
+    arrangementxrulesid           UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -885,7 +885,7 @@ CREATE TABLE arrangement.arrangementxrules
 
 CREATE TABLE arrangement.arrangementxrulessecuritytoken
 (
-    arrangementxrulessecuritytokenid UUID                        NOT NULL,
+    arrangementxrulessecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                timestamp(6) with time zone NOT NULL,
     effectivetodate                  timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp        timestamp(6) with time zone NOT NULL,
@@ -913,7 +913,7 @@ CREATE TABLE arrangement.arrangementxrulessecuritytoken
 
 CREATE TABLE arrangement.arrangementxrulestype
 (
-    arrangementxrulestypeid       UUID                        NOT NULL,
+    arrangementxrulestypeid       UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -939,7 +939,7 @@ CREATE TABLE arrangement.arrangementxrulestype
 
 CREATE TABLE arrangement.arrangementxrulestypesecuritytoken
 (
-    arrangementxrulestypesecuritytokenid UUID                        NOT NULL,
+    arrangementxrulestypesecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                    timestamp(6) with time zone NOT NULL,
     effectivetodate                      timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp            timestamp(6) with time zone NOT NULL,
@@ -967,7 +967,7 @@ CREATE TABLE arrangement.arrangementxrulestypesecuritytoken
 
 CREATE TABLE classification.classification
 (
-    classificationid              UUID                        NOT NULL,
+    classificationid              UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -993,7 +993,7 @@ CREATE TABLE classification.classification
 
 CREATE TABLE classification.classificationdataconcept
 (
-    classificationdataconceptid   UUID                        NOT NULL,
+    classificationdataconceptid   UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1017,7 +1017,7 @@ CREATE TABLE classification.classificationdataconcept
 
 CREATE TABLE classification.classificationdataconceptsecuritytoken
 (
-    classificationdataconceptsecuritytokenid UUID                        NOT NULL,
+    classificationdataconceptsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                        timestamp(6) with time zone NOT NULL,
     effectivetodate                          timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                timestamp(6) with time zone NOT NULL,
@@ -1045,7 +1045,7 @@ CREATE TABLE classification.classificationdataconceptsecuritytoken
 
 CREATE TABLE classification.classificationdataconceptxclassification
 (
-    classificationdataconceptxclassificationid UUID                        NOT NULL,
+    classificationdataconceptxclassificationid UUID                        NOT NULL primary key ,
     effectivefromdate                          timestamp(6) with time zone NOT NULL,
     effectivetodate                            timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                  timestamp(6) with time zone NOT NULL,
@@ -1071,7 +1071,7 @@ CREATE TABLE classification.classificationdataconceptxclassification
 
 CREATE TABLE classification.classificationdataconceptxclassificationsecuritytoken
 (
-    classificationdataconceptxclassificationsecuritytokenid UUID                        NOT NULL,
+    classificationdataconceptxclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                                       timestamp(6) with time zone NOT NULL,
     effectivetodate                                         timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                               timestamp(6) with time zone NOT NULL,
@@ -1099,7 +1099,7 @@ CREATE TABLE classification.classificationdataconceptxclassificationsecuritytoke
 
 CREATE TABLE classification.classificationdataconceptxresourceitem
 (
-    classificationdataconceptxresourceitemid UUID                        NOT NULL,
+    classificationdataconceptxresourceitemid UUID                        NOT NULL primary key ,
     effectivefromdate                        timestamp(6) with time zone NOT NULL,
     effectivetodate                          timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                timestamp(6) with time zone NOT NULL,
@@ -1125,7 +1125,7 @@ CREATE TABLE classification.classificationdataconceptxresourceitem
 
 CREATE TABLE classification.classificationdataconceptxresourceitemsecuritytoken
 (
-    classificationdataconceptxresourceitemsecuritytokenid UUID                        NOT NULL,
+    classificationdataconceptxresourceitemsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                                     timestamp(6) with time zone NOT NULL,
     effectivetodate                                       timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                             timestamp(6) with time zone NOT NULL,
@@ -1153,7 +1153,7 @@ CREATE TABLE classification.classificationdataconceptxresourceitemsecuritytoken
 
 CREATE TABLE classification.classificationsecuritytoken
 (
-    classificationsecuritytokenid UUID                        NOT NULL,
+    classificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1181,7 +1181,7 @@ CREATE TABLE classification.classificationsecuritytoken
 
 CREATE TABLE classification.classificationxclassification
 (
-    classificationxclassificationid UUID                        NOT NULL,
+    classificationxclassificationid UUID                        NOT NULL primary key ,
     effectivefromdate               timestamp(6) with time zone NOT NULL,
     effectivetodate                 timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp       timestamp(6) with time zone NOT NULL,
@@ -1207,7 +1207,7 @@ CREATE TABLE classification.classificationxclassification
 
 CREATE TABLE classification.classificationxclassificationsecuritytoken
 (
-    classificationxclassificationsecuritytokenid UUID                        NOT NULL,
+    classificationxclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                            timestamp(6) with time zone NOT NULL,
     effectivetodate                              timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                    timestamp(6) with time zone NOT NULL,
@@ -1235,7 +1235,7 @@ CREATE TABLE classification.classificationxclassificationsecuritytoken
 
 CREATE TABLE classification.classificationxresourceitem
 (
-    classificationxresourceitemid UUID                        NOT NULL,
+    classificationxresourceitemid UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1260,7 +1260,7 @@ CREATE TABLE classification.classificationxresourceitem
 
 CREATE TABLE classification.classificationxresourceitemsecuritytoken
 (
-    classificationxresourceitemsecuritytokenid UUID                        NOT NULL,
+    classificationxresourceitemsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                          timestamp(6) with time zone NOT NULL,
     effectivetodate                            timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                  timestamp(6) with time zone NOT NULL,
@@ -1288,7 +1288,7 @@ CREATE TABLE classification.classificationxresourceitemsecuritytoken
 
 CREATE TABLE dbo.activeflag
 (
-    activeflagid                  UUID                        NOT NULL,
+    activeflagid                  UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1309,7 +1309,7 @@ CREATE TABLE dbo.activeflag
 
 CREATE TABLE dbo.activeflagsecuritytoken
 (
-    activeflagsecuritytokenid     UUID                        NOT NULL,
+    activeflagsecuritytokenid     UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1337,7 +1337,7 @@ CREATE TABLE dbo.activeflagsecuritytoken
 
 CREATE TABLE dbo.activeflagxclassification
 (
-    activeflagxclassificationid   UUID                        NOT NULL,
+    activeflagxclassificationid   UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1361,7 +1361,7 @@ CREATE TABLE dbo.activeflagxclassification
 
 CREATE TABLE dbo.activeflagxclassificationsecuritytoken
 (
-    activeflagxclassificationsecuritytokenid UUID                        NOT NULL,
+    activeflagxclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                        timestamp(6) with time zone NOT NULL,
     effectivetodate                          timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                timestamp(6) with time zone NOT NULL,
@@ -1389,7 +1389,7 @@ CREATE TABLE dbo.activeflagxclassificationsecuritytoken
 
 CREATE TABLE dbo.enterprise
 (
-    enterpriseid                  UUID                        NOT NULL,
+    enterpriseid                  UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1408,7 +1408,7 @@ CREATE TABLE dbo.enterprise
 
 CREATE TABLE dbo.enterprisesecuritytoken
 (
-    enterprisesecuritytokenid     UUID                        NOT NULL,
+    enterprisesecuritytokenid     UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1435,7 +1435,7 @@ CREATE TABLE dbo.enterprisesecuritytoken
 
 CREATE TABLE dbo.enterprisexclassification
 (
-    enterprisexclassificationid   UUID                        NOT NULL,
+    enterprisexclassificationid   UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1459,7 +1459,7 @@ CREATE TABLE dbo.enterprisexclassification
 
 CREATE TABLE dbo.enterprisexclassificationsecuritytoken
 (
-    enterprisexclassificationsecuritytokenid UUID                        NOT NULL,
+    enterprisexclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                        timestamp(6) with time zone NOT NULL,
     effectivetodate                          timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                timestamp(6) with time zone NOT NULL,
@@ -1487,7 +1487,7 @@ CREATE TABLE dbo.enterprisexclassificationsecuritytoken
 
 CREATE TABLE dbo.systems
 (
-    systemid                      UUID                        NOT NULL,
+    systemid                      UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1509,7 +1509,7 @@ CREATE TABLE dbo.systems
 
 CREATE TABLE dbo.systemssecuritytoken
 (
-    systemssecuritytokenid        UUID                        NOT NULL,
+    systemssecuritytokenid        UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1536,7 +1536,7 @@ CREATE TABLE dbo.systemssecuritytoken
 
 CREATE TABLE dbo.systemxclassification
 (
-    systemxclassificationid       UUID                        NOT NULL,
+    systemxclassificationid       UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1560,7 +1560,7 @@ CREATE TABLE dbo.systemxclassification
 
 CREATE TABLE dbo.systemxclassificationsecuritytoken
 (
-    systemxclassificationsecuritytokenid UUID                        NOT NULL,
+    systemxclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                    timestamp(6) with time zone NOT NULL,
     effectivetodate                      timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp            timestamp(6) with time zone NOT NULL,
@@ -1588,7 +1588,7 @@ CREATE TABLE dbo.systemxclassificationsecuritytoken
 
 CREATE TABLE event.event
 (
-    eventid                       UUID                        NOT NULL,
+    eventid                       UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1614,7 +1614,7 @@ CREATE TABLE event.event
 
 CREATE TABLE event.eventsecuritytoken
 (
-    eventssecuritytokenid         UUID                        NOT NULL,
+    eventssecuritytokenid         UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1642,7 +1642,7 @@ CREATE TABLE event.eventsecuritytoken
 
 CREATE TABLE event.eventtype
 (
-    eventtypeid                   UUID                        NOT NULL,
+    eventtypeid                   UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1666,7 +1666,7 @@ CREATE TABLE event.eventtype
 
 CREATE TABLE event.eventtypessecuritytoken
 (
-    eventtypessecuritytokenid     UUID                        NOT NULL,
+    eventtypessecuritytokenid     UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1694,7 +1694,7 @@ CREATE TABLE event.eventtypessecuritytoken
 
 CREATE TABLE event.eventxaddress
 (
-    eventxaddressid               UUID                        NOT NULL,
+    eventxaddressid               UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1720,7 +1720,7 @@ CREATE TABLE event.eventxaddress
 
 CREATE TABLE event.eventxaddresssecuritytoken
 (
-    eventxaddresssecuritytokenid  UUID                        NOT NULL,
+    eventxaddresssecuritytokenid  UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1748,7 +1748,7 @@ CREATE TABLE event.eventxaddresssecuritytoken
 
 CREATE TABLE event.eventxarrangement
 (
-    eventxarrangementsid          UUID                        NOT NULL,
+    eventxarrangementsid          UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1774,7 +1774,7 @@ CREATE TABLE event.eventxarrangement
 
 CREATE TABLE event.eventxarrangementssecuritytoken
 (
-    eventxarrangementssecuritytokenid UUID                        NOT NULL,
+    eventxarrangementssecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                 timestamp(6) with time zone NOT NULL,
     effectivetodate                   timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp         timestamp(6) with time zone NOT NULL,
@@ -1802,7 +1802,7 @@ CREATE TABLE event.eventxarrangementssecuritytoken
 
 CREATE TABLE event.eventxclassification
 (
-    eventxclassificationid        UUID                        NOT NULL,
+    eventxclassificationid        UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1827,7 +1827,7 @@ CREATE TABLE event.eventxclassification
 
 CREATE TABLE event.eventxclassificationsecuritytoken
 (
-    eventxclassificationssecuritytokenid UUID                        NOT NULL,
+    eventxclassificationssecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                    timestamp(6) with time zone NOT NULL,
     effectivetodate                      timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp            timestamp(6) with time zone NOT NULL,
@@ -1855,7 +1855,7 @@ CREATE TABLE event.eventxclassificationsecuritytoken
 
 CREATE TABLE event.eventxevent
 (
-    eventxeventid                 UUID                        NOT NULL,
+    eventxeventid                 UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1881,7 +1881,7 @@ CREATE TABLE event.eventxevent
 
 CREATE TABLE event.eventxeventsecuritytoken
 (
-    eventxeventsecuritytokenid    UUID                        NOT NULL,
+    eventxeventsecuritytokenid    UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1909,7 +1909,7 @@ CREATE TABLE event.eventxeventsecuritytoken
 
 CREATE TABLE event.eventxeventtype
 (
-    eventxeventtypeid             UUID                        NOT NULL,
+    eventxeventtypeid             UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1935,7 +1935,7 @@ CREATE TABLE event.eventxeventtype
 
 CREATE TABLE event.eventxeventtypesecuritytoken
 (
-    eventxeventtypesecuritytokenid UUID                        NOT NULL,
+    eventxeventtypesecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate              timestamp(6) with time zone NOT NULL,
     effectivetodate                timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp      timestamp(6) with time zone NOT NULL,
@@ -1963,7 +1963,7 @@ CREATE TABLE event.eventxeventtypesecuritytoken
 
 CREATE TABLE event.eventxgeography
 (
-    eventxgeographyid             UUID                        NOT NULL,
+    eventxgeographyid             UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -1989,7 +1989,7 @@ CREATE TABLE event.eventxgeography
 
 CREATE TABLE event.eventxgeographysecuritytoken
 (
-    eventxgeographysecuritytokenid UUID                        NOT NULL,
+    eventxgeographysecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate              timestamp(6) with time zone NOT NULL,
     effectivetodate                timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp      timestamp(6) with time zone NOT NULL,
@@ -2017,7 +2017,7 @@ CREATE TABLE event.eventxgeographysecuritytoken
 
 CREATE TABLE event.eventxinvolvedparty
 (
-    eventxinvolvedpartyid         UUID                        NOT NULL,
+    eventxinvolvedpartyid         UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2043,7 +2043,7 @@ CREATE TABLE event.eventxinvolvedparty
 
 CREATE TABLE event.eventxinvolvedpartysecuritytoken
 (
-    eventxinvolvedpartysecuritytokenid UUID                        NOT NULL,
+    eventxinvolvedpartysecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                  timestamp(6) with time zone NOT NULL,
     effectivetodate                    timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp          timestamp(6) with time zone NOT NULL,
@@ -2071,7 +2071,7 @@ CREATE TABLE event.eventxinvolvedpartysecuritytoken
 
 CREATE TABLE event.eventxproduct
 (
-    eventxproductid               UUID                        NOT NULL,
+    eventxproductid               UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2097,7 +2097,7 @@ CREATE TABLE event.eventxproduct
 
 CREATE TABLE event.eventxproductsecuritytoken
 (
-    eventxproductsecuritytokenid  UUID                        NOT NULL,
+    eventxproductsecuritytokenid  UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2125,7 +2125,7 @@ CREATE TABLE event.eventxproductsecuritytoken
 
 CREATE TABLE event.eventxresourceitem
 (
-    eventxresourceitemid          UUID                        NOT NULL,
+    eventxresourceitemid          UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2151,7 +2151,7 @@ CREATE TABLE event.eventxresourceitem
 
 CREATE TABLE event.eventxresourceitemsecuritytoken
 (
-    eventxresourceitemsecuritytokenid UUID                        NOT NULL,
+    eventxresourceitemsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                 timestamp(6) with time zone NOT NULL,
     effectivetodate                   timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp         timestamp(6) with time zone NOT NULL,
@@ -2179,7 +2179,7 @@ CREATE TABLE event.eventxresourceitemsecuritytoken
 
 CREATE TABLE event.eventxrules
 (
-    eventxrulesid                 UUID                        NOT NULL,
+    eventxrulesid                 UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2205,7 +2205,7 @@ CREATE TABLE event.eventxrules
 
 CREATE TABLE event.eventxrulessecuritytoken
 (
-    eventxrulessecuritytokenid    UUID                        NOT NULL,
+    eventxrulessecuritytokenid    UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2233,7 +2233,7 @@ CREATE TABLE event.eventxrulessecuritytoken
 
 CREATE TABLE geography.geography
 (
-    geographyid                   UUID                        NOT NULL,
+    geographyid                   UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2258,7 +2258,7 @@ CREATE TABLE geography.geography
 
 CREATE TABLE geography.geographysecuritytoken
 (
-    geographysecuritytokenid      UUID                        NOT NULL,
+    geographysecuritytokenid      UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2286,7 +2286,7 @@ CREATE TABLE geography.geographysecuritytoken
 
 CREATE TABLE geography.geographyxclassification
 (
-    geographyxclassificationid    UUID                        NOT NULL,
+    geographyxclassificationid    UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2311,7 +2311,7 @@ CREATE TABLE geography.geographyxclassification
 
 CREATE TABLE geography.geographyxclassificationsecuritytoken
 (
-    geographyxclassificationsecuritytokenid UUID                        NOT NULL,
+    geographyxclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                       timestamp(6) with time zone NOT NULL,
     effectivetodate                         timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp               timestamp(6) with time zone NOT NULL,
@@ -2339,7 +2339,7 @@ CREATE TABLE geography.geographyxclassificationsecuritytoken
 
 CREATE TABLE geography.geographyxgeography
 (
-    geographyxgeographyid         UUID                        NOT NULL,
+    geographyxgeographyid         UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2365,7 +2365,7 @@ CREATE TABLE geography.geographyxgeography
 
 CREATE TABLE geography.geographyxgeographysecuritytoken
 (
-    geographyxgeographysecuritytokenid UUID                        NOT NULL,
+    geographyxgeographysecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                  timestamp(6) with time zone NOT NULL,
     effectivetodate                    timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp          timestamp(6) with time zone NOT NULL,
@@ -2393,7 +2393,7 @@ CREATE TABLE geography.geographyxgeographysecuritytoken
 
 CREATE TABLE geography.geographyxresourceitem
 (
-    geographyxresourceitemid      UUID                        NOT NULL,
+    geographyxresourceitemid      UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2419,7 +2419,7 @@ CREATE TABLE geography.geographyxresourceitem
 
 CREATE TABLE geography.geographyxresourceitemsecuritytoken
 (
-    geographyxresourceitemsecuritytokenid UUID                        NOT NULL,
+    geographyxresourceitemsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                     timestamp(6) with time zone NOT NULL,
     effectivetodate                       timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp             timestamp(6) with time zone NOT NULL,
@@ -2447,7 +2447,7 @@ CREATE TABLE geography.geographyxresourceitemsecuritytoken
 
 CREATE TABLE party.involvedparty
 (
-    involvedpartyid               UUID                        NOT NULL,
+    involvedpartyid               UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2469,7 +2469,7 @@ CREATE TABLE party.involvedparty
 
 CREATE TABLE party.involvedpartyidentificationtype
 (
-    involvedpartyidentificationtypeid UUID                        NOT NULL,
+    involvedpartyidentificationtypeid UUID                        NOT NULL primary key ,
     effectivefromdate                 timestamp(6) with time zone NOT NULL,
     effectivetodate                   timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp         timestamp(6) with time zone NOT NULL,
@@ -2493,7 +2493,7 @@ CREATE TABLE party.involvedpartyidentificationtype
 
 CREATE TABLE party.involvedpartyidentificationtypesecuritytoken
 (
-    involvedpartyidentificationtypesecuritytokenid UUID                        NOT NULL,
+    involvedpartyidentificationtypesecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                              timestamp(6) with time zone NOT NULL,
     effectivetodate                                timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                      timestamp(6) with time zone NOT NULL,
@@ -2521,7 +2521,7 @@ CREATE TABLE party.involvedpartyidentificationtypesecuritytoken
 
 CREATE TABLE party.involvedpartynametype
 (
-    involvedpartynametypeid       UUID                        NOT NULL,
+    involvedpartynametypeid       UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2545,7 +2545,7 @@ CREATE TABLE party.involvedpartynametype
 
 CREATE TABLE party.involvedpartynametypesecuritytoken
 (
-    involvedpartynametypesecuritytokenid UUID                        NOT NULL,
+    involvedpartynametypesecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                    timestamp(6) with time zone NOT NULL,
     effectivetodate                      timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp            timestamp(6) with time zone NOT NULL,
@@ -2573,7 +2573,7 @@ CREATE TABLE party.involvedpartynametypesecuritytoken
 
 CREATE TABLE party.involvedpartynonorganic
 (
-    involvedpartynonorganicid     UUID                        NOT NULL,
+    involvedpartynonorganicid     UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2595,7 +2595,7 @@ CREATE TABLE party.involvedpartynonorganic
 
 CREATE TABLE party.involvedpartynonorganicsecuritytoken
 (
-    involvedpartynonorganicsecuritytokenid UUID                        NOT NULL,
+    involvedpartynonorganicsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                      timestamp(6) with time zone NOT NULL,
     effectivetodate                        timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp              timestamp(6) with time zone NOT NULL,
@@ -2623,7 +2623,7 @@ CREATE TABLE party.involvedpartynonorganicsecuritytoken
 
 CREATE TABLE party.involvedpartyorganic
 (
-    involvedpartyorganicid        UUID                        NOT NULL,
+    involvedpartyorganicid        UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2645,7 +2645,7 @@ CREATE TABLE party.involvedpartyorganic
 
 CREATE TABLE party.involvedpartyorganicsecuritytoken
 (
-    involvedpartyorganicsecuritytokenid UUID                        NOT NULL,
+    involvedpartyorganicsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                   timestamp(6) with time zone NOT NULL,
     effectivetodate                     timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp           timestamp(6) with time zone NOT NULL,
@@ -2673,7 +2673,7 @@ CREATE TABLE party.involvedpartyorganicsecuritytoken
 
 CREATE TABLE party.involvedpartyorganictype
 (
-    involvedpartyorganictypeid    UUID                        NOT NULL,
+    involvedpartyorganictypeid    UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2697,7 +2697,7 @@ CREATE TABLE party.involvedpartyorganictype
 
 CREATE TABLE party.involvedpartyorganictypesecuritytoken
 (
-    involvedpartyorganictypesecuritytokenid UUID                        NOT NULL,
+    involvedpartyorganictypesecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                       timestamp(6) with time zone NOT NULL,
     effectivetodate                         timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp               timestamp(6) with time zone NOT NULL,
@@ -2725,7 +2725,7 @@ CREATE TABLE party.involvedpartyorganictypesecuritytoken
 
 CREATE TABLE party.involvedpartysecuritytoken
 (
-    involvedpartysecuritytokenid  UUID                        NOT NULL,
+    involvedpartysecuritytokenid  UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2753,7 +2753,7 @@ CREATE TABLE party.involvedpartysecuritytoken
 
 CREATE TABLE party.involvedpartytype
 (
-    involvedpartytypeid           UUID                        NOT NULL,
+    involvedpartytypeid           UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2777,7 +2777,7 @@ CREATE TABLE party.involvedpartytype
 
 CREATE TABLE party.involvedpartytypesecuritytoken
 (
-    involvedpartytypesecuritytokenid UUID                        NOT NULL,
+    involvedpartytypesecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                timestamp(6) with time zone NOT NULL,
     effectivetodate                  timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp        timestamp(6) with time zone NOT NULL,
@@ -2805,7 +2805,7 @@ CREATE TABLE party.involvedpartytypesecuritytoken
 
 CREATE TABLE party.involvedpartyxaddress
 (
-    involvedpartyxaddressid       UUID                        NOT NULL,
+    involvedpartyxaddressid       UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2831,7 +2831,7 @@ CREATE TABLE party.involvedpartyxaddress
 
 CREATE TABLE party.involvedpartyxaddresssecuritytoken
 (
-    involvedpartyxaddresssecuritytokenid UUID                        NOT NULL,
+    involvedpartyxaddresssecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                    timestamp(6) with time zone NOT NULL,
     effectivetodate                      timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp            timestamp(6) with time zone NOT NULL,
@@ -2859,7 +2859,7 @@ CREATE TABLE party.involvedpartyxaddresssecuritytoken
 
 CREATE TABLE party.involvedpartyxclassification
 (
-    involvedpartyxclassificationid UUID                        NOT NULL,
+    involvedpartyxclassificationid UUID                        NOT NULL primary key ,
     effectivefromdate              timestamp(6) with time zone NOT NULL,
     effectivetodate                timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp      timestamp(6) with time zone NOT NULL,
@@ -2884,7 +2884,7 @@ CREATE TABLE party.involvedpartyxclassification
 
 CREATE TABLE party.involvedpartyxclassificationsecuritytoken
 (
-    involvedpartyxclassificationsecuritytokenid UUID                        NOT NULL,
+    involvedpartyxclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                           timestamp(6) with time zone NOT NULL,
     effectivetodate                             timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                   timestamp(6) with time zone NOT NULL,
@@ -2912,7 +2912,7 @@ CREATE TABLE party.involvedpartyxclassificationsecuritytoken
 
 CREATE TABLE party.involvedpartyxinvolvedparty
 (
-    involvedpartyxinvolvedpartyid UUID                        NOT NULL,
+    involvedpartyxinvolvedpartyid UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -2938,7 +2938,7 @@ CREATE TABLE party.involvedpartyxinvolvedparty
 
 CREATE TABLE party.involvedpartyxinvolvedpartyidentificationtype
 (
-    involvedpartyxinvolvedpartyidentificationtypeid UUID                        NOT NULL,
+    involvedpartyxinvolvedpartyidentificationtypeid UUID                        NOT NULL primary key ,
     effectivefromdate                               timestamp(6) with time zone NOT NULL,
     effectivetodate                                 timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                       timestamp(6) with time zone NOT NULL,
@@ -2964,7 +2964,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartyidentificationtype
 
 CREATE TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
 (
-    involvedpartyxinvolvedpartyidentificationtypesecuritytokenid UUID                        NOT NULL,
+    involvedpartyxinvolvedpartyidentificationtypesecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                                            timestamp(6) with time zone NOT NULL,
     effectivetodate                                              timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                                    timestamp(6) with time zone NOT NULL,
@@ -2992,7 +2992,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
 
 CREATE TABLE party.involvedpartyxinvolvedpartynametype
 (
-    involvedpartyxinvolvedpartynametypeid UUID                        NOT NULL,
+    involvedpartyxinvolvedpartynametypeid UUID                        NOT NULL primary key ,
     effectivefromdate                     timestamp(6) with time zone NOT NULL,
     effectivetodate                       timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp             timestamp(6) with time zone NOT NULL,
@@ -3018,7 +3018,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartynametype
 
 CREATE TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
 (
-    involvedpartyxinvolvedpartynametypesecuritytokenid UUID                        NOT NULL,
+    involvedpartyxinvolvedpartynametypesecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                                  timestamp(6) with time zone NOT NULL,
     effectivetodate                                    timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                          timestamp(6) with time zone NOT NULL,
@@ -3046,7 +3046,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
 
 CREATE TABLE party.involvedpartyxinvolvedpartysecuritytoken
 (
-    involvedpartyxinvolvedpartysecuritytokenid UUID                        NOT NULL,
+    involvedpartyxinvolvedpartysecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                          timestamp(6) with time zone NOT NULL,
     effectivetodate                            timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                  timestamp(6) with time zone NOT NULL,
@@ -3074,7 +3074,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartysecuritytoken
 
 CREATE TABLE party.involvedpartyxinvolvedpartytype
 (
-    involvedpartyxinvolvedpartytypeid UUID                        NOT NULL,
+    involvedpartyxinvolvedpartytypeid UUID                        NOT NULL primary key ,
     effectivefromdate                 timestamp(6) with time zone NOT NULL,
     effectivetodate                   timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp         timestamp(6) with time zone NOT NULL,
@@ -3100,7 +3100,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartytype
 
 CREATE TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
 (
-    involvedpartyxinvolvedpartytypesecuritytokenid UUID                        NOT NULL,
+    involvedpartyxinvolvedpartytypesecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                              timestamp(6) with time zone NOT NULL,
     effectivetodate                                timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                      timestamp(6) with time zone NOT NULL,
@@ -3128,7 +3128,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
 
 CREATE TABLE party.involvedpartyxproduct
 (
-    involvedpartyxproductid       UUID                        NOT NULL,
+    involvedpartyxproductid       UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -3154,7 +3154,7 @@ CREATE TABLE party.involvedpartyxproduct
 
 CREATE TABLE party.involvedpartyxproductsecuritytoken
 (
-    involvedpartyxproductsecuritytokenid UUID                        NOT NULL,
+    involvedpartyxproductsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                    timestamp(6) with time zone NOT NULL,
     effectivetodate                      timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp            timestamp(6) with time zone NOT NULL,
@@ -3182,7 +3182,7 @@ CREATE TABLE party.involvedpartyxproductsecuritytoken
 
 CREATE TABLE party.involvedpartyxproducttype
 (
-    involvedpartyxproducttypeid   UUID                        NOT NULL,
+    involvedpartyxproducttypeid   UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -3208,7 +3208,7 @@ CREATE TABLE party.involvedpartyxproducttype
 
 CREATE TABLE party.involvedpartyxproducttypesecuritytoken
 (
-    involvedpartyxproducttypesecuritytokenid UUID                        NOT NULL,
+    involvedpartyxproducttypesecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                        timestamp(6) with time zone NOT NULL,
     effectivetodate                          timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                timestamp(6) with time zone NOT NULL,
@@ -3236,7 +3236,7 @@ CREATE TABLE party.involvedpartyxproducttypesecuritytoken
 
 CREATE TABLE party.involvedpartyxresourceitem
 (
-    involvedpartyxresourceitemid  UUID                        NOT NULL,
+    involvedpartyxresourceitemid  UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -3262,7 +3262,7 @@ CREATE TABLE party.involvedpartyxresourceitem
 
 CREATE TABLE party.involvedpartyxresourceitemsecuritytoken
 (
-    involvedpartyxresourceitemsecuritytokenid UUID                        NOT NULL,
+    involvedpartyxresourceitemsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                         timestamp(6) with time zone NOT NULL,
     effectivetodate                           timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                 timestamp(6) with time zone NOT NULL,
@@ -3290,7 +3290,7 @@ CREATE TABLE party.involvedpartyxresourceitemsecuritytoken
 
 CREATE TABLE party.involvedpartyxrules
 (
-    involvedpartyxrulesid         UUID                        NOT NULL,
+    involvedpartyxrulesid         UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -3316,7 +3316,7 @@ CREATE TABLE party.involvedpartyxrules
 
 CREATE TABLE party.involvedpartyxrulessecuritytoken
 (
-    involvedpartyxrulessecuritytokenid UUID                        NOT NULL,
+    involvedpartyxrulessecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                  timestamp(6) with time zone NOT NULL,
     effectivetodate                    timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp          timestamp(6) with time zone NOT NULL,
@@ -3344,7 +3344,7 @@ CREATE TABLE party.involvedpartyxrulessecuritytoken
 
 CREATE TABLE product.product
 (
-    productid                     UUID                        NOT NULL,
+    productid                     UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -3369,7 +3369,7 @@ CREATE TABLE product.product
 
 CREATE TABLE product.productsecuritytoken
 (
-    productsecuritytokenid        UUID                        NOT NULL,
+    productsecuritytokenid        UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -3397,7 +3397,7 @@ CREATE TABLE product.productsecuritytoken
 
 CREATE TABLE product.producttype
 (
-    producttypeid                 UUID                        NOT NULL,
+    producttypeid                 UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -3421,7 +3421,7 @@ CREATE TABLE product.producttype
 
 CREATE TABLE product.producttypessecuritytoken
 (
-    producttypessecuritytokenid   UUID                        NOT NULL,
+    producttypessecuritytokenid   UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -3449,7 +3449,7 @@ CREATE TABLE product.producttypessecuritytoken
 
 CREATE TABLE product.producttypexclassification
 (
-    producttypexclassificationid  UUID                        NOT NULL,
+    producttypexclassificationid  UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -3474,7 +3474,7 @@ CREATE TABLE product.producttypexclassification
 
 CREATE TABLE product.producttypexclassificationsecuritytoken
 (
-    producttypexclassificationsecuritytokenid UUID                        NOT NULL,
+    producttypexclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                         timestamp(6) with time zone NOT NULL,
     effectivetodate                           timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                 timestamp(6) with time zone NOT NULL,
@@ -3502,7 +3502,7 @@ CREATE TABLE product.producttypexclassificationsecuritytoken
 
 CREATE TABLE product.productxclassification
 (
-    productxclassificationid      UUID                        NOT NULL,
+    productxclassificationid      UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -3527,7 +3527,7 @@ CREATE TABLE product.productxclassification
 
 CREATE TABLE product.productxclassificationsecuritytoken
 (
-    productxclassificationsecuritytokenid UUID                        NOT NULL,
+    productxclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                     timestamp(6) with time zone NOT NULL,
     effectivetodate                       timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp             timestamp(6) with time zone NOT NULL,
@@ -3555,7 +3555,7 @@ CREATE TABLE product.productxclassificationsecuritytoken
 
 CREATE TABLE product.productxproduct
 (
-    productxproductid             UUID                        NOT NULL,
+    productxproductid             UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -3581,7 +3581,7 @@ CREATE TABLE product.productxproduct
 
 CREATE TABLE product.productxproductsecuritytoken
 (
-    productxproductsecuritytokenid UUID                        NOT NULL,
+    productxproductsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate              timestamp(6) with time zone NOT NULL,
     effectivetodate                timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp      timestamp(6) with time zone NOT NULL,
@@ -3609,7 +3609,7 @@ CREATE TABLE product.productxproductsecuritytoken
 
 CREATE TABLE product.productxproducttype
 (
-    productxproducttypeid         UUID                        NOT NULL,
+    productxproducttypeid         UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -3635,7 +3635,7 @@ CREATE TABLE product.productxproducttype
 
 CREATE TABLE product.productxproducttypesecuritytoken
 (
-    productxproducttypesecuritytokenid UUID                        NOT NULL,
+    productxproducttypesecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                  timestamp(6) with time zone NOT NULL,
     effectivetodate                    timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp          timestamp(6) with time zone NOT NULL,
@@ -3663,7 +3663,7 @@ CREATE TABLE product.productxproducttypesecuritytoken
 
 CREATE TABLE product.productxresourceitem
 (
-    productxresourceitemid        UUID                        NOT NULL,
+    productxresourceitemid        UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -3689,7 +3689,7 @@ CREATE TABLE product.productxresourceitem
 
 CREATE TABLE product.productxresourceitemsecuritytoken
 (
-    productxresourceitemsecuritytokenid UUID                        NOT NULL,
+    productxresourceitemsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                   timestamp(6) with time zone NOT NULL,
     effectivetodate                     timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp           timestamp(6) with time zone NOT NULL,
@@ -3837,7 +3837,7 @@ CREATE TABLE public.securityhierarchyparents
 
 CREATE TABLE resource.resourceitem
 (
-    resourceitemid                UUID                        NOT NULL,
+    resourceitemid                UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -3860,7 +3860,7 @@ CREATE TABLE resource.resourceitem
 
 CREATE TABLE resource.resourceitemdata
 (
-    resourceitemdataid            UUID                        NOT NULL,
+    resourceitemdataid            UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -3884,7 +3884,7 @@ CREATE TABLE resource.resourceitemdata
 
 CREATE TABLE resource.resourceitemdatasecuritytoken
 (
-    resourceitemdatasecuritytokenid UUID                        NOT NULL,
+    resourceitemdatasecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate               timestamp(6) with time zone NOT NULL,
     effectivetodate                 timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp       timestamp(6) with time zone NOT NULL,
@@ -3912,7 +3912,7 @@ CREATE TABLE resource.resourceitemdatasecuritytoken
 
 CREATE TABLE resource.resourceitemdataxclassification
 (
-    resourceitemdataxclassificationid UUID                        NOT NULL,
+    resourceitemdataxclassificationid UUID                        NOT NULL primary key ,
     effectivefromdate                 timestamp(6) with time zone NOT NULL,
     effectivetodate                   timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp         timestamp(6) with time zone NOT NULL,
@@ -3937,7 +3937,7 @@ CREATE TABLE resource.resourceitemdataxclassification
 
 CREATE TABLE resource.resourceitemdataxclassificationsecuritytoken
 (
-    resourceitemdataxclassificationsecuritytokenid UUID                        NOT NULL,
+    resourceitemdataxclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                              timestamp(6) with time zone NOT NULL,
     effectivetodate                                timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                      timestamp(6) with time zone NOT NULL,
@@ -3965,7 +3965,7 @@ CREATE TABLE resource.resourceitemdataxclassificationsecuritytoken
 
 CREATE TABLE resource.resourceitemsecuritytoken
 (
-    resourceitemsecuritytokenid   UUID                        NOT NULL,
+    resourceitemsecuritytokenid   UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -3993,7 +3993,7 @@ CREATE TABLE resource.resourceitemsecuritytoken
 
 CREATE TABLE resource.resourceitemtype
 (
-    resourceitemtypeid            UUID                        NOT NULL,
+    resourceitemtypeid            UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4017,7 +4017,7 @@ CREATE TABLE resource.resourceitemtype
 
 CREATE TABLE resource.resourceitemtypesecuritytoken
 (
-    resourceitemtypesecuritytokenid UUID                        NOT NULL,
+    resourceitemtypesecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate               timestamp(6) with time zone NOT NULL,
     effectivetodate                 timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp       timestamp(6) with time zone NOT NULL,
@@ -4045,7 +4045,7 @@ CREATE TABLE resource.resourceitemtypesecuritytoken
 
 CREATE TABLE resource.resourceitemxclassification
 (
-    resourceitemxclassificationid UUID                        NOT NULL,
+    resourceitemxclassificationid UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4070,7 +4070,7 @@ CREATE TABLE resource.resourceitemxclassification
 
 CREATE TABLE resource.resourceitemxclassificationsecuritytoken
 (
-    resourceitemxclassificationsecuritytokenid UUID                        NOT NULL,
+    resourceitemxclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                          timestamp(6) with time zone NOT NULL,
     effectivetodate                            timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                  timestamp(6) with time zone NOT NULL,
@@ -4098,7 +4098,7 @@ CREATE TABLE resource.resourceitemxclassificationsecuritytoken
 
 CREATE TABLE resource.resourceitemxresourceitem
 (
-    resourceitemxresourceitemid   UUID                        NOT NULL,
+    resourceitemxresourceitemid   UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4124,7 +4124,7 @@ CREATE TABLE resource.resourceitemxresourceitem
 
 CREATE TABLE resource.resourceitemxresourceitemsecuritytoken
 (
-    resourceitemxresourceitemsecuritytokenid UUID                        NOT NULL,
+    resourceitemxresourceitemsecuritytokenid UUID                        NOT NULL  primary key ,
     effectivefromdate                        timestamp(6) with time zone NOT NULL,
     effectivetodate                          timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                timestamp(6) with time zone NOT NULL,
@@ -4152,7 +4152,7 @@ CREATE TABLE resource.resourceitemxresourceitemsecuritytoken
 
 CREATE TABLE resource.resourceitemxresourceitemtype
 (
-    resourceitemxresourceitemtypeid UUID                        NOT NULL,
+    resourceitemxresourceitemtypeid UUID                        NOT NULL  primary key ,
     effectivefromdate               timestamp(6) with time zone NOT NULL,
     effectivetodate                 timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp       timestamp(6) with time zone NOT NULL,
@@ -4178,7 +4178,7 @@ CREATE TABLE resource.resourceitemxresourceitemtype
 
 CREATE TABLE resource.resourceitemxresourceitemtypesecuritytoken
 (
-    resourceitemxresourceitemtypesecuritytokenid UUID                        NOT NULL,
+    resourceitemxresourceitemtypesecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                            timestamp(6) with time zone NOT NULL,
     effectivetodate                              timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                    timestamp(6) with time zone NOT NULL,
@@ -4206,7 +4206,7 @@ CREATE TABLE resource.resourceitemxresourceitemtypesecuritytoken
 
 CREATE TABLE rules.rules
 (
-    rulesid                       UUID                        NOT NULL,
+    rulesid                       UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4230,7 +4230,7 @@ CREATE TABLE rules.rules
 
 CREATE TABLE rules.rulessecuritytoken
 (
-    rulessecuritytokenid          UUID                        NOT NULL,
+    rulessecuritytokenid          UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4258,7 +4258,7 @@ CREATE TABLE rules.rulessecuritytoken
 
 CREATE TABLE rules.rulestype
 (
-    rulestypeid                   UUID                        NOT NULL,
+    rulestypeid                   UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4282,7 +4282,7 @@ CREATE TABLE rules.rulestype
 
 CREATE TABLE rules.rulestypessecuritytoken
 (
-    rulestypessecuritytokenid     UUID                        NOT NULL,
+    rulestypessecuritytokenid     UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4310,7 +4310,7 @@ CREATE TABLE rules.rulestypessecuritytoken
 
 CREATE TABLE rules.rulestypexclassification
 (
-    rulestypexclassificationid    UUID                        NOT NULL,
+    rulestypexclassificationid    UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4335,7 +4335,7 @@ CREATE TABLE rules.rulestypexclassification
 
 CREATE TABLE rules.rulestypexclassificationsecuritytoken
 (
-    rulestypexclassificationsecuritytokenid UUID                        NOT NULL,
+    rulestypexclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                       timestamp(6) with time zone NOT NULL,
     effectivetodate                         timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp               timestamp(6) with time zone NOT NULL,
@@ -4363,7 +4363,7 @@ CREATE TABLE rules.rulestypexclassificationsecuritytoken
 
 CREATE TABLE rules.rulestypexresourceitem
 (
-    rulestypexresourceitemid      UUID                        NOT NULL,
+    rulestypexresourceitemid      UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4389,7 +4389,7 @@ CREATE TABLE rules.rulestypexresourceitem
 
 CREATE TABLE rules.rulestypexresourceitemsecuritytoken
 (
-    rulestypexresourceitemsecuritytokenid UUID                        NOT NULL,
+    rulestypexresourceitemsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                     timestamp(6) with time zone NOT NULL,
     effectivetodate                       timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp             timestamp(6) with time zone NOT NULL,
@@ -4417,7 +4417,7 @@ CREATE TABLE rules.rulestypexresourceitemsecuritytoken
 
 CREATE TABLE rules.rulesxarrangement
 (
-    rulesxarrangementsid          UUID                        NOT NULL,
+    rulesxarrangementsid          UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4443,7 +4443,7 @@ CREATE TABLE rules.rulesxarrangement
 
 CREATE TABLE rules.rulesxarrangementssecuritytoken
 (
-    rulesxarrangementssecuritytokenid UUID                        NOT NULL,
+    rulesxarrangementssecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                 timestamp(6) with time zone NOT NULL,
     effectivetodate                   timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp         timestamp(6) with time zone NOT NULL,
@@ -4471,7 +4471,7 @@ CREATE TABLE rules.rulesxarrangementssecuritytoken
 
 CREATE TABLE rules.rulesxclassification
 (
-    rulesxclassificationid        UUID                        NOT NULL,
+    rulesxclassificationid        UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4496,7 +4496,7 @@ CREATE TABLE rules.rulesxclassification
 
 CREATE TABLE rules.rulesxclassificationsecuritytoken
 (
-    rulesxclassificationsecuritytokenid UUID                        NOT NULL,
+    rulesxclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                   timestamp(6) with time zone NOT NULL,
     effectivetodate                     timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp           timestamp(6) with time zone NOT NULL,
@@ -4524,7 +4524,7 @@ CREATE TABLE rules.rulesxclassificationsecuritytoken
 
 CREATE TABLE rules.rulesxinvolvedparty
 (
-    rulesxinvolvedpartyid         UUID                        NOT NULL,
+    rulesxinvolvedpartyid         UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4550,7 +4550,7 @@ CREATE TABLE rules.rulesxinvolvedparty
 
 CREATE TABLE rules.rulesxinvolvedpartysecuritytoken
 (
-    rulesxinvolvedpartysecuritytokenid UUID                        NOT NULL,
+    rulesxinvolvedpartysecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                  timestamp(6) with time zone NOT NULL,
     effectivetodate                    timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp          timestamp(6) with time zone NOT NULL,
@@ -4578,7 +4578,7 @@ CREATE TABLE rules.rulesxinvolvedpartysecuritytoken
 
 CREATE TABLE rules.rulesxproduct
 (
-    rulesxproductid               UUID                        NOT NULL,
+    rulesxproductid               UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4604,7 +4604,7 @@ CREATE TABLE rules.rulesxproduct
 
 CREATE TABLE rules.rulesxproductsecuritytoken
 (
-    rulesxproductsecuritytokenid  UUID                        NOT NULL,
+    rulesxproductsecuritytokenid  UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4632,7 +4632,7 @@ CREATE TABLE rules.rulesxproductsecuritytoken
 
 CREATE TABLE rules.rulesxresourceitem
 (
-    rulesxresourceitemid          UUID                        NOT NULL,
+    rulesxresourceitemid          UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4658,7 +4658,7 @@ CREATE TABLE rules.rulesxresourceitem
 
 CREATE TABLE rules.rulesxresourceitemsecuritytoken
 (
-    rulesxresourceitemsecuritytokenid UUID                        NOT NULL,
+    rulesxresourceitemsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                 timestamp(6) with time zone NOT NULL,
     effectivetodate                   timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp         timestamp(6) with time zone NOT NULL,
@@ -4686,7 +4686,7 @@ CREATE TABLE rules.rulesxresourceitemsecuritytoken
 
 CREATE TABLE rules.rulesxrules
 (
-    rulesxrulesid                 UUID                        NOT NULL,
+    rulesxrulesid                 UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4712,7 +4712,7 @@ CREATE TABLE rules.rulesxrules
 
 CREATE TABLE rules.rulesxrulessecuritytoken
 (
-    rulesxrulessecuritytokenid    UUID                        NOT NULL,
+    rulesxrulessecuritytokenid    UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4740,7 +4740,7 @@ CREATE TABLE rules.rulesxrulessecuritytoken
 
 CREATE TABLE rules.rulesxrulestype
 (
-    rulesxrulestypeid             UUID                        NOT NULL,
+    rulesxrulestypeid             UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4766,7 +4766,7 @@ CREATE TABLE rules.rulesxrulestype
 
 CREATE TABLE rules.rulesxrulestypesecuritytoken
 (
-    rulesxrulestypesecuritytokenid UUID                        NOT NULL,
+    rulesxrulestypesecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate              timestamp(6) with time zone NOT NULL,
     effectivetodate                timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp      timestamp(6) with time zone NOT NULL,
@@ -4810,7 +4810,7 @@ CREATE TABLE security.securityhierarchy
 
 CREATE TABLE security.securitytoken
 (
-    securitytokenid                  UUID                        NOT NULL,
+    securitytokenid                  UUID                        NOT NULL primary key ,
     effectivefromdate                timestamp(6) with time zone NOT NULL,
     effectivetodate                  timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp        timestamp(6) with time zone NOT NULL,
@@ -4836,7 +4836,7 @@ CREATE TABLE security.securitytoken
 
 CREATE TABLE security.securitytokenssecuritytoken
 (
-    securitytokenaccessid         UUID                        NOT NULL,
+    securitytokenaccessid         UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4864,7 +4864,7 @@ CREATE TABLE security.securitytokenssecuritytoken
 
 CREATE TABLE security.securitytokensxsecuritytokensecuritytoken
 (
-    securitytokenxsecuritytokensecuritytokenid UUID                        NOT NULL,
+    securitytokenxsecuritytokensecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                          timestamp(6) with time zone NOT NULL,
     effectivetodate                            timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                  timestamp(6) with time zone NOT NULL,
@@ -4892,7 +4892,7 @@ CREATE TABLE security.securitytokensxsecuritytokensecuritytoken
 
 CREATE TABLE security.securitytokenxclassification
 (
-    securitytokenxclassificationid UUID                        NOT NULL,
+    securitytokenxclassificationid UUID                        NOT NULL primary key ,
     effectivefromdate              timestamp(6) with time zone NOT NULL,
     effectivetodate                timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp      timestamp(6) with time zone NOT NULL,
@@ -4917,7 +4917,7 @@ CREATE TABLE security.securitytokenxclassification
 
 CREATE TABLE security.securitytokenxclassificationsecuritytoken
 (
-    securitytokenxclassificationsecuritytokenid UUID                        NOT NULL,
+    securitytokenxclassificationsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate                           timestamp(6) with time zone NOT NULL,
     effectivetodate                             timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp                   timestamp(6) with time zone NOT NULL,
@@ -4945,7 +4945,7 @@ CREATE TABLE security.securitytokenxclassificationsecuritytoken
 
 CREATE TABLE security.securitytokenxsecuritytoken
 (
-    securitytokenxsecuritytokenid UUID                        NOT NULL,
+    securitytokenxsecuritytokenid UUID                        NOT NULL primary key ,
     effectivefromdate             timestamp(6) with time zone NOT NULL,
     effectivetodate               timestamp(6) with time zone NOT NULL,
     warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
@@ -4971,7 +4971,7 @@ CREATE TABLE security.securitytokenxsecuritytoken
 
 CREATE TABLE "time".daynames
 (
-    daynameid                    integer                NOT NULL,
+    daynameid                    integer                NOT NULL primary key ,
     dayabbreviation              character varying(50)  NOT NULL,
     daybusinessdayclassification character varying(50)  NOT NULL,
     dayisbusinessday             INTEGER                NOT NULL,
@@ -4989,7 +4989,7 @@ CREATE TABLE "time".daynames
 
 CREATE TABLE "time".dayparts
 (
-    daypartid          integer                NOT NULL,
+    daypartid          integer                NOT NULL primary key ,
     daypartdescription character varying(100) NOT NULL,
     daypartname        character varying(100) NOT NULL,
     daypartsortorder   integer                NOT NULL
@@ -5003,7 +5003,7 @@ CREATE TABLE "time".dayparts
 
 CREATE TABLE "time".days
 (
-    dayid                        integer                     NOT NULL,
+    dayid                        integer                     NOT NULL primary key ,
     dayddmmyyyydescription       character varying(50)       NOT NULL,
     dayddmmyyyyhyphendescription character varying(50)       NOT NULL,
     dayddmmyyyyslashdescription  character varying(50)       NOT NULL,
@@ -5036,7 +5036,7 @@ CREATE TABLE "time".days
 
 CREATE TABLE "time".halfhourdayparts
 (
-    halfhourdaypartid integer NOT NULL,
+    halfhourdaypartid integer NOT NULL primary key ,
     hourid            integer NOT NULL,
     minuteid          integer NOT NULL,
     daypartid         integer NOT NULL
@@ -5067,7 +5067,7 @@ CREATE TABLE "time".halfhours
 
 CREATE TABLE "time".hours
 (
-    hourid                  integer               NOT NULL,
+    hourid                  integer               NOT NULL primary key ,
     ampmdesc                character varying(5)  NOT NULL,
     previoushourid          integer               NOT NULL,
     twelvehourclockdesc     character varying(10) NOT NULL,
@@ -5082,7 +5082,7 @@ CREATE TABLE "time".hours
 
 CREATE TABLE "time".monthofyear
 (
-    monthofyearid           integer               NOT NULL,
+    monthofyearid           integer               NOT NULL primary key ,
     monthofyearabbreviation character varying(50) NOT NULL,
     monthofyearname         character varying(50) NOT NULL,
     monthofyearshortname    character varying(50) NOT NULL,
@@ -5097,7 +5097,7 @@ CREATE TABLE "time".monthofyear
 
 CREATE TABLE "time".months
 (
-    monthid                  integer               NOT NULL,
+    monthid                  integer               NOT NULL primary key ,
     lastmonthid              integer               NOT NULL,
     lastquarterid            integer               NOT NULL,
     lastyearid               integer               NOT NULL,
@@ -5121,7 +5121,7 @@ CREATE TABLE "time".months
 
 CREATE TABLE "time".publicholidays
 (
-    publicholidayid   integer                NOT NULL,
+    publicholidayid   integer                NOT NULL primary key ,
     dayid             integer                NOT NULL,
     publicholidayname character varying(250) NOT NULL,
     publicholidaytype character varying(250) NOT NULL
@@ -5135,7 +5135,7 @@ CREATE TABLE "time".publicholidays
 
 CREATE TABLE "time".quarters
 (
-    quarterid               integer               NOT NULL,
+    quarterid               integer               NOT NULL primary key ,
     lastquarterid           smallint              NOT NULL,
     lastyearid              smallint              NOT NULL,
     quarterdescription      character varying(50) NOT NULL,
@@ -5234,7 +5234,7 @@ CREATE TABLE "time".trans_ytd
 
 CREATE TABLE "time".weeks
 (
-    weekid               integer               NOT NULL,
+    weekid               integer               NOT NULL primary key ,
     monthid              integer               NOT NULL,
     quarterid            integer               NOT NULL,
     weekdescription      character varying(50) NOT NULL,
@@ -5252,7 +5252,7 @@ CREATE TABLE "time".weeks
 
 CREATE TABLE "time".years
 (
-    yearid       smallint               NOT NULL,
+    yearid       smallint               NOT NULL primary key ,
     century      smallint               NOT NULL,
     lastyearid   smallint               NOT NULL,
     leapyearflag smallint               NOT NULL,

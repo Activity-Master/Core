@@ -163,22 +163,15 @@ public class ResourceItem
   {
     ResourceItemData rid = new ResourceItemData();
     return rid.builder(session)
-               .inActiveRange()
-               .inDateRange()
+               //.inActiveRange()
+             //  .inDateRange()
                .where(ResourceItemData_.resource, Equals, this)
-               .latestFirst()
-               .setReturnFirst(true)
+             //  .latestFirst()
+            //   .setReturnFirst(true)
                .selectColumn(ResourceItemData_.resourceItemData)
                .get(byte[].class)
                .onItem()
-               .ifNotNull()
-               .transform(data -> unzip(data))
-               .onItem()
-               .ifNull()
-               .continueWith(() -> {
-                log.error("No resource item data exists");
-                return new byte[]{};
-              });
+               .transform(data -> unzip(data));
   }
 
   @Override
@@ -235,7 +228,17 @@ public class ResourceItem
   }
 
 
-  @Override
+  //@Override
+		
+		/**
+			* @deprecated
+			* @param session
+			* @param data
+			* @param system
+			* @param identityToken
+			* @return
+			*/
+		@Deprecated
   public Uni<Void> updateData(Mutiny.Session session, byte[] data, ISystems<?, ?> system, UUID... identityToken)
   {
     if (data == null || data.length == 0)

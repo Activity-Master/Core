@@ -51,6 +51,8 @@ import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService.ActivateFlagSystemName;
 import static com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService.getISystem;
@@ -64,6 +66,8 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.S
 public class SystemsService
     implements ISystemsService<SystemsService>
 {
+  // Local cache: key = enterpriseId + '|' + systemName, value = Systems UUID
+  private final Map<String, UUID> systemKeyToId = new ConcurrentHashMap<>();
   @Inject
   private IClassificationService<?> classificationService;
 
@@ -109,16 +113,55 @@ public class SystemsService
   @Override
   public Uni<ISystems<?, ?>> findSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise, String systemName, UUID... identityToken)
   {
-    Systems search = new Systems();
-    return (Uni) search.builder(session)
+    UUID enterpriseId = null;
+    if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
+      enterpriseId = ent.getId();
+    }
+    String key = enterpriseId + "|" + systemName;
+    UUID cachedId = systemKeyToId.get(key);
+    if (cachedId != null) {
+      log.trace("🔁 Systems cache hit for key '{}': {} — loading by UUID", key, cachedId);
+      return (Uni) getSystemById(session, cachedId)
+        .flatMap(found -> {
+          if (found != null) {
+            return Uni.createFrom().item(found);
+          }
+          // Stale mapping: remove and fallback to name+enterprise query
+          systemKeyToId.remove(key);
+          return (Uni) new Systems().builder(session)
+                          .withName(systemName)
+                          .withEnterprise(enterprise)
+                          .inActiveRange()
+                          .inDateRange()
+                          //.canRead(enterprise, identityToken)
+                          .get()
+                          .invoke(sys -> {
+                            if (sys != null && sys.getId() != null) {
+                              systemKeyToId.put(key, (UUID) sys.getId());
+                            }
+                          });
+        });
+    }
+
+    // Cold path: query by name+enterprise and remember UUID
+    return (Uni) new Systems().builder(session)
                      .withName(systemName)
                      .withEnterprise(enterprise)
                      .inActiveRange()
                      .inDateRange()
                      //.canRead(enterprise, identityToken)
-                     .get();
-                     //.onFailure()
-                     //.invoke(error -> log.error("Error finding system by name {}: {}", systemName, error.getMessage(), error));
+                     .get()
+                     .invoke(sys -> {
+                       if (sys != null && sys.getId() != null) {
+                         systemKeyToId.put(key, (UUID) sys.getId());
+                       }
+                     });
+  }
+
+  // UUID-based lookup to leverage L2 cache (@Cacheable on entity + L2 cache enabled)
+  public Uni<ISystems<?, ?>> getSystemById(Mutiny.Session session, UUID id) {
+    //noinspection unchecked
+    return (Uni) session.find(Systems.class, id);
   }
 
   //@Transactional()

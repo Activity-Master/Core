@@ -29,6 +29,12 @@ import java.util.UUID;
 public class RulesService
 		implements IRulesService<RulesService>
 {
+	private final java.util.Map<String, java.util.UUID> rulesTypeKeyToId = new java.util.concurrent.ConcurrentHashMap<>();
+
+	// UUID-based lookup to leverage Hibernate 2nd-level cache
+	public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRulesType<?, ?>> getRulesTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id) {
+		return (io.smallrye.mutiny.Uni) session.find(com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType.class, id);
+	}
 	@Inject
 	private IClassificationService<?> classificationService;
 
@@ -210,13 +216,49 @@ public class RulesService
 	public Uni<IRulesType<?, ?>> findRulesTypes(Mutiny.Session session, String rulesType, ISystems<?, ?> system, UUID... identityToken)
 	{
 		var enterprise = system.getEnterprise();
+		java.util.UUID enterpriseId = null;
+		java.util.UUID systemId = null;
+		if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
+			enterpriseId = ent.getId();
+		}
+		if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys) {
+			systemId = sys.getId();
+		}
+		String key = enterpriseId + "|" + systemId + "|" + rulesType;
+		java.util.UUID cachedId = rulesTypeKeyToId.get(key);
+		if (cachedId != null) {
+			log.trace("🔁 RulesType cache hit for key '{}': {} — loading by UUID", key, cachedId);
+			return (Uni) getRulesTypeById(session, cachedId)
+				.flatMap(found -> {
+					if (found != null) {
+						return Uni.createFrom().item(found);
+					}
+					rulesTypeKeyToId.remove(key);
+					return (Uni) new RulesType().builder(session)
+										      .withName(rulesType)
+										      .withEnterprise(enterprise)
+										      .inActiveRange()
+										      .inDateRange()
+										      .get()
+										      .invoke(res -> {
+										        if (res != null && res.getId() != null) {
+										          rulesTypeKeyToId.put(key, (java.util.UUID) res.getId());
+										        }
+										      });
+				});
+		}
 		return (Uni) new RulesType().builder(session)
-		                      .withName(rulesType)
-		                      .withEnterprise(enterprise)
-		                      .inActiveRange()
-		                      .inDateRange()
-		                      //      .canRead(system, identityToken)
-		                      .get();
+							      .withName(rulesType)
+							      .withEnterprise(enterprise)
+							      .inActiveRange()
+							      .inDateRange()
+							      //      .canRead(system, identityToken)
+							      .get()
+							      .invoke(res -> {
+							        if (res != null && res.getId() != null) {
+							          rulesTypeKeyToId.put(key, (java.util.UUID) res.getId());
+							        }
+							      });
 	}
 
 	@Override

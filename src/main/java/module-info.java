@@ -31,6 +31,8 @@ module com.guicedee.activitymaster.fsdm {
   requires jakarta.validation;
 
   requires java.naming;
+		
+		requires com.formdev.flatlaf;
 
   requires java.logging;
 

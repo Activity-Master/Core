@@ -47,6 +47,8 @@ import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.time.Duration;
 import java.util.UUID;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.SecurityTokenClassifications.*;
@@ -60,6 +62,9 @@ public class ClassificationService
 
   @Inject
   private ClassificationsDataConceptService dataConceptService;
+
+  // Local cache: key = enterpriseId + '|' + systemId + '|' + classificationName, value = Classification UUID
+  private final Map<String, UUID> classificationKeyToId = new ConcurrentHashMap<>();
 
   public IClassification<?, ?> get()
   {
@@ -276,10 +281,45 @@ public class ClassificationService
         name, concept != null ? concept : "null", system.getName(), session.hashCode());
 
     var enterprise = system.getEnterprise();
-    Classification search = new Classification();
-    log.trace("📋 Preparing classification query for name: '{}', enterprise: '{}'",
-        name, enterprise.getName());
 
+    // Build cache key: enterpriseId|systemId|name
+    UUID enterpriseId = null;
+    UUID systemId = null;
+    if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
+      enterpriseId = ent.getId();
+    }
+    if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys) {
+      systemId = sys.getId();
+    }
+    String key = enterpriseId + "|" + systemId + "|" + name;
+    UUID cachedId = classificationKeyToId.get(key);
+    if (cachedId != null) {
+      log.trace("🔁 Classification cache hit for key '{}': {} — loading by UUID", key, cachedId);
+      return (Uni) getClassificationById(session, cachedId)
+        .flatMap(found -> {
+          if (found != null) {
+            return Uni.createFrom().item(found);
+          }
+          // Stale mapping: remove and fallback to name+enterprise+system query
+          classificationKeyToId.remove(key);
+          Classification search = new Classification();
+          return (Uni) search.builder(session)
+                     .withName(name)
+                     .inActiveRange()
+                     .inDateRange()
+                     //   .canRead(system, identityToken)
+                     .withEnterprise(enterprise)
+                     .get()
+                     .invoke(result -> {
+                       if (result != null && result.getId() != null) {
+                         classificationKeyToId.put(key, (UUID) result.getId());
+                       }
+                     });
+        });
+    }
+
+    // Cold path: query by name+enterprise and remember UUID
+    Classification search = new Classification();
     return (Uni) search.builder(session)
                      .withName(name)
                      .inActiveRange()
@@ -287,21 +327,17 @@ public class ClassificationService
                      //   .canRead(system, identityToken)
                      .withEnterprise(enterprise)
                      .get()
-                     .onItem()
                      .invoke(result -> {
-                       if (result != null)
-                       {
-                         log.trace("✅ Found classification '{}' with ID: {}", name, result.getId());
+                       if (result != null && result.getId() != null) {
+                         classificationKeyToId.put(key, (UUID) result.getId());
                        }
-                       else
-                       {
-                         log.warn("⚠️ Classification '{}' not found", name);
-                       }
-                     })
-		               /*.onFailure().invoke(findError ->
-		                   log.error("❌ Error finding classification '{}': {}", 
-		                       name, findError.getMessage(), findError))*/
-        ;
+                     });
+  }
+
+  // UUID-based lookup to leverage L2 cache (@Cacheable on entity + L2 cache enabled)
+  public Uni<IClassification<?, ?>> getClassificationById(Mutiny.Session session, UUID id) {
+    //noinspection unchecked
+    return (Uni) session.find(Classification.class, id);
   }
 
   //@Transactional()
