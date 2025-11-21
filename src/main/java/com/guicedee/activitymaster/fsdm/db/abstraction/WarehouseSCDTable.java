@@ -131,7 +131,7 @@ public abstract class WarehouseSCDTable<
     }
 
     @SuppressWarnings("unchecked")
-    public J setActiveFlagID(IActiveFlag<?, ?> activeFlagID)
+    public @org.jspecify.annotations.NonNull J setActiveFlagID(IActiveFlag<?, ?> activeFlagID)
     {
         this.activeFlagID = (ActiveFlag) activeFlagID;
         return (J) this;
@@ -144,7 +144,7 @@ public abstract class WarehouseSCDTable<
     }
 
     @SuppressWarnings("unchecked")
-    public J setSystemID(ISystems<?, ?> systemID)
+    public @org.jspecify.annotations.NonNull J setSystemID(ISystems<?, ?> systemID)
     {
         this.systemID = (Systems) systemID;
         return (J) this;

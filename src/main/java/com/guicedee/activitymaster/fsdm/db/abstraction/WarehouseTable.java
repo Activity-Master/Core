@@ -78,7 +78,7 @@ public abstract class WarehouseTable<
 		return this.originalSourceSystemUniqueID;
 	}
 
-	public J setOriginalSourceSystemUniqueID(@NotNull UUID originalSourceSystemUniqueID)
+	public @org.jspecify.annotations.NonNull J setOriginalSourceSystemUniqueID(@NotNull UUID originalSourceSystemUniqueID)
 	{
 		if(originalSourceSystemUniqueID == null)
 		{
@@ -95,13 +95,13 @@ public abstract class WarehouseTable<
 	}
 
 	@SuppressWarnings("unchecked")
-	public J setOriginalSourceSystemID(UUID originalSourceSystemID)
+	public @org.jspecify.annotations.NonNull J setOriginalSourceSystemID(UUID originalSourceSystemID)
 	{
 		this.originalSourceSystemID = originalSourceSystemID;
 		return (J)this;
 	}
 
-	public J setOriginalSourceSystemID(ISystems<?, ?> originalSourceSystemID)
+	public @org.jspecify.annotations.NonNull J setOriginalSourceSystemID(ISystems<?, ?> originalSourceSystemID)
 	{
 		if(originalSourceSystemID == null)
 		{
@@ -116,7 +116,7 @@ public abstract class WarehouseTable<
 		return this.enterpriseID;
 	}
 
-	public J setEnterpriseID(IEnterprise<?, ?> enterpriseID)
+	public @org.jspecify.annotations.NonNull J setEnterpriseID(IEnterprise<?, ?> enterpriseID)
 	{
 		this.enterpriseID = (Enterprise) enterpriseID;
 		return (J) this;

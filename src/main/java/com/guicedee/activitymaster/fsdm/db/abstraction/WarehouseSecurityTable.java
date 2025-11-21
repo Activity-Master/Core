@@ -94,7 +94,7 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
   }
 
   @Override
-  public J setCreateAllowed(@NotNull boolean createAllowed)
+  public @org.jspecify.annotations.NonNull J setCreateAllowed(@NotNull boolean createAllowed)
   {
     this.createAllowed = createAllowed;
     return (J) this;
@@ -107,7 +107,7 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
   }
 
   @Override
-  public J setUpdateAllowed(@NotNull boolean updateAllowed)
+  public @org.jspecify.annotations.NonNull J setUpdateAllowed(@NotNull boolean updateAllowed)
   {
     this.updateAllowed = updateAllowed;
     return (J) this;
@@ -120,7 +120,7 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
   }
 
   @Override
-  public J setDeleteAllowed(@NotNull boolean deleteAllowed)
+  public @org.jspecify.annotations.NonNull J setDeleteAllowed(@NotNull boolean deleteAllowed)
   {
     this.deleteAllowed = deleteAllowed;
     return (J) this;
@@ -133,7 +133,7 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
   }
 
   @Override
-  public J setReadAllowed(@NotNull boolean readAllowed)
+  public @org.jspecify.annotations.NonNull J setReadAllowed(@NotNull boolean readAllowed)
   {
     this.readAllowed = readAllowed;
     return (J) this;
@@ -146,7 +146,7 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
   }
 
   @Override
-  public J setSecurityTokenID(ISecurityToken<?, ?> securityTokenID)
+  public @org.jspecify.annotations.NonNull J setSecurityTokenID(ISecurityToken<?, ?> securityTokenID)
   {
     this.securityTokenID = (SecurityToken) securityTokenID;
     return (J) this;

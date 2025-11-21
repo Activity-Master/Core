@@ -61,7 +61,7 @@ public abstract class WarehouseClassificationRelationshipTable<
 	}
 	
 	@Override
-	public J setClassificationID(IClassification classificationID)
+	public @org.jspecify.annotations.NonNull J setClassificationID(IClassification classificationID)
 	{
 		this.classificationID = (Classification) classificationID;
 		return (J) this;

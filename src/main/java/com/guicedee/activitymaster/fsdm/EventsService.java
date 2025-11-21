@@ -104,7 +104,7 @@ public class EventsService
                        .chain(persistedEvent -> {
                            // Chain the createDefaultSecurity operation properly
                            return persistedEvent.createDefaultSecurity(session, system, identityToken)
-                               .onItem().invoke(() -> log.info("Security setup completed successfully for event"))
+                               .onItem().invoke(() -> log.trace("Security setup completed successfully for event"))
                                .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for event: " + error.getMessage()))
                                .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
                                .chain(() -> persistedEvent.addEventTypes(session, eventType, "", NoClassification.toString(), system, identityToken)

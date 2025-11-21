@@ -94,7 +94,7 @@ public abstract class SCDEntity<J extends SCDEntity<J, Q, I>, Q extends QueryBui
    */
   @NotNull
   @SuppressWarnings("all")
-  public J setEffectiveFromDate(@NotNull OffsetDateTime effectiveFromDate)
+  public @org.jspecify.annotations.NonNull J setEffectiveFromDate(@NotNull OffsetDateTime effectiveFromDate)
   {
     this.effectiveFromDate = effectiveFromDate;
     return (J) this;
@@ -119,7 +119,7 @@ public abstract class SCDEntity<J extends SCDEntity<J, Q, I>, Q extends QueryBui
    */
   @NotNull
   @SuppressWarnings("all")
-  public J setEffectiveToDate(@NotNull OffsetDateTime effectiveToDate)
+  public @org.jspecify.annotations.NonNull J setEffectiveToDate(@NotNull OffsetDateTime effectiveToDate)
   {
     this.effectiveToDate = effectiveToDate;
     return (J) this;
@@ -143,7 +143,7 @@ public abstract class SCDEntity<J extends SCDEntity<J, Q, I>, Q extends QueryBui
    */
   @NotNull
   @SuppressWarnings("all")
-  public J setWarehouseCreatedTimestamp(@NotNull OffsetDateTime warehouseCreatedTimestamp)
+  public @org.jspecify.annotations.NonNull J setWarehouseCreatedTimestamp(@NotNull OffsetDateTime warehouseCreatedTimestamp)
   {
     this.warehouseCreatedTimestamp = warehouseCreatedTimestamp;
     return (J) this;
@@ -167,7 +167,7 @@ public abstract class SCDEntity<J extends SCDEntity<J, Q, I>, Q extends QueryBui
    */
   @NotNull
   @SuppressWarnings("all")
-  public J setWarehouseLastUpdatedTimestamp(@NotNull OffsetDateTime warehouseLastUpdatedTimestamp)
+  public @org.jspecify.annotations.NonNull J setWarehouseLastUpdatedTimestamp(@NotNull OffsetDateTime warehouseLastUpdatedTimestamp)
   {
     this.warehouseLastUpdatedTimestamp = warehouseLastUpdatedTimestamp;
     return (J) this;
