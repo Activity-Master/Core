@@ -5,7 +5,7 @@ import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
 import com.guicedee.activitymaster.fsdm.SystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.HashSet;

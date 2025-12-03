@@ -1,7 +1,7 @@
 package com.guicedee.activitymaster;
 
 import com.guicedee.activitymaster.fsdm.db.ActivityMasterDBModule;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
 import com.guicedee.vertxpersistence.ConnectionBaseInfo;
 import com.guicedee.vertxpersistence.DatabaseModule;
 import com.guicedee.vertxpersistence.annotations.EntityManager;
@@ -12,8 +12,6 @@ import org.testcontainers.containers.Container;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.MountableFile;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Properties;
 
 @EntityManager(value = "ActivityMaster-Test", defaultEm = true)

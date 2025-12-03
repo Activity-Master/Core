@@ -9,7 +9,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.client.IGuiceContext;
-import com.guicedee.guicedinjection.pairing.Pair;
+import com.guicedee.client.utils.Pair;
 import io.smallrye.mutiny.Uni;
 import org.hibernate.reactive.mutiny.Mutiny;
 import org.junit.jupiter.api.*;

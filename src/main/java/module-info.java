@@ -5,7 +5,10 @@ import com.guicedee.activitymaster.fsdm.db.ActivityMasterDBModule;
 import com.guicedee.activitymaster.fsdm.implementations.*;
 import com.guicedee.activitymaster.fsdm.injections.*;
 import com.guicedee.activitymaster.fsdm.systems.*;
-import com.guicedee.guicedinjection.interfaces.*;
+import com.guicedee.client.services.lifecycle.IGuiceConfigurator;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuicePostStartup;
+import com.guicedee.client.services.config.IGuiceScanModuleInclusions;
 
 module com.guicedee.activitymaster.fsdm {
   requires transitive com.guicedee.activitymaster.fsdm.client;
@@ -88,7 +91,7 @@ module com.guicedee.activitymaster.fsdm {
 
   //provides IGuicedHazelcastServerConfig with HazelcastServerConfig;
   //provides com.guicedee.guicedhazelcast.services.IGuicedHazelcastClientConfig with HazelcastClientConfig;
-  provides com.guicedee.guicedinjection.interfaces.IGuiceScanModuleInclusions with ActivityMasterModuleInclusion;
+  provides IGuiceScanModuleInclusions with ActivityMasterModuleInclusion;
 
   provides IGuicePostStartup with ActivityMasterPostStartup;
 

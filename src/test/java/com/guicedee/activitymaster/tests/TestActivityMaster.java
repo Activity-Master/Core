@@ -9,12 +9,12 @@ import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 import com.guicedee.client.IGuiceContext;
+import com.guicedee.client.utils.Pair;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 import org.junit.jupiter.api.*;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
-import com.entityassist.enumerations.ActiveFlag;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -1184,8 +1184,8 @@ public class TestActivityMaster extends TestDatabaseSetup
                                     .chain(() -> partyService.createNameType(session, "DisplayName", "Display Name Type",
                                         (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems<?, ?>) sys))
                                     .chain(() -> partyService.create(session,
-                                        (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems<?, ?>) sys,
-                                        new com.guicedee.guicedinjection.pairing.Pair<>(idType, idValue), true))
+																																																																					(com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems<?, ?>) sys,
+																																																																					new Pair<>(idType, idValue), true))
                                     .chain(created -> partyService.findAllByIdentificationType(session, idType, idValue)
                                                           .invoke(list -> {
                                                             java.util.List<?> l = (java.util.List<?>) list;
@@ -1236,8 +1236,8 @@ public class TestActivityMaster extends TestDatabaseSetup
                                         (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems<?, ?>) sys,
                                         "Person", "Person Type"))
                                     .chain(() -> partyService.create(session,
-                                        (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems<?, ?>) sys,
-                                        new com.guicedee.guicedinjection.pairing.Pair<>(idType, idValue), true))
+																																																																					(com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems<?, ?>) sys,
+																																																																					new Pair<>(idType, idValue), true))
                                     .chain(party -> ((com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedParty<?, ?>) party)
                                                         .addClassification(session, classyName, relValue,
                                                             (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems<?, ?>) sys)

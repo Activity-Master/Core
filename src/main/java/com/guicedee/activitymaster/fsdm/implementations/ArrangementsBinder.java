@@ -3,7 +3,7 @@ package com.guicedee.activitymaster.fsdm.implementations;
 import com.google.inject.*;
 import com.guicedee.activitymaster.fsdm.client.services.IArrangementsService;
 import com.guicedee.activitymaster.fsdm.ArrangementsService;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
 
 public class ArrangementsBinder extends PrivateModule implements IGuiceModule<ArrangementsBinder>
 {

@@ -3,7 +3,7 @@ package com.guicedee.activitymaster.fsdm.implementations;
 import com.google.inject.*;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConceptService;
 import com.guicedee.activitymaster.fsdm.ClassificationsDataConceptService;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
 
 public class ClassificationConceptsBinder extends PrivateModule implements IGuiceModule<ClassificationConceptsBinder>
 {

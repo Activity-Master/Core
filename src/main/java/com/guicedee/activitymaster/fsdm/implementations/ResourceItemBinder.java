@@ -3,7 +3,7 @@ package com.guicedee.activitymaster.fsdm.implementations;
 import com.google.inject.*;
 import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
 import com.guicedee.activitymaster.fsdm.ResourceItemService;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
 
 public class ResourceItemBinder extends PrivateModule implements IGuiceModule<ResourceItemBinder>
 {

@@ -8,7 +8,7 @@ import com.guicedee.activitymaster.fsdm.client.services.ITimeService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 import com.guicedee.activitymaster.fsdm.systems.TimeSystem;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
 
 public class ActivityMasterBinder
 		extends PrivateModule

@@ -3,7 +3,7 @@ package com.guicedee.activitymaster.fsdm.implementations;
 import com.google.inject.*;
 import com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService;
 import com.guicedee.activitymaster.fsdm.InvolvedPartyService;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
 
 public class InvolvedPartiesBinder extends PrivateModule implements IGuiceModule<InvolvedPartiesBinder>
 {

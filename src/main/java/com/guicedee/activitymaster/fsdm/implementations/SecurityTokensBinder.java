@@ -3,7 +3,7 @@ package com.guicedee.activitymaster.fsdm.implementations;
 import com.google.inject.*;
 import com.guicedee.activitymaster.fsdm.SecurityTokenService;
 import com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
 
 public class SecurityTokensBinder extends PrivateModule implements IGuiceModule<SecurityTokensBinder>
 {

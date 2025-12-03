@@ -6,15 +6,14 @@ import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.*;
 import com.guicedee.activitymaster.fsdm.client.services.deserializers.*;
-import com.guicedee.guicedinjection.interfaces.IGuicePostStartup;
+import com.guicedee.client.services.lifecycle.IGuicePostStartup;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-import static com.guicedee.guicedinjection.interfaces.ObjectBinderKeys.*;
+import static com.guicedee.client.implementations.ObjectBinderKeys.*;
 
 @Log4j2
 public class ActivityMasterPostStartup implements IGuicePostStartup<ActivityMasterPostStartup>

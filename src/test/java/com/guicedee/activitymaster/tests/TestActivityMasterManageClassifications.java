@@ -12,6 +12,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.client.IGuiceContext;
+import com.guicedee.client.utils.Pair;
 import io.smallrye.mutiny.Uni;
 import org.hibernate.reactive.mutiny.Mutiny;
 import org.junit.jupiter.api.*;
@@ -165,7 +166,7 @@ public class TestActivityMasterManageClassifications {
             String idValue = "MC-PTY-ID-CL";
             return partyService.createIdentificationType(session, sys, idType, "National Identification")
                 .chain(() -> partyService.createType(session, sys, "Person", "Person Type"))
-                .chain(() -> partyService.create(session, sys, new com.guicedee.guicedinjection.pairing.Pair<>(idType, idValue), true))
+                .chain(() -> partyService.create(session, sys, new Pair<>(idType, idValue), true))
                 .chain(party -> {
                   String classyName = "MC_Classy_Party_1";
                   String value = "IP-VAL-CL-1";

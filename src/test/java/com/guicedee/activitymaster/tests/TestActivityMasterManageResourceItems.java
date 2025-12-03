@@ -12,6 +12,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.produ
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.client.IGuiceContext;
+import com.guicedee.client.utils.Pair;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
@@ -188,7 +189,7 @@ public class TestActivityMasterManageResourceItems {
             String idValue = "MRI-PTY-ID";
             return partyService.createIdentificationType(session, sys, idType, "National Identification")
                 .chain(() -> partyService.createType(session, sys, "Person", "Person Type"))
-                .chain(() -> partyService.create(session, sys, new com.guicedee.guicedinjection.pairing.Pair<>(idType, idValue), true))
+                .chain(() -> partyService.create(session, sys, new Pair<>(idType, idValue), true))
                 .chain(party -> createResource(session, sys, "FileType_MRI", "res-pty-mri")
                     .chain(res -> ((IInvolvedParty<?, ?>) party).addResourceItem(session,
                         com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification.name(), res, "IP-VAL-1", sys)

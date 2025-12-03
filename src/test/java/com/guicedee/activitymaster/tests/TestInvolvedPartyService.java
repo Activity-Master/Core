@@ -7,7 +7,7 @@ import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityM
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.client.IGuiceContext;
-import com.guicedee.guicedinjection.pairing.Pair;
+import com.guicedee.client.utils.Pair;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;

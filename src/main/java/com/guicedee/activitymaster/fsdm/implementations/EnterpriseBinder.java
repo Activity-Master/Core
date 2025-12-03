@@ -5,7 +5,7 @@ import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
 import com.guicedee.activitymaster.fsdm.EnterpriseService;
 import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
 
 public class EnterpriseBinder extends PrivateModule implements IGuiceModule<EnterpriseBinder>
 {

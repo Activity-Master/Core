@@ -1,10 +1,8 @@
 package com.guicedee.activitymaster.fsdm.implementations;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.matcher.Matchers;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.*;
 //import com.guicedee.activitymaster.fsdm.implementations.interceptors.*;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
 
 /**
  * Special Abstract Module to apply interceptors to any binding located in the DI

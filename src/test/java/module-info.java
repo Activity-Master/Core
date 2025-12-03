@@ -1,5 +1,5 @@
 import com.guicedee.activitymaster.PostgreSQLTestDBModule;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
 
 open module activity.master.test {
     requires transitive com.entityassist;

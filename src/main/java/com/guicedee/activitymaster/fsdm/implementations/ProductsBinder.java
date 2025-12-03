@@ -3,7 +3,7 @@ package com.guicedee.activitymaster.fsdm.implementations;
 import com.google.inject.*;
 import com.guicedee.activitymaster.fsdm.client.services.IProductService;
 import com.guicedee.activitymaster.fsdm.ProductService;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
 
 public class ProductsBinder extends PrivateModule implements IGuiceModule<ProductsBinder>
 {

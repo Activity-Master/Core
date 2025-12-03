@@ -5,7 +5,7 @@ import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
 import com.guicedee.activitymaster.fsdm.ActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
 
 public class ActiveFlagBinder extends PrivateModule implements IGuiceModule<ActiveFlagBinder>
 {

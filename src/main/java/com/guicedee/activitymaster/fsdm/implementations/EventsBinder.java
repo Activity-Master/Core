@@ -4,7 +4,7 @@ import com.google.inject.*;
 import com.guicedee.activitymaster.fsdm.EventsService;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
 
 public class EventsBinder extends PrivateModule implements IGuiceModule<EventsBinder>
 {

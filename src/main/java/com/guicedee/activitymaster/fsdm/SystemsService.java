@@ -42,14 +42,13 @@ import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsXClassification;
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.client.IGuiceContext;
-import com.guicedee.guicedinjection.pairing.Pair;
+import com.guicedee.client.utils.Pair;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.NoResultException;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
