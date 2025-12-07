@@ -18,3 +18,4 @@ persistence.xml
 /*.log
 /*.tlog
 /logs/
+/.vscode/

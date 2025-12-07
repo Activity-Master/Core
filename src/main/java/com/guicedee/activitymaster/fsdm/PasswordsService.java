@@ -87,9 +87,6 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
                .withEnterprise(enterprise)
                .findByIdentificationType(IdentificationTypeUserName, username, system, identityToken)
                .get()
-               .onItem()
-               .ifNull()
-               .failWith(() -> new SecurityAccessException("Involved Party Does Not Exist"))
                .map(party -> (IInvolvedParty<?, ?>) party);
   }
 

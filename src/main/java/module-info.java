@@ -48,7 +48,7 @@ module com.guicedee.activitymaster.fsdm {
   requires org.apache.logging.log4j.core;
 
   requires transitive com.ehcache;
-		requires transitive cache.annotations.ri.guice;
+		//requires transitive cache.annotations.ri.guice;
   requires transitive org.hibernate.orm.jcache;
 
   provides IGuiceModule with
