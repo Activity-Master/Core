@@ -1,6 +1,5 @@
 package com.guicedee.activitymaster.fsdm;
 
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
 import com.guicedee.activitymaster.fsdm.client.services.IPasswordsService;
@@ -159,24 +158,25 @@ public class EnterpriseService
 				return Uni
 												.createFrom()
 												.item(() -> {
-														try
+														logProgress("Update System", "Starting updates for " + value.getSimpleName());
+														for (IOnSystemUpdate<?> systemUpdateEventHandler : systemUpdateEventHandlers)
 														{
-																logProgress("Update System", "Starting updates for " + value.getSimpleName());
-																for (IOnSystemUpdate<?> systemUpdateEventHandler : systemUpdateEventHandlers)
+																try
 																{
 																		systemUpdateEventHandler.onSystemUpdateStart(value);
 																}
-																return com.guicedee.client.IGuiceContext.get(value);
-														}
-														catch (Throwable T)
-														{
-																log.error("Unable to perform update", T);
-																for (IOnSystemUpdate<?> a : systemUpdateEventHandlers)
+																catch (Throwable T)
 																{
-																		a.onSystemUpdateFail(value);
+																		log.error("Unable to perform update - " + systemUpdateEventHandler
+																																																													.getClass()
+																																																													.getSimpleName(), T);
+																		for (IOnSystemUpdate<?> a : systemUpdateEventHandlers)
+																		{
+																				a.onSystemUpdateFail(value);
+																		}
 																}
-																throw new RuntimeException("Failed to process update", T);
 														}
+														return com.guicedee.client.IGuiceContext.get(value);
 												})
 												.chain(o -> {
 														// Perform the update
@@ -185,12 +185,25 @@ public class EnterpriseService
 																						.invoke(() -> {
 																								for (IOnSystemUpdate<?> a : systemUpdateEventHandlers)
 																								{
-																										a.onSystemUpdateEnd(value);
+																										try
+																										{
+																												a.onSystemUpdateEnd(value);
+																										}
+																										catch (Throwable T)
+																										{
+																												log.error("Unable to perform update - " + a
+																																																																							.getClass()
+																																																																							.getSimpleName(), T);
+																												for (IOnSystemUpdate<?> b : systemUpdateEventHandlers)
+																												{
+																														b.onSystemUpdateFail(value);
+																												}
+																										}
 																								}
 																						})
 																						.onFailure()
 																						.recoverWithItem((err) -> {
-																								log.error("Unable to perform update", err);
+																								log.error("Unable to perform update on system end", err);
 																								for (IOnSystemUpdate<?> a : systemUpdateEventHandlers)
 																								{
 																										a.onSystemUpdateFail(value);
@@ -235,6 +248,10 @@ public class EnterpriseService
 																																																			system)
 																																.replaceWithVoid();
 																						});
+												})
+												.onFailure()
+												.invoke(err -> {
+														log.fatal("Unable to perform update - " + o.getClass().getSimpleName(), err);
 												});
 		}
 		
@@ -405,7 +422,7 @@ public class EnterpriseService
 		public Uni<IEnterprise<?, ?>> getEnterprise(Mutiny.Session session, UUID uuid)
 		{
 				//noinspection unchecked
-				return (Uni) session.find(Enterprise.class,uuid);
+				return (Uni) session.find(Enterprise.class, uuid);
 		}
 		
 		@Override
