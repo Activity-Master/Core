@@ -2,10 +2,7 @@ package com.guicedee.activitymaster.tests;
 
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConceptService;
-import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
-import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
-import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
+import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 import com.guicedee.client.IGuiceContext;
@@ -14,7 +11,6 @@ import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 import org.junit.jupiter.api.*;
-import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -2139,26 +2135,24 @@ public class TestActivityMaster extends TestDatabaseSetup
         public void testUpdateDataValueAndGetDataRow()
         {
           var uni = sessionFactory.withTransaction(session -> {
-            var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
-            var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
-            var resourceService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IResourceItemService.class);
+            IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
+            ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
+            IResourceItemService<?> resourceService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IResourceItemService.class);
 
             return enterpriseService.getEnterprise(session, TestEnterprise.name())
                        .chain(ent -> systemsService.getActivityMaster(session,
-                           (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent))
+																																																																						ent))
                        .chain(sys -> {
                          String typeName = "FileType_X1";
                          String value = "demo_file_value_update_1";
                          String value2 = "demo_file_value_update_2";
                          return resourceService.create(session, typeName, value,
-                                 (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems<?, ?>) sys)
-                                    .chain(res -> ((com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem<?, ?>) res)
+																																																							sys)
+                                    .chain(res -> res
                                                       .getDataRow(session)
                                                       .invoke(row -> assertNotNull(row, "getDataRow should return a non-null data row"))
                                                       .replaceWith(res))
-                                    .chain(res -> ((com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem<?, ?>) res)
-                                                      .updateDataTypeValue(session, value2)
-                                                      .invoke(updated -> assertNotNull(updated, "updateDataTypeValue should return the resource item"))
+                                    .chain(res -> resourceService.updateResourceData (session,value2.getBytes(),res.getId())
                                     );
                        });
           });

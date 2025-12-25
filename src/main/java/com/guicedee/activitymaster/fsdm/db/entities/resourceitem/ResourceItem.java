@@ -51,8 +51,8 @@ import static jakarta.persistence.FetchType.EAGER;
  */
 @SuppressWarnings({"unused", "rawtypes"})
 @Entity
-@Table(schema = "Resource",
-    name = "ResourceItem")
+@Table(schema = "resource",
+    name = "resourceitem")
 @XmlRootElement
 
 @Access(AccessType.FIELD)
@@ -149,29 +149,12 @@ public class ResourceItem
   }
 
   @Override
-  public Uni<IResourceItem<?, ?>> updateDataTypeValue(Mutiny.Session session, String newValue)
-  {
-    setResourceItemDataType(newValue);
-    return builder(session).find(getId())
-               .update()
-               .replaceWith(Uni.createFrom()
-                                .item(this));
-  }
-
-  @Override
   public Uni<byte[]> getData(Mutiny.Session session, UUID... identityToken)
   {
-    ResourceItemData rid = new ResourceItemData();
-    return rid.builder(session)
-               //.inActiveRange()
-             //  .inDateRange()
-               .where(ResourceItemData_.resource, Equals, this)
-             //  .latestFirst()
-            //   .setReturnFirst(true)
-               .selectColumn(ResourceItemData_.resourceItemData)
-               .get(byte[].class)
+    ResourceItemDataValue rid = new ResourceItemDataValue();
+    return session.find(ResourceItemDataValue.class, getId())
                .onItem()
-               .transform(data -> unzip(data));
+               .transform(data -> unzip(data.getData()));
   }
 
   @Override
@@ -226,74 +209,7 @@ public class ResourceItem
     byte[] outcome = data;
     return outcome;
   }
-
-
-  //@Override
 		
-		/**
-			* @deprecated
-			* @param session
-			* @param data
-			* @param system
-			* @param identityToken
-			* @return
-			*/
-		@Deprecated
-  public Uni<Void> updateData(Mutiny.Session session, byte[] data, ISystems<?, ?> system, UUID... identityToken)
-  {
-    if (data == null || data.length == 0)
-    {
-      return Uni.createFrom()
-                 .failure(new RuntimeException("Cannot store 0 data into a resource item"));
-    }
-    ResourceItemData rid = new ResourceItemData();
-    return rid.builder(session)
-               .inActiveRange()
-               .where(ResourceItemData_.resource, Equals, this)
-               .latestFirst()
-               .setReturnFirst(true)
-               .get()
-               .chain(resourceItemData -> {
-                 resourceItemData.setResourceItemData(data);
-                 return session.merge(resourceItemData);
-               })
-               .replaceWithVoid();
-  }
-
-  @Override
-  public Uni<Void> updateAndKeepHistoryData(Mutiny.Session session, byte[] data, ISystems<?, ?> system, UUID... identityToken)
-  {
-    final byte[] zippedData = zip(data);
-
-    ResourceItemData rid = new ResourceItemData();
-    return rid.builder(session)
-               .inActiveRange()
-               .where(ResourceItemData_.resource, Equals, this)
-               .latestFirst()
-               .setReturnFirst(true)
-               .get()
-               .onItem()
-               .ifNotNull()
-               .invoke(resourceItemData -> {
-                 resourceItemData.archive(session);
-               })
-               .onItem()
-               .transformToUni(item -> {
-                 ResourceItemData newRid = new ResourceItemData();
-                 newRid.setResource(this);
-                 newRid.setEffectiveFromDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-                 newRid.setWarehouseCreatedTimestamp(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-                 newRid.setEffectiveToDate(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
-                 newRid.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-                 newRid.setResourceItemData(zippedData);
-                 newRid.setActiveFlagID(getActiveFlagID());
-                 newRid.setOriginalSourceSystemID(getSystemID());
-                 newRid.setSystemID(getSystemID());
-                 newRid.setEnterpriseID(system.getEnterpriseID());
-                 return session.persist(newRid);
-               });
-  }
-
   @Override
   public boolean equals(Object o)
   {

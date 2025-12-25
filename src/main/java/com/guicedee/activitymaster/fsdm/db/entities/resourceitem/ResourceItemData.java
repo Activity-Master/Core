@@ -25,8 +25,8 @@ import java.util.UUID;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema = "Resource",
-        name = "ResourceItemData")
+@Table(schema = "resource",
+        name = "resourceitemdata")
 @XmlRootElement
 @Access(AccessType.FIELD)
 @Getter
@@ -42,19 +42,19 @@ public class ResourceItemData
     private static final long serialVersionUID = 1L;
     @Id
     @Column(nullable = false,
-            name = "ResourceItemDataID")
+            name = "resourceitemdataid")
     private UUID id;
-    @Column(nullable = false,
-            name = "ResourceItemData")
-    private byte[] resourceItemData;
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JoinColumn(name = "resourceitemdatavalueid", referencedColumnName = "resourceitemdatavalueid")
+    private ResourceItemDataValue dataValue;
 
     @OneToMany(
             mappedBy = "base",
             fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     private List<ResourceItemDataSecurityToken> securities;
 
-    @JoinColumn(name = "ResourceItemID",
-            referencedColumnName = "ResourceItemID",
+    @JoinColumn(name = "resourceitemid",
+            referencedColumnName = "resourceitemid",
             nullable = false)
     @OneToOne(optional = false,
             fetch = FetchType.LAZY)
@@ -119,19 +119,7 @@ public class ResourceItemData
     {
         return getId() + "";
     }
-
-    @Override
-    public byte[] getResourceItemData()
-    {
-        return getResource().unzip(resourceItemData);
-    }
-
-    public ResourceItemData setResourceItemData(byte[] resourceItemData)
-    {
-        this.resourceItemData = resourceItemData;
-        return this;
-    }
-
+				
     public ResourceItem getResource()
     {
         return resource;

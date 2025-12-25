@@ -218,7 +218,7 @@ public class EnterpriseService
 		//@jakarta.transaction.Transactional
 		Uni<? extends IWarehouseRelationshipClassificationTable<?, ?, ?, IClassification<?, ?>, UUID, ?>> updateLastUpdateDate(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system)
 		{
-				return enterprise.addClassification(session,
+				return enterprise.addOrUpdateClassification(session,
 																																								EnterpriseClassifications.LastUpdateDate.toString(),
 																																								DateTimeFormatter
 																																									.ofPattern("yyyy/MM/dd")

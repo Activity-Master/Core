@@ -4,16 +4,19 @@ import com.entityassist.RootEntity;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
-
 import com.google.inject.Singleton;
-import com.guicedee.activitymaster.fsdm.client.services.exceptions.ResourceItemException;
-//import com.guicedee.activitymaster.fsdm.db.entityassist.TransactionalCallable;
-import com.guicedee.activitymaster.fsdm.client.services.*;
+import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
+import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
+import com.guicedee.activitymaster.fsdm.client.services.IRelationshipValue;
+import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.*;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceData;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItemType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications;
+import com.guicedee.activitymaster.fsdm.client.services.exceptions.ResourceItemException;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
@@ -22,21 +25,22 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.Resour
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.NoResultException;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.ListJoin;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
-
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
-//import static com.guicedee.activitymaster.fsdm.db.entityassist.SCDEntity.*;
-import static com.entityassist.enumerations.Operand.*;
+import static com.entityassist.enumerations.Operand.Equals;
 import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.EndOfTime;
 import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.convertToUTCDateTime;
-import static jakarta.persistence.criteria.JoinType.*;
+import static jakarta.persistence.criteria.JoinType.INNER;
 
 
 /**
@@ -268,7 +272,7 @@ public class ResourceItemService
 														xr.setEnterpriseID(enterprise);
 														IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 														
-														return (Uni) acService
+														return acService
 																												.getActiveFlag(session, enterprise)
 																												.chain(activeFlag -> {
 																														xr.setActiveFlagID(activeFlag);
@@ -289,15 +293,26 @@ public class ResourceItemService
 																																								rid.setWarehouseCreatedTimestamp(convertToUTCDateTime(now));
 																																								rid.setEffectiveToDate(EndOfTime.atOffset(ZoneOffset.UTC));
 																																								rid.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(now));
-																																								rid.setResourceItemData("".getBytes());
 																																								rid.setActiveFlagID(activeFlag);
 																																								rid.setOriginalSourceSystemID(system.getId());
 																																								rid.setSystemID(system);
 																																								rid.setEnterpriseID(system.getEnterpriseID());
 																																								
+																																								ResourceItemDataValue dataValue = new ResourceItemDataValue();
+																																								dataValue.setId(persisted.getId());
+																																								dataValue.setData(data);
+																																								if (data == null)
+																																								{
+																																										dataValue.setData(new byte[0]);
+																																								}
+																																								rid.setDataValue(dataValue);
+																																								
 																																								// Persist the resource item data
 																																								return session
 																																																.persist(rid)
+																																																.chain(() -> {
+																																																		return session.persist(rid.getDataValue());
+																																																})
 																																																.replaceWith(Uni
 																																																														.createFrom()
 																																																														.item(rid))
@@ -306,28 +321,12 @@ public class ResourceItemService
 																																																		persistedData.createDefaultSecurity(session, system, identityToken);
 																																																		return persistedData;
 																																																})
-																																																.chain(resourceItem -> {
+																																																.chain(_ -> {
 																																																		// Step 3: Add resource item types
 																																																		log.trace("Adding resource item type: {}", identityResourceType);
 																																																		return addResourceItemTypeRelationship(session, persisted, identityResourceType, resourceItemDataValue, system, identityToken);
 																																																})
-																																																.chain(resourceItem -> {
-																																																		// Step 2: Update data if provided
-																																																		if (data != null)
-																																																		{
-																																																				log.trace("Updating resource item data");
-																																																				// Find the appropriate method to update data
-																																																				// This might need to be adjusted based on the actual implementation
-																																																				return findResourceItemDataForUpdate(session, persisted, data, system, identityToken)
-																																																												.map(updated -> persisted);
-																																																		}
-																																																		else
-																																																		{
-																																																				return Uni
-																																																												.createFrom()
-																																																												.item(persisted);
-																																																		}
-																																																});
+																																																.replaceWith(persisted);
 																																						});
 																												})
 																												.onFailure()
@@ -340,85 +339,19 @@ public class ResourceItemService
 		@Override
 		public Uni<Void> updateResourceData(Mutiny.Session session, byte[] data, UUID resourceItemId)
 		{
-				var cb = session.getCriteriaBuilder();
-				var cu = cb
-														.createCriteriaUpdate(ResourceItemData.class)
-														.set(ResourceItemData_.warehouseLastUpdatedTimestamp, OffsetDateTime.now(ZoneOffset.UTC))
-														.set(ResourceItemData_.resourceItemData, data);
-				
-				var root = cu.getRoot();
-				cu.where(cb.equal(root
-																							.get("resource")
-																							.get("id"), resourceItemId));
-				
 				return session
-												.createQuery(cu)
-												.executeUpdate()
-												.chain(count -> {
-														if (count == 0)
+												.find(ResourceItemDataValue.class, resourceItemId)
+												.chain(resourceItem -> {
+														if (resourceItem == null)
 														{
 																return Uni
 																								.createFrom()
-																								.failure(new IllegalStateException("Update of resource data ended up with no rows"));
+																								.failure(new IllegalStateException("Resource item not found: " + resourceItemId));
 														}
-														else
-														{
-																return Uni
-																								.createFrom()
-																								.item(count);
-														}
+														resourceItem.setData(data);
+														return session.merge(resourceItem);
 												})
 												.replaceWithVoid();
-		}
-		
-		
-		/**
-			* Helper method to update resource item data
-			*/
-		@Override
-		public Uni<Void> findResourceItemDataForUpdate(Mutiny.Session session, IResourceItem<?, ?> resourceItem, byte[] data, ISystems<?, ?> system, UUID... identityToken)
-		{
-				log.trace("Updating data for resource item: {}", resourceItem.getId());
-				var enterprise = system.getEnterprise();
-				// Find the existing data relationship
-				ResourceItemData rid = new ResourceItemData();
-				return rid
-												.builder(session)
-												.withResource((ResourceItem) resourceItem)
-												.inActiveRange()
-												.inDateRange()
-												.get()
-												.chain(existingData -> {
-														if (existingData == null)
-														{
-																// Create new data if none exists
-																ResourceItemData newData = new ResourceItemData();
-																newData.setResource((ResourceItem) resourceItem);
-																LocalDateTime now = RootEntity.getNow();
-																newData.setEffectiveFromDate(convertToUTCDateTime(now));
-																newData.setWarehouseCreatedTimestamp(convertToUTCDateTime(now));
-																newData.setEffectiveToDate(EndOfTime.atOffset(ZoneOffset.UTC));
-																newData.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(now));
-																newData.setResourceItemData(data);
-																newData.setSystemID(system);
-																newData.setEnterpriseID(system.getEnterpriseID());
-																IActiveFlagService<?> afs = IGuiceContext.get(IActiveFlagService.class);
-																return afs
-																								.getActiveFlag(session, enterprise)
-																								.chain(activeFlag -> {
-																										newData.setActiveFlagID(activeFlag);
-																										newData.setOriginalSourceSystemID(system.getId());
-																										return session.persist(newData);
-																								});
-														}
-														else
-														{
-																// Update existing data
-																existingData.setResourceItemData(data);
-																existingData.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(RootEntity.getNow()));
-																return session.persist(existingData);
-														}
-												});
 		}
 		
 		/**
@@ -628,16 +561,6 @@ public class ResourceItemService
 																		.inDateRange()
 																		.get();
 				
-		}
-		
-		@Override
-		public Uni<byte[]> getDataForResourceItemValue(Mutiny.Session session, IRelationshipValue<IResourceItem<?, ?>, IResourceData<?, ?, ?>, ?> data)
-		{
-				log.trace("Getting data for resource item value");
-				ResourceItemData d = (ResourceItemData) data.getSecondary();
-				return Uni
-												.createFrom()
-												.item(d.getResourceItemData());
 		}
 		
 		@Override
