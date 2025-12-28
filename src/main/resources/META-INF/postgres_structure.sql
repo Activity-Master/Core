@@ -3091,6 +3091,6 @@ select * from resource.resourceitemdata where resourceitemid = 'b8eb4da4-b596-4c
 select * from resource.resourceitemdatavalue where resourceitemdatavalueid = 'b8eb4da4-b596-4c92-8979-a2304950571a';
 
 
---alter table resource.resourceitemdata 	drop COLUMN resourceitemdata;
+alter table resource.resourceitemdata 	drop COLUMN resourceitemdata;
 
 
