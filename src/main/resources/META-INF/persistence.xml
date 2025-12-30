@@ -248,12 +248,12 @@
 
             <property name="jakarta.persistence.validation.mode" value="none"/>
 
-            <property name="hibernate.jdbc.batch_size" value="500"/>
+            <!--<property name="hibernate.jdbc.batch_size" value="500"/>-->
 
             <property name="hibernate.vertx.prepared_statement_cache.max_size" value="500"/>
 
 
-            <property name="hibernate.connection.pool_size" value="500"/>
+            <property name="hibernate.connection.pool_size" value="80"/>
             <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
             <property name="hibernate.javax.cache.missing_cache_strategy" value="create"/>
             <property name="hibernate.jakarta.cache.missing_cache_strategy" value="create"/>

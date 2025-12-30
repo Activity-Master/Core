@@ -148,10 +148,8 @@ public class ArrangementsService
                        })
                        .chain(arrangementType -> {
                            // Step 3: Add arrangement type
-                           return arrangement.addOrUpdateArrangementType(
-                                           session, arrangementTypeClassification,
-                                           arrangementType,
-                                           arrangementTypeValue,
+                           return arrangement.addArrangementType(
+                                           session,  arrangementType,arrangementTypeClassification,
                                            arrangementTypeValue,
                                            system,
                                            identityToken

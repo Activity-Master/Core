@@ -336,21 +336,31 @@ public class ResourceItemService
 												});
 		}
 		
+		Uni<Integer> tryUpdate(Mutiny.Session session, UUID id, byte[] value) {
+  String sql = """
+    WITH tgt AS (
+      SELECT resourceitemdatavalueid
+      FROM resource.resourceitemdatavalue
+      WHERE resourceitemdatavalueid = :id
+      FOR UPDATE SKIP LOCKED
+    )
+    UPDATE resource.resourceitemdatavalue v
+    SET resourceitemdatavalue = :val
+    FROM tgt
+    WHERE v.resourceitemdatavalueid = tgt.resourceitemdatavalueid
+    """;
+
+  return session.createNativeQuery(sql)
+      .setParameter("id", id)
+      .setParameter("val", value)
+      .executeUpdate();
+}
+		
 		@Override
 		public Uni<Void> updateResourceData(Mutiny.Session session, byte[] data, UUID resourceItemId)
 		{
-				return session
-												.find(ResourceItemDataValue.class, resourceItemId)
-												.chain(resourceItem -> {
-														if (resourceItem == null)
-														{
-																return Uni
-																								.createFrom()
-																								.failure(new IllegalStateException("Resource item not found: " + resourceItemId));
-														}
-														resourceItem.setData(data);
-														return session.merge(resourceItem);
-												})
+				
+				return tryUpdate(session,resourceItemId,data)
 												.replaceWithVoid();
 		}
 		
