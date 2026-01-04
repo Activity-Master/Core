@@ -25,8 +25,7 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.E
 public class ClassificationsDataConceptService
     implements IClassificationDataConceptService<ClassificationsDataConceptService>
 {
-  // Local cache: key = enterpriseId + '|' + systemId + '|' + conceptName, value = ClassificationDataConcept UUID
-  private final Map<String, UUID> conceptKeyToId = new ConcurrentHashMap<>();
+  // Using shared NameIdCache via IClassificationDataConceptService.resolveCdcIdByName; no separate local cache needed
 
   @Override
   public IClassificationDataConcept<?, ?> get()
@@ -102,45 +101,25 @@ public class ClassificationsDataConceptService
     if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys) {
       systemId = sys.getId();
     }
-    String key = enterpriseId + "|" + systemId + "|" + name;
-    UUID cachedId = conceptKeyToId.get(key);
-    if (cachedId != null) {
-      log.trace("🔁 Concept cache hit for key '{}': {} — loading by UUID", key, cachedId);
-      return (Uni) getConceptById(session, cachedId)
-        .flatMap(found -> {
-          if (found != null) {
-            return Uni.createFrom().item(found);
-          }
-          // Stale mapping: remove and fallback to name+enterprise+system query
-          conceptKeyToId.remove(key);
-          ClassificationDataConcept cdc = new ClassificationDataConcept();
-          return (Uni) cdc.builder(session)
-                   .withName(name)
-                   .withEnterprise(enterprise)
-                   .inActiveRange()
-                   .inDateRange()
-                   .get()
-                   .invoke(dc -> {
-                     if (dc != null && dc.getId() != null) {
-                       conceptKeyToId.put(key, (UUID) dc.getId());
-                     }
-                   });
-        });
-    }
 
-    // Cold path: query by name+enterprise and remember UUID
-    ClassificationDataConcept cdc = new ClassificationDataConcept();
-    return (Uni) cdc.builder(session)
-                     .withName(name)
-                     .withEnterprise(enterprise)
-                     .inActiveRange()
-                     .inDateRange()
-                     .get()
-                     .invoke(dc -> {
-                       if (dc != null && dc.getId() != null) {
-                         conceptKeyToId.put(key, (UUID) dc.getId());
-                       }
-                     });
+    // ID-first resolution using ActiveFlag VisibleRangeAndUp IDs and SCD window, then load by UUID
+    IActiveFlagService<?> afService = IGuiceContext.get(IActiveFlagService.class);
+    final UUID entId = enterpriseId;
+    final UUID sysId = systemId;
+    return afService.getVisibleRangeAndUpIds(session, entId)
+            .flatMap(visibleIds -> session.createNativeQuery(
+                    "select classificationdataconceptid from classification.classificationdataconcept " +
+                    "where enterpriseid = :ent and classificationdataconceptname = :name " +
+                    "and (effectivefromdate <= current_timestamp) and (effectivetodate > current_timestamp) " +
+                    "and activeflagid in (:visible)"
+            )
+            .setParameter("ent", entId)
+            //.setParameter("sys", sysId)
+            .setParameter("name", name)
+            .setParameter("visible", visibleIds)
+            .getSingleResult()
+            .map(r -> (UUID) r))
+            .flatMap(id -> (Uni) getConceptById(session, id));
   }
 
   // UUID-based lookup to leverage L2 cache (@Cacheable on entity + L2 cache enabled)

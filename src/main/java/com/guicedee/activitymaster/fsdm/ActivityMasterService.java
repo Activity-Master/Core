@@ -52,12 +52,14 @@ public class ActivityMasterService
 	@Inject
 	private IEnterpriseService<?> enterpriseService;
 
-	@Override
-	public Uni<Void> loadSystems(Mutiny.Session session, String enterpriseName)
-	{
-		return enterpriseService.getEnterprise(session, enterpriseName)
-				.chain(enterprise -> enterpriseService.performPostStartup(session, enterprise));
-	}
+ @Override
+ public Uni<Void> loadSystems(Mutiny.Session session, String enterpriseName)
+ {
+     return enterpriseService
+             .resolveEnterpriseIdByName(session, enterpriseName)
+             .chain(enterpriseId -> enterpriseService.getEnterprise(session, enterpriseId))
+             .chain(enterprise -> enterpriseService.performPostStartup(session, enterprise));
+ }
 
 	@Override
 	public Uni<Void> loadUpdates(Mutiny.Session session, IEnterprise<?, ?> enterprise)

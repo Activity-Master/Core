@@ -98,39 +98,19 @@ public class ActiveFlagService
 		UUID cachedId = flagKeyToId.get(key);
 		if (cachedId != null) {
 			log.trace("🔁 ActiveFlag cache hit for key '{}': {} — loading by UUID", key, cachedId);
-			return (Uni) getFlagById(session, cachedId)
-				.flatMap(found -> {
-					if (found != null) {
-						return Uni.createFrom().item(found);
-					}
-					// Stale mapping: remove and fallback to name+enterprise query
-					flagKeyToId.remove(key);
-					return (Uni) new ActiveFlag().builder(session)
-							.withName(flag)
-							.inDateRange()
-							//    .canRead(enterprise, identifyingToken)
-							.withEnterprise(enterprise)
-							.get()
-							.invoke(ent -> {
-								if (ent != null && ent.getId() != null) {
-									flagKeyToId.put(key, ent.getId());
-								}
-							});
-				});
+			return (Uni) getFlagById(session, cachedId);
 		}
 
-		// Cold path: query by name+enterprise and remember UUID
-		return (Uni) new ActiveFlag().builder(session)
-						.withName(flag)
-						.inDateRange()
-						//    .canRead(enterprise, identifyingToken)
-						.withEnterprise(enterprise)
-						.get()
-						.invoke(ent -> {
-							if (ent != null && ent.getId() != null) {
-								flagKeyToId.put(key, ent.getId());
-							}
-						});
+		// Use ID-first resolution with shared NameIdCache and native SQL, then load by UUID
+		return IActiveFlagService.super
+				.resolveActiveFlagIdByName(session, enterpriseId, flag)
+				.flatMap(id -> {
+					if (id == null) {
+						return Uni.createFrom().failure(new NoResultException("ActiveFlag not found: " + flag));
+					}
+					flagKeyToId.put(key, id);
+					return (Uni) getFlagById(session, id);
+				});
 	}
 
 	// UUID-based lookup to leverage L2 cache (@Cacheable on entity + L2 cache enabled)

@@ -573,71 +573,25 @@ public class ResourceItemService
 				
 		}
 		
-		@Override
-		public Uni<IResourceItemType<?, ?>> findResourceItemType(Mutiny.Session session, String type, ISystems<?, ?> system, UUID... identityToken)
-		{
-				log.trace("Finding resource item type: {}", type);
-				var enterprise = system.getEnterprise();
-				java.util.UUID enterpriseId = null;
-				java.util.UUID systemId = null;
-				if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent)
-				{
-						enterpriseId = ent.getId();
-				}
-				if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys)
-				{
-						systemId = sys.getId();
-				}
-				String key = enterpriseId + "|" + systemId + "|" + type;
-				java.util.UUID cachedId = resourceItemTypeKeyToId.get(key);
-				if (cachedId != null)
-				{
-						log.trace("🔁 ResourceItemType cache hit for key '{}': {} — loading by UUID", key, cachedId);
-						return (Uni) getResourceItemTypeById(session, cachedId)
-																				.flatMap(found -> {
-																						if (found != null)
-																						{
-																								return Uni
-																																.createFrom()
-																																.item(found);
-																						}
-																						// Stale mapping: remove and fallback to name+enterprise query
-																						resourceItemTypeKeyToId.remove(key);
-																						ResourceItemType xr = new ResourceItemType();
-																						return (Uni) xr
-																																				.builder(session)
-																																				.withEnterprise(enterprise)
-																																				.withName(type)
-																																				.inActiveRange()
-																																				//       .canRead(system, identityToken)
-																																				.inDateRange()
-																																				.get()
-																																				.invoke(res -> {
-																																						if (res != null && res.getId() != null)
-																																						{
-																																								resourceItemTypeKeyToId.put(key, (java.util.UUID) res.getId());
-																																						}
-																																				});
-																				});
-				}
-				
-				// Cold path
-				ResourceItemType xr = new ResourceItemType();
-				return (Uni) xr
-																		.builder(session)
-																		.withEnterprise(enterprise)
-																		.withName(type)
-																		.inActiveRange()
-																		//       .canRead(system, identityToken)
-																		.inDateRange()
-																		.get()
-																		.invoke(res -> {
-																				if (res != null && res.getId() != null)
-																				{
-																						resourceItemTypeKeyToId.put(key, (java.util.UUID) res.getId());
-																				}
-																		});
-		}
+  @Override
+  public Uni<IResourceItemType<?, ?>> findResourceItemType(Mutiny.Session session, String type, ISystems<?, ?> system, UUID... identityToken)
+  {
+              log.trace("Finding resource item type by name (ID-first): {}", type);
+              var enterprise = system.getEnterprise();
+              java.util.UUID enterpriseId = null;
+              if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent)
+              {
+                      enterpriseId = ent.getId();
+              }
+              final java.util.UUID entId = enterpriseId;
+
+              // Resolve ResourceItemType UUID by name using cached native resolver, then load entity by UUID
+              return (io.smallrye.mutiny.Uni) resolveResourceItemTypeIdByName(session, entId, type)
+                      .flatMap(id -> getResourceItemTypeById(session, id))
+                      .map(result -> (IResourceItemType<?, ?>) result)
+                      .onFailure()
+                      .invoke(error -> log.error("Error finding resource item type (ID-first): {}", type, error));
+  }
 		
 		@Override
 		public Uni<List<IResourceItem<?, ?>>> findByResourceItemType(Mutiny.Session session, String type, ISystems<?, ?> systems, UUID... identityToken)

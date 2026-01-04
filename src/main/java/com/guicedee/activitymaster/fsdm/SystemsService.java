@@ -73,6 +73,9 @@ public class SystemsService
   @Inject
   private ISecurityTokenService<?> securityTokenService;
 
+  @Inject
+  private IActiveFlagService<?> activeFlagService;
+
   public ISystems<?, ?> get()
   {
     return new Systems();
@@ -96,15 +99,25 @@ public class SystemsService
   @Override
   public Uni<Boolean> doesSystemExist(Mutiny.Session session, IEnterprise<?, ?> enterprise, String systemName, UUID... identityToken)
   {
-    return new Systems().builder(session)
-               .withName(systemName)
-               .withEnterprise(enterprise)
-               .inActiveRange()
-               .inDateRange()
-               .getCount()
-               .onFailure()
-               .invoke(error -> log.error("Error checking if system exists: {}", error.getMessage(), error))
-               .map(count -> count > 0);
+    UUID enterpriseId = null;
+    if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
+      enterpriseId = ent.getId();
+    }
+    // Use ID-first resolution with ActiveFlag visible range: if we can resolve an ID, it exists
+    final UUID entId = enterpriseId;
+    return activeFlagService.getVisibleRangeAndUpIds(session, entId)
+            .flatMap(visibleIds -> session.createNativeQuery(
+                    "select systemid from dbo.systems where enterpriseid = :ent and systemname = :name " +
+                    "and (effectivefromdate <= current_timestamp) and (effectivetodate > current_timestamp) " +
+                    "and activeflagid in (:visible)"
+            )
+            .setParameter("ent", entId)
+            .setParameter("name", systemName)
+            .setParameter("visible", visibleIds)
+            .getSingleResult()
+            .map(res -> true))
+            .onFailure()
+            .recoverWithItem(false);
   }
 
   //@Transactional()
@@ -116,6 +129,7 @@ public class SystemsService
     if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
       enterpriseId = ent.getId();
     }
+    final UUID entId = enterpriseId;
     String key = enterpriseId + "|" + systemName;
     UUID cachedId = systemKeyToId.get(key);
     if (cachedId != null) {
@@ -125,36 +139,42 @@ public class SystemsService
           if (found != null) {
             return Uni.createFrom().item(found);
           }
-          // Stale mapping: remove and fallback to name+enterprise query
+          // Stale mapping: remove and fallback to name+enterprise query using visible ActiveFlags
           systemKeyToId.remove(key);
-          return (Uni) new Systems().builder(session)
-                          .withName(systemName)
-                          .withEnterprise(enterprise)
-                          .inActiveRange()
-                          .inDateRange()
-                          //.canRead(enterprise, identityToken)
-                          .get()
-                          .invoke(sys -> {
-                            if (sys != null && sys.getId() != null) {
-                              systemKeyToId.put(key, (UUID) sys.getId());
-                            }
-                          });
+          return activeFlagService.getVisibleRangeAndUpIds(session, entId)
+                  .flatMap(visibleIds -> session.createNativeQuery(
+                          "select systemid from dbo.systems where enterpriseid = :ent and systemname = :name " +
+                          "and (effectivefromdate <= current_timestamp) and (effectivetodate > current_timestamp) " +
+                          "and activeflagid in (:visible)"
+                  )
+                  .setParameter("ent", entId)
+                  .setParameter("name", systemName)
+                  .setParameter("visible", visibleIds)
+                  .getSingleResult()
+                  .map(r -> (UUID) r))
+                  .flatMap(resolvedId -> {
+                    systemKeyToId.put(key, resolvedId);
+                    return (Uni) getSystemById(session, resolvedId);
+                  });
         });
     }
 
-    // Cold path: query by name+enterprise and remember UUID
-    return (Uni) new Systems().builder(session)
-                     .withName(systemName)
-                     .withEnterprise(enterprise)
-                     .inActiveRange()
-                     .inDateRange()
-                     //.canRead(enterprise, identityToken)
-                     .get()
-                     .invoke(sys -> {
-                       if (sys != null && sys.getId() != null) {
-                         systemKeyToId.put(key, (UUID) sys.getId());
-                       }
-                     });
+    // Cold path: resolve ID by name+enterprise using visible ActiveFlags, then load by UUID and remember mapping
+    return activeFlagService.getVisibleRangeAndUpIds(session, entId)
+            .flatMap(visibleIds -> session.createNativeQuery(
+                    "select systemid from dbo.systems where enterpriseid = :ent and systemname = :name " +
+                    "and (effectivefromdate <= current_timestamp) and (effectivetodate > current_timestamp) " +
+                    "and activeflagid in (:visible)"
+            )
+            .setParameter("ent", entId)
+            .setParameter("name", systemName)
+            .setParameter("visible", visibleIds)
+            .getSingleResult()
+            .map(r -> (UUID) r))
+            .flatMap(id -> {
+              systemKeyToId.put(key, id);
+              return (Uni) getSystemById(session, id);
+            });
   }
 
   // UUID-based lookup to leverage L2 cache (@Cacheable on entity + L2 cache enabled)

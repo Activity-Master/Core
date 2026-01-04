@@ -62,6 +62,8 @@ public class ClassificationService
 
   @Inject
   private ClassificationsDataConceptService dataConceptService;
+  
+  // ActiveFlag service is retrieved via Guice context when needed to keep interface lean
 
   // Local cache: key = enterpriseId + '|' + systemId + '|' + classificationName, value = Classification UUID
   private final Map<String, UUID> classificationKeyToId = new ConcurrentHashMap<>();
@@ -282,7 +284,6 @@ public class ClassificationService
 
     var enterprise = system.getEnterprise();
 
-    // Build cache key: enterpriseId|systemId|name
     UUID enterpriseId = null;
     UUID systemId = null;
     if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
@@ -291,47 +292,47 @@ public class ClassificationService
     if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys) {
       systemId = sys.getId();
     }
-    String key = enterpriseId + "|" + systemId + "|" + name;
-    UUID cachedId = classificationKeyToId.get(key);
-    if (cachedId != null) {
-      log.trace("🔁 Classification cache hit for key '{}': {} — loading by UUID", key, cachedId);
-      return (Uni) getClassificationById(session, cachedId)
-        .flatMap(found -> {
-          if (found != null) {
-            return Uni.createFrom().item(found);
-          }
-          // Stale mapping: remove and fallback to name+enterprise+system query
-          classificationKeyToId.remove(key);
-          Classification search = new Classification();
-          return (Uni) search.builder(session)
-                     .withName(name)
-                     .inActiveRange()
-                     .inDateRange()
-                     //   .canRead(system, identityToken)
-                     .withEnterprise(enterprise)
-                     .get()
-                     .invoke(result -> {
-                       if (result != null && result.getId() != null) {
-                         classificationKeyToId.put(key, (UUID) result.getId());
-                       }
-                     });
-        });
-    }
+    final UUID entId = enterpriseId;
+    final UUID sysId = systemId;
 
-    // Cold path: query by name+enterprise and remember UUID
-    Classification search = new Classification();
-    return (Uni) search.builder(session)
-                     .withName(name)
-                     .inActiveRange()
-                     .inDateRange()
-                     //   .canRead(system, identityToken)
-                     .withEnterprise(enterprise)
-                     .get()
-                     .invoke(result -> {
-                       if (result != null && result.getId() != null) {
-                         classificationKeyToId.put(key, (UUID) result.getId());
-                       }
-                     });
+    // If we have a concept, resolve its ID via CDC resolver; then resolve classification ID; else resolve by enterprise+name
+    if (concept != null) {
+      return dataConceptService
+          .resolveCdcIdByName(session, entId, sysId, concept.classificationValue())
+          .flatMap(conceptId -> {
+            var afService = IGuiceContext.get(IActiveFlagService.class);
+            return afService.getVisibleRangeAndUpIds(session, entId)
+                .flatMap(visibleIds -> session.createNativeQuery(
+                        "select classificationid from classification.classification " +
+                        "where enterpriseid = :ent and classificationdataconceptid = :cdc and classificationname = :name " +
+                        "and (effectivefromdate <= current_timestamp) and (effectivetodate > current_timestamp) " +
+                        "and activeflagid in (:visible)"
+                )
+                .setParameter("ent", entId)
+               // .setParameter("sys", sysId)
+                .setParameter("cdc", conceptId)
+                .setParameter("name", name)
+                .setParameter("visible", visibleIds)
+                .getSingleResult()
+                .map(r -> (UUID) r));
+          })
+          .flatMap(id ->getClassificationById(session, (UUID) id));
+    } else {
+      var afService = IGuiceContext.get(IActiveFlagService.class);
+      return afService.getVisibleRangeAndUpIds(session, entId)
+          .flatMap(visibleIds -> session.createNativeQuery(
+                  "select classificationid from classification.classification " +
+                  "where enterpriseid = :ent and classificationname = :name " +
+                  "and (effectivefromdate <= current_timestamp) and (effectivetodate > current_timestamp) " +
+                  "and activeflagid in (:visible)"
+          )
+          .setParameter("ent", entId)
+          .setParameter("name", name)
+          .setParameter("visible", visibleIds)
+          .getSingleResult()
+          .map(r -> (UUID) r))
+          .flatMap(id -> (Uni) getClassificationById(session, (UUID) id));
+    }
   }
 
   // UUID-based lookup to leverage L2 cache (@Cacheable on entity + L2 cache enabled)
