@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.fsdm.db.entities.resourceitem;
 
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
+import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
@@ -22,6 +23,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyX
 import com.guicedee.activitymaster.fsdm.db.entities.product.ProductXResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
 import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
+import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -153,8 +155,13 @@ public class ResourceItem
   {
     ResourceItemDataValue rid = new ResourceItemDataValue();
     return session.find(ResourceItemDataValue.class, getId())
+            .onFailure()
+            .call(err->{
+              IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
+              return resourceItemService.updateResourceData(session,new byte[]{},getId());
+            })
                .onItem()
-               .transform(data -> unzip(data.getData()));
+               .transform(data -> unzip( data== null ? new byte[]{} : data.getData()));
   }
 
   @Override
@@ -206,6 +213,9 @@ public class ResourceItem
    */
   byte[] unzip(byte[] data)
   {
+    if (data == null) {
+      data = new byte[0];
+    }
     byte[] outcome = data;
     return outcome;
   }
