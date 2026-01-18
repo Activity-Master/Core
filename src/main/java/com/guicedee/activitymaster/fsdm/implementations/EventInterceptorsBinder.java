@@ -1,7 +1,9 @@
 package com.guicedee.activitymaster.fsdm.implementations;
 
 import com.google.inject.AbstractModule;
-//import com.guicedee.activitymaster.fsdm.implementations.interceptors.*;
+import com.google.inject.matcher.Matchers;
+import com.guicedee.activitymaster.fsdm.client.services.annotations.*;
+import com.guicedee.activitymaster.fsdm.implementations.interceptors.*;
 import com.guicedee.client.services.lifecycle.IGuiceModule;
 
 /**
@@ -15,7 +17,11 @@ public class EventInterceptorsBinder
 {
 	public void configure()
 	{
-		/*bindInterceptor(Matchers.any(), Matchers.annotatedWith(Event.class), new EventsAOPInterceptor());
+		EventCallScopeInterceptor eventCallScopeInterceptor = new EventCallScopeInterceptor();
+		requestInjection(eventCallScopeInterceptor);
+		bindInterceptor(Matchers.any(), Matchers.annotatedWith(Event.class), eventCallScopeInterceptor);
+
+		bindInterceptor(Matchers.any(), Matchers.annotatedWith(Event.class), new EventsAOPInterceptor());
 		bindInterceptor(Matchers.any(),Matchers.annotatedWith(AddressEvent.class), new AddressEventAOPInterceptor());
 		bindInterceptor(Matchers.any(),Matchers.annotatedWith(ArrangementEvent.class), new ArrangementEventAOPInterceptor());
 		bindInterceptor(Matchers.any(),Matchers.annotatedWith(ClassificationEvent.class), new ClassificationEventAOPInterceptor());
@@ -24,6 +30,6 @@ public class EventInterceptorsBinder
 		bindInterceptor(Matchers.any(),Matchers.annotatedWith(ProductEvent.class), new ProductEventAOPInterceptor());
 		bindInterceptor(Matchers.any(),Matchers.annotatedWith(ResourceItemEvent.class), new ResourceItemEventAOPInterceptor());
 		bindInterceptor(Matchers.any(),Matchers.annotatedWith(RulesEvent.class), new RulesEventAOPInterceptor());
-		bindInterceptor(Matchers.any(),Matchers.annotatedWith(LogItemEvent.class), new LogItemEventAOPInterceptor());*/
+		bindInterceptor(Matchers.any(),Matchers.annotatedWith(LogItemEvent.class), new LogItemEventAOPInterceptor());
 	}
 }

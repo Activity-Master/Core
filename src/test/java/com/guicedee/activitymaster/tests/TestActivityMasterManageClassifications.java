@@ -12,8 +12,10 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.client.IGuiceContext;
+import com.guicedee.client.utils.LogUtils;
 import com.guicedee.client.utils.Pair;
 import io.smallrye.mutiny.Uni;
+import org.apache.logging.log4j.Level;
 import org.hibernate.reactive.mutiny.Mutiny;
 import org.junit.jupiter.api.*;
 
@@ -29,6 +31,8 @@ public class TestActivityMasterManageClassifications {
 
   @BeforeAll
   public void setup() {
+      LogUtils.addConsoleLogger(Level.INFO);
+
     com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.get()
         .setApplicationEnterpriseName(TestEnterprise.name());
     IGuiceContext.instance();

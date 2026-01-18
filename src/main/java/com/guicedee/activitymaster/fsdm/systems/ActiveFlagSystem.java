@@ -41,8 +41,24 @@ public class ActiveFlagSystem
 
     return systemsService
                .create(session, enterprise, ActivateFlagSystemName, "The system for the active flag management")
-               .invoke(system -> log.debug("✅ Created Active Flag System: '{}' with session: {}", system.getName(), session.hashCode()))
+               .onItem()
+               .ifNull()
+               .continueWith(() -> {
+                 log.warn("Active Flag system creation returned null, trying to find it");
+                 return null;
+               })
                .chain(system -> {
+                 if (system == null) {
+                   return systemsService.findSystem(session, enterprise, ActivateFlagSystemName);
+                 }
+                 return Uni.createFrom().item(system);
+               })
+               .chain(system -> {
+                 if (system == null) {
+                   log.error("❌ Failed to resolve Active Flag system for enterprise: '{}'", enterprise.getName());
+                   return Uni.createFrom().failure(new RuntimeException("Failed to resolve Active Flag system"));
+                 }
+                 log.debug("✅ Found/Created Active Flag System: '{}' with session: {}", system.getName(), session.hashCode());
                  return systemsService.registerNewSystem(session, enterprise, system)
                             .replaceWith(system);
                })

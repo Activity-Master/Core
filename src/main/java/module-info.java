@@ -26,6 +26,8 @@ module com.guicedee.activitymaster.fsdm {
   requires transitive io.vertx.core;
   requires transitive org.hibernate.reactive;
 
+  requires transitive com.ongres.scram.client;
+
   requires com.google.common;
 
   requires static lombok;
@@ -109,6 +111,7 @@ module com.guicedee.activitymaster.fsdm {
 		
   opens com.guicedee.activitymaster.fsdm to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive,  com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy;
   opens com.guicedee.activitymaster.fsdm.implementations to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive,  com.entityassist, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geography;
+  opens com.guicedee.activitymaster.fsdm.implementations.interceptors to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind;
   opens com.guicedee.activitymaster.fsdm.db to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive,  com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
   opens com.guicedee.activitymaster.fsdm.db.abstraction to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive,  com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
 

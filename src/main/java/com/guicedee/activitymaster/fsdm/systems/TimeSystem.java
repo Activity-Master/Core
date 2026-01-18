@@ -76,12 +76,27 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
     return systemsService
                .create(session, enterprise, getSystemName(), getSystemDescription())
+               .onItem()
+               .ifNull()
+               .continueWith(() -> {
+                 log.warn("Time system creation returned null, trying to find it");
+                 return null;
+               })
                .chain(system -> {
-                 log.debug("✅ Created Time System: '{}' with session: {}", system.getName(), session.hashCode());
+                 if (system == null) {
+                   return systemsService.findSystem(session, enterprise, getSystemName());
+                 }
+                 return Uni.createFrom().item(system);
+               })
+               .chain(system -> {
+                 if (system == null) {
+                   log.error("❌ Failed to resolve Time system for enterprise: '{}'", enterprise.getName());
+                   return Uni.createFrom().failure(new RuntimeException("Failed to resolve Time system"));
+                 }
+                 log.debug("✅ Found/Created Time System: '{}' with session: {}", system.getName(), session.hashCode());
 
                  // Chain the registerNewSystem call properly
-                 return getSystem(session, enterprise)
-                            .chain(sys -> systemsService.registerNewSystem(session, enterprise, sys))
+                 return systemsService.registerNewSystem(session, enterprise, system)
                             .onItem()
                             .invoke(() -> {
                               log.debug("✅ Registered system: {}", getSystemName());
@@ -89,8 +104,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                             })
                             .onFailure()
                             .invoke(error -> log.error("❌ Error registering system: {}", error.getMessage(), error))
-                            .chain(() -> Uni.createFrom()
-                                             .item(system)); // Chain back to return the original system
+                            .replaceWith(system); // Return the system
                })
                .onFailure()
                .invoke(error -> log.error("❌ Failed to create Time System: '{}' with session {}: {}",

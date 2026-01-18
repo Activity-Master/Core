@@ -57,8 +57,24 @@ public class EnterpriseSystem
   {
         return systemsService
                .create(session, enterprise, EnterpriseSystemName, "The Enterprise Management System", "Enterprise")
-               .invoke(system -> log.debug("✅ Created Enterprise System: '{}' with session: {}", system.getName(), session.hashCode()))
+               .onItem()
+               .ifNull()
+               .continueWith(() -> {
+                 log.warn("Enterprise system creation returned null, trying to find it");
+                 return null;
+               })
                .chain(system -> {
+                 if (system == null) {
+                   return systemsService.findSystem(session, enterprise, EnterpriseSystemName);
+                 }
+                 return Uni.createFrom().item(system);
+               })
+               .chain(system -> {
+                 if (system == null) {
+                   log.error("❌ Failed to resolve Enterprise system for enterprise: '{}'", enterprise.getName());
+                   return Uni.createFrom().failure(new RuntimeException("Failed to resolve Enterprise system"));
+                 }
+                 log.debug("✅ Found/Created Enterprise System: '{}' with session: {}", system.getName(), session.hashCode());
                  return systemsService.registerNewSystem(session, enterprise, system)
                             .replaceWith(system);
                })
