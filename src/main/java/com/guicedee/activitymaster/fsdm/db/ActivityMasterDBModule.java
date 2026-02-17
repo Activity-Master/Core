@@ -42,6 +42,8 @@ public class ActivityMasterDBModule
         connectionInfo.setPassword(Environment.getProperty("FSDM_PASSWORD","fsdm"));
         connectionInfo.setDefaultConnection(true);
         connectionInfo.setReactive(true);
+		connectionInfo.setMinPoolSize(5);
+		connectionInfo.setMaxPoolSize(300);
         return connectionInfo;
 	}
 	

@@ -246,6 +246,12 @@
             <property name="hibernate.reactive" value="true"/>
             <property name="hibernate.flushMode" value="FLUSH_AUTO"/>
 
+            <property name="jakarta.persistence.lock.scope" value="ROOT_ONLY"/>
+            <property name="jakarta.persistence.lock.timeout" value="1000"/>
+            <property name="hibernate.vertx.pool.idle_timeout" value="5000"/>
+            <property name="hibernate.vertx.pool.connect_timeout" value="5000"/>
+            <property name="hibernate.vertx.pool.max_wait_queue_size" value="10"/>
+
             <property name="jakarta.persistence.validation.mode" value="none"/>
 
             <!--<property name="hibernate.jdbc.batch_size" value="500"/>-->
@@ -253,7 +259,12 @@
             <property name="hibernate.vertx.prepared_statement_cache.max_size" value="500"/>
 
 
-            <property name="hibernate.connection.pool_size" value="80"/>
+            <!-- Hibernate Reactive Vert.x SQL client pool size -->
+            <property name="hibernate.vertx.pool.max-size" value="300"/>
+            <!-- Ensure HR uses a shared, named Vert.x SQL pool so it can be reused across contexts -->
+            <property name="hibernate.vertx.pool.shared" value="true"/>
+            <property name="hibernate.vertx.pool.name" value="ActivityMaster"/>
+            <property name="hibernate.connection.pool_size" value="300"/>
             <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
             <property name="hibernate.javax.cache.missing_cache_strategy" value="create"/>
             <property name="hibernate.jakarta.cache.missing_cache_strategy" value="create"/>
