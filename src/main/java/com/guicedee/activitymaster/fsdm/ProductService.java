@@ -48,9 +48,9 @@ import org.hibernate.reactive.mutiny.Mutiny;
 import java.util.*;
 
 import static com.entityassist.enumerations.Operand.*;
+import static com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.applicationEnterpriseName;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
 
-@SuppressWarnings("unchecked")
 @Log4j2
 @Singleton
 public class ProductService
@@ -101,58 +101,64 @@ public class ProductService
 
     @Override
     public Uni<IProduct<?, ?>> createProduct(Mutiny.Session session, String productType, UUID key, String name, String description, String code, ISystems<?, ?> system, UUID... identityToken) {
-        Product newProduct = new Product();
-        var enterprise = system.getEnterprise();
+        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
+            var createSession = tuple.getItem1();
+            var createEnterprise = tuple.getItem2();
+            var createSystem = tuple.getItem3();
+            var createIdentityToken = tuple.getItem4();
 
-        return findProduct(session, name, system, identityToken)
-                .onFailure(NoResultException.class)
-                .recoverWithUni(existingProduct -> {
-                    newProduct.setId(key);
-                    newProduct.setName(name);
-                    newProduct.setProductCode(code);
-                    newProduct.setDescription(description);
-                    newProduct.setEnterpriseID(enterprise);
-                    newProduct.setSystemID(system);
-                    newProduct.setOriginalSourceSystemID(system.getId());
+            Product newProduct = new Product();
 
-                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-                    return acService
-                            .getActiveFlag(session, enterprise)
-                            .chain(activeFlag -> {
-                                newProduct.setActiveFlagID(activeFlag);
-                                return session
-                                        .persist(newProduct)
-                                        .replaceWith(Uni
-                                                .createFrom()
-                                                .item(newProduct))
-                                        .chain(product ->
-                                                // Find existing product type; do not create here
-                                                findProductTypeForProduct(session, productType, system, identityToken)
-                                                        .chain(foundType -> {
-                                                            // Link product -> product type (classification: NoClassification, value: empty)
-                                                            return newProduct
-                                                                    .addProductTypes(session, productType, "", NoClassification.toString(), system, identityToken)
+            return findProduct(createSession, name, createSystem, createIdentityToken)
+                    .onFailure(NoResultException.class)
+                    .recoverWithUni(existingProduct -> {
+                        newProduct.setId(key);
+                        newProduct.setName(name);
+                        newProduct.setProductCode(code);
+                        newProduct.setDescription(description);
+                        newProduct.setEnterpriseID(createEnterprise);
+                        newProduct.setSystemID(createSystem);
+                        newProduct.setOriginalSourceSystemID(createSystem.getId());
+
+                        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                        return acService
+                                .getActiveFlag(createSession, createEnterprise, createIdentityToken)
+                                .chain(activeFlag -> {
+                                    newProduct.setActiveFlagID(activeFlag);
+                                    return createSession
+                                            .persist(newProduct)
+                                            .replaceWith(Uni
+                                                    .createFrom()
+                                                    .item(newProduct))
+                                            .chain(product ->
+                                                    // Find existing product type; do not create here
+                                                    findProductTypeForProduct(createSession, productType, createSystem, createIdentityToken)
+                                                            .chain(foundType -> {
+                                                                // Link product -> product type (classification: NoClassification, value: empty)
+                                                                return newProduct
+                                                                        .addProductTypes(createSession, productType, "", NoClassification.toString(), createSystem, createIdentityToken)
+                                                                        .onFailure()
+                                                                        .invoke(err -> log.warn("Error linking product to product type", err))
+                                                                        .onFailure()
+                                                                        .recoverWithNull()
+                                                                        .replaceWith(foundType);
+                                                            })
+                                                            // Continue with security creation for the product
+                                                            .replaceWith(newProduct)
+                                                            .chain(p -> newProduct
+                                                                    .createDefaultSecurity(createSession, createSystem, createIdentityToken)
                                                                     .onFailure()
-                                                                    .invoke(err -> log.warn("Error linking product to product type", err))
+                                                                    .invoke(error -> log.warn("Error in createDefaultSecurity", error))
                                                                     .onFailure()
-                                                                    .recoverWithNull()
-                                                                    .replaceWith(foundType);
-                                                        })
-                                                        // Continue with security creation for the product
-                                                        .replaceWith(newProduct)
-                                                        .chain(p -> newProduct
-                                                                .createDefaultSecurity(session, system, identityToken)
-                                                                .onFailure()
-                                                                .invoke(error -> log.warn("Error in createDefaultSecurity", error))
-                                                                .onFailure()
-                                                                .recoverWithUni(err -> Uni
-                                                                        .createFrom()
-                                                                        .nullItem())
-                                                                .replaceWith(newProduct)
-                                                        ))
-                                        ;
-                            });
-                });
+                                                                    .recoverWithUni(err -> Uni
+                                                                            .createFrom()
+                                                                            .nullItem())
+                                                                    .replaceWith(newProduct)
+                                                            ))
+                                            ;
+                                });
+                    });
+        });
     }
 
     //@Transactional()
@@ -200,42 +206,48 @@ public class ProductService
     @Override
     //@Transactional()
     public Uni<IProductType<?, ?>> createProductType(Mutiny.Session session, String productsType, UUID key, String description, ISystems<?, ?> system, UUID... identityToken) {
-        ProductType newProductType = new ProductType();
-        var enterprise = system.getEnterprise();
+        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
+            var createSession = tuple.getItem1();
+            var createEnterprise = tuple.getItem2();
+            var createSystem = tuple.getItem3();
+            var createIdentityToken = tuple.getItem4();
 
-        return findProductTypeForProduct(session, productsType, system, identityToken)
-                .onFailure(NoResultException.class)
-                .recoverWithUni(existingProductType -> {
-                    newProductType.setId(key);
-                    newProductType.setName(productsType);
-                    newProductType.setDescription(description);
-                    newProductType.setSystemID(system);
-                    newProductType.setEnterpriseID(enterprise);
-                    newProductType.setOriginalSourceSystemID(system.getId());
+            ProductType newProductType = new ProductType();
 
-                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-                    return acService
-                            .getActiveFlag(session, enterprise)
-                            .chain(activeFlag -> {
-                                newProductType.setActiveFlagID(activeFlag);
-                                return session
-                                        .persist(newProductType)
-                                        .replaceWith(Uni
-                                                .createFrom()
-                                                .item(newProductType))
-                                        .chain(persisted ->
-                                                persisted
-                                                        .createDefaultSecurity(session, system, identityToken)
-                                                        .onFailure()
-                                                        .invoke(error -> log.warn("Error in createDefaultSecurity", error))
-                                                        .onFailure()
-                                                        .recoverWithUni(err -> Uni
-                                                                .createFrom()
-                                                                .nullItem())
-                                                        .replaceWith((IProductType<?, ?>) persisted)
-                                        );
-                            });
-                });
+            return findProductTypeForProduct(createSession, productsType, createSystem, createIdentityToken)
+                    .onFailure(NoResultException.class)
+                    .recoverWithUni(existingProductType -> {
+                        newProductType.setId(key);
+                        newProductType.setName(productsType);
+                        newProductType.setDescription(description);
+                        newProductType.setSystemID(createSystem);
+                        newProductType.setEnterpriseID(createEnterprise);
+                        newProductType.setOriginalSourceSystemID(createSystem.getId());
+
+                        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                        return acService
+                                .getActiveFlag(createSession, createEnterprise, createIdentityToken)
+                                .chain(activeFlag -> {
+                                    newProductType.setActiveFlagID(activeFlag);
+                                    return createSession
+                                            .persist(newProductType)
+                                            .replaceWith(Uni
+                                                    .createFrom()
+                                                    .item(newProductType))
+                                            .chain(persisted ->
+                                                    persisted
+                                                            .createDefaultSecurity(createSession, createSystem, createIdentityToken)
+                                                            .onFailure()
+                                                            .invoke(error -> log.warn("Error in createDefaultSecurity", error))
+                                                            .onFailure()
+                                                            .recoverWithUni(err -> Uni
+                                                                    .createFrom()
+                                                                    .nullItem())
+                                                            .replaceWith((IProductType<?, ?>) persisted)
+                                            );
+                                });
+                    });
+        });
     }
 
     //@Transactional()
@@ -269,7 +281,7 @@ public class ProductService
                                 .get()
                                 .invoke(res -> {
                                     if (res != null && res.getId() != null) {
-                                        productTypeKeyToId.put(key, (java.util.UUID) res.getId());
+                                        productTypeKeyToId.put(key,res.getId());
                                     }
                                 });
                     });
@@ -283,7 +295,7 @@ public class ProductService
                 .get()
                 .invoke(res -> {
                     if (res != null && res.getId() != null) {
-                        productTypeKeyToId.put(key, (java.util.UUID) res.getId());
+                        productTypeKeyToId.put(key, res.getId());
                     }
                 });
     }

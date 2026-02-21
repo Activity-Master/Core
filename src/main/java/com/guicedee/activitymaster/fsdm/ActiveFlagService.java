@@ -30,6 +30,7 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
+import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ActiveFlagException;
@@ -65,16 +66,22 @@ public class ActiveFlagService
  //@Transactional()
 	public Uni<IActiveFlag<?,?>> create(Mutiny.Session session, IEnterprise<?,?> enterprise, String name, String description, UUID... identifyingToken)
 	{
-		return findFlagByName(session, name, enterprise, identifyingToken)
-			.onFailure(NoResultException.class).recoverWithUni(() -> {
-				ActiveFlag af = new ActiveFlag();
-				af.setName(name);
-				af.setDescription(description);
-				af.setAllowAccess(true);
-				af.setEnterpriseID((Enterprise) enterprise);
-				return af.builder(session)
-					.persist(af).replaceWith(Uni.createFrom().item(af));
-			});
+		return SessionUtils.withActivityMaster(enterprise.getName(), ActivateFlagSystemName, tuple -> {
+			var createSession = tuple.getItem1();
+			var createEnterprise = tuple.getItem2();
+			var createIdentityToken = tuple.getItem4();
+
+			return findFlagByName(createSession, name, createEnterprise, createIdentityToken)
+				.onFailure(NoResultException.class).recoverWithUni(() -> {
+					ActiveFlag af = new ActiveFlag();
+					af.setName(name);
+					af.setDescription(description);
+					af.setAllowAccess(true);
+					af.setEnterpriseID((Enterprise) createEnterprise);
+					return af.builder(createSession)
+						.persist(af).replaceWith(Uni.createFrom().item(af));
+				});
+		});
 	}
 
 
@@ -98,7 +105,7 @@ public class ActiveFlagService
 		UUID cachedId = flagKeyToId.get(key);
 		if (cachedId != null) {
 			log.trace("🔁 ActiveFlag cache hit for key '{}': {} — loading by UUID", key, cachedId);
-			return (Uni) getFlagById(session, cachedId);
+			return getFlagById(session, cachedId);
 		}
 
 		// Use ID-first resolution with shared NameIdCache and native SQL, then load by UUID
@@ -109,7 +116,7 @@ public class ActiveFlagService
 						return Uni.createFrom().failure(new NoResultException("ActiveFlag not found: " + flag));
 					}
 					flagKeyToId.put(key, id);
-					return (Uni) getFlagById(session, id);
+					return getFlagById(session, id);
 				});
 	}
 

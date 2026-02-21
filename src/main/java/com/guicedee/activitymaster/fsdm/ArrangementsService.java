@@ -188,35 +188,39 @@ public class ArrangementsService
     //
     public Uni<IArrangementType<?, ?>> createArrangementType(Mutiny.Session session, String type, UUID key, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.trace("Creating arrangement type: {}, key: {}", type, key);
-        ArrangementType xr = new ArrangementType();
-        xr.setId(key);
-        xr.setName(type);
-        xr.setDescription(type);
-        xr.setSystemID(system);
-        xr.setOriginalSourceSystemID(system.getId());
-        var enterprise = system.getEnterprise();
-        xr.setEnterpriseID(enterprise);
-        IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
+            log.trace("Creating arrangement type: {}, key: {}", type, key);
+            var createSession = tuple.getItem1();
+            var createEnterprise = tuple.getItem2();
+            var createSystem = tuple.getItem3();
+            var createIdentityToken = tuple.getItem4();
 
-        return (Uni)acService.getActiveFlag(session, enterprise)
-                       .chain(activeFlag -> {
-                           xr.setActiveFlagID(activeFlag);
-                           return session.persist(xr).replaceWith(Uni.createFrom().item(xr));
-                       })
-                       .chain(persisted -> {
-                           // Create default security with proper chaining
-                           return persisted.createDefaultSecurity(session, system, identityToken)
-                               .onItem().invoke(() -> log.trace("Security setup completed successfully for arrangement type"))
-                               .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for arrangement type", error))
-                               .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
-                               .map(result -> (IArrangementType<?, ?>) persisted);
-                       })
-                       .onFailure()
-                       .invoke(error ->
-                                       log.error("Failed to create arrangement type: {}", type, error)
-                       );
+            ArrangementType xr = new ArrangementType();
+            xr.setId(key);
+            xr.setName(type);
+            xr.setDescription(type);
+            xr.setSystemID(createSystem);
+            xr.setOriginalSourceSystemID(createSystem.getId());
+            xr.setEnterpriseID(createEnterprise);
 
+            return (Uni) activeFlagService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
+                    .chain(activeFlag -> {
+                        xr.setActiveFlagID(activeFlag);
+                        return createSession.persist(xr).replaceWith(Uni.createFrom().item(xr));
+                    })
+                    .chain(persisted -> {
+                        // Create default security with proper chaining
+                        return persisted.createDefaultSecurity(createSession, createSystem, createIdentityToken)
+                                .onItem().invoke(() -> log.trace("Security setup completed successfully for arrangement type"))
+                                .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for arrangement type", error))
+                                .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
+                                .map(result -> (IArrangementType<?, ?>) persisted);
+                    })
+                    .onFailure()
+                    .invoke(error ->
+                            log.error("Failed to create arrangement type: {}", type, error)
+                    );
+        });
     }
 
 

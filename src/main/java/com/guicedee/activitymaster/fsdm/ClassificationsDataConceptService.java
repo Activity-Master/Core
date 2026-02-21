@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConceptService;
+import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassificationDataConcept;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
@@ -18,6 +19,7 @@ import java.util.UUID;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.applicationEnterpriseName;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
 
 @Log4j2
@@ -39,38 +41,44 @@ public class ClassificationsDataConceptService
                                                                  ISystems<?, ?> system,
                                                                  UUID... identityToken)
   {
-    ClassificationDataConcept newConcept = new ClassificationDataConcept();
-    var enterprise = system.getEnterprise();
-    return find(session, name, system, identityToken)
-               .onFailure(NoResultException.class)
-               .recoverWithUni(existingConcept -> {
-                 newConcept.setDescription(description);
-                 newConcept.setName(name.classificationValue());
-                 newConcept.setSystemID(system);
-                 newConcept.setOriginalSourceSystemID(system.getId());
-                 newConcept.setOriginalSourceSystemUniqueID(null);
+    return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
+      var createSession = tuple.getItem1();
+      var createEnterprise = tuple.getItem2();
+      var createSystem = tuple.getItem3();
+      var createIdentityToken = tuple.getItem4();
 
-                 IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-                 return acService.getActiveFlag(session, enterprise)
-                            .chain(activeFlag -> {
-                              newConcept.setActiveFlagID(activeFlag);
-                              newConcept.setEnterpriseID(enterprise);
-                              return session.persist(newConcept)
-                                         .replaceWith(Uni.createFrom()
-                                                          .item(newConcept))
-                                         .chain(persisted -> {
-                                           log.debug("🔐 Starting security setup for classification data concept: '{}'", persisted.getName());
-                                           // Chain the security setup operation properly
-                                           return persisted.createDefaultSecurity(session, system, identityToken)
-                                               .onItem()
-                                               .invoke(() -> log.debug("✅ Security setup completed successfully for: '{}'", persisted.getName()))
-                                               .onFailure()
-                                               .invoke(error -> log.warn("⚠️ Error in createDefaultSecurity for '{}': {}", persisted.getName(), error.getMessage(), error))
-                                               .chain(() -> Uni.createFrom().item((IClassificationDataConcept<?, ?>) persisted)); // Continue with persisted object regardless of security setup outcome
-                                         });
-                            });
+      ClassificationDataConcept newConcept = new ClassificationDataConcept();
+      return find(createSession, name, createSystem, createIdentityToken)
+                 .onFailure(NoResultException.class)
+                 .recoverWithUni(_ -> {
+                   newConcept.setDescription(description);
+                   newConcept.setName(name.classificationValue());
+                   newConcept.setSystemID(createSystem);
+                   newConcept.setOriginalSourceSystemID(createSystem.getId());
+                   newConcept.setOriginalSourceSystemUniqueID(null);
 
-               });
+                   IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                   return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
+                              .chain(activeFlag -> {
+                                newConcept.setActiveFlagID(activeFlag);
+                                newConcept.setEnterpriseID(createEnterprise);
+                                return createSession.persist(newConcept)
+                                           .replaceWith(Uni.createFrom()
+                                                            .item(newConcept))
+                                           .chain(persisted -> {
+                                             log.debug("🔐 Starting security setup for classification data concept: '{}'", persisted.getName());
+                                             // Chain the security setup operation properly
+                                             return persisted.createDefaultSecurity(createSession, createSystem, createIdentityToken)
+                                                 .onItem()
+                                                 .invoke(() -> log.debug("✅ Security setup completed successfully for: '{}'", persisted.getName()))
+                                                 .onFailure()
+                                                 .invoke(error -> log.warn("⚠️ Error in createDefaultSecurity for '{}': {}", persisted.getName(), error.getMessage(), error))
+                                                 .chain(() -> Uni.createFrom().item((IClassificationDataConcept<?, ?>) persisted)); // Continue with persisted object regardless of security setup outcome
+                                           });
+                              });
+
+                 });
+    });
   }
 
   @Override
@@ -87,9 +95,6 @@ public class ClassificationsDataConceptService
     return find(session, name.classificationValue(), system, identityToken);
   }
 
-  //@Transactional()
-  //@CacheResult(cacheName = "FindConceptWithConceptValueAndSystemString")
-  @SuppressWarnings("unchecked")
   public Uni<IClassificationDataConcept<?, ?>> find(Mutiny.Session session, String name, ISystems<?, ?> system, UUID... identityToken)
   {
     var enterprise = system.getEnterprise();
@@ -119,7 +124,7 @@ public class ClassificationsDataConceptService
             .setParameter("visible", visibleIds)
             .getSingleResult()
             .map(r -> (UUID) r))
-            .flatMap(id -> (Uni) getConceptById(session, id));
+            .flatMap(id -> getConceptById(session, id));
   }
 
   // UUID-based lookup to leverage L2 cache (@Cacheable on entity + L2 cache enabled)

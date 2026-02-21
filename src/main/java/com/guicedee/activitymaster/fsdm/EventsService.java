@@ -1,33 +1,5 @@
 package com.guicedee.activitymaster.fsdm;
 
-/**
- * Reactivity Migration Checklist:
- * 
- * [✓] One action per Mutiny.Session at a time
- *     - All operations on a session are sequential
- *     - No parallel operations on the same session
- * 
- * [✓] Pass Mutiny.Session through the chain
- *     - All methods accept session as parameter
- *     - Session is passed to all dependent operations
- * 
- * [✓] No await() usage
- *     - Using reactive chains instead of blocking operations
- * 
- * [✓] Proper chaining and non-blocking execution
- *     - Reactive chains are sequential and non-blocking
- *     - createDefaultSecurity is properly chained in createEvent and createEventType
- * 
- * [✓] No parallel operations on a session
- *     - Not using Uni.combine().all().unis() with operations that share the same session
- * 
- * [✓] No session/transaction creation in libraries
- *     - Sessions are passed in from the caller
- *     - No sessionFactory.withTransaction() in methods
- * 
- * See ReactivityMigrationGuide.md for more details on these rules.
- */
-
 import com.entityassist.enumerations.OrderByType;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
@@ -36,42 +8,37 @@ import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
+import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangement;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEventType;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangement;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedParty;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.products.IProduct;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRules;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.EventException;
-import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.fsdm.db.entities.events.Event;
-import com.guicedee.activitymaster.fsdm.db.entities.events.EventType;
-import com.guicedee.activitymaster.fsdm.db.entities.events.*;
-import com.guicedee.activitymaster.fsdm.db.entities.events.builders.*;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.Arrangement;
+import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
+import com.guicedee.activitymaster.fsdm.db.entities.events.*;
+import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventQueryBuilder;
+import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventXClassificationQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.fsdm.db.entities.product.Product;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.Rules;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
-import io.vertx.core.Vertx;
 import jakarta.persistence.criteria.JoinType;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification;
-import static com.guicedee.client.IGuiceContext.get;
 import static com.entityassist.enumerations.Operand.*;
+import static com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.applicationEnterpriseName;
+import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification;
 
 @Log4j2
 @Singleton
@@ -109,84 +76,95 @@ public class EventsService
     @Override
     public Uni<IEvent<?, ?>> createEvent(Mutiny.Session session, String eventType, UUID key, ISystems<?, ?> system, UUID... identityToken)
     {
-        Event event = new Event();
-        if (key != null)
-        {
-            event.setId(key);
-        }
-      var enterprise = system.getEnterprise();
-        event.setEnterpriseID(enterprise);
-        event.setSystemID(system);
-        event.setOriginalSourceSystemID(system.getId());
+        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
+            var createSession = tuple.getItem1();
+            var createEnterprise = tuple.getItem2();
+            var createSystem = tuple.getItem3();
+            var createIdentityToken = tuple.getItem4();
 
-        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-        return acService.getActiveFlag(session, enterprise)
-                       .chain(activeFlag -> {
-                           event.setActiveFlagID(activeFlag);
-                           return session.persist(event)
-                                          .replaceWith(Uni.createFrom()
-                                                               .item(event));
-                       })
-                       .chain(persistedEvent -> {
-                           // Chain the createDefaultSecurity operation properly
-                           return persistedEvent.createDefaultSecurity(session, system, identityToken)
-                               .onItem().invoke(() -> log.trace("Security setup completed successfully for event"))
-                               .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for event: " + error.getMessage()))
-                               .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
-                               .chain(() -> persistedEvent.addEventTypes(session, eventType, "", NoClassification.toString(), system, identityToken)
-                                          .map(result -> persistedEvent));
-                       });
+            Event event = new Event();
+            if (key != null)
+            {
+                event.setId(key);
+            }
+            event.setEnterpriseID(createEnterprise);
+            event.setSystemID(createSystem);
+            event.setOriginalSourceSystemID(createSystem.getId());
 
+            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+            return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
+                           .chain(activeFlag -> {
+                               event.setActiveFlagID(activeFlag);
+                               return createSession.persist(event)
+                                              .replaceWith(Uni.createFrom()
+                                                                   .item(event));
+                           })
+                           .chain(persistedEvent -> {
+                               // Chain the createDefaultSecurity operation properly
+                               return persistedEvent.createDefaultSecurity(createSession, createSystem, createIdentityToken)
+                                   .onItem().invoke(() -> log.trace("Security setup completed successfully for event"))
+                                   .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for event: " + error.getMessage()))
+                                   .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
+                                   .chain(() -> persistedEvent.addEventTypes(createSession, eventType, "", NoClassification.toString(), createSystem, createIdentityToken)
+                                              .map(result -> persistedEvent));
+                           });
+        });
     }
 
     @Override
     public Uni<IEventType<?, ?>> createEventType(Mutiny.Session session, String eventType, ISystems<?, ?> system, UUID... identityToken)
     {
-        EventType et = new EventType();
-        var enterprise = system.getEnterprise();
-        return et.builder(session)
-                       .withName(eventType)
-                       .withEnterprise(enterprise)
-                       .inActiveRange()
-                       .inDateRange()
-                       .getCount()
-                       .map(count -> count > 0)
-                       .chain(exists -> {
-                           if (!exists)
-                           {
-                               if (et.getId() == null)
+        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
+            var createSession = tuple.getItem1();
+            var createEnterprise = tuple.getItem2();
+            var createSystem = tuple.getItem3();
+            var createIdentityToken = tuple.getItem4();
+
+            EventType et = new EventType();
+            return et.builder(createSession)
+                           .withName(eventType)
+                           .withEnterprise(createEnterprise)
+                           .inActiveRange()
+                           .inDateRange()
+                           .getCount()
+                           .map(count -> count > 0)
+                           .chain(exists -> {
+                               if (!exists)
                                {
-                                   et.setId(UUID.randomUUID());
+                                   if (et.getId() == null)
+                                   {
+                                       et.setId(UUID.randomUUID());
+                                   }
+
+                                   EventType etBuilt = new EventType();
+                                   etBuilt.setId(et.getId());
+                                   etBuilt.setName(eventType);
+                                   etBuilt.setDescription(eventType);
+                                   etBuilt.setSystemID(createSystem);
+                                   etBuilt.setEnterpriseID(createEnterprise);
+
+                                   IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                                   return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
+                                                  .chain(activeFlag -> {
+                                                      etBuilt.setActiveFlagID(activeFlag);
+                                                      etBuilt.setOriginalSourceSystemID(createSystem.getId());
+                                                      return createSession.persist(etBuilt).replaceWith(Uni.createFrom().item(etBuilt));
+                                                  })
+                                                  .chain(persistedEt -> {
+                                                      // Chain the createDefaultSecurity operation properly
+                                                      return persistedEt.createDefaultSecurity(createSession, createSystem, createIdentityToken)
+                                                          .onItem().invoke(() -> log.trace("Security setup completed successfully for event type"))
+                                                          .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for event type: " + error.getMessage()))
+                                                          .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
+                                                          .map(_ -> persistedEt);
+                                                  });
                                }
-
-                               EventType etBuilt = new EventType();
-                               etBuilt.setId(et.getId());
-                               etBuilt.setName(eventType);
-                               etBuilt.setDescription(eventType);
-                               etBuilt.setSystemID(system);
-                               etBuilt.setEnterpriseID(enterprise);
-
-                               IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-                               return acService.getActiveFlag(session, enterprise)
-                                              .chain(activeFlag -> {
-                                                  etBuilt.setActiveFlagID(activeFlag);
-                                                  etBuilt.setOriginalSourceSystemID(system.getId());
-                                                  return session.persist(etBuilt).replaceWith(Uni.createFrom().item(etBuilt));
-                                              })
-                                              .chain(persistedEt -> {
-                                                  // Chain the createDefaultSecurity operation properly
-                                                  return persistedEt.createDefaultSecurity(session, system, identityToken)
-                                                      .onItem().invoke(() -> log.trace("Security setup completed successfully for event type"))
-                                                      .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for event type: " + error.getMessage()))
-                                                      .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
-                                                      .map(result -> persistedEt);
-                                              });
-                           }
-                           else
-                           {
-                               return findEventType(session, eventType, system, identityToken);
-                           }
-                       });
+                               else
+                               {
+                                   return findEventType(createSession, eventType, createSystem, createIdentityToken);
+                               }
+                           });
+        });
     }
 
     @Override
@@ -236,7 +214,7 @@ public class EventsService
                     eqb.join(Event_.classifications, qb, JoinType.INNER, je);
                     eqb.orderBy(Event_.effectiveFromDate, OrderByType.DESC);
 
-                    return eqb.getAll().map(list -> new ArrayList<IEvent<?, ?>>(list));
+                    return eqb.getAll().map(ArrayList::new);
                 });
     }
 
@@ -293,11 +271,11 @@ public class EventsService
                                     }
                                     eqb.where(Event_.id, InList, ids);
                                     eqb.orderBy(Event_.effectiveFromDate, OrderByType.DESC);
-                                    return eqb.getAll().map(list -> new ArrayList<IEvent<?, ?>>(list));
+                                    return eqb.getAll().map(ArrayList::new);
                                 });
                     }
                     eqb.orderBy(Event_.effectiveFromDate, OrderByType.DESC);
-                    return eqb.getAll().map(list -> new ArrayList<IEvent<?, ?>>(list));
+                    return eqb.getAll().map(ArrayList::new);
                 });
     }
 
@@ -381,11 +359,11 @@ public class EventsService
                                     }
                                     eqb.where(Event_.id, InList, ids);
                                     eqb.orderBy(Event_.effectiveFromDate, OrderByType.DESC);
-                                    return eqb.getAll().map(list -> new ArrayList<IEvent<?, ?>>(list));
+                                    return eqb.getAll().map(ArrayList::new);
                                 });
                     }
                     eqb.orderBy(Event_.effectiveFromDate, OrderByType.DESC);
-                    return eqb.getAll().map(list -> new ArrayList<IEvent<?, ?>>(list));
+                    return eqb.getAll().map(ArrayList::new);
                 });
     }
 

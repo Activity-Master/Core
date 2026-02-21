@@ -29,14 +29,13 @@ package com.guicedee.activitymaster.fsdm;
  */
 
 import com.google.inject.Inject;
-//import com.google.inject.persist.Transactional;
 import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
+import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
-import com.guicedee.activitymaster.fsdm.client.services.exceptions.ClassificationException;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.ClassificationQueryBuilder;
@@ -45,13 +44,14 @@ import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
-import java.time.Duration;
-import java.util.UUID;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.SecurityTokenClassifications.*;
+import static com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.applicationEnterpriseName;
+import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.HierarchyTypeClassification;
+import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification;
+import static com.guicedee.activitymaster.fsdm.client.services.classifications.SecurityTokenClassifications.Identity;
 
 
 @Log4j2
@@ -108,138 +108,137 @@ public class ClassificationService
     public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
                                              ISystems<?, ?> system,
                                              Integer sequenceNumber, IClassification<?, ?> parent, UUID... identityToken) {
-        var sessionFactory = IGuiceContext.get(Mutiny.SessionFactory.class);
 
         log.trace("🚀 Creating new classification: '{}' for system: '{}' with external session", name, system.getName());
-        log.trace("📝 Classification details - Name: '{}', Description: '{}', System ID: {}, Session: {}",
-                name, description, system.getId(), session.hashCode());
 
-        Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassificationDataConcept<?, ?>> dataConceptUni;
-        if (conceptName != null) {
-            log.trace("📋 Finding data concept: '{}' for system: '{}' with session: {}", conceptName, system.getName(), session.hashCode());
-            dataConceptUni = dataConceptService.find(session, conceptName, system, identityToken);
-        } else {
-            log.trace("📋 Finding default 'NoClassification' data concept for system: '{}' with session: {}", system.getName(), session.hashCode());
-            dataConceptUni = dataConceptService.find(session, "NoClassification", system, identityToken);
-        }
+        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
+            var createSession = tuple.getItem1();
+            var createEnterprise = tuple.getItem2();
+            var createSystem = tuple.getItem3();
+            var createIdentityToken = tuple.getItem4();
 
-        var enterprise = system.getEnterprise();
+            log.trace("📝 Classification details - Name: '{}', Description: '{}', System ID: {}, Session: {}",
+                    name, description, createSystem.getId(), createSession.hashCode());
 
-        log.trace("🔍 Checking if classification '{}' already exists with session: {}", name, session.hashCode());
-        return find(session, name, conceptName, system, identityToken)
-                .onItem()
-                .invoke(existing ->
-                        log.trace("✅ Found existing classification: '{}' with ID: {}", existing.getName(), existing.getId())
-                )
-                .onFailure()
-                .recoverWithUni(error -> {
-                    log.info("📋 Classification '{}' not found, creating new one", name);
-                    log.trace("🏛️ Opening new session and transaction for classification creation");
+            Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassificationDataConcept<?, ?>> dataConceptUni;
+            if (conceptName != null) {
+                log.trace("📋 Finding data concept: '{}' for system: '{}' with session: {}", conceptName, createSystem.getName(), createSession.hashCode());
+                dataConceptUni = dataConceptService.find(createSession, conceptName, createSystem, createIdentityToken);
+            } else {
+                log.trace("📋 Finding default 'NoClassification' data concept for system: '{}' with session: {}", createSystem.getName(), createSession.hashCode());
+                dataConceptUni = dataConceptService.find(createSession, "NoClassification", createSystem, createIdentityToken);
+            }
 
-                    log.trace("📋 Preparing classification entity with session: {}", session.hashCode());
+            log.trace("🔍 Checking if classification '{}' already exists with session: {}", name, createSession.hashCode());
+            return find(createSession, name, conceptName, createSystem, createIdentityToken)
+                    .onItem()
+                    .invoke(existing ->
+                            log.trace("✅ Found existing classification: '{}' with ID: {}", existing.getName(), existing.getId())
+                    )
+                    .onFailure()
+                    .recoverWithUni(error -> {
+                        log.info("📋 Classification '{}' not found, creating new one", name);
 
-                    Classification rootCl = new Classification();
-                    rootCl.setName(name);
-                    rootCl.setDescription(description);
-                    rootCl.setClassificationSequenceNumber(sequenceNumber == null ? 1 : sequenceNumber);
-                    rootCl.setSystemID(system);
-                    rootCl.setOriginalSourceSystemID(system.getId());
-                    rootCl.setOriginalSourceSystemUniqueID(UUID.fromString("00000000-0000-0000-0000-000000000000"));
-                    rootCl.setEnterpriseID(enterprise);
+                        Classification rootCl = new Classification();
+                        rootCl.setName(name);
+                        rootCl.setDescription(description);
+                        rootCl.setClassificationSequenceNumber(sequenceNumber == null ? 1 : sequenceNumber);
+                        rootCl.setSystemID(createSystem);
+                        rootCl.setOriginalSourceSystemID(createSystem.getId());
+                        rootCl.setOriginalSourceSystemUniqueID(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+                        rootCl.setEnterpriseID(createEnterprise);
 
-                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
-                    return dataConceptUni
-                            .onItem()
-                            .invoke(dataConcept -> log.trace("✅ Data concept retrieved for classification '{}'", name))
-                            .onFailure()
-                            .invoke(dataConceptError ->
-                                    log.error("❌ Failed to retrieve data concept for classification '{}': {}", name, dataConceptError.getMessage(), dataConceptError)
-                            )
-                            .chain(dataConcept -> {
-                                if (dataConcept instanceof ClassificationDataConcept cdc) {
-                                    rootCl.setConcept(cdc);
-                                    log.debug("🔗 Linked data concept to classification '{}'", name);
-                                } else {
-                                    log.warn("⚠️ DataConcept is not an instance of ClassificationDataConcept: {}",
-                                            dataConcept.getClass()
-                                                    .getName());
-                                }
+                        return dataConceptUni
+                                .onItem()
+                                .invoke(dataConcept -> log.trace("✅ Data concept retrieved for classification '{}'", name))
+                                .onFailure()
+                                .invoke(dataConceptError ->
+                                        log.error("❌ Failed to retrieve data concept for classification '{}': {}", name, dataConceptError.getMessage(), dataConceptError)
+                                )
+                                .chain(dataConcept -> {
+                                    if (dataConcept instanceof ClassificationDataConcept cdc) {
+                                        rootCl.setConcept(cdc);
+                                        log.debug("🔗 Linked data concept to classification '{}'", name);
+                                    } else {
+                                        log.warn("⚠️ DataConcept is not an instance of ClassificationDataConcept: {}",
+                                                dataConcept.getClass()
+                                                        .getName());
+                                    }
 
-                                log.trace("📋 Retrieving active flag for enterprise: '{}' with session: {}", enterprise.getName(), session.hashCode());
-                                return acService.getActiveFlag(session, enterprise);
-                            })
-                            .onItem()
-                            .invoke(activeFlag -> log.trace("✅ Active flag retrieved: {}", activeFlag.getId()))
-                            .onFailure()
-                            .invoke(activeFlagError ->
-                                    log.error("❌ Failed to retrieve active flag for enterprise '{}': {}", enterprise.getName(), activeFlagError.getMessage(), activeFlagError)
-                            )
-                            .chain(activeFlag -> {
-                                rootCl.setActiveFlagID(activeFlag);
-                                log.trace("🔗 Linked active flag to classification '{}'", name);
-                                log.trace("💾 Persisting classification '{}' to database using session: {}", name, session.hashCode());
-                                return rootCl.builder(session)
-                                        .persist(rootCl);
-                            })
-                            .onItem()
-                            .invoke(persisted ->
-                                    log.trace("✅ Classification '{}' successfully persisted with ID: {}", name, persisted.getId())
-                            )
-                            .onFailure()
-                            .invoke(persistError ->
-                                    log.error("❌ Failed to persist classification '{}': {}", name, persistError.getMessage(), persistError)
-                            )
-                            .chain(persisted -> {
-                                log.trace("🔐 Starting security creation for classification '{}'", name);
-                                // Use chain instead of await for reactive flow
-                                return rootCl.createDefaultSecurity(session, system, identityToken)
-                                        .onItem()
-                                        .invoke(result -> log.trace("🛡️ Security setup completed successfully for classification '{}'", name))
-                                        .onFailure()
-                                        .recoverWithItem(securityError -> {
-                                            log.warn("⚠️ Security creation failed for classification '{}': {}", name, securityError.getMessage());
-                                            return null; // Continue the chain even if security creation fails
-                                        })
-                                        .chain(securityResult -> {
-                                            // Handle parent-child relationship if needed
-                                            if (parent != null && !NoClassification.toString()
-                                                    .equals(name)) {
-                                                log.trace("👶 Setting up parent-child relationship for classification '{}' with parent '{}'", name, parent.getName());
-                                                return find(session, parent.getName(), system, identityToken)
-                                                        .onFailure()
-                                                        .recoverWithItem(e -> {
-                                                            log.warn("⚠️ Error finding parent classification '{}': {}", parent.getName(), e.getMessage());
-                                                            return null;
-                                                        })
-                                                        .chain(foundParent -> {
-                                                            if (foundParent != null) {
-                                                                log.trace("✅ Found parent classification: '{}'", parent.getName());
-                                                                try {
-                                                                    @SuppressWarnings("unchecked")
-                                                                    IClassification<Classification, ClassificationQueryBuilder> pp =
-                                                                            (IClassification<Classification, ClassificationQueryBuilder>) foundParent;
-                                                                    // Ensure reactive addChild is chained so the link is created before we complete
-                                                                    return pp.addChild(session, rootCl, NoClassification.toString(), null, system, identityToken)
-                                                                            .onItem().invoke(v -> log.trace("🔗 Added classification '{}' as child to parent '{}'", name, parent.getName()))
-                                                                            .onFailure().invoke(e -> log.warn("⚠️ Error adding child to parent: {}", e.getMessage(), e))
-                                                                            .replaceWith((IClassification<?, ?>) rootCl);
-                                                                } catch (Exception e) {
-                                                                    log.warn("⚠️ Error adding child to parent: {}", e.getMessage(), e);
+                                    log.trace("📋 Retrieving active flag for enterprise: '{}' with session: {}", createEnterprise.getName(), createSession.hashCode());
+                                    return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken);
+                                })
+                                .onItem()
+                                .invoke(activeFlag -> log.trace("✅ Active flag retrieved: {}", activeFlag.getId()))
+                                .onFailure()
+                                .invoke(activeFlagError ->
+                                        log.error("❌ Failed to retrieve active flag for enterprise '{}': {}", createEnterprise.getName(), activeFlagError.getMessage(), activeFlagError)
+                                )
+                                .chain(activeFlag -> {
+                                    rootCl.setActiveFlagID(activeFlag);
+                                    log.trace("🔗 Linked active flag to classification '{}'", name);
+                                    log.trace("💾 Persisting classification '{}' to database using session: {}", name, createSession.hashCode());
+                                    return rootCl.builder(createSession)
+                                            .persist(rootCl);
+                                })
+                                .onItem()
+                                .invoke(persisted ->
+                                        log.trace("✅ Classification '{}' successfully persisted with ID: {}", name, persisted.getId())
+                                )
+                                .onFailure()
+                                .invoke(persistError ->
+                                        log.error("❌ Failed to persist classification '{}': {}", name, persistError.getMessage(), persistError)
+                                )
+                                .chain(persisted -> {
+                                    log.trace("🔐 Starting security creation for classification '{}'", name);
+                                    return rootCl.createDefaultSecurity(createSession, createSystem, createIdentityToken)
+                                            .onItem()
+                                            .invoke(result -> log.trace("🛡️ Security setup completed successfully for classification '{}'", name))
+                                            .onFailure()
+                                            .recoverWithItem(securityError -> {
+                                                log.warn("⚠️ Security creation failed for classification '{}': {}", name, securityError.getMessage());
+                                                return null;
+                                            })
+                                            .chain(securityResult -> {
+                                                if (parent != null && !NoClassification.toString()
+                                                        .equals(name)) {
+                                                    log.trace("👶 Setting up parent-child relationship for classification '{}' with parent '{}'", name, parent.getName());
+                                                    return find(createSession, parent.getName(), createSystem, createIdentityToken)
+                                                            .onFailure()
+                                                            .recoverWithItem(e -> {
+                                                                log.warn("⚠️ Error finding parent classification '{}': {}", parent.getName(), e.getMessage());
+                                                                return null;
+                                                            })
+                                                            .chain(foundParent -> {
+                                                                if (foundParent != null) {
+                                                                    log.trace("✅ Found parent classification: '{}'", parent.getName());
+                                                                    try {
+                                                                        @SuppressWarnings("unchecked")
+                                                                        IClassification<Classification, ClassificationQueryBuilder> pp =
+                                                                                (IClassification<Classification, ClassificationQueryBuilder>) foundParent;
+                                                                        return pp.addChild(createSession, rootCl, NoClassification.toString(), null, createSystem, createIdentityToken)
+                                                                                .onItem().invoke(v -> log.trace("🔗 Added classification '{}' as child to parent '{}'", name, parent.getName()))
+                                                                                .onFailure().invoke(e -> log.warn("⚠️ Error adding child to parent: {}", e.getMessage(), e))
+                                                                                .replaceWith((IClassification<?, ?>) rootCl);
+                                                                    } catch (Exception e) {
+                                                                        log.warn("⚠️ Error adding child to parent: {}", e.getMessage(), e);
+                                                                    }
                                                                 }
-                                                            }
-                                                            log.info("🎉 Classification '{}' creation completed successfully", name);
-                                                            return Uni.createFrom()
-                                                                    .item((IClassification<?, ?>) rootCl);
-                                                        });
-                                            } else {
-                                                log.info("🎉 Classification '{}' creation completed successfully", name);
-                                                return Uni.createFrom()
-                                                        .item((IClassification<?, ?>) rootCl);
-                                            }
-                                        });
-                            });
-                });
+                                                                log.info("🎉 Classification '{}' creation completed successfully", name);
+                                                                return Uni.createFrom()
+                                                                        .item((IClassification<?, ?>) rootCl);
+                                                            });
+                                                } else {
+                                                    log.info("🎉 Classification '{}' creation completed successfully", name);
+                                                    return Uni.createFrom()
+                                                            .item((IClassification<?, ?>) rootCl);
+                                                }
+                                            });
+                                });
+                    });
+        });
     }
 
 
@@ -308,7 +307,7 @@ public class ClassificationService
                             .setParameter("visible", visibleIds)
                             .getSingleResult()
                             .map(r -> (UUID) r))
-                    .flatMap(id -> (Uni) getClassificationById(session, (UUID) id));
+                    .flatMap(id -> getClassificationById(session, (UUID) id));
         }
     }
 
