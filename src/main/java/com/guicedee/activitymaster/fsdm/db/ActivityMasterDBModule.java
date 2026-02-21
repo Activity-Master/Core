@@ -1,10 +1,15 @@
 package com.guicedee.activitymaster.fsdm.db;
 
 import com.guicedee.client.Environment;
+import com.guicedee.vertx.spi.VertXPreStartup;
 import com.guicedee.vertxpersistence.ConnectionBaseInfo;
 import com.guicedee.vertxpersistence.DatabaseModule;
 import com.guicedee.vertxpersistence.annotations.EntityManager;
 import com.guicedee.vertxpersistence.implementations.postgres.PostgresConnectionBaseInfo;
+import io.vertx.pgclient.PgBuilder;
+import io.vertx.pgclient.PgConnectOptions;
+import io.vertx.sqlclient.Pool;
+import io.vertx.sqlclient.PoolOptions;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.jpa.boot.spi.PersistenceUnitDescriptor;
 
@@ -44,6 +49,29 @@ public class ActivityMasterDBModule
         connectionInfo.setReactive(true);
 		connectionInfo.setMinPoolSize(5);
 		connectionInfo.setMaxPoolSize(300);
+		connectionInfo.setMaxIdleTime(30000);
+
+		PgConnectOptions connectOptions = new PgConnectOptions()
+				.setPort(Integer.parseInt(Environment.getProperty("FSDM_DBPORT","5432")))
+				.setHost(Environment.getProperty("FSDM_DBSERVER","localhost"))
+				.setDatabase(Environment.getProperty("FSDM_DBNAME","fsdm"))
+				.setUser(Environment.getProperty("FSDM_USER","fsdm"))
+				.setPassword(Environment.getProperty("FSDM_PASSWORD","fsdm"))
+				.setPipeliningLimit(16);
+
+		PoolOptions poolOptions = new PoolOptions()
+				.setShared(true)
+				.setName("activity-master-pool")
+				.setMaxSize(50);
+
+		Pool pool = PgBuilder
+				.pool()
+				.connectingTo(connectOptions.setPipeliningLimit(16))
+				.with(poolOptions)
+				.using(VertXPreStartup.getVertx())
+				.build();
+		properties.put("hibernate.vertx.pool", pool);
+
         return connectionInfo;
 	}
 	

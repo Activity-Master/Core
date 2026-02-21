@@ -248,9 +248,9 @@
 
             <property name="jakarta.persistence.lock.scope" value="ROOT_ONLY"/>
             <property name="jakarta.persistence.lock.timeout" value="1000"/>
-            <property name="hibernate.vertx.pool.idle_timeout" value="5000"/>
+            <property name="hibernate.vertx.pool.idle_timeout" value="30000"/>
             <property name="hibernate.vertx.pool.connect_timeout" value="5000"/>
-            <property name="hibernate.vertx.pool.max_wait_queue_size" value="10"/>
+            <property name="hibernate.vertx.pool.max_wait_queue_size" value="200"/>
 
             <property name="jakarta.persistence.validation.mode" value="none"/>
 

@@ -379,6 +379,18 @@ public class EnterpriseService
                 });
     }
 
+    @Override
+    public Uni<IEnterprise<?, ?>> getEnterprise(Mutiny.StatelessSession session, String name) {
+        log.trace("📦 Session & transaction started for enterprise lookup: {}", name);
+        // Cold path: query by name, then remember the UUID for next calls
+        return (Uni) new Enterprise()
+                .builder(session)
+                .withName(name)
+                .inDateRange()
+                //.setCacheName("getEnterpriseByName","default")
+                .get();
+    }
+
     //@Transactional()
     @Override
     //@CacheResult(cacheName = "GetEnterpriseByEnterpriseByUUID")

@@ -69,7 +69,6 @@ public class Arrangement
     @Column(nullable = false,
             name = "ArrangementID")
     @JsonValue
-
     private java.util.UUID id;
 
 
