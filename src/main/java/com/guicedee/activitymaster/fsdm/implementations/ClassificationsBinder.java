@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.ClassificationService;
 import com.guicedee.client.services.lifecycle.IGuiceModule;
 
-public class ClassificationsBinder extends PrivateModule implements IGuiceModule<ClassificationsBinder>
+public class ClassificationsBinder extends AbstractModule implements IGuiceModule<ClassificationsBinder>
 {
 	@Override
 	protected void configure()
@@ -19,9 +19,7 @@ public class ClassificationsBinder extends PrivateModule implements IGuiceModule
 		bind(genericKey).to(realKey);
 		bind(realKey).to(ClassificationService.class);
 		bind(IClassificationService.class).to(genericKey);
-		
-		expose(genericKey);
-		expose(IClassificationService.class);
+
 	}
 	
 }

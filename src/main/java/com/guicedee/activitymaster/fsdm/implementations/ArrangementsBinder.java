@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.client.services.IArrangementsService;
 import com.guicedee.activitymaster.fsdm.ArrangementsService;
 import com.guicedee.client.services.lifecycle.IGuiceModule;
 
-public class ArrangementsBinder extends PrivateModule implements IGuiceModule<ArrangementsBinder>
+public class ArrangementsBinder extends AbstractModule implements IGuiceModule<ArrangementsBinder>
 {
 	@Override
 	protected void configure()
@@ -20,7 +20,7 @@ public class ArrangementsBinder extends PrivateModule implements IGuiceModule<Ar
 		bind(realKey).to(ArrangementsService.class);
 		bind(IArrangementsService.class).to(genericKey);
 		
-		expose(genericKey);
-		expose(IArrangementsService.class);
+		//expose(genericKey);
+		//expose(IArrangementsService.class);
 	}
 }

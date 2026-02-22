@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.client.services.IProductService;
 import com.guicedee.activitymaster.fsdm.ProductService;
 import com.guicedee.client.services.lifecycle.IGuiceModule;
 
-public class ProductsBinder extends PrivateModule implements IGuiceModule<ProductsBinder>
+public class ProductsBinder extends AbstractModule implements IGuiceModule<ProductsBinder>
 {
 	@Override
 	protected void configure()
@@ -19,8 +19,5 @@ public class ProductsBinder extends PrivateModule implements IGuiceModule<Produc
 		bind(genericKey).to(realKey);
 		bind(realKey).to(ProductService.class);
 		bind(IProductService.class).to(genericKey);
-		
-		expose(genericKey);
-		expose(IProductService.class);
 	}
 }

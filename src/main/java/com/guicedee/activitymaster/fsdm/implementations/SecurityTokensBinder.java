@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.SecurityTokenService;
 import com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService;
 import com.guicedee.client.services.lifecycle.IGuiceModule;
 
-public class SecurityTokensBinder extends PrivateModule implements IGuiceModule<SecurityTokensBinder>
+public class SecurityTokensBinder extends AbstractModule implements IGuiceModule<SecurityTokensBinder>
 {
 	@Override
 	protected void configure()
@@ -19,8 +19,5 @@ public class SecurityTokensBinder extends PrivateModule implements IGuiceModule<
 		bind(genericKey).to(realKey);
 		bind(realKey).to(SecurityTokenService.class);
 		bind(ISecurityTokenService.class).to(genericKey);
-		
-		expose(genericKey);
-		expose(ISecurityTokenService.class);
 	}
 }

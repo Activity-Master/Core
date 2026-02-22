@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConce
 import com.guicedee.activitymaster.fsdm.ClassificationsDataConceptService;
 import com.guicedee.client.services.lifecycle.IGuiceModule;
 
-public class ClassificationConceptsBinder extends PrivateModule implements IGuiceModule<ClassificationConceptsBinder>
+public class ClassificationConceptsBinder extends AbstractModule implements IGuiceModule<ClassificationConceptsBinder>
 {
 	@Override
 	protected void configure()
@@ -19,9 +19,6 @@ public class ClassificationConceptsBinder extends PrivateModule implements IGuic
 		bind(genericKey).to(realKey);
 		bind(realKey).to(ClassificationsDataConceptService.class);
 		bind(IClassificationDataConceptService.class).to(genericKey);
-		
-		expose(genericKey);
-		expose(IClassificationDataConceptService.class);
 	}
 	
 }

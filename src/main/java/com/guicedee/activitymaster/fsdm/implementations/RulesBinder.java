@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.client.services.IRulesService;
 import com.guicedee.activitymaster.fsdm.RulesService;
 import com.guicedee.client.services.lifecycle.IGuiceModule;
 
-public class RulesBinder extends PrivateModule implements IGuiceModule<RulesBinder>
+public class RulesBinder extends AbstractModule implements IGuiceModule<RulesBinder>
 {
 	@Override
 	protected void configure()
@@ -19,8 +19,6 @@ public class RulesBinder extends PrivateModule implements IGuiceModule<RulesBind
 		bind(genericKey).to(realKey);
 		bind(realKey).to(RulesService.class);
 		bind(IRulesService.class).to(genericKey);
-		
-		expose(genericKey);
-		expose(IRulesService.class);
+
 	}
 }

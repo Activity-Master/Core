@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.client.services.IEventService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
 import com.guicedee.client.services.lifecycle.IGuiceModule;
 
-public class EventsBinder extends PrivateModule implements IGuiceModule<EventsBinder>
+public class EventsBinder extends AbstractModule implements IGuiceModule<EventsBinder>
 {
 	@Override
 	protected void configure()
@@ -21,9 +21,6 @@ public class EventsBinder extends PrivateModule implements IGuiceModule<EventsBi
 		bind(realKey).to(EventsService.class);
 		bind(IEventService.class).to(genericKey);
 		
-		expose(genericKey);
-		expose(IEventService.class);
-		
 		//IEvent Provider
 		@SuppressWarnings("Convert2Diamond")
 		Key<IEvent<?,?>> genericKeyIEvent = Key.get(new TypeLiteral<IEvent<?,?>>() {});
@@ -33,8 +30,6 @@ public class EventsBinder extends PrivateModule implements IGuiceModule<EventsBi
 		bind(genericKeyIEvent).to(realKeyIEvent);
 		bind(IEvent.class).to(realKeyIEvent);
 		bind(realKeyIEvent).toProvider(IEventProvider.class);
-		
-		expose(genericKeyIEvent);
-		expose(IEvent.class);
+
 	}
 }

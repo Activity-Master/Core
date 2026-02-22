@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.client.services.IPasswordsService;
 import com.guicedee.activitymaster.fsdm.PasswordsService;
 import com.guicedee.client.services.lifecycle.IGuiceModule;
 
-public class PasswordsServiceBinder extends PrivateModule implements IGuiceModule<PasswordsServiceBinder>
+public class PasswordsServiceBinder extends AbstractModule implements IGuiceModule<PasswordsServiceBinder>
 {
 	@Override
 	protected void configure()
@@ -19,8 +19,6 @@ public class PasswordsServiceBinder extends PrivateModule implements IGuiceModul
 		bind(genericKey).to(realKey);
 		bind(realKey).to(PasswordsService.class);
 		bind(IPasswordsService.class).to(genericKey);
-		
-		expose(genericKey);
-		expose(IPasswordsService.class);
+
 	}
 }

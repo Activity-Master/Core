@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService;
 import com.guicedee.activitymaster.fsdm.InvolvedPartyService;
 import com.guicedee.client.services.lifecycle.IGuiceModule;
 
-public class InvolvedPartiesBinder extends PrivateModule implements IGuiceModule<InvolvedPartiesBinder>
+public class InvolvedPartiesBinder extends AbstractModule implements IGuiceModule<InvolvedPartiesBinder>
 {
 	@Override
 	protected void configure()
@@ -19,8 +19,6 @@ public class InvolvedPartiesBinder extends PrivateModule implements IGuiceModule
 		bind(genericKey).to(realKey);
 		bind(realKey).to(InvolvedPartyService.class);
 		bind(IInvolvedPartyService.class).to(genericKey);
-		
-		expose(genericKey);
-		expose(IInvolvedPartyService.class);
+
 	}
 }

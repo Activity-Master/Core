@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
 import com.guicedee.activitymaster.fsdm.ResourceItemService;
 import com.guicedee.client.services.lifecycle.IGuiceModule;
 
-public class ResourceItemBinder extends PrivateModule implements IGuiceModule<ResourceItemBinder>
+public class ResourceItemBinder extends AbstractModule implements IGuiceModule<ResourceItemBinder>
 {
 	@Override
 	protected void configure()
@@ -19,8 +19,5 @@ public class ResourceItemBinder extends PrivateModule implements IGuiceModule<Re
 		bind(genericKey).to(realKey);
 		bind(realKey).to(ResourceItemService.class);
 		bind(IResourceItemService.class).to(genericKey);
-		
-		expose(genericKey);
-		expose(IResourceItemService.class);
 	}
 }

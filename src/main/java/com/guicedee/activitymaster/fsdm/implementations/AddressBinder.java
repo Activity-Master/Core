@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.client.services.IAddressService;
 import com.guicedee.activitymaster.fsdm.AddressService;
 import com.guicedee.client.services.lifecycle.IGuiceModule;
 
-public class AddressBinder extends PrivateModule implements IGuiceModule<AddressBinder>
+public class AddressBinder extends AbstractModule implements IGuiceModule<AddressBinder>
 {
 	@Override
 	protected void configure()
@@ -19,8 +19,6 @@ public class AddressBinder extends PrivateModule implements IGuiceModule<Address
 		bind(genericKey).to(realKey);
 		bind(realKey).to(AddressService.class);
 		bind(IAddressService.class).to(genericKey);
-		
-		expose(genericKey);
-		expose(IAddressService.class);
+
 	}
 }
