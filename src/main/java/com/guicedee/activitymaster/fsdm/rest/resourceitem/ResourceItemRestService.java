@@ -9,10 +9,11 @@ import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.fsdm.client.services.rest.resourceitems.*;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
 
-import com.guicedee.activitymaster.fsdm.rest.RelationshipUpdateEntry;
+import com.guicedee.activitymaster.fsdm.client.services.rest.RelationshipUpdateEntry;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple4;
 import jakarta.ws.rs.*;
@@ -72,6 +73,85 @@ public class ResourceItemRestService
                     .onFailure().invoke(e ->
                         log.error("Error finding resource item {} for enterprise {} system {}: {}",
                                 resourceItemId, enterpriseName, requestingSystemName, e.getMessage(), e)
+                    );
+            }
+        );
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // Search by classification
+    // ──────────────────────────────────────────────────────────────────────────
+
+    @POST
+    @Path("{requestingSystemName}/search")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<List<ResourceItemDTO>> search(@PathParam("enterprise") String enterpriseName,
+                                              @PathParam("requestingSystemName") String requestingSystemName,
+                                              ResourceItemSearchDTO searchDto) {
+        return SessionUtils.<List<ResourceItemDTO>>withActivityMaster(enterpriseName, requestingSystemName,
+            (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                Mutiny.Session session = tuple.getItem1();
+                ISystems<?, ?> system = tuple.getItem3();
+                UUID[] identityToken = tuple.getItem4();
+
+                return resourceItemService.findByClassificationAll(session,
+                        searchDto.resourceItemType,
+                        searchDto.classificationName,
+                        searchDto.classificationValue,
+                        system, identityToken)
+                    .chain(results -> {
+                        // Apply sorting if requested
+                        if (searchDto.sortDirection != null) {
+                            SearchSortField field = searchDto.sortField != null
+                                    ? searchDto.sortField : SearchSortField.EFFECTIVE_FROM_DATE;
+                            Comparator<Object> comparator = Comparator.comparing(o -> {
+                                ResourceItemXClassification r = (ResourceItemXClassification) (Object) o;
+                                return switch (field) {
+                                    case WAREHOUSE_CREATED_TIMESTAMP -> r.getWarehouseCreatedTimestamp();
+                                    case EFFECTIVE_FROM_DATE -> r.getEffectiveFromDate();
+                                };
+                            }, Comparator.nullsLast(Comparator.naturalOrder()));
+                            if (searchDto.sortDirection == SortDirection.DESC) {
+                                comparator = comparator.reversed();
+                            }
+                            results.sort(comparator);
+                        }
+
+                        // Apply maxResults limit if requested
+                        List<?> limitedResults = (searchDto.maxResults != null && searchDto.maxResults > 0 && results.size() > searchDto.maxResults)
+                                ? results.subList(0, searchDto.maxResults)
+                                : results;
+
+                        List<ResourceItemDataIncludes> includesList = searchDto.includes;
+                        Uni<List<ResourceItemDTO>> listUni = Uni.createFrom().item(new ArrayList<>());
+
+                        for (var relValue : limitedResults) {
+                            listUni = listUni.chain(dtoList -> {
+                                ResourceItemXClassification rixc = (ResourceItemXClassification) (Object) relValue;
+                                return session.fetch(rixc.getResourceItemID())
+                                    .chain(fetchedItem -> {
+                                        ResourceItemDTO dto = new ResourceItemDTO();
+                                        dto.resourceItemId = fetchedItem.getId();
+
+                                        if (includesList == null || includesList.isEmpty()) {
+                                            dtoList.add(dto);
+                                            return Uni.createFrom().item(dtoList);
+                                        }
+
+                                        Uni<ResourceItemDTO> fetchChain = Uni.createFrom().item(dto);
+                                        for (ResourceItemDataIncludes include : includesList) {
+                                            fetchChain = fetchChain.chain(d -> fetchInclude(session, fetchedItem, d, include));
+                                        }
+                                        return fetchChain.map(d -> { dtoList.add(d); return dtoList; });
+                                    });
+                            });
+                        }
+                        return listUni;
+                    })
+                    .onFailure().invoke(e ->
+                        log.error("Error searching resource items for enterprise {} system {}: {}",
+                                enterpriseName, requestingSystemName, e.getMessage(), e)
                     );
             }
         );
@@ -259,6 +339,34 @@ public class ResourceItemRestService
                                 resourceItemId, enterpriseName, requestingSystemName, e.getMessage(), e)
                     );
         });
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // Get Data
+    // ──────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Returns the binary data of a resource item as an octet-stream.
+     */
+    @GET
+    @Path("{requestingSystemName}/data/{resourceItemId}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Uni<byte[]> getData(@PathParam("enterprise") String enterpriseName,
+                               @PathParam("requestingSystemName") String requestingSystemName,
+                               @PathParam("resourceItemId") UUID resourceItemId) {
+        return SessionUtils.<byte[]>withActivityMaster(enterpriseName, requestingSystemName,
+            (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                Mutiny.Session session = tuple.getItem1();
+                UUID[] identityToken = tuple.getItem4();
+
+                return resourceItemService.findByUUID(session, resourceItemId)
+                    .chain(resourceItem -> ((ResourceItem) resourceItem).getData(session, identityToken))
+                    .onFailure().invoke(e ->
+                        log.error("Error getting data for resource item {} for enterprise {} system {}: {}",
+                                resourceItemId, enterpriseName, requestingSystemName, e.getMessage(), e)
+                    );
+            }
+        );
     }
 
     // ──────────────────────────────────────────────────────────────────────────

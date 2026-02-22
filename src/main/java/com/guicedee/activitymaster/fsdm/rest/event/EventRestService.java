@@ -9,9 +9,10 @@ import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.fsdm.client.services.rest.events.*;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.*;
-import com.guicedee.activitymaster.fsdm.rest.RelationshipUpdateEntry;
+import com.guicedee.activitymaster.fsdm.client.services.rest.RelationshipUpdateEntry;
 
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple4;

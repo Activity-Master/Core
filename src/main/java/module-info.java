@@ -115,10 +115,17 @@ module com.guicedee.activitymaster.fsdm {
 
 
     opens com.guicedee.activitymaster.fsdm to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy;
-    opens com.guicedee.activitymaster.fsdm.rest to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
+
+    //opens com.guicedee.activitymaster.fsdm.rest to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
+
     opens com.guicedee.activitymaster.fsdm.rest.arrangement to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
     opens com.guicedee.activitymaster.fsdm.rest.resourceitem to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
     opens com.guicedee.activitymaster.fsdm.rest.event to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
+    opens com.guicedee.activitymaster.fsdm.rest.party to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
+
+
+
+
     opens com.guicedee.activitymaster.fsdm.implementations to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geography;
     opens com.guicedee.activitymaster.fsdm.implementations.interceptors to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind;
     opens com.guicedee.activitymaster.fsdm.db to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
@@ -235,8 +242,9 @@ module com.guicedee.activitymaster.fsdm {
 
     exports com.guicedee.activitymaster.fsdm.db;
 
-    exports com.guicedee.activitymaster.fsdm.rest;
+    //exports com.guicedee.activitymaster.fsdm.rest;
     exports com.guicedee.activitymaster.fsdm.rest.arrangement;
     exports com.guicedee.activitymaster.fsdm.rest.resourceitem;
     exports com.guicedee.activitymaster.fsdm.rest.event;
+    exports com.guicedee.activitymaster.fsdm.rest.party;
 }

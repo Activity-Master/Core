@@ -50,7 +50,7 @@ public abstract class WarehouseTable<
 	            referencedColumnName = "EnterpriseID",
 	            nullable = false)
 	@ManyToOne(optional = false,
-	           fetch = FetchType.LAZY)
+	           fetch = FetchType.EAGER)
 
 	private Enterprise enterpriseID;
 

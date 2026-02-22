@@ -19,6 +19,17 @@ All endpoints are **reactive** (returning `Uni<T>` via SmallRye Mutiny) and use 
 
 ---
 
+## DTO Packages
+
+All DTOs used by this API live in the **client** module:
+
+| Package | Contents |
+|---|---|
+| `com.guicedee.activitymaster.fsdm.client.services.rest.resourceitems` | `ResourceItemDTO`, `ResourceItemFindDTO`, `ResourceItemCreateDTO`, `ResourceItemUpdateDTO`, `ResourceItemUpdateDataDTO`, `ResourceItemSearchDTO`, `ResourceItemDataIncludes`, `SortDirection`, `SearchSortField` |
+| `com.guicedee.activitymaster.fsdm.client.services.rest` | `RelationshipUpdateEntry` (shared across all REST APIs) |
+
+---
+
 ## Endpoints
 
 ### 1. Find Resource Item
@@ -77,14 +88,89 @@ Retrieves a resource item by ID with selectable relationship includes.
 
 ---
 
-### 2. Create Resource Item
+### 2. Search Resource Items
+
+Searches for resource items by resource item type and classification, with optional sorting and result limiting.
+
+| Property | Value |
+|---|---|
+| **Method** | `POST` |
+| **Path** | `/{enterprise}/resource-item/{requestingSystemName}/search` |
+| **Consumes** | `application/json` |
+| **Produces** | `application/json` |
+| **Request Body** | `ResourceItemSearchDTO` |
+| **Response** | `List<ResourceItemDTO>` |
+
+#### Request Body — `ResourceItemSearchDTO`
+
+```json
+{
+  "resourceItemType": "ProfilePhoto",
+  "classificationName": "MimeType",
+  "classificationValue": "image/jpeg",
+  "includes": ["Types", "Classifications"],
+  "maxResults": 10,
+  "sortDirection": "DESC",
+  "sortField": "WAREHOUSE_CREATED_TIMESTAMP"
+}
+```
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `resourceItemType` | `String` | **Yes** | The resource item type name to filter by. |
+| `classificationName` | `String` | **Yes** | The classification name to match. |
+| `classificationValue` | `String` | No | Optional classification value to match. If null, all items with the classification are returned. |
+| `includes` | `List<ResourceItemDataIncludes>` | No | Which relationship types to include in each result. If omitted/empty, only `resourceItemId` is returned. |
+| `maxResults` | `Integer` | No | Maximum number of results to return. If null or ≤ 0, all matching results are returned. |
+| `sortDirection` | `SortDirection` | No | `ASC` (oldest first) or `DESC` (newest first). If null, no explicit ordering is applied. |
+| `sortField` | `SearchSortField` | No | Which field to sort by. Defaults to `WAREHOUSE_CREATED_TIMESTAMP` when a sort direction is specified. |
+
+#### Sort Fields
+
+| Value | Description |
+|---|---|
+| `EFFECTIVE_FROM_DATE` | Sort by the effective-from date of the cross-reference record. |
+| `WAREHOUSE_CREATED_TIMESTAMP` | Sort by the warehouse-created timestamp. |
+
+#### Example: Get Latest Record
+
+```json
+{
+  "resourceItemType": "ProfilePhoto",
+  "classificationName": "UserId",
+  "classificationValue": "user-42",
+  "maxResults": 1,
+  "sortDirection": "DESC"
+}
+```
+
+#### Example Response
+
+```json
+[
+  {
+    "resourceItemId": "550e8400-e29b-41d4-a716-446655440000",
+    "types": {
+      "ProfilePhoto": "avatar-001"
+    },
+    "classifications": {
+      "MimeType": "image/jpeg",
+      "UserId": "user-42"
+    }
+  }
+]
+```
+
+---
+
+### 3. Create Resource Item
 
 Creates a new resource item with a type and data value, optionally adding classifications, resource item types, and child links in the same request.
 
 | Property | Value |
 |---|---|
 | **Method** | `POST` |
-| **Path** | `/{enterprise}/resource-item/{requestingSystemName}` |
+| **Path** | `/{enterprise}/resource-item/{requestingSystemName}/create` |
 | **Consumes** | `application/json` |
 | **Produces** | `application/json` |
 | **Request Body** | `ResourceItemCreateDTO` |
@@ -132,14 +218,14 @@ The `create` endpoint does **not** wrap `resourceItemService.create()` in `withA
 
 ---
 
-### 3. Update Resource Item
+### 4. Update Resource Item
 
 Updates an existing resource item's relationships. Supports **add/update** (upsert) and **delete** (expire/soft-delete) for each relationship type.
 
 | Property | Value |
 |---|---|
 | **Method** | `PUT` |
-| **Path** | `/{enterprise}/resource-item/{requestingSystemName}` |
+| **Path** | `/{enterprise}/resource-item/{requestingSystemName}/update` |
 | **Consumes** | `application/json` |
 | **Produces** | `application/json` |
 | **Request Body** | `ResourceItemUpdateDTO` |
@@ -195,7 +281,7 @@ Updates an existing resource item's relationships. Supports **add/update** (upse
 
 ---
 
-### 4. Update Resource Item Data
+### 5. Update Resource Item Data
 
 Replaces the binary data payload of an existing resource item. Only the data is updated — no metadata, classifications, or relationships are affected.
 
@@ -234,11 +320,51 @@ The response confirms the update with the resource item ID. No relationship data
 
 ---
 
+### 6. Get Resource Item Data
+
+Retrieves the binary data payload of a resource item. The data is returned as a raw octet stream (not JSON-wrapped).
+
+| Property | Value |
+|---|---|
+| **Method** | `GET` |
+| **Path** | `/{enterprise}/resource-item/{requestingSystemName}/data/{resourceItemId}` |
+| **Produces** | `application/octet-stream` |
+| **Response** | `byte[]` |
+
+#### Path Parameters
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `enterprise` | `String` | **Yes** | The enterprise name. |
+| `requestingSystemName` | `String` | **Yes** | The ActivityMaster system performing the operation. |
+| `resourceItemId` | `UUID` | **Yes** | The resource item whose binary data to retrieve. |
+
+#### Behavior
+
+1. Resolves the enterprise, system, and identity token via `SessionUtils.withActivityMaster()`.
+2. Looks up the resource item by UUID using `resourceItemService.findByUUID()`.
+3. Retrieves the binary data via `ResourceItem.getData()`, which reads from the `ResourceItemDataValue` entity and decompresses (un-gzips) the stored bytes.
+4. Returns the raw `byte[]` as `application/octet-stream`.
+
+#### Example Request
+
+```
+GET /MyEnterprise/resource-item/ActivityMaster/data/550e8400-e29b-41d4-a716-446655440000
+```
+
+#### Notes
+
+- The response body is **raw binary data**, not JSON. Clients should handle the response as a byte stream.
+- If the resource item has no stored data, an empty byte array is returned.
+- Data is stored compressed (GZip) in the database and decompressed automatically before being returned.
+
+---
+
 ## Data Model
 
 ### Resource Item
 
-A storable resource entity with a UUID, linked to an enterprise and system. Can contain binary data via `ResourceItemData`.
+A storable resource entity with a UUID, linked to an enterprise and system. Can contain binary data via `ResourceItemData` / `ResourceItemDataValue`.
 
 ### Relationships
 
@@ -262,7 +388,7 @@ All relationship records follow the Slowly Changing Dimension pattern:
 ### Creating a Resource Item with Classifications
 
 ```json
-POST /{enterprise}/resource-item/{system}
+POST /{enterprise}/resource-item/{system}/create
 {
   "type": "Document",
   "dataValue": "application/pdf",
@@ -274,10 +400,24 @@ POST /{enterprise}/resource-item/{system}
 }
 ```
 
+### Searching for Resource Items
+
+```json
+POST /{enterprise}/resource-item/{system}/search
+{
+  "resourceItemType": "Document",
+  "classificationName": "Category",
+  "classificationValue": "Finance",
+  "includes": ["Types", "Classifications"],
+  "maxResults": 20,
+  "sortDirection": "DESC"
+}
+```
+
 ### Updating Classifications and Types
 
 ```json
-PUT /{enterprise}/resource-item/{system}
+PUT /{enterprise}/resource-item/{system}/update
 {
   "resourceItemId": "...",
   "classifications": {
@@ -300,13 +440,22 @@ POST /{enterprise}/resource-item/{system}/find
 }
 ```
 
+### Downloading Binary Data
+
+```
+GET /{enterprise}/resource-item/{system}/data/{resourceItemId}
+```
+
+The response is `application/octet-stream` — save or process the raw bytes directly.
+
 ---
 
 ## JSON Serialization
 
 - All DTOs use `@JsonInclude(NON_EMPTY)` — null and empty maps/lists are omitted from responses.
 - All DTOs use `@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)` — field-based serialization.
-- Binary `data` fields are Base64-encoded in JSON.
+- Binary `data` fields are Base64-encoded in JSON (for request bodies and `ResourceItemUpdateDataDTO`).
+- The **Get Data** endpoint (`GET .../data/{resourceItemId}`) returns raw `application/octet-stream`, not JSON.
 
 ---
 
@@ -315,9 +464,11 @@ POST /{enterprise}/resource-item/{system}/find
 | DTO | Used By | Purpose |
 |---|---|---|
 | `ResourceItemFindDTO` | `POST .../find` | Find by ID with selectable includes |
-| `ResourceItemCreateDTO` | `POST .../{system}` | Create with optional relationships |
-| `ResourceItemUpdateDTO` | `PUT .../{system}` | Update relationships (add/update/delete) |
+| `ResourceItemSearchDTO` | `POST .../search` | Search by type + classification with sorting/limiting |
+| `ResourceItemCreateDTO` | `POST .../create` | Create with optional relationships |
+| `ResourceItemUpdateDTO` | `PUT .../update` | Update relationships (add/update/delete) |
 | `ResourceItemUpdateDataDTO` | `PATCH .../data` | Update binary data payload |
 | `ResourceItemDTO` | Response | Standard resource item response |
 | `RelationshipUpdateEntry` | Within `ResourceItemUpdateDTO` | Add/update map + delete list for one relationship type |
-
+| `SortDirection` | Within `ResourceItemSearchDTO` | `ASC` / `DESC` enum for search ordering |
+| `SearchSortField` | Within `ResourceItemSearchDTO` | `EFFECTIVE_FROM_DATE` / `WAREHOUSE_CREATED_TIMESTAMP` enum |

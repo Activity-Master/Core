@@ -102,14 +102,14 @@ public class Systems
     @JoinColumn(name = "EnterpriseID",
             referencedColumnName = "EnterpriseID",
             nullable = false)
-    @ManyToOne(optional = false,fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Enterprise enterpriseID;
 
     @JoinColumn(name = "ActiveFlagID",
             referencedColumnName = "ActiveFlagID",
             nullable = false)
     @ManyToOne(optional = false,
-            fetch = FetchType.LAZY)
+            fetch = FetchType.EAGER)
     private ActiveFlag activeFlagID;
 
     @OneToMany(

@@ -39,8 +39,8 @@ public abstract class WarehouseClassificationRelationshipTable<
 	            referencedColumnName = "ClassificationID",
 	            nullable = false)
 	@ManyToOne(optional = false,
-	           fetch = FetchType.LAZY)
-	
+	           fetch = FetchType.EAGER)
+
 	private Classification classificationID;
 	
 	public WarehouseClassificationRelationshipTable()

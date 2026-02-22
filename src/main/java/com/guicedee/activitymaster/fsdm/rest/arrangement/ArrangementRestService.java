@@ -9,14 +9,15 @@ import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangement;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.fsdm.client.services.rest.arrangements.*;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.*;
 import com.guicedee.activitymaster.fsdm.db.entities.events.EventXArrangement;
 import com.guicedee.activitymaster.fsdm.db.entities.events.EventXArrangement_;
 
-import com.guicedee.activitymaster.fsdm.rest.EntityRef;
-import com.guicedee.activitymaster.fsdm.rest.PivotEntry;
-import com.guicedee.activitymaster.fsdm.rest.RelationshipUpdateEntry;
+import com.guicedee.activitymaster.fsdm.client.services.rest.EntityRef;
+import com.guicedee.activitymaster.fsdm.client.services.rest.PivotEntry;
+import com.guicedee.activitymaster.fsdm.client.services.rest.RelationshipUpdateEntry;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple4;
 import jakarta.ws.rs.*;

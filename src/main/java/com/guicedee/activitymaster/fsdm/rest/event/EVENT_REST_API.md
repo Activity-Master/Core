@@ -19,6 +19,17 @@ All endpoints are **reactive** (returning `Uni<T>` via SmallRye Mutiny) and use 
 
 ---
 
+## DTO Packages
+
+All DTOs used by this API live in the **client** module:
+
+| Package | Contents |
+|---|---|
+| `com.guicedee.activitymaster.fsdm.client.services.rest.events` | `EventDTO`, `EventFindDTO`, `EventCreateDTO`, `EventUpdateDTO`, `EventDataIncludes` |
+| `com.guicedee.activitymaster.fsdm.client.services.rest` | `RelationshipUpdateEntry` (shared across all REST APIs) |
+
+---
+
 ## Endpoints
 
 ### 1. Find Event
@@ -305,4 +316,5 @@ POST /{enterprise}/event/{system}/find
 | `EventUpdateDTO` | `PUT .../update` | Update relationships (add/update/delete) |
 | `EventDTO` | Response | Standard event response |
 | `RelationshipUpdateEntry` | Within `EventUpdateDTO` | Add/update map + delete list for one relationship type |
+
 

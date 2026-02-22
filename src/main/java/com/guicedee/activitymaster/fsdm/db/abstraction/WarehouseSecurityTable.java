@@ -60,7 +60,7 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
       referencedColumnName = "SecurityTokenID",
       nullable = false)
   @ManyToOne(optional = false,
-      fetch = FetchType.LAZY)
+      fetch = FetchType.EAGER)
   private SecurityToken securityTokenID;
 
   //===========================================================================================================================

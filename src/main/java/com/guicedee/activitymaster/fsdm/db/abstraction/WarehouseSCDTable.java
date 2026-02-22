@@ -49,7 +49,7 @@ public abstract class WarehouseSCDTable<
             referencedColumnName = "ActiveFlagID",
             nullable = false)
     @ManyToOne(optional = false,
-            fetch = FetchType.LAZY)
+            fetch = FetchType.EAGER)
 
     private ActiveFlag activeFlagID;
 
@@ -57,7 +57,7 @@ public abstract class WarehouseSCDTable<
             referencedColumnName = "SystemID",
             nullable = false)
     @ManyToOne(optional = false,
-            fetch = FetchType.LAZY)
+            fetch = FetchType.EAGER)
 
     private Systems systemID;
 

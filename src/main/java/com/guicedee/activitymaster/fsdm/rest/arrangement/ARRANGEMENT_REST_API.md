@@ -27,6 +27,17 @@ All endpoints are **reactive** (returning `Uni<T>` via SmallRye Mutiny) and use 
 
 ---
 
+## DTO Packages
+
+All DTOs used by this API live in the **client** module:
+
+| Package | Contents |
+|---|---|
+| `com.guicedee.activitymaster.fsdm.client.services.rest.arrangements` | `ArrangementDTO`, `ArrangementFindDTO`, `ArrangementCreateDTO`, `ArrangementUpdateDTO`, `ArrangementPivotRequest`, `ArrangementPivotResponse`, `ArrangementDataIncludes` |
+| `com.guicedee.activitymaster.fsdm.client.services.rest` | `RelationshipUpdateEntry`, `PivotEntry`, `EntityRef` (shared across all REST APIs) |
+
+---
+
 ## Endpoints
 
 ### 1. Find Arrangement
@@ -160,7 +171,7 @@ Creates a new arrangement with an arrangement type, and optionally adds classifi
 | Property | Value |
 |---|---|
 | **Method** | `POST` |
-| **Path** | `/{enterprise}/arrangement/{requestingSystemName}` |
+| **Path** | `/{enterprise}/arrangement/{requestingSystemName}/create` |
 | **Consumes** | `application/json` |
 | **Produces** | `application/json` |
 | **Request Body** | `ArrangementCreateDTO` |
@@ -228,7 +239,7 @@ Updates an existing arrangement's relationships. Supports **add/update** (upsert
 | Property | Value |
 |---|---|
 | **Method** | `PUT` |
-| **Path** | `/{enterprise}/arrangement/{requestingSystemName}` |
+| **Path** | `/{enterprise}/arrangement/{requestingSystemName}/update` |
 | **Consumes** | `application/json` |
 | **Produces** | `application/json` |
 | **Request Body** | `ArrangementUpdateDTO` |
@@ -356,7 +367,7 @@ arrangementsService.create(session, "PackingStaffTimesheet", timesheetId, "Grade
 
 **After** (single REST call):
 ```json
-POST /{enterprise}/arrangement/{system}
+POST /{enterprise}/arrangement/{system}/create
 {
   "type": "PackingStaffTimesheet",
   "classification": "Grader",
@@ -372,7 +383,7 @@ POST /{enterprise}/arrangement/{system}
 ### Updating Multiple Relationship Types Atomically
 
 ```json
-PUT /{enterprise}/arrangement/{system}
+PUT /{enterprise}/arrangement/{system}/update
 {
   "arrangementId": "...",
   "classifications": {
@@ -435,8 +446,8 @@ POST /{enterprise}/arrangement/{system}/find
 |---|---|---|
 | `ArrangementFindDTO` | `POST .../find` | Find by ID with selectable includes |
 | `ArrangementPivotRequest` | `POST .../pivot` | Optimized native query for named fields |
-| `ArrangementCreateDTO` | `POST .../{system}` | Create with optional relationships |
-| `ArrangementUpdateDTO` | `PUT .../{system}` | Update relationships (add/update/delete) |
+| `ArrangementCreateDTO` | `POST .../create` | Create with optional relationships |
+| `ArrangementUpdateDTO` | `PUT .../update` | Update relationships (add/update/delete) |
 | `ArrangementDTO` | Response | Standard arrangement response |
 | `ArrangementPivotResponse` | Response | Pivot response with entity refs + timestamps |
 | `RelationshipUpdateEntry` | Within `ArrangementUpdateDTO` | Add/update map + delete list for one relationship type |
