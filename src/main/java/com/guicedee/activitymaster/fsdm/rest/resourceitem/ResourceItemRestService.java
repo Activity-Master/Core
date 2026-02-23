@@ -183,60 +183,17 @@ public class ResourceItemRestService
                 createUni = resourceItemService.create(null, dto.type, dto.dataValue, system);
             }
 
-            return createUni.chain(resourceItem -> {
+            return createUni.map(resourceItem -> {
                 boolean hasRelationships = (dto.classifications != null && !dto.classifications.isEmpty())
                         || (dto.types != null && !dto.types.isEmpty())
                         || (dto.children != null && !dto.children.isEmpty());
 
-                if (!hasRelationships)
+                if (hasRelationships)
                 {
-                    return buildCreateResponse(enterpriseName, requestingSystemName, resourceItem, dto);
+                    persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, resourceItem, dto);
                 }
 
-                // Step 2: Add relationships in a fresh session
-                return SessionUtils.<Void>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                    Mutiny.Session session = tuple.getItem1();
-                    ISystems<?, ?> sys = tuple.getItem3();
-                    UUID[] identityToken = tuple.getItem4();
-
-                    Uni<Void> chain = Uni.createFrom().voidItem();
-
-                    if (dto.classifications != null && !dto.classifications.isEmpty())
-                    {
-                        for (var entry : dto.classifications.entrySet())
-                        {
-                            chain = chain.chain(() -> resourceItem
-                                    .addOrUpdateClassification(session, entry.getKey(), entry.getValue(), sys, identityToken)
-                                    .replaceWithVoid());
-                        }
-                    }
-
-                    if (dto.types != null && !dto.types.isEmpty())
-                    {
-                        for (var entry : dto.types.entrySet())
-                        {
-                            chain = chain.chain(() -> resourceItem
-                                    .addOrUpdateResourceItemTypes(session, entry.getKey(), null, null, entry.getValue(), sys, identityToken)
-                                    .replaceWithVoid());
-                        }
-                    }
-
-                    if (dto.children != null && !dto.children.isEmpty())
-                    {
-                        for (var entry : dto.children.entrySet())
-                        {
-                            UUID childId = UUID.fromString(entry.getKey());
-                            chain = chain.chain(() ->
-                                    resourceItemService.findByUUID(session, childId)
-                                            .chain(child -> resourceItem
-                                                    .addChild(session, (ResourceItem) child, null, entry.getValue(), sys, identityToken)
-                                                    .replaceWithVoid()));
-                        }
-                    }
-
-                    return chain;
-                })
-                .chain(() -> buildCreateResponse(enterpriseName, requestingSystemName, resourceItem, dto));
+                return buildCreateResponseFromDto(resourceItem, dto);
             })
             .onFailure().invoke(e ->
                 log.error("Error creating resource item for enterprise {} and system {}: {}",
@@ -257,58 +214,20 @@ public class ResourceItemRestService
                                        @PathParam("requestingSystemName") String requestingSystemName,
                                        ResourceItemUpdateDTO dto) {
         UUID resourceItemId = dto.resourceItemId;
-        return SessionUtils.<ResourceItemDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
+        // Step 1: Find the resource item in its own session
+        return SessionUtils.<IResourceItem<?, ?>>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
             Mutiny.Session session = tuple.getItem1();
-            ISystems<?, ?> system = tuple.getItem3();
-            UUID[] identityToken = tuple.getItem4();
+            return resourceItemService.findByUUID(session, resourceItemId);
+        }).map(resourceItem -> {
+            // Step 2: Fire-and-forget relationship persistence
+            persistUpdateRelationshipsAsync(enterpriseName, requestingSystemName, resourceItem, dto);
 
-            return resourceItemService.findByUUID(session, resourceItemId)
-                .chain(resourceItem -> {
-                    Uni<Void> chain = Uni.createFrom().voidItem();
-
-                    // ── Classifications ──
-                    chain = chainAddOrUpdate(chain, dto.classifications, (name, value) ->
-                            resourceItem.addOrUpdateClassification(session, name, value, system, identityToken).replaceWithVoid());
-                    chain = chainDelete(chain, dto.classifications, name ->
-                            resourceItem.removeClassification(session, name, null, system, identityToken).replaceWithVoid());
-
-                    // ── Resource Item Types ──
-                    chain = chainAddOrUpdate(chain, dto.types, (name, value) ->
-                            resourceItem.addOrUpdateResourceItemTypes(session, name, null, null, value, system, identityToken).replaceWithVoid());
-                    chain = chainDelete(chain, dto.types, name ->
-                            resourceItem.removeResourceItemTypes(session, name, null, null, null, system, identityToken).replaceWithVoid());
-
-                    // ── Children ──
-                    chain = chainAddOrUpdate(chain, dto.children, (childIdStr, value) -> {
-                        UUID childId = UUID.fromString(childIdStr);
-                        return resourceItemService.findByUUID(session, childId)
-                                .chain(child -> resourceItem
-                                        .addChild(session, (ResourceItem) child, null, value, system, identityToken)
-                                        .replaceWithVoid());
-                    });
-                    chain = chainDeleteByExpire(chain, dto.children, session, resourceItem);
-
-                    // ── Build response ──
-                    return chain.chain(() -> {
-                        ResourceItem ri = (ResourceItem) resourceItem;
-                        ResourceItemDTO response = new ResourceItemDTO();
-                        response.resourceItemId = resourceItemId;
-
-                        List<ResourceItemDataIncludes> includes = determineIncludes(dto);
-
-                        Uni<ResourceItemDTO> fetchChain = Uni.createFrom().item(response);
-                        for (ResourceItemDataIncludes include : includes)
-                        {
-                            fetchChain = fetchChain.chain(d -> fetchInclude(session, ri, d, include));
-                        }
-                        return fetchChain;
-                    });
-                })
-                .onFailure().invoke(e ->
-                    log.error("Error updating resource item {} for enterprise {} and system {}: {}",
-                            resourceItemId, enterpriseName, requestingSystemName, e.getMessage(), e)
-                );
-        });
+            // Step 3: Build response immediately from the DTO input
+            return buildUpdateResponseFromDto(resourceItemId, dto);
+        }).onFailure().invoke(e ->
+                log.error("Error updating resource item {} for enterprise {} and system {}: {}",
+                        resourceItemId, enterpriseName, requestingSystemName, e.getMessage(), e)
+        );
     }
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -432,7 +351,116 @@ public class ResourceItemRestService
     }
 
     // ──────────────────────────────────────────────────────────────────────────
-    // Response builders
+    // Fire-and-forget relationship persistence
+    // ──────────────────────────────────────────────────────────────────────────
+
+    private void persistCreateRelationshipsAsync(String enterpriseName, String requestingSystemName,
+                                                  IResourceItem<?, ?> resourceItem, ResourceItemCreateDTO dto) {
+        String label = "resource item " + resourceItem.getId();
+
+        if (dto.classifications != null && !dto.classifications.isEmpty()) {
+            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+                Uni<Void> chain = Uni.createFrom().voidItem();
+                for (var entry : dto.classifications.entrySet()) {
+                    chain = chain.chain(() -> resourceItem.addOrUpdateClassification(s, entry.getKey(), entry.getValue(), sys, token).replaceWithVoid());
+                }
+                return chain;
+            }), label + " classifications");
+        }
+
+        if (dto.types != null && !dto.types.isEmpty()) {
+            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+                Uni<Void> chain = Uni.createFrom().voidItem();
+                for (var entry : dto.types.entrySet()) {
+                    chain = chain.chain(() -> resourceItem.addOrUpdateResourceItemTypes(s, entry.getKey(), null, null, entry.getValue(), sys, token).replaceWithVoid());
+                }
+                return chain;
+            }), label + " types");
+        }
+
+        if (dto.children != null && !dto.children.isEmpty()) {
+            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+                Uni<Void> chain = Uni.createFrom().voidItem();
+                for (var entry : dto.children.entrySet()) {
+                    UUID childId = UUID.fromString(entry.getKey());
+                    chain = chain.chain(() -> resourceItemService.findByUUID(s, childId)
+                            .chain(child -> resourceItem.addChild(s, (ResourceItem) child, null, entry.getValue(), sys, token).replaceWithVoid()));
+                }
+                return chain;
+            }), label + " children");
+        }
+    }
+
+    private void persistUpdateRelationshipsAsync(String enterpriseName, String requestingSystemName,
+                                                  IResourceItem<?, ?> resourceItem, ResourceItemUpdateDTO dto) {
+        String label = "resource item " + resourceItem.getId();
+
+        if (hasEntries(dto.classifications)) {
+            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+                Uni<Void> chain = Uni.createFrom().voidItem();
+                chain = chainAddOrUpdate(chain, dto.classifications, (name, value) ->
+                        resourceItem.addOrUpdateClassification(s, name, value, sys, token).replaceWithVoid());
+                chain = chainDelete(chain, dto.classifications, name ->
+                        resourceItem.removeClassification(s, name, null, sys, token).replaceWithVoid());
+                return chain;
+            }), label + " classifications");
+        }
+
+        if (hasEntries(dto.types)) {
+            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+                Uni<Void> chain = Uni.createFrom().voidItem();
+                chain = chainAddOrUpdate(chain, dto.types, (name, value) ->
+                        resourceItem.addOrUpdateResourceItemTypes(s, name, null, null, value, sys, token).replaceWithVoid());
+                chain = chainDelete(chain, dto.types, name ->
+                        resourceItem.removeResourceItemTypes(s, name, null, null, null, sys, token).replaceWithVoid());
+                return chain;
+            }), label + " types");
+        }
+
+        if (hasEntries(dto.children)) {
+            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+                Uni<Void> chain = Uni.createFrom().voidItem();
+                chain = chainAddOrUpdate(chain, dto.children, (childIdStr, value) -> {
+                    UUID childId = UUID.fromString(childIdStr);
+                    return resourceItemService.findByUUID(s, childId)
+                            .chain(child -> resourceItem.addChild(s, (ResourceItem) child, null, value, sys, token).replaceWithVoid());
+                });
+                chain = chainDeleteByExpire(chain, dto.children, s, resourceItem);
+                return chain;
+            }), label + " children");
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // DTO-based response builders (no DB round-trip)
+    // ──────────────────────────────────────────────────────────────────────────
+
+    private ResourceItemDTO buildCreateResponseFromDto(IResourceItem<?, ?> resourceItem, ResourceItemCreateDTO dto) {
+        ResourceItemDTO response = new ResourceItemDTO();
+        response.resourceItemId = resourceItem.getId();
+        response.types = dto.types != null ? new LinkedHashMap<>(dto.types) : null;
+        response.classifications = dto.classifications != null ? new LinkedHashMap<>(dto.classifications) : null;
+        response.children = dto.children != null ? new LinkedHashMap<>(dto.children) : null;
+        return response;
+    }
+
+    private ResourceItemDTO buildUpdateResponseFromDto(UUID resourceItemId, ResourceItemUpdateDTO dto) {
+        ResourceItemDTO response = new ResourceItemDTO();
+        response.resourceItemId = resourceItemId;
+        if (dto.classifications != null && dto.classifications.addOrUpdate != null) response.classifications = new LinkedHashMap<>(dto.classifications.addOrUpdate);
+        if (dto.types != null && dto.types.addOrUpdate != null) response.types = new LinkedHashMap<>(dto.types.addOrUpdate);
+        if (dto.children != null && dto.children.addOrUpdate != null) response.children = new LinkedHashMap<>(dto.children.addOrUpdate);
+        return response;
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // Response builders (DB-based — retained for find)
     // ──────────────────────────────────────────────────────────────────────────
 
     private Uni<ResourceItemDTO> buildCreateResponse(String enterpriseName, String requestingSystemName,
@@ -509,7 +537,7 @@ public class ResourceItemRestService
                                                 String childId = child != null && child.getId() != null ? child.getId().toString() : null;
                                                 if (childId != null && idsToDelete.contains(childId))
                                                 {
-                                                    return ((WarehouseBaseTable) link).expire().replaceWithVoid();
+                                                    return ((WarehouseBaseTable) link).expire(session).replaceWithVoid();
                                                 }
                                                 return Uni.createFrom().voidItem();
                                             })
@@ -522,7 +550,9 @@ public class ResourceItemRestService
 
     private List<ResourceItemDataIncludes> determineIncludes(ResourceItemUpdateDTO dto) {
         List<ResourceItemDataIncludes> includes = new ArrayList<>();
-        if (hasEntries(dto.classifications)) includes.add(ResourceItemDataIncludes.Classifications);
+        //if (hasEntries(dto.classifications)) includes.add(ResourceItemDataIncludes.Classifications);
+        includes.add(ResourceItemDataIncludes.Classifications);
+
         if (hasEntries(dto.types))           includes.add(ResourceItemDataIncludes.Types);
         if (hasEntries(dto.children))        includes.add(ResourceItemDataIncludes.Children);
         if (includes.isEmpty())
@@ -539,10 +569,3 @@ public class ResourceItemRestService
                 || (entry.delete != null && !entry.delete.isEmpty());
     }
 }
-
-
-
-
-
-
-

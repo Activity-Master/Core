@@ -14,6 +14,7 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.jpa.boot.spi.PersistenceUnitDescriptor;
 
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 @EntityManager(value = "ActivityMaster", defaultEm = false)
 public class ActivityMasterDBModule
@@ -47,7 +48,7 @@ public class ActivityMasterDBModule
         connectionInfo.setPassword(Environment.getProperty("FSDM_PASSWORD","fsdm"));
         connectionInfo.setDefaultConnection(true);
         connectionInfo.setReactive(true);
-		connectionInfo.setMinPoolSize(5);
+		connectionInfo.setMinPoolSize(50);
 		connectionInfo.setMaxPoolSize(300);
 		connectionInfo.setMaxIdleTime(30000);
 
@@ -62,7 +63,13 @@ public class ActivityMasterDBModule
 		PoolOptions poolOptions = new PoolOptions()
 				.setShared(true)
 				.setName("activity-master-pool")
-				.setMaxSize(50);
+				.setMaxSize(500)
+				.setShared(true)
+				.setIdleTimeout(300)
+				.setPoolCleanerPeriod(300)
+				.setEventLoopSize(10)
+				.setMaxLifetimeUnit(TimeUnit.MINUTES)
+				.setMaxLifetime(3);
 
 		Pool pool = PgBuilder
 				.pool()

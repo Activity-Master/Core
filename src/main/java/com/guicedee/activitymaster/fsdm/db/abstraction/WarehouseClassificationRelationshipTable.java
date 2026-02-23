@@ -39,7 +39,7 @@ public abstract class WarehouseClassificationRelationshipTable<
 	            referencedColumnName = "ClassificationID",
 	            nullable = false)
 	@ManyToOne(optional = false,
-	           fetch = FetchType.EAGER)
+	           fetch = FetchType.LAZY)
 
 	private Classification classificationID;
 	
