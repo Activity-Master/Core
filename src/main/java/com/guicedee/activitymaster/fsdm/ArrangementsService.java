@@ -109,13 +109,13 @@ public class ArrangementsService
 
 
     @Override
-    public Uni<IArrangement<?, ?>> create(Mutiny.Session session, String type,
+    public Uni<IArrangement<?, ?>> create(Mutiny.Session session,UUID key, String type,
                                           String arrangementTypeClassification,
                                           String arrangementTypeValue,
                                           ISystems<?, ?> system,
                                           UUID... identityToken) {
         log.debug("Creating arrangement - type: {}, classification: {}, value: {}", type, arrangementTypeClassification, arrangementTypeValue);
-        return create(session, type, null, arrangementTypeClassification, arrangementTypeValue, system, identityToken);
+        return create(session, type, key, arrangementTypeClassification, arrangementTypeValue, system, identityToken);
     }
 
 
@@ -127,6 +127,8 @@ public class ArrangementsService
             String arrangementTypeValue,
             ISystems<?, ?> system,
             UUID... identityToken) {
+        var finalKey = key != null ? key : UUID.randomUUID();
+
         return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
                     log.debug("Creating arrangement - type: {}, key: {}, classification: {}, value: {}",
                             type, key, arrangementTypeClassification, arrangementTypeValue);
@@ -135,9 +137,8 @@ public class ArrangementsService
                     var createEnterprise = tuple.getItem2();
                     var createSystem = tuple.getItem3();
                     var createIdentityToken = tuple.getItem4();
-
                     Arrangement arrangement = new Arrangement();
-                    arrangement.setId(key != null ? key : UUID.randomUUID());
+                    arrangement.setId(finalKey);
                     arrangement.setSystemID(tuple.getItem3());
                     arrangement.setOriginalSourceSystemID(tuple.getItem3().getId());
                     arrangement.setEnterpriseID(tuple.getItem2());
@@ -150,28 +151,22 @@ public class ArrangementsService
                                 // Step 2: Create default security with proper chaining
                                 persisted.createDefaultSecurity(createSession, createSystem, createIdentityToken);
                             })
+                            .chain(arrangementPass->{
+                                return find(createSession, type, createSystem)
+                                        .chain(arrangementType ->
+                                                {
+                                                    return arrangementPass.addArrangementType(
+                                                            createSession, arrangementType, arrangementTypeClassification,
+                                                            arrangementTypeValue,
+                                                            createSystem,
+                                                            createIdentityToken
+                                                    ).replaceWith(Uni.createFrom().item(arrangementPass));
+                                                }
+                                        );
+                            })
                             .onItem().invoke(() -> log.debug("Arrangement created successfully - proceeding to add arrangement type"));
                 })
-                .chain(_ -> {
-                    return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-                        log.debug("Creating arrangement - type: {}, key: {}, classification: {}, value: {}",
-                                type, key, arrangementTypeClassification, arrangementTypeValue);
-                        // Step Add the arrangement type
-                        var createSession = tuple.getItem1();
-                        var createEnterprise = tuple.getItem2();
-                        var createSystem = tuple.getItem3();
-                        var createIdentityToken = tuple.getItem4();
-                        return find(createSession, type, createSystem)
-                                .chain(arrangementType -> find(createSession, key, createSystem, createIdentityToken).chain(arrangement ->
-                                        arrangement.addArrangementType(
-                                                createSession, arrangementType, arrangementTypeClassification,
-                                                arrangementTypeValue,
-                                                createSystem,
-                                                createIdentityToken
-                                        ))
-                                );
-                    });
-                });
+                ;
     }
 
     @Override

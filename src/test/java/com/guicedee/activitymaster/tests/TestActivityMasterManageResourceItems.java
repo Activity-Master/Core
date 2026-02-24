@@ -97,7 +97,7 @@ public class TestActivityMasterManageResourceItems {
       return enterpriseService.getEnterprise(session, TestEnterprise.name())
           .chain(ent -> systemsService.getActivityMaster(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent))
           .chain(sys -> arrangementsService.createArrangementType(session, "OrderType_X1", sys)
-              .replaceWith(arrangementsService.create(session, "OrderType_X1",
+              .replaceWith(arrangementsService.create(session, "OrderType_X1",null,
                   com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification.name(), "ARR-VAL-1", sys))
               .chain(arr -> createResource(session, sys, "FileType_MRI", "res-arr-mri")
                   .chain(res -> ((IArrangement<?, ?>) arr).addResourceItem(session,

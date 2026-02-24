@@ -176,11 +176,11 @@ public class ResourceItemRestService
             Uni<IResourceItem<?, ?>> createUni;
             if (dto.data != null && dto.data.length > 0)
             {
-                createUni = resourceItemService.create(null, dto.type, dto.dataValue, dto.data, system);
+                createUni = resourceItemService.create(null, dto.type,dto.key, dto.dataValue, dto.data, system);
             }
             else
             {
-                createUni = resourceItemService.create(null, dto.type, dto.dataValue, system);
+                createUni = resourceItemService.create(null, dto.type,dto.key, dto.dataValue, system);
             }
 
             return createUni.map(resourceItem -> {

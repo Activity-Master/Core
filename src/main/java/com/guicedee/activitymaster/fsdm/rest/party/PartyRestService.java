@@ -205,7 +205,7 @@ public class PartyRestService {
         return SessionUtils.<ISystems<?, ?>>withActivityMaster(enterpriseName, requestingSystemName,
                 (java.util.function.Function<Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]>, Uni<ISystems<?, ?>>>) tuple ->
                         Uni.createFrom().item(tuple.getItem3())
-        ).chain(system -> involvedPartyService.create(null, system,
+        ).chain(system -> involvedPartyService.create(null, system,dto.key,
                         new Pair<>(dto.identificationType, dto.identificationValue), dto.organic)
                 .map(party -> {
                     if (hasAnyRelationship(dto)) {

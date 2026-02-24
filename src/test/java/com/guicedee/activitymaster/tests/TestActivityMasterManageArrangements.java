@@ -56,7 +56,7 @@ public class TestActivityMasterManageArrangements {
   private Uni<IArrangement<?, ?>> createArrangement(Mutiny.Session session, ISystems<?, ?> sys, String typeName, String value) {
     IArrangementsService<?> arrangementsService = IGuiceContext.get(IArrangementsService.class);
     return arrangementsService.createArrangementType(session, typeName, sys)
-        .chain(t -> arrangementsService.create(session, typeName,
+        .chain(t -> arrangementsService.create(session, typeName,null,
             com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification.name(), value, sys))
         .map(a -> (IArrangement<?, ?>) a);
   }

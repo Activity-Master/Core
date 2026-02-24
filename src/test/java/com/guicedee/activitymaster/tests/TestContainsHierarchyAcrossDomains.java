@@ -74,8 +74,8 @@ public class TestContainsHierarchyAcrossDomains extends TestDatabaseSetup {
       return enterpriseService.getEnterprise(session, TestEnterprise.name())
           .chain(ent -> systemsService.getActivityMaster(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent))
           .chain(sys -> arrangementsService.createArrangementType(session, "CH_OrderType", sys)
-              .chain(type -> arrangementsService.create(session, "CH_OrderType", "NoClassification", "ARR-H-01", sys))
-              .chain(parent -> arrangementsService.create(session, "CH_OrderType", "NoClassification", "ARR-H-02", sys)
+              .chain(type -> arrangementsService.create(session, "CH_OrderType",null, "NoClassification", "ARR-H-01", sys))
+              .chain(parent -> arrangementsService.create(session, "CH_OrderType", null,"NoClassification", "ARR-H-02", sys)
                   .map(child -> new Object[]{sys, parent, child}))
           )
           .chain(arr -> {

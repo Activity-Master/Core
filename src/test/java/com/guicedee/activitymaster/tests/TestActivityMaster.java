@@ -1311,7 +1311,7 @@ public class TestActivityMaster extends TestDatabaseSetup
                          var concept = com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.NoClassificationDataConceptName;
                          return classificationService.create(session, classificationName, "Arrangement test classification", concept,
                                  (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems<?, ?>) sys)
-                                    .chain(() -> arrangementsService.create(session, typeName,
+                                    .chain(() -> arrangementsService.create(session, typeName,null,
                                         com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification.name(), value,
                                         (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems<?, ?>) sys))
                                     .chain(created -> ((com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangement<?, ?>) created)

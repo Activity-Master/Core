@@ -20,6 +20,7 @@ import com.guicedee.activitymaster.fsdm.client.services.rest.PivotEntry;
 import com.guicedee.activitymaster.fsdm.client.services.rest.RelationshipUpdateEntry;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple4;
+import jakarta.persistence.NoResultException;
 import jakarta.ws.rs.*;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
@@ -63,6 +64,7 @@ public class ArrangementRestService {
 
                                 return chain;
                             })
+                            .onFailure(NoResultException.class).recoverWithItem(() -> null)
                             .onFailure().invoke(e ->
                                     log.error("Error finding arrangement with ID {} for enterprise {} and system {}", arrangementId, enterpriseName, requestingSystemName, e)
                             );
@@ -401,7 +403,7 @@ public class ArrangementRestService {
         // Step 1: Create the arrangement — ArrangementsService.create() manages its own session+transaction
         return SessionUtils.<ISystems<?, ?>>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
             return Uni.createFrom().item(tuple.getItem3());
-        }).chain(system -> arrangementsService.create(null, dto.type, dto.classification, dto.typeValue, system)
+        }).chain(system -> arrangementsService.create(null,dto.key, dto.type, dto.classification, dto.typeValue, system)
                 .map(arrangement -> {
                     boolean hasRelationships = (dto.classifications != null && !dto.classifications.isEmpty())
                             || (dto.parties != null && !dto.parties.isEmpty())

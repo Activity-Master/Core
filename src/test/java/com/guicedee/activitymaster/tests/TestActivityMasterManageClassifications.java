@@ -75,7 +75,7 @@ public class TestActivityMasterManageClassifications {
       return enterpriseService.getEnterprise(session, TestEnterprise.name())
           .chain(ent -> systemsService.getActivityMaster(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent))
           .chain(sys -> arrangementsService.createArrangementType(session, "MC_OrderType_X1", sys)
-              .chain(type -> arrangementsService.create(session, "MC_OrderType_X1",
+              .chain(type -> arrangementsService.create(session, "MC_OrderType_X1",null,
                   com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification.name(), "ARR-CL-1", sys))
               .chain(arr -> {
                 String classyName = "MC_Classy_Arrangements_1";
