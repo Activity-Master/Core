@@ -65,12 +65,12 @@ Retrieves an event by ID with selectable relationship includes.
 |---|---|
 | `Types` | Event type names → stored values |
 | `Classifications` | Classification names → stored values |
-| `Parties` | Classification names → involved party IDs |
-| `Resources` | Classification names → resource item IDs |
-| `Products` | Classification names → product IDs |
-| `Rules` | Classification names → rule IDs |
-| `Arrangements` | Classification names → arrangement IDs |
-| `Children` | Child event IDs → stored values |
+| `Parties` | Classification names → involved party UUIDs |
+| `Resources` | Classification names → resource item UUIDs |
+| `Products` | Classification names → product UUIDs |
+| `Rules` | Classification names → rule UUIDs |
+| `Arrangements` | Classification names → arrangement UUIDs |
+| `Children` | Classification names → child event UUIDs |
 
 #### Example Response — `EventDTO`
 
@@ -97,7 +97,7 @@ Retrieves an event by ID with selectable relationship includes.
 
 ### 2. Create Event
 
-Creates a new event with an event type, and optionally adds classifications, additional event types, parties, resources, products, rules, arrangements, and child event links in the same request.
+Creates a new event from the `types` map. The first entry in `types` is used as the primary event type for the underlying `createEvent()` call. All entries (including the first) are then persisted with their values asynchronously.
 
 | Property | Value |
 |---|---|
@@ -112,19 +112,19 @@ Creates a new event with an event type, and optionally adds classifications, add
 
 ```json
 {
-  "type": "PackingSession",
+  "types": {
+    "PackingSession": "session-001",
+    "ShiftEvent": "morning"
+  },
   "classifications": {
     "Status": "InProgress",
     "StartTime": "2026-02-22T08:00:00"
   },
-  "types": {
-    "ShiftEvent": "morning"
-  },
   "parties": {
-    "Operator": "staff-value"
+    "Operator": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
   },
   "resources": {
-    "Station": "station-value"
+    "Station": "r1s2t3u4-e5f6-7890-abcd-ef1234567890"
   },
   "products": {
     "ProductGrade": "grade-a"
@@ -136,26 +136,34 @@ Creates a new event with an event type, and optionally adds classifications, add
     "Timesheet": "timesheet-value"
   },
   "children": {
-    "child-event-uuid": "sub-event"
+    "SubEventClassification": "child-event-uuid"
   }
 }
 ```
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `type` | `String` | **Yes** | Event type name (e.g. `"PackingSession"`, `"Login"`). |
+| `types` | `Map<String, String>` | **Yes** | Event type name → relationship value pairs. **At least one entry is required.** The first entry is used as the primary event type during creation; all entries are persisted with their values. |
 | `classifications` | `Map<String, String>` | No | Classification name → value pairs. |
-| `types` | `Map<String, String>` | No | Additional event type name → value pairs. |
-| `parties` | `Map<String, String>` | No | Classification name → store value for involved party relationships. |
-| `resources` | `Map<String, String>` | No | Classification name → store value for resource item relationships. |
+| `parties` | `Map<String, String>` | No | Classification name → **involved party UUID**. The UUID is resolved to an entity before linking. |
+| `resources` | `Map<String, String>` | No | Classification name → **resource item UUID**. The UUID is resolved to an entity before linking. |
 | `products` | `Map<String, String>` | No | Classification name → store value for product relationships. |
 | `rules` | `Map<String, String>` | No | Classification name → store value for rule relationships. |
 | `arrangements` | `Map<String, String>` | No | Classification name → store value for arrangement relationships. |
-| `children` | `Map<String, String>` | No | Child event UUID (as string) → relationship value. |
+| `children` | `Map<String, String>` | No | Classification name → child event UUID string. |
 
-#### Session Handling
+#### Session & Response Handling
 
-The `create` endpoint does **not** wrap `eventService.createEvent()` in `withActivityMaster()` because the service method manages its own session. Subsequent relationship operations and response fetching each open their own fresh sessions.
+- `eventService.createEvent()` manages its own session — the REST endpoint does **not** wrap it in `withActivityMaster()`.
+- **Relationship persistence is fire-and-forget**: Each relationship type (types, classifications, parties, resources, etc.) is persisted asynchronously on its **own Vert.x context** via `SessionUtils.fireAndForget()`. Each fire-and-forget Uni opens its own session and transaction, fully isolated from the others.
+- **Response is returned immediately** from the DTO input (echoed back) — no DB round-trip needed. The response includes all submitted relationship data even though the async persistence may still be in progress.
+
+#### Entity Resolution
+
+- **Parties**: The value is an **involved party UUID**. It is resolved via `involvedPartyService.find(session, partyId)` before being passed to `addOrUpdateInvolvedParty()`.
+- **Resources**: The value is a **resource item UUID**. It is resolved via `resourceItemService.findByUUID(session, riId)` before being passed to `addOrUpdateResourceItem()`.
+- **Children**: The key is a **classification name** and the value is a **child event UUID**. The child event is resolved via `eventService.find(session, childId)` before calling `addChild()`.
+- Products, rules, and arrangements pass the map value as a store value string (no entity resolution needed).
 
 ---
 
@@ -192,11 +200,19 @@ Updates an existing event's relationships. Supports **add/update** (upsert) and 
   },
   "parties": {
     "addOrUpdate": {
-      "Supervisor": "supervisor-value"
+      "Supervisor": "supervisor-party-uuid"
+    }
+  },
+  "resources": {
+    "addOrUpdate": {
+      "Station": "resource-item-uuid"
     }
   },
   "children": {
-    "delete": ["old-child-uuid"]
+    "addOrUpdate": {
+      "SubEventClassification": "child-event-uuid"
+    },
+    "delete": ["old-child-classification"]
   }
 }
 ```
@@ -206,12 +222,12 @@ Updates an existing event's relationships. Supports **add/update** (upsert) and 
 | `eventId` | `UUID` | **Yes** | The event to update. |
 | `classifications` | `RelationshipUpdateEntry` | No | Classification operations. |
 | `types` | `RelationshipUpdateEntry` | No | Event type operations. |
-| `parties` | `RelationshipUpdateEntry` | No | Involved party operations (key = classification name). |
-| `resources` | `RelationshipUpdateEntry` | No | Resource item operations (key = classification name). |
+| `parties` | `RelationshipUpdateEntry` | No | Involved party operations. Key = classification name, Value = **involved party UUID**. |
+| `resources` | `RelationshipUpdateEntry` | No | Resource item operations. Key = classification name, Value = **resource item UUID**. |
 | `products` | `RelationshipUpdateEntry` | No | Product operations (key = classification name). |
 | `rules` | `RelationshipUpdateEntry` | No | Rule operations (key = classification name). |
 | `arrangements` | `RelationshipUpdateEntry` | No | Arrangement operations (key = classification name). |
-| `children` | `RelationshipUpdateEntry` | No | Child event operations (key = child event UUID string). |
+| `children` | `RelationshipUpdateEntry` | No | Child event operations. Key = classification name, Value = child event UUID. |
 
 #### `RelationshipUpdateEntry` Structure
 
@@ -221,6 +237,12 @@ Updates an existing event's relationships. Supports **add/update** (upsert) and 
   "delete": ["NameToExpire"]
 }
 ```
+
+#### Session & Response Handling (Update)
+
+- The event is validated (exists) in an initial session.
+- **All relationship updates are fire-and-forget**: Each relationship type is persisted asynchronously on its own Vert.x context via `SessionUtils.fireAndForget()`.
+- **Response is returned immediately** from the DTO input — no DB round-trip.
 
 ---
 
@@ -241,7 +263,7 @@ An occurrence or action entity with a UUID, linked to an enterprise and system.
 | Products | `EventXProduct` | Classification name | `addOrUpdateProduct()` | Expire via query |
 | Rules | `EventXRules` | Classification name | `addOrUpdateRules()` | Expire via query |
 | Arrangements | `EventXArrangement` | Classification name | `addOrUpdateArrangement()` | Expire via query |
-| Children | `EventXEvent` | Child UUID | `addChild()` | Expire via query |
+| Children | `EventXEvent` | Classification name | `addChild()` | Expire via query |
 
 ### SCD Pattern
 
@@ -254,13 +276,23 @@ All relationship records follow the Slowly Changing Dimension pattern:
 
 ## Response Key Conventions
 
-For relationships that link through a classification (parties, resources, products, rules, arrangements):
-- **Key** = classification name (the descriptive classification on the cross-reference row)
-- **Value** = the related entity's UUID
+For all relationship maps:
+- **Key** = classification name or entity name (the descriptive name on the cross-reference row)
+- **Value** = the related entity's UUID (for parties, resources, products, rules, arrangements, children) or the stored relationship value (for types, classifications)
 
-For direct relationships (types, children, classifications):
-- **Key** = entity name or UUID
-- **Value** = the stored relationship value
+---
+
+## Async Relationship Persistence
+
+All create and update operations use **fire-and-forget** async persistence for relationships:
+
+1. Each relationship type (types, classifications, parties, etc.) is persisted in a **separate** `SessionUtils.fireAndForget()` call.
+2. Each `fireAndForget()` runs on its **own Vert.x context** (`vertx.getOrCreateContext().runOnContext(...)`) to ensure session isolation.
+3. Each async operation opens its own session and transaction via `SessionUtils.withActivityMaster()`.
+4. Failures are logged at ERROR level but never propagated to the caller.
+5. The HTTP response is returned **immediately** — relationship data is echoed from the submitted DTO.
+
+This pattern avoids Hibernate Reactive session thread-affinity errors (HR000069) and "Illegal pop()" errors that occur when multiple `withTransaction` calls share the same Vert.x context.
 
 ---
 
@@ -271,13 +303,15 @@ For direct relationships (types, children, classifications):
 ```json
 POST /{enterprise}/event/{system}/create
 {
-  "type": "PackingSession",
+  "types": {
+    "PackingSession": "session-001"
+  },
   "classifications": {
     "Status": "InProgress",
     "Operator": "John Smith"
   },
   "resources": {
-    "Station": "station-42"
+    "Station": "resource-item-uuid"
   }
 }
 ```
@@ -312,9 +346,8 @@ POST /{enterprise}/event/{system}/find
 | DTO | Used By | Purpose |
 |---|---|---|
 | `EventFindDTO` | `POST .../find` | Find by ID with selectable includes |
-| `EventCreateDTO` | `POST .../create` | Create with optional relationships |
+| `EventCreateDTO` | `POST .../create` | Create with mandatory types + optional relationships |
 | `EventUpdateDTO` | `PUT .../update` | Update relationships (add/update/delete) |
 | `EventDTO` | Response | Standard event response |
 | `RelationshipUpdateEntry` | Within `EventUpdateDTO` | Add/update map + delete list for one relationship type |
-
 

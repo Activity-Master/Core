@@ -120,10 +120,10 @@ Searches for resource items by resource item type and classification, with optio
 | `resourceItemType` | `String` | **Yes** | The resource item type name to filter by. |
 | `classificationName` | `String` | **Yes** | The classification name to match. |
 | `classificationValue` | `String` | No | Optional classification value to match. If null, all items with the classification are returned. |
-| `includes` | `List<ResourceItemDataIncludes>` | No | Which relationship types to include in each result. If omitted/empty, only `resourceItemId` is returned. |
-| `maxResults` | `Integer` | No | Maximum number of results to return. If null or ≤ 0, all matching results are returned. |
-| `sortDirection` | `SortDirection` | No | `ASC` (oldest first) or `DESC` (newest first). If null, no explicit ordering is applied. |
-| `sortField` | `SearchSortField` | No | Which field to sort by. Defaults to `WAREHOUSE_CREATED_TIMESTAMP` when a sort direction is specified. |
+| `includes` | `List<ResourceItemDataIncludes>` | No | Which relationship types to include in each result. |
+| `maxResults` | `Integer` | No | Maximum number of results to return. |
+| `sortDirection` | `SortDirection` | No | `ASC` (oldest first) or `DESC` (newest first). |
+| `sortField` | `SearchSortField` | No | Which field to sort by. Defaults to `WAREHOUSE_CREATED_TIMESTAMP`. |
 
 #### Sort Fields
 
@@ -206,15 +206,16 @@ Creates a new resource item with a type and data value, optionally adding classi
 | `types` | `Map<String, String>` | No | Resource item type name → relationship value pairs to add. |
 | `children` | `Map<String, String>` | No | Child resource item UUID (as string) → relationship value. |
 
-#### Behavior
+#### Session & Response Handling
 
-1. Creates the resource item with the given `type` and `dataValue` (and optional binary `data`).
-2. If any optional relationship maps are provided, adds them via `addOrUpdateClassification`, `addOrUpdateResourceItemTypes`, and `addChild`.
-3. Returns the full `ResourceItemDTO` with Types, Classifications, and any Children that were provided.
+- `resourceItemService.create()` manages its own session — the REST endpoint does **not** wrap it in `withActivityMaster()`.
+- **Relationship persistence is fire-and-forget**: Each relationship type (classifications, types, children) is persisted asynchronously on its **own Vert.x context** via `SessionUtils.fireAndForget()`. Each fire-and-forget Uni opens its own session and transaction, fully isolated from the others.
+- **Response is returned immediately** from the DTO input (echoed back) — no DB round-trip needed.
 
-#### Important: Session Handling
+#### Entity Resolution
 
-The `create` endpoint does **not** wrap `resourceItemService.create()` in `withActivityMaster()` because the service method manages its own session. Subsequent relationship operations and response fetching each open their own fresh sessions.
+- **Children**: The key is a **child resource item UUID**. The child is resolved via `resourceItemService.findByUUID(session, childId)` before calling `addChild()`.
+- Types use `addOrUpdateResourceItemTypes()` which resolves type names internally (no entity resolution needed in the REST service).
 
 ---
 
@@ -274,10 +275,11 @@ Updates an existing resource item's relationships. Supports **add/update** (upse
 }
 ```
 
-| Field | Type | Description |
-|---|---|---|
-| `addOrUpdate` | `Map<String, String>` | Key/value pairs to upsert. Key is the **name** (classification name, type name). |
-| `delete` | `List<String>` | Names to expire (soft-delete). For classifications and resource item types, uses dedicated remove methods. For children, queries the hierarchy table and expires matching rows. |
+#### Session & Response Handling (Update)
+
+- The resource item is validated (exists) in an initial session.
+- **All relationship updates are fire-and-forget**: Each relationship type is persisted asynchronously on its own Vert.x context via `SessionUtils.fireAndForget()`.
+- **Response is returned immediately** from the DTO input — no DB round-trip.
 
 ---
 
@@ -308,16 +310,6 @@ Replaces the binary data payload of an existing resource item. Only the data is 
 | `resourceItemId` | `UUID` | **Yes** | The resource item whose data to update. |
 | `data` | `byte[]` | **Yes** | The new binary data (Base64-encoded in JSON). |
 
-#### Example Response
-
-```json
-{
-  "resourceItemId": "550e8400-e29b-41d4-a716-446655440000"
-}
-```
-
-The response confirms the update with the resource item ID. No relationship data is returned.
-
 ---
 
 ### 6. Get Resource Item Data
@@ -346,18 +338,6 @@ Retrieves the binary data payload of a resource item. The data is returned as a 
 3. Retrieves the binary data via `ResourceItem.getData()`, which reads from the `ResourceItemDataValue` entity and decompresses (un-gzips) the stored bytes.
 4. Returns the raw `byte[]` as `application/octet-stream`.
 
-#### Example Request
-
-```
-GET /MyEnterprise/resource-item/ActivityMaster/data/550e8400-e29b-41d4-a716-446655440000
-```
-
-#### Notes
-
-- The response body is **raw binary data**, not JSON. Clients should handle the response as a byte stream.
-- If the resource item has no stored data, an empty byte array is returned.
-- Data is stored compressed (GZip) in the database and decompressed automatically before being returned.
-
 ---
 
 ## Data Model
@@ -380,6 +360,20 @@ All relationship records follow the Slowly Changing Dimension pattern:
 - **Expire** = set `effectiveToDate` to now.
 - **Delete** = set `activeFlagID` to the deleted flag.
 - Queries use `.inActiveRange()` and `.inDateRange()` to filter to current, active records.
+
+---
+
+## Async Relationship Persistence
+
+All create and update operations use **fire-and-forget** async persistence for relationships:
+
+1. Each relationship type (types, classifications, children) is persisted in a **separate** `SessionUtils.fireAndForget()` call.
+2. Each `fireAndForget()` runs on its **own Vert.x context** (`vertx.getOrCreateContext().runOnContext(...)`) to ensure session isolation.
+3. Each async operation opens its own session and transaction via `SessionUtils.withActivityMaster()`.
+4. Failures are logged at ERROR level but never propagated to the caller.
+5. The HTTP response is returned **immediately** — relationship data is echoed from the submitted DTO.
+
+This pattern avoids Hibernate Reactive session thread-affinity errors (HR000069) and "Illegal pop()" errors that occur when multiple `withTransaction` calls share the same Vert.x context.
 
 ---
 

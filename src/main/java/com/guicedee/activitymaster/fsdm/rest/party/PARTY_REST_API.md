@@ -67,11 +67,11 @@ Retrieves an involved party by ID with selectable relationship includes.
 | `Classifications` | Classification names → stored values |
 | `NameTypes` | Name type classification names → stored values |
 | `IdentificationTypes` | Identification type classification names → stored values |
-| `Resources` | Resource item classification names → resource item IDs |
-| `Products` | Product classification names → product IDs |
-| `Rules` | Rule classification names → rule IDs |
-| `Addresses` | Address classification names → address IDs |
-| `Children` | Child involved party IDs → stored values |
+| `Resources` | Resource item classification names → resource item UUIDs |
+| `Products` | Product classification names → product UUIDs |
+| `Rules` | Rule classification names → rule UUIDs |
+| `Addresses` | Address classification names → address UUIDs |
+| `Children` | Child involved party UUIDs → stored values |
 
 #### Example Response — `PartyDTO`
 
@@ -252,7 +252,7 @@ Creates a new involved party with an identification type and value, optionally a
     "FullName": "John Smith"
   },
   "resources": {
-    "ProfilePhoto": "photo-resource-value"
+    "ProfilePhoto": "r1s2t3u4-e5f6-7890-abcd-ef1234567890"
   },
   "products": {
     "Subscription": "premium"
@@ -269,19 +269,28 @@ Creates a new involved party with an identification type and value, optionally a
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `identificationType` | `String` | **Yes** | Identification type name (e.g. `"Email"`, `"PhoneNumber"`). |
-| `identificationValue` | `String` | **Yes** | Identification type value (e.g. `"user@example.com"`, `"+1234567890"`). |
+| `identificationValue` | `String` | **Yes** | Identification type value (e.g. `"user@example.com"`). |
 | `organic` | `boolean` | No | Whether this party is organic (person) or non-organic (organisation). Defaults to `true`. |
+| `key` | `UUID` | No | Optional unique key for the party. |
 | `classifications` | `Map<String, String>` | No | Classification name → value pairs. |
 | `types` | `Map<String, String>` | No | Involved party type classification name → store value pairs. |
 | `nameTypes` | `Map<String, String>` | No | Name type classification name → store value pairs. |
-| `resources` | `Map<String, String>` | No | Classification name → store value for resource item relationships. |
+| `resources` | `Map<String, String>` | No | Classification name → **resource item UUID**. The UUID is resolved to an entity before linking. |
 | `products` | `Map<String, String>` | No | Classification name → store value for product relationships. |
 | `rules` | `Map<String, String>` | No | Classification name → store value for rule relationships. |
 | `children` | `Map<String, String>` | No | Child party UUID (as string) → relationship value. |
 
-#### Session Handling
+#### Session & Response Handling
 
-The `create` endpoint does **not** wrap `involvedPartyService.create()` in `withActivityMaster()` because the service method manages its own session. Subsequent relationship operations and response fetching each open their own fresh sessions.
+- `involvedPartyService.create()` manages its own session — the REST endpoint does **not** wrap it in `withActivityMaster()`.
+- **Relationship persistence is fire-and-forget**: Each relationship type (classifications, types, name types, resources, etc.) is persisted asynchronously on its **own Vert.x context** via `SessionUtils.fireAndForget()`. Each fire-and-forget Uni opens its own session and transaction, fully isolated from the others.
+- **Response is returned immediately** from the DTO input (echoed back) — no DB round-trip needed.
+
+#### Entity Resolution
+
+- **Resources**: The value is a **resource item UUID**. It is resolved via `resourceItemService.findByUUID(session, riId)` before being passed to `addOrUpdateResourceItem()`.
+- **Children**: The key is a **child party UUID**. The child party is resolved via `involvedPartyService.find(session, childId)` before calling `addChild()`.
+- Types, name types, products, and rules pass the map value as a store value string (no entity resolution needed).
 
 ---
 
@@ -328,7 +337,7 @@ Updates an existing involved party's relationships. Supports **add/update** (ups
   },
   "resources": {
     "addOrUpdate": {
-      "ProfilePhoto": "new-photo-value"
+      "ProfilePhoto": "resource-item-uuid"
     }
   },
   "products": {
@@ -352,7 +361,7 @@ Updates an existing involved party's relationships. Supports **add/update** (ups
 | `types` | `RelationshipUpdateEntry` | No | Involved party type operations (key = classification name). |
 | `nameTypes` | `RelationshipUpdateEntry` | No | Name type operations (key = classification name). |
 | `identificationTypes` | `RelationshipUpdateEntry` | No | Identification type operations (key = classification name). |
-| `resources` | `RelationshipUpdateEntry` | No | Resource item operations (key = classification name). |
+| `resources` | `RelationshipUpdateEntry` | No | Resource item operations. Key = classification name, Value = **resource item UUID**. |
 | `products` | `RelationshipUpdateEntry` | No | Product operations (key = classification name). |
 | `rules` | `RelationshipUpdateEntry` | No | Rule operations (key = classification name). |
 | `children` | `RelationshipUpdateEntry` | No | Child party operations (key = child party UUID string). |
@@ -368,8 +377,14 @@ Updates an existing involved party's relationships. Supports **add/update** (ups
 
 | Field | Type | Description |
 |---|---|---|
-| `addOrUpdate` | `Map<String, String>` | Key/value pairs to upsert. Key is the **name** (classification name, type name). |
+| `addOrUpdate` | `Map<String, String>` | Key/value pairs to upsert. Key is the **name** (classification name, type name). Value depends on the relationship type (UUID for resources, store value for others). |
 | `delete` | `List<String>` | Names to expire (soft-delete). For classifications, uses `removeClassification()`. For types/name types/identification types/resources/products/rules, queries the cross-ref table and expires matching rows. For children, matches by child party UUID. |
+
+#### Session & Response Handling (Update)
+
+- The party is validated (exists) in an initial session.
+- **All relationship updates are fire-and-forget**: Each relationship type is persisted asynchronously on its own Vert.x context via `SessionUtils.fireAndForget()`.
+- **Response is returned immediately** from the DTO input — no DB round-trip.
 
 ---
 
@@ -415,6 +430,20 @@ For direct relationships (children):
 For classifications:
 - **Key** = classification name
 - **Value** = stored value
+
+---
+
+## Async Relationship Persistence
+
+All create and update operations use **fire-and-forget** async persistence for relationships:
+
+1. Each relationship type (types, classifications, name types, resources, etc.) is persisted in a **separate** `SessionUtils.fireAndForget()` call.
+2. Each `fireAndForget()` runs on its **own Vert.x context** (`vertx.getOrCreateContext().runOnContext(...)`) to ensure session isolation.
+3. Each async operation opens its own session and transaction via `SessionUtils.withActivityMaster()`.
+4. Failures are logged at ERROR level but never propagated to the caller.
+5. The HTTP response is returned **immediately** — relationship data is echoed from the submitted DTO.
+
+This pattern avoids Hibernate Reactive session thread-affinity errors (HR000069) and "Illegal pop()" errors that occur when multiple `withTransaction` calls share the same Vert.x context.
 
 ---
 

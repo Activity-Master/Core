@@ -22,7 +22,7 @@ All endpoints are **reactive** (returning `Uni<T>` via SmallRye Mutiny) and use 
 ## Authentication & Session Management
 
 - Sessions and transactions are managed internally via `SessionUtils.withActivityMaster()`.
-- The `create` endpoint is an exception — `ArrangementsService.create()` manages its own session internally. The REST endpoint chains subsequent relationship operations and response fetching in separate sessions.
+- The `create` endpoint is an exception — `ArrangementsService.create()` manages its own session internally. The REST endpoint chains subsequent relationship operations in separate fire-and-forget sessions.
 - **Never** wrap `arrangementsService.create()` inside `withActivityMaster()` — it will cause nested session/transaction errors.
 
 ---
@@ -73,13 +73,13 @@ Retrieves an arrangement by ID with selectable relationship includes.
 |---|---|
 | `Types` | Arrangement type names → stored values |
 | `Classifications` | Classification names → stored values |
-| `Parties` | Involved party IDs → stored values |
-| `Resources` | Resource item IDs → stored values |
-| `Events` | Event IDs → stored values |
-| `Rules` | Rule IDs → stored values |
-| `Products` | Product IDs → stored values |
-| `RuleTypes` | Rule type IDs → stored values |
-| `Arrangements` | Child arrangement IDs → stored values |
+| `Parties` | Involved party UUIDs → stored values |
+| `Resources` | Resource item UUIDs → stored values |
+| `Events` | Event UUIDs → stored values |
+| `Rules` | Rule UUIDs → stored values |
+| `Products` | Product UUIDs → stored values |
+| `RuleTypes` | Rule type UUIDs → stored values |
+| `Arrangements` | Child arrangement UUIDs → stored values |
 
 #### Example Response — `ArrangementDTO`
 
@@ -184,6 +184,7 @@ Creates a new arrangement with an arrangement type, and optionally adds classifi
   "type": "PackingStaffTimesheet",
   "classification": "Grader",
   "typeValue": "grader-shift-001",
+  "key": "550e8400-e29b-41d4-a716-446655440000",
   "classifications": {
     "StaffName": "John Smith",
     "StationNumber": "5",
@@ -191,10 +192,10 @@ Creates a new arrangement with an arrangement type, and optionally adds classifi
     "EndDate": "2025-06-15T16:00:00"
   },
   "parties": {
-    "EmployeeClassification": "staff-member-value"
+    "EmployeeClassification": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
   },
   "resources": {
-    "EquipmentClassification": "forklift-42"
+    "EquipmentClassification": "r1s2t3u4-e5f6-7890-abcd-ef1234567890"
   },
   "rules": {
     "ShiftRuleClassification": "max-8-hours"
@@ -203,7 +204,7 @@ Creates a new arrangement with an arrangement type, and optionally adds classifi
     "ProductClassification": "grade-a-apples"
   },
   "childArrangements": {
-    "a1b2c3d4-e5f6-7890-abcd-ef1234567890": "sub-task"
+    "SubTaskClassification": "a1b2c3d4-e5f6-7890-abcd-ef1234567890_71"
   }
 }
 ```
@@ -213,22 +214,26 @@ Creates a new arrangement with an arrangement type, and optionally adds classifi
 | `type` | `String` | **Yes** | Arrangement type name (e.g. `"PackingStaffTimesheet"`). |
 | `classification` | `String` | **Yes** | Classification name for the arrangement type relationship (e.g. `"Grader"`). |
 | `typeValue` | `String` | **Yes** | The value to store on the arrangement type relationship. |
+| `key` | `UUID` | **Yes** | The unique key for the arrangement. |
 | `classifications` | `Map<String, String>` | No | Classification name → value pairs to add/update. |
-| `parties` | `Map<String, String>` | No | Classification name → store value for involved party relationships. |
-| `resources` | `Map<String, String>` | No | Classification name → store value for resource item relationships. |
+| `parties` | `Map<String, String>` | No | Classification name → **involved party UUID**. The UUID is resolved to an entity before linking. |
+| `resources` | `Map<String, String>` | No | Classification name → **resource item UUID**. The UUID is resolved to an entity before linking. |
 | `rules` | `Map<String, String>` | No | Classification name → store value for rule relationships. |
 | `products` | `Map<String, String>` | No | Classification name → store value for product relationships. |
-| `childArrangements` | `Map<String, String>` | No | Child arrangement UUID (as string) → relationship value. |
+| `childArrangements` | `Map<String, String>` | No | Classification name → child arrangement UUID (optionally suffixed with `_hierarchyValue`, e.g. `"uuid_71"`). |
 
-#### Behavior
+#### Session & Response Handling
 
-1. Creates the arrangement and its initial arrangement type (with `type`, `classification`, `typeValue`).
-2. If any optional relationship maps are provided, adds them via `addOrUpdateClassification`, `addOrUpdateInvolvedParty`, etc.
-3. Returns the full `ArrangementDTO` with Types, Classifications, and any other relationships that were provided.
+- `arrangementsService.create()` manages its own session — the REST endpoint does **not** wrap it in `withActivityMaster()`.
+- **Relationship persistence is fire-and-forget**: Each relationship type (classifications, parties, resources, etc.) is persisted asynchronously on its **own Vert.x context** via `SessionUtils.fireAndForget()`. Each fire-and-forget Uni opens its own session and transaction, fully isolated from the others.
+- **Response is returned immediately** from the DTO input (echoed back) — no DB round-trip needed.
 
-#### Important: Session Handling
+#### Entity Resolution
 
-The `create` endpoint does **not** wrap `arrangementsService.create()` in `withActivityMaster()` because the service method manages its own session. Subsequent relationship operations and response fetching each open their own fresh sessions.
+- **Parties**: The value is an **involved party UUID**. It is resolved via `involvedPartyService.find(session, partyId)` before being passed to `addOrUpdateInvolvedParty()`.
+- **Resources**: The value is a **resource item UUID**. It is resolved via `resourceItemService.findByUUID(session, riId)` before being passed to `addOrUpdateResourceItem()`.
+- **Child Arrangements**: The value is a **child arrangement UUID**, optionally suffixed with `_hierarchyValue` (e.g. `"2c7c36bf-ec6d-4b70-a664-47366d3aec0d_71"`). The first 36 characters are parsed as the UUID, and any suffix after `_` at position 36 is extracted as the hierarchy value passed to `addChild()`. The child arrangement is resolved via `arrangementsService.find(session, childId)`.
+- Rules and products pass the map value as a store value string (no entity resolution needed).
 
 ---
 
@@ -253,10 +258,9 @@ Updates an existing arrangement's relationships. Supports **add/update** (upsert
   "classifications": {
     "addOrUpdate": {
       "Status": "Active",
-      "Priority": "High",
-      "StartDate": "2025-06-15T08:00:00"
+      "Priority": "High"
     },
-    "delete": ["Deprecated", "OldStatus"]
+    "delete": ["Deprecated"]
   },
   "types": {
     "addOrUpdate": {
@@ -265,21 +269,20 @@ Updates an existing arrangement's relationships. Supports **add/update** (upsert
   },
   "parties": {
     "addOrUpdate": {
-      "EmployeeClassification": "new-staff-member"
+      "EmployeeClassification": "party-uuid"
     },
-    "delete": ["old-party-id"]
+    "delete": ["old-classification"]
   },
-  "ruleTypes": {
+  "resources": {
     "addOrUpdate": {
-      "ValidationRule": "Enabled"
-    },
-    "delete": ["OldRule"]
+      "EquipmentClassification": "resource-item-uuid"
+    }
   },
   "childArrangements": {
     "addOrUpdate": {
-      "child-uuid-string": "sub-task"
+      "SubTaskClassification": "child-uuid_71"
     },
-    "delete": ["old-child-uuid-string"]
+    "delete": ["old-child-classification"]
   }
 }
 ```
@@ -289,12 +292,12 @@ Updates an existing arrangement's relationships. Supports **add/update** (upsert
 | `arrangementId` | `UUID` | **Yes** | The arrangement to update. |
 | `classifications` | `RelationshipUpdateEntry` | No | Classification operations. |
 | `types` | `RelationshipUpdateEntry` | No | Arrangement type operations. |
-| `parties` | `RelationshipUpdateEntry` | No | Involved party operations. |
-| `resources` | `RelationshipUpdateEntry` | No | Resource item operations. |
+| `parties` | `RelationshipUpdateEntry` | No | Involved party operations. Key = classification name, Value = **involved party UUID**. |
+| `resources` | `RelationshipUpdateEntry` | No | Resource item operations. Key = classification name, Value = **resource item UUID**. |
 | `rules` | `RelationshipUpdateEntry` | No | Rule operations. |
 | `products` | `RelationshipUpdateEntry` | No | Product operations. |
 | `ruleTypes` | `RelationshipUpdateEntry` | No | Rule type operations. |
-| `childArrangements` | `RelationshipUpdateEntry` | No | Child arrangement operations. |
+| `childArrangements` | `RelationshipUpdateEntry` | No | Child arrangement operations. Key = classification name, Value = child UUID (optionally suffixed with `_hierarchyValue`). |
 
 #### `RelationshipUpdateEntry` Structure
 
@@ -307,15 +310,14 @@ Updates an existing arrangement's relationships. Supports **add/update** (upsert
 
 | Field | Type | Description |
 |---|---|---|
-| `addOrUpdate` | `Map<String, String>` | Key/value pairs to upsert. Key is the **name** (classification name, type name, product name, rule name, etc.). Value is the relationship value to store. |
+| `addOrUpdate` | `Map<String, String>` | Key/value pairs to upsert. Key is the **classification name** or **type name**. Value depends on the relationship type (UUID for parties/resources/children, store value for others). |
 | `delete` | `List<String>` | Names to expire (soft-delete). For classifications and rule types, uses dedicated remove methods. For other relationship types, queries the relationship table and expires matching rows. |
 
-#### Key Rules
+#### Session & Response Handling (Update)
 
-- **All string keys are names, not IDs** — classification names, type names, product names, rule names, rule type names.
-- **Exception**: Child arrangement keys and involved party/resource/rule delete keys are UUID strings.
-- **Delete = expire**: Soft-delete by setting `effectiveToDate` to now. The record remains in the database but falls out of active/date range queries.
-- **Add/Update is idempotent**: `addOrUpdate` uses upsert semantics — if a relationship with that name already exists and is active, its value is updated; otherwise a new one is created.
+- The arrangement is validated (exists) in an initial session.
+- **All relationship updates are fire-and-forget**: Each relationship type is persisted asynchronously on its own Vert.x context via `SessionUtils.fireAndForget()`.
+- **Response is returned immediately** from the DTO input — no DB round-trip.
 
 ---
 
@@ -338,7 +340,7 @@ An arrangement can have multiple relationship types, each managed through a dedi
 | Rules | `ArrangementXRules` | Classification name | `addOrUpdateRules()` | Expire via query |
 | Products | `ArrangementXProduct` | Classification name | `addOrUpdateProduct()` | Expire via query |
 | Rule Types | `ArrangementXRulesType` | Rule type name | `addOrUpdateRuleTypes()` | `removeRuleTypes()` |
-| Child Arrangements | `ArrangementXArrangement` | Child UUID | `addChild()` | Expire via query |
+| Child Arrangements | `ArrangementXArrangement` | Classification name | `addChild()` | Expire via query |
 | Events | `EventXArrangement` | Event UUID | (read-only in this API) | — |
 
 ### SCD (Slowly Changing Dimension) Pattern
@@ -352,35 +354,46 @@ All relationship records follow the SCD pattern:
 
 ---
 
+## Async Relationship Persistence
+
+All create and update operations use **fire-and-forget** async persistence for relationships:
+
+1. Each relationship type (types, classifications, parties, etc.) is persisted in a **separate** `SessionUtils.fireAndForget()` call.
+2. Each `fireAndForget()` runs on its **own Vert.x context** (`vertx.getOrCreateContext().runOnContext(...)`) to ensure session isolation.
+3. Each async operation opens its own session and transaction via `SessionUtils.withActivityMaster()`.
+4. Failures are logged at ERROR level but never propagated to the caller.
+5. The HTTP response is returned **immediately** — relationship data is echoed from the submitted DTO.
+
+This pattern avoids Hibernate Reactive session thread-affinity errors (HR000069) and "Illegal pop()" errors that occur when multiple `withTransaction` calls share the same Vert.x context.
+
+---
+
 ## Common Patterns
 
-### Creating an Arrangement with Full Details (replacing chained service calls)
+### Creating an Arrangement with Full Details
 
-**Before** (tedious, error-prone):
-```java
-arrangementsService.create(session, "PackingStaffTimesheet", timesheetId, "Grader", typeValue, system, token)
-    .chain(arr -> arr.addClassification(session, "StaffName", name, system, token))
-    .chain(() -> arr.addClassification(session, "StationNumber", station, system, token))
-    .chain(() -> arr.addClassification(session, "StartDate", start, system, token))
-    // ... many more chains
-```
-
-**After** (single REST call):
 ```json
 POST /{enterprise}/arrangement/{system}/create
 {
   "type": "PackingStaffTimesheet",
   "classification": "Grader",
   "typeValue": "grader-shift-001",
+  "key": "unique-key-uuid",
   "classifications": {
     "StaffName": "John Smith",
     "StationNumber": "5",
     "StartDate": "2025-06-15T08:00:00"
+  },
+  "parties": {
+    "Employee": "party-uuid"
+  },
+  "resources": {
+    "Equipment": "resource-item-uuid"
   }
 }
 ```
 
-### Updating Multiple Relationship Types Atomically
+### Updating Multiple Relationship Types
 
 ```json
 PUT /{enterprise}/arrangement/{system}/update

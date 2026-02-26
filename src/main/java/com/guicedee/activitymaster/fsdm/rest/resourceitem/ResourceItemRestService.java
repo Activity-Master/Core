@@ -16,6 +16,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
 import com.guicedee.activitymaster.fsdm.client.services.rest.RelationshipUpdateEntry;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple4;
+import jakarta.persistence.NoResultException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import lombok.extern.log4j.Log4j2;
@@ -184,13 +185,19 @@ public class ResourceItemRestService
             }
 
             return createUni.map(resourceItem -> {
+                // Extract the ID before the session closes — the entity will be detached
+                // after withActivityMaster's transaction completes
+                UUID resourceItemId = resourceItem.getId();
+
                 boolean hasRelationships = (dto.classifications != null && !dto.classifications.isEmpty())
                         || (dto.types != null && !dto.types.isEmpty())
                         || (dto.children != null && !dto.children.isEmpty());
 
                 if (hasRelationships)
                 {
-                    persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, resourceItem, dto);
+                    // Pass the ID, not the detached entity — each fire-and-forget will
+                    // re-find the entity in its own session
+                    persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, resourceItemId, dto);
                 }
 
                 return buildCreateResponseFromDto(resourceItem, dto);
@@ -214,13 +221,15 @@ public class ResourceItemRestService
                                        @PathParam("requestingSystemName") String requestingSystemName,
                                        ResourceItemUpdateDTO dto) {
         UUID resourceItemId = dto.resourceItemId;
-        // Step 1: Find the resource item in its own session
-        return SessionUtils.<IResourceItem<?, ?>>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
+        // Step 1: Find the resource item in its own session (just to validate it exists)
+        return SessionUtils.<UUID>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
             Mutiny.Session session = tuple.getItem1();
-            return resourceItemService.findByUUID(session, resourceItemId);
-        }).map(resourceItem -> {
-            // Step 2: Fire-and-forget relationship persistence
-            persistUpdateRelationshipsAsync(enterpriseName, requestingSystemName, resourceItem, dto);
+            return resourceItemService.findByUUID(session, resourceItemId)
+                    .map(resourceItem -> resourceItem.getId());
+        }).map(foundId -> {
+            // Step 2: Fire-and-forget relationship persistence — each gets its own session
+            // and re-finds the entity by ID
+            persistUpdateRelationshipsAsync(enterpriseName, requestingSystemName, foundId, dto);
 
             // Step 3: Build response immediately from the DTO input
             return buildUpdateResponseFromDto(resourceItemId, dto);
@@ -279,11 +288,12 @@ public class ResourceItemRestService
                 UUID[] identityToken = tuple.getItem4();
 
                 return resourceItemService.findByUUID(session, resourceItemId)
-                    .chain(resourceItem -> ((ResourceItem) resourceItem).getData(session, identityToken))
-                    .onFailure().invoke(e ->
-                        log.error("Error getting data for resource item {} for enterprise {} system {}: {}",
-                                resourceItemId, enterpriseName, requestingSystemName, e.getMessage(), e)
-                    );
+                        .chain(resourceItem -> ((ResourceItem) resourceItem).getData(session, identityToken))
+                        .onFailure(NoResultException.class).recoverWithItem(()->null)
+                        .onFailure().invoke(e ->
+                                log.error("Error getting data for resource item {} for enterprise {} system {}: {}",
+                                        resourceItemId, enterpriseName, requestingSystemName, e.getMessage(), e)
+                        );
             }
         );
     }
@@ -355,84 +365,103 @@ public class ResourceItemRestService
     // ──────────────────────────────────────────────────────────────────────────
 
     private void persistCreateRelationshipsAsync(String enterpriseName, String requestingSystemName,
-                                                  IResourceItem<?, ?> resourceItem, ResourceItemCreateDTO dto) {
-        String label = "resource item " + resourceItem.getId();
+                                                  UUID resourceItemId, ResourceItemCreateDTO dto) {
+        String label = "resource item " + resourceItemId;
 
         if (dto.classifications != null && !dto.classifications.isEmpty()) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.classifications.entrySet()) {
-                    chain = chain.chain(() -> resourceItem.addOrUpdateClassification(s, entry.getKey(), entry.getValue(), sys, token).replaceWithVoid());
-                }
-                return chain;
+                return resourceItemService.findByUUID(s, resourceItemId).chain(resourceItem -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.classifications.entrySet()) {
+                        chain = chain.chain(() -> resourceItem.addOrUpdateClassification(s, entry.getKey(), entry.getValue(), sys, token).replaceWithVoid());
+                    }
+                    return chain;
+                });
             }), label + " classifications");
         }
 
         if (dto.types != null && !dto.types.isEmpty()) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.types.entrySet()) {
-                    chain = chain.chain(() -> resourceItem.addOrUpdateResourceItemTypes(s, entry.getKey(), null, null, entry.getValue(), sys, token).replaceWithVoid());
-                }
-                return chain;
+                return resourceItemService.findByUUID(s, resourceItemId).chain(resourceItem -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.types.entrySet()) {
+                        chain = chain.chain(() -> resourceItem.addOrUpdateResourceItemTypes(s, entry.getKey(), null, null, entry.getValue(), sys, token).replaceWithVoid());
+                    }
+                    return chain;
+                });
             }), label + " types");
         }
 
+        // Children: Key = classification name (mandatory), Value = child resource item UUID
         if (dto.children != null && !dto.children.isEmpty()) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.children.entrySet()) {
-                    UUID childId = UUID.fromString(entry.getKey());
-                    chain = chain.chain(() -> resourceItemService.findByUUID(s, childId)
-                            .chain(child -> resourceItem.addChild(s, (ResourceItem) child, null, entry.getValue(), sys, token).replaceWithVoid()));
-                }
-                return chain;
+                return resourceItemService.findByUUID(s, resourceItemId).chain(resourceItem -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.children.entrySet()) {
+                        String classificationName = entry.getKey();
+                        UUID childId = parseUuidOrNull(entry.getValue(), label + " children");
+                        if (childId == null) continue;
+                        chain = chain.chain(() -> resourceItemService.findByUUID(s, childId)
+                                .chain(child -> resourceItem.addChild(s, (ResourceItem) child, classificationName, null, sys, token).replaceWithVoid()));
+                    }
+                    return chain;
+                });
             }), label + " children");
         }
     }
 
     private void persistUpdateRelationshipsAsync(String enterpriseName, String requestingSystemName,
-                                                  IResourceItem<?, ?> resourceItem, ResourceItemUpdateDTO dto) {
-        String label = "resource item " + resourceItem.getId();
+                                                  UUID resourceItemId, ResourceItemUpdateDTO dto) {
+        String label = "resource item " + resourceItemId;
 
         if (hasEntries(dto.classifications)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.classifications, (name, value) ->
-                        resourceItem.addOrUpdateClassification(s, name, value, sys, token).replaceWithVoid());
-                chain = chainDelete(chain, dto.classifications, name ->
-                        resourceItem.removeClassification(s, name, null, sys, token).replaceWithVoid());
-                return chain;
+                return resourceItemService.findByUUID(s, resourceItemId).chain(resourceItem -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    chain = chainAddOrUpdate(chain, dto.classifications, (name, value) ->
+                            resourceItem.addOrUpdateClassification(s, name, value, sys, token).replaceWithVoid());
+                    chain = chainDelete(chain, dto.classifications, name ->
+                            resourceItem.removeClassification(s, name, null, sys, token).replaceWithVoid());
+                    return chain;
+                });
             }), label + " classifications");
         }
 
         if (hasEntries(dto.types)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.types, (name, value) ->
-                        resourceItem.addOrUpdateResourceItemTypes(s, name, null, null, value, sys, token).replaceWithVoid());
-                chain = chainDelete(chain, dto.types, name ->
-                        resourceItem.removeResourceItemTypes(s, name, null, null, null, sys, token).replaceWithVoid());
-                return chain;
+                return resourceItemService.findByUUID(s, resourceItemId).chain(resourceItem -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    chain = chainAddOrUpdate(chain, dto.types, (name, value) ->
+                            resourceItem.addOrUpdateResourceItemTypes(s, name, null, null, value, sys, token).replaceWithVoid());
+                    chain = chainDelete(chain, dto.types, name ->
+                            resourceItem.removeResourceItemTypes(s, name, null, null, null, sys, token).replaceWithVoid());
+                    return chain;
+                });
             }), label + " types");
         }
 
         if (hasEntries(dto.children)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.children, (childIdStr, value) -> {
-                    UUID childId = UUID.fromString(childIdStr);
-                    return resourceItemService.findByUUID(s, childId)
-                            .chain(child -> resourceItem.addChild(s, (ResourceItem) child, null, value, sys, token).replaceWithVoid());
+                return resourceItemService.findByUUID(s, resourceItemId).chain(resourceItem -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    if (dto.children.addOrUpdate != null) {
+                        for (var e : dto.children.addOrUpdate.entrySet()) {
+                            String classificationName = e.getKey();
+                            UUID childId = parseUuidOrNull(e.getValue(), label + " children addOrUpdate");
+                            if (childId == null) continue;
+                            chain = chain.chain(() -> resourceItemService.findByUUID(s, childId)
+                                    .chain(child -> resourceItem.addChild(s, (ResourceItem) child, classificationName, null, sys, token).replaceWithVoid()));
+                        }
+                    }
+                    chain = chainDeleteByExpire(chain, dto.children, s, resourceItem);
+                    return chain;
                 });
-                chain = chainDeleteByExpire(chain, dto.children, s, resourceItem);
-                return chain;
             }), label + " children");
         }
     }
@@ -567,5 +596,14 @@ public class ResourceItemRestService
         if (entry == null) return false;
         return (entry.addOrUpdate != null && !entry.addOrUpdate.isEmpty())
                 || (entry.delete != null && !entry.delete.isEmpty());
+    }
+
+    private UUID parseUuidOrNull(String value, String context) {
+        try {
+            return UUID.fromString(value);
+        } catch (IllegalArgumentException e) {
+            log.warn("Skipping invalid UUID '{}' in {}", value, context);
+            return null;
+        }
     }
 }

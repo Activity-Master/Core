@@ -5,6 +5,8 @@ import java.util.*;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.ArrangementsService;
 import com.guicedee.activitymaster.fsdm.client.services.IArrangementsService;
+import com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService;
+import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
 import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangement;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -34,6 +36,12 @@ public class ArrangementRestService {
 
     @Inject
     private IArrangementsService<ArrangementsService> arrangementsService;
+
+    @Inject
+    private IResourceItemService<?> resourceItemService;
+
+    @Inject
+    private IInvolvedPartyService<?> involvedPartyService;
 
     @POST
     @Path("{requestingSystemName}/find")
@@ -405,6 +413,7 @@ public class ArrangementRestService {
             return Uni.createFrom().item(tuple.getItem3());
         }).chain(system -> arrangementsService.create(null,dto.key, dto.type, dto.classification, dto.typeValue, system)
                 .map(arrangement -> {
+                    UUID arrangementId = arrangement.getId();
                     boolean hasRelationships = (dto.classifications != null && !dto.classifications.isEmpty())
                             || (dto.parties != null && !dto.parties.isEmpty())
                             || (dto.resources != null && !dto.resources.isEmpty())
@@ -413,7 +422,7 @@ public class ArrangementRestService {
                             || (dto.childArrangements != null && !dto.childArrangements.isEmpty());
 
                     if (hasRelationships) {
-                        persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, arrangement, dto);
+                        persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, arrangementId, dto);
                     }
 
                     return buildCreateResponseFromDto((Arrangement) arrangement, dto);
@@ -430,172 +439,230 @@ public class ArrangementRestService {
     // ──────────────────────────────────────────────────────────────────────────
 
     private void persistCreateRelationshipsAsync(String enterpriseName, String requestingSystemName,
-                                                  IArrangement<?, ?> arrangement, ArrangementCreateDTO dto) {
-        String label = "arrangement " + arrangement.getId();
+                                                   UUID arrangementId, ArrangementCreateDTO dto) {
+        String label = "arrangement " + arrangementId;
 
         if (dto.classifications != null && !dto.classifications.isEmpty()) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.classifications.entrySet()) {
-                    chain = chain.chain(() -> arrangement.addOrUpdateClassification(s, entry.getKey(), entry.getValue(), sys, token).replaceWithVoid());
-                }
-                return chain;
+                return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.classifications.entrySet()) {
+                        chain = chain.chain(() -> arrangement.addOrUpdateClassification(s, entry.getKey(), entry.getValue(), sys, token).replaceWithVoid());
+                    }
+                    return chain;
+                });
             }), label + " classifications");
         }
         if (dto.parties != null && !dto.parties.isEmpty()) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.parties.entrySet()) {
-                    chain = chain.chain(() -> arrangement.addOrUpdateInvolvedParty(s, entry.getKey(), null, null, entry.getValue(), sys, token).replaceWithVoid());
-                }
-                return chain;
+                return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.parties.entrySet()) {
+                        String classificationName = entry.getKey();
+                        UUID partyId = parseUuidOrNull(entry.getValue(), label + " parties");
+                        if (partyId == null) continue;
+                        chain = chain.chain(() -> involvedPartyService.find(s, partyId)
+                                .chain(party -> arrangement.addOrUpdateInvolvedParty(s, classificationName, party, null, null, sys, token).replaceWithVoid()));
+                    }
+                    return chain;
+                });
             }), label + " parties");
         }
         if (dto.resources != null && !dto.resources.isEmpty()) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.resources.entrySet()) {
-                    chain = chain.chain(() -> arrangement.addOrUpdateResourceItem(s, entry.getKey(), null, null, entry.getValue(), sys, token).replaceWithVoid());
-                }
-                return chain;
+                return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.resources.entrySet()) {
+                        String classificationName = entry.getKey();
+                        UUID riId = parseUuidOrNull(entry.getValue(), label + " resources");
+                        if (riId == null) continue;
+                        chain = chain.chain(() -> resourceItemService.findByUUID(s, riId)
+                                .chain(ri -> arrangement.addOrUpdateResourceItem(s, classificationName, ri, null, null, sys, token).replaceWithVoid()));
+                    }
+                    return chain;
+                });
             }), label + " resources");
         }
         if (dto.rules != null && !dto.rules.isEmpty()) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.rules.entrySet()) {
-                    chain = chain.chain(() -> arrangement.addOrUpdateRules(s, entry.getKey(), null, null, entry.getValue(), sys, token).replaceWithVoid());
-                }
-                return chain;
+                return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.rules.entrySet()) {
+                        chain = chain.chain(() -> arrangement.addOrUpdateRules(s, entry.getKey(), null, null, entry.getValue(), sys, token).replaceWithVoid());
+                    }
+                    return chain;
+                });
             }), label + " rules");
         }
         if (dto.products != null && !dto.products.isEmpty()) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.products.entrySet()) {
-                    chain = chain.chain(() -> arrangement.addOrUpdateProduct(s, entry.getKey(), null, null, entry.getValue(), sys, token).replaceWithVoid());
-                }
-                return chain;
+                return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.products.entrySet()) {
+                        chain = chain.chain(() -> arrangement.addOrUpdateProduct(s, entry.getKey(), null, null, entry.getValue(), sys, token).replaceWithVoid());
+                    }
+                    return chain;
+                });
             }), label + " products");
         }
         if (dto.childArrangements != null && !dto.childArrangements.isEmpty()) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.childArrangements.entrySet()) {
-                    UUID childId = UUID.fromString(entry.getKey());
-                    chain = chain.chain(() -> arrangementsService.find(s, childId, sys, token)
-                            .chain(child -> arrangement.addChild(s, (Arrangement) child, null, entry.getValue(), sys, token).replaceWithVoid()));
-                }
-                return chain;
+                return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.childArrangements.entrySet()) {
+                        String classificationName = entry.getKey();
+                        UUID childId = parseUuidOrNull(entry.getValue(), label + " childArrangements");
+                        if (childId == null) continue;
+                        String hierarchyValue = parseHierarchyValue(entry.getValue());
+                        chain = chain.chain(() -> arrangementsService.find(s, childId, sys, token)
+                                .chain(child -> arrangement.addChild(s, (Arrangement) child, classificationName, hierarchyValue, sys, token).replaceWithVoid()));
+                    }
+                    return chain;
+                });
             }), label + " childArrangements");
         }
     }
 
     private void persistUpdateRelationshipsAsync(String enterpriseName, String requestingSystemName,
-                                                  IArrangement<?, ?> arrangement, ArrangementUpdateDTO dto) {
-        String label = "arrangement " + arrangement.getId();
+                                                   UUID arrangementId, ArrangementUpdateDTO dto) {
+        String label = "arrangement " + arrangementId;
 
         if (hasEntries(dto.classifications)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.classifications, (name, value) ->
-                        arrangement.addOrUpdateClassification(s, name, value, sys, token).replaceWithVoid());
-                chain = chainDelete(chain, dto.classifications, name ->
-                        arrangement.removeClassification(s, name, null, sys, token).replaceWithVoid());
-                return chain;
+                return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    chain = chainAddOrUpdate(chain, dto.classifications, (name, value) ->
+                            arrangement.addOrUpdateClassification(s, name, value, sys, token).replaceWithVoid());
+                    chain = chainDelete(chain, dto.classifications, name ->
+                            arrangement.removeClassification(s, name, null, sys, token).replaceWithVoid());
+                    return chain;
+                });
             }), label + " classifications");
         }
         if (hasEntries(dto.types)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.types, (name, value) ->
-                        arrangement.addOrUpdateArrangementType(s, name, null, null, value, sys, token).replaceWithVoid());
-                chain = chainDeleteByExpire(chain, dto.types, s, arrangement, ArrangementXArrangementType.class,
-                        ArrangementXArrangementType_.arrangement, ArrangementXArrangementType::getType,
-                        type -> type != null ? type.getName() : null);
-                return chain;
+                return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    chain = chainAddOrUpdate(chain, dto.types, (name, value) ->
+                            arrangement.addOrUpdateArrangementType(s, name, null, null, value, sys, token).replaceWithVoid());
+                    chain = chainDeleteByExpire(chain, dto.types, s, arrangement, ArrangementXArrangementType.class,
+                            ArrangementXArrangementType_.arrangement, ArrangementXArrangementType::getType,
+                            type -> type != null ? type.getName() : null);
+                    return chain;
+                });
             }), label + " types");
         }
         if (hasEntries(dto.parties)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.parties, (name, value) ->
-                        arrangement.addOrUpdateInvolvedParty(s, name, null, null, value, sys, token).replaceWithVoid());
-                chain = chainDeleteByExpire(chain, dto.parties, s, arrangement, ArrangementXInvolvedParty.class,
-                        ArrangementXInvolvedParty_.arrangementID, ArrangementXInvolvedParty::getInvolvedPartyID,
-                        ip -> ip != null && ip.getId() != null ? ip.getId().toString() : null);
-                return chain;
+                return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    if (dto.parties.addOrUpdate != null) {
+                        for (var e : dto.parties.addOrUpdate.entrySet()) {
+                            String classificationName = e.getKey();
+                            UUID partyId = parseUuidOrNull(e.getValue(), label + " parties addOrUpdate");
+                            if (partyId == null) continue;
+                            chain = chain.chain(() -> involvedPartyService.find(s, partyId)
+                                    .chain(party -> arrangement.addOrUpdateInvolvedParty(s, classificationName, party, null, null, sys, token).replaceWithVoid()));
+                        }
+                    }
+                    chain = chainDeleteByExpire(chain, dto.parties, s, arrangement, ArrangementXInvolvedParty.class,
+                            ArrangementXInvolvedParty_.arrangementID, ArrangementXInvolvedParty::getInvolvedPartyID,
+                            ip -> ip != null && ip.getId() != null ? ip.getId().toString() : null);
+                    return chain;
+                });
             }), label + " parties");
         }
         if (hasEntries(dto.resources)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.resources, (name, value) ->
-                        arrangement.addOrUpdateResourceItem(s, name, null, null, value, sys, token).replaceWithVoid());
-                chain = chainDeleteByExpire(chain, dto.resources, s, arrangement, ArrangementXResourceItem.class,
-                        ArrangementXResourceItem_.arrangementID, ArrangementXResourceItem::getResourceItemID,
-                        ri -> ri != null && ri.getId() != null ? ri.getId().toString() : null);
-                return chain;
+                return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    if (dto.resources.addOrUpdate != null) {
+                        for (var e : dto.resources.addOrUpdate.entrySet()) {
+                            String classificationName = e.getKey();
+                            UUID riId = parseUuidOrNull(e.getValue(), label + " resources addOrUpdate");
+                            if (riId == null) continue;
+                            chain = chain.chain(() -> resourceItemService.findByUUID(s, riId)
+                                    .chain(ri -> arrangement.addOrUpdateResourceItem(s, classificationName, ri, null, null, sys, token).replaceWithVoid()));
+                        }
+                    }
+                    chain = chainDeleteByExpire(chain, dto.resources, s, arrangement, ArrangementXResourceItem.class,
+                            ArrangementXResourceItem_.arrangementID, ArrangementXResourceItem::getResourceItemID,
+                            ri -> ri != null && ri.getId() != null ? ri.getId().toString() : null);
+                    return chain;
+                });
             }), label + " resources");
         }
         if (hasEntries(dto.rules)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.rules, (name, value) ->
-                        arrangement.addOrUpdateRules(s, name, null, null, value, sys, token).replaceWithVoid());
-                chain = chainDeleteByExpire(chain, dto.rules, s, arrangement, ArrangementXRules.class,
-                        ArrangementXRules_.arrangement, ArrangementXRules::getRulesID,
-                        rule -> rule != null && rule.getId() != null ? rule.getId().toString() : null);
-                return chain;
+                return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    chain = chainAddOrUpdate(chain, dto.rules, (name, value) ->
+                            arrangement.addOrUpdateRules(s, name, null, null, value, sys, token).replaceWithVoid());
+                    chain = chainDeleteByExpire(chain, dto.rules, s, arrangement, ArrangementXRules.class,
+                            ArrangementXRules_.arrangement, ArrangementXRules::getRulesID,
+                            rule -> rule != null && rule.getId() != null ? rule.getId().toString() : null);
+                    return chain;
+                });
             }), label + " rules");
         }
         if (hasEntries(dto.products)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.products, (name, value) ->
-                        arrangement.addOrUpdateProduct(s, name, null, null, value, sys, token).replaceWithVoid());
-                chain = chainDeleteByExpire(chain, dto.products, s, arrangement, ArrangementXProduct.class,
-                        ArrangementXProduct_.arrangementID, ArrangementXProduct::getProductID,
-                        product -> product != null && product.getId() != null ? product.getId().toString() : null);
-                return chain;
+                return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    chain = chainAddOrUpdate(chain, dto.products, (name, value) ->
+                            arrangement.addOrUpdateProduct(s, name, null, null, value, sys, token).replaceWithVoid());
+                    chain = chainDeleteByExpire(chain, dto.products, s, arrangement, ArrangementXProduct.class,
+                            ArrangementXProduct_.arrangementID, ArrangementXProduct::getProductID,
+                            product -> product != null && product.getId() != null ? product.getId().toString() : null);
+                    return chain;
+                });
             }), label + " products");
         }
         if (hasEntries(dto.ruleTypes)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.ruleTypes, (name, value) ->
-                        arrangement.addOrUpdateRuleTypes(s, name, null, null, value, sys, token).replaceWithVoid());
-                chain = chainDelete(chain, dto.ruleTypes, name ->
-                        arrangement.removeRuleTypes(s, name, null, null, null, sys, token).replaceWithVoid());
-                return chain;
+                return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    chain = chainAddOrUpdate(chain, dto.ruleTypes, (name, value) ->
+                            arrangement.addOrUpdateRuleTypes(s, name, null, null, value, sys, token).replaceWithVoid());
+                    chain = chainDelete(chain, dto.ruleTypes, name ->
+                            arrangement.removeRuleTypes(s, name, null, null, null, sys, token).replaceWithVoid());
+                    return chain;
+                });
             }), label + " ruleTypes");
         }
         if (hasEntries(dto.childArrangements)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.childArrangements, (childIdStr, value) -> {
-                    UUID childId = UUID.fromString(childIdStr);
-                    return arrangementsService.find(s, childId, sys, token)
-                            .chain(child -> arrangement.addChild(s, (Arrangement) child, null, value, sys, token).replaceWithVoid());
+                return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    if (dto.childArrangements.addOrUpdate != null) {
+                        for (var e : dto.childArrangements.addOrUpdate.entrySet()) {
+                            String classificationName = e.getKey();
+                            UUID childId = parseUuidOrNull(e.getValue(), label + " childArrangements addOrUpdate");
+                            if (childId == null) continue;
+                            String hierarchyValue = parseHierarchyValue(e.getValue());
+                            chain = chain.chain(() -> arrangementsService.find(s, childId, sys, token)
+                                    .chain(child -> arrangement.addChild(s, (Arrangement) child, classificationName, hierarchyValue, sys, token).replaceWithVoid()));
+                        }
+                    }
+                    chain = chainDeleteByExpire(chain, dto.childArrangements, s, arrangement, ArrangementXArrangement.class,
+                            ArrangementXArrangement_.parentArrangementID, ArrangementXArrangement::getChildArrangementID,
+                            child -> child != null && child.getId() != null ? child.getId().toString() : null);
+                    return chain;
                 });
-                chain = chainDeleteByExpire(chain, dto.childArrangements, s, arrangement, ArrangementXArrangement.class,
-                        ArrangementXArrangement_.parentArrangementID, ArrangementXArrangement::getChildArrangementID,
-                        child -> child != null && child.getId() != null ? child.getId().toString() : null);
-                return chain;
             }), label + " childArrangements");
         }
     }
@@ -694,15 +761,15 @@ public class ArrangementRestService {
                                       @PathParam("requestingSystemName") String requestingSystemName,
                                       ArrangementUpdateDTO dto) {
         UUID arrangementId = dto.arrangementId;
-        // Step 1: Find the arrangement in its own session
-        return SessionUtils.<IArrangement<?, ?>>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
+        // Step 1: Find the arrangement in its own session (just to validate it exists)
+        return SessionUtils.<UUID>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
             Mutiny.Session session = tuple.getItem1();
             ISystems<?, ?> system = tuple.getItem3();
             UUID[] identityToken = tuple.getItem4();
-            return arrangementsService.find(session, arrangementId, system, identityToken);
-        }).map(arrangement -> {
+            return arrangementsService.find(session, arrangementId, system, identityToken).map(arrangement -> arrangement.getId());
+        }).map(foundId -> {
             // Step 2: Fire-and-forget relationship persistence
-            persistUpdateRelationshipsAsync(enterpriseName, requestingSystemName, arrangement, dto);
+            persistUpdateRelationshipsAsync(enterpriseName, requestingSystemName, foundId, dto);
 
             // Step 3: Build response immediately from the DTO input
             return buildUpdateResponseFromDto(arrangementId, dto);
@@ -824,6 +891,36 @@ public class ArrangementRestService {
         if (entry == null) return false;
         return (entry.addOrUpdate != null && !entry.addOrUpdate.isEmpty())
                 || (entry.delete != null && !entry.delete.isEmpty());
+    }
+
+    /**
+     * Parses a UUID from a string that may contain a {@code _suffix} after the 36-char UUID
+     * (e.g. {@code "2c7c36bf-ec6d-4b70-a664-47366d3aec0d_71"}).
+     * Returns {@code null} and logs a warning if the value is not a valid UUID.
+     */
+    private UUID parseUuidOrNull(String value, String context) {
+        if (value == null) return null;
+        String uuidPart = value;
+        if (value.length() > 36 && value.charAt(36) == '_') {
+            uuidPart = value.substring(0, 36);
+        }
+        try {
+            return UUID.fromString(uuidPart);
+        } catch (IllegalArgumentException e) {
+            log.warn("Skipping invalid UUID '{}' in {}", value, context);
+            return null;
+        }
+    }
+
+    /**
+     * Extracts the optional hierarchy value suffix from a string in the format {@code UUID_suffix}.
+     * Returns {@code null} if no suffix is present.
+     */
+    private String parseHierarchyValue(String value) {
+        if (value != null && value.length() > 37 && value.charAt(36) == '_') {
+            return value.substring(37);
+        }
+        return null;
     }
 
 

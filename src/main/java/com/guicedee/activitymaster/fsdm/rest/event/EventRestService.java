@@ -5,6 +5,8 @@ import java.util.*;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.EventsService;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
+import com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService;
+import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
 import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
@@ -28,6 +30,12 @@ public class EventRestService {
 
     @Inject
     private IEventService<EventsService> eventService;
+
+    @Inject
+    private IResourceItemService<?> resourceItemService;
+
+    @Inject
+    private IInvolvedPartyService<?> involvedPartyService;
 
     // ──────────────────────────────────────────────────────────────────────────
     // Find
@@ -76,14 +84,17 @@ public class EventRestService {
                                 @PathParam("requestingSystemName") String requestingSystemName,
                                 EventCreateDTO dto) {
         // Step 1: Resolve system then create — EventsService.createEvent() manages its own session
+        //         Use the first entry in dto.types as the primary event type
+        Map.Entry<String, String> primaryType = dto.types.entrySet().iterator().next();
         return SessionUtils.<ISystems<?, ?>>withActivityMaster(enterpriseName, requestingSystemName,
                 (java.util.function.Function<Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]>, Uni<ISystems<?, ?>>>) tuple ->
                         Uni.createFrom().item(tuple.getItem3())
-        ).chain(system -> eventService.createEvent(null, dto.type, system)
+        ).chain(system -> eventService.createEvent(null, primaryType.getKey(), system)
                 .map(event -> {
+                    UUID eventId = event.getId();
                     // Step 2: Fire-and-forget relationship persistence in parallel
                     if (hasAnyRelationship(dto)) {
-                        persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, event, dto);
+                        persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, eventId, dto);
                     }
 
                     // Step 3: Build response immediately from the DTO input — no DB round-trip needed
@@ -106,13 +117,13 @@ public class EventRestService {
                                 @PathParam("requestingSystemName") String requestingSystemName,
                                 EventUpdateDTO dto) {
         UUID eventId = dto.eventId;
-        // Step 1: Find the event in its own session
-        return SessionUtils.<IEvent<?, ?>>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
+        // Step 1: Find the event in its own session (just to validate it exists)
+        return SessionUtils.<UUID>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
             Mutiny.Session session = tuple.getItem1();
-            return eventService.find(session, eventId);
-        }).map(event -> {
+            return eventService.find(session, eventId).map(event -> event.getId());
+        }).map(foundId -> {
             // Step 2: Fire-and-forget relationship persistence in parallel
-            persistUpdateRelationshipsAsync(enterpriseName, requestingSystemName, event, dto);
+            persistUpdateRelationshipsAsync(enterpriseName, requestingSystemName, foundId, dto);
 
             // Step 3: Build response immediately from the DTO input — no DB round-trip needed
             return buildUpdateResponseFromDto(eventId, dto);
@@ -294,21 +305,23 @@ public class EventRestService {
      * Failures are logged but do not affect the caller.
      */
     private void persistCreateRelationshipsAsync(String enterpriseName, String requestingSystemName,
-                                                  IEvent<?, ?> event, EventCreateDTO dto) {
-        String label = "event " + event.getId();
+                                                   UUID eventId, EventCreateDTO dto) {
+        String label = "event " + eventId;
 
         if (dto.classifications != null && !dto.classifications.isEmpty()) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1();
                 ISystems<?, ?> sys = tuple.getItem3();
                 UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.classifications.entrySet()) {
-                    chain = chain.chain(() -> event
-                            .addOrUpdateClassification(s, entry.getKey(), entry.getValue(), sys, token)
-                            .replaceWithVoid());
-                }
-                return chain;
+                return eventService.find(s, eventId).chain(event -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.classifications.entrySet()) {
+                        chain = chain.chain(() -> event
+                                .addOrUpdateClassification(s, entry.getKey(), entry.getValue(), sys, token)
+                                .replaceWithVoid());
+                    }
+                    return chain;
+                });
             }), label + " classifications");
         }
 
@@ -317,13 +330,15 @@ public class EventRestService {
                 Mutiny.Session s = tuple.getItem1();
                 ISystems<?, ?> sys = tuple.getItem3();
                 UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.types.entrySet()) {
-                    chain = chain.chain(() -> event
-                            .addOrUpdateEventTypes(s, entry.getKey(), null, null, entry.getValue(), sys, token)
-                            .replaceWithVoid());
-                }
-                return chain;
+                return eventService.find(s, eventId).chain(event -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.types.entrySet()) {
+                        chain = chain.chain(() -> event
+                                .addOrUpdateEventTypes(s, entry.getKey(), null, null, entry.getValue(), sys, token)
+                                .replaceWithVoid());
+                    }
+                    return chain;
+                });
             }), label + " types");
         }
 
@@ -332,13 +347,19 @@ public class EventRestService {
                 Mutiny.Session s = tuple.getItem1();
                 ISystems<?, ?> sys = tuple.getItem3();
                 UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.parties.entrySet()) {
-                    chain = chain.chain(() -> event
-                            .addOrUpdateInvolvedParty(s, entry.getKey(), null, null, entry.getValue(), sys, token)
-                            .replaceWithVoid());
-                }
-                return chain;
+                return eventService.find(s, eventId).chain(event -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.parties.entrySet()) {
+                        String classificationName = entry.getKey();
+                        UUID partyId = parseUuidOrNull(entry.getValue(), label + " parties");
+                        if (partyId == null) continue;
+                        chain = chain.chain(() -> involvedPartyService.find(s, partyId)
+                                .chain(party -> event
+                                        .addOrUpdateInvolvedParty(s, classificationName, party, null, null, sys, token)
+                                        .replaceWithVoid()));
+                    }
+                    return chain;
+                });
             }), label + " parties");
         }
 
@@ -347,13 +368,19 @@ public class EventRestService {
                 Mutiny.Session s = tuple.getItem1();
                 ISystems<?, ?> sys = tuple.getItem3();
                 UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.resources.entrySet()) {
-                    chain = chain.chain(() -> event
-                            .addOrUpdateResourceItem(s, entry.getKey(), null, null, entry.getValue(), sys, token)
-                            .replaceWithVoid());
-                }
-                return chain;
+                return eventService.find(s, eventId).chain(event -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.resources.entrySet()) {
+                        String classificationName = entry.getKey();
+                        UUID riId = parseUuidOrNull(entry.getValue(), label + " resources");
+                        if (riId == null) continue;
+                        chain = chain.chain(() -> resourceItemService.findByUUID(s, riId)
+                                .chain(ri -> event
+                                        .addOrUpdateResourceItem(s, classificationName, ri, null, null, sys, token)
+                                        .replaceWithVoid()));
+                    }
+                    return chain;
+                });
             }), label + " resources");
         }
 
@@ -362,13 +389,15 @@ public class EventRestService {
                 Mutiny.Session s = tuple.getItem1();
                 ISystems<?, ?> sys = tuple.getItem3();
                 UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.products.entrySet()) {
-                    chain = chain.chain(() -> event
-                            .addOrUpdateProduct(s, entry.getKey(), null, null, entry.getValue(), sys, token)
-                            .replaceWithVoid());
-                }
-                return chain;
+                return eventService.find(s, eventId).chain(event -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.products.entrySet()) {
+                        chain = chain.chain(() -> event
+                                .addOrUpdateProduct(s, entry.getKey(), null, null, entry.getValue(), sys, token)
+                                .replaceWithVoid());
+                    }
+                    return chain;
+                });
             }), label + " products");
         }
 
@@ -377,13 +406,15 @@ public class EventRestService {
                 Mutiny.Session s = tuple.getItem1();
                 ISystems<?, ?> sys = tuple.getItem3();
                 UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.rules.entrySet()) {
-                    chain = chain.chain(() -> event
-                            .addOrUpdateRules(s, entry.getKey(), null, null, entry.getValue(), sys, token)
-                            .replaceWithVoid());
-                }
-                return chain;
+                return eventService.find(s, eventId).chain(event -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.rules.entrySet()) {
+                        chain = chain.chain(() -> event
+                                .addOrUpdateRules(s, entry.getKey(), null, null, entry.getValue(), sys, token)
+                                .replaceWithVoid());
+                    }
+                    return chain;
+                });
             }), label + " rules");
         }
 
@@ -392,13 +423,15 @@ public class EventRestService {
                 Mutiny.Session s = tuple.getItem1();
                 ISystems<?, ?> sys = tuple.getItem3();
                 UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.arrangements.entrySet()) {
-                    chain = chain.chain(() -> event
-                            .addOrUpdateArrangement(s, entry.getKey(), null, null, entry.getValue(), sys, token)
-                            .replaceWithVoid());
-                }
-                return chain;
+                return eventService.find(s, eventId).chain(event -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.arrangements.entrySet()) {
+                        chain = chain.chain(() -> event
+                                .addOrUpdateArrangement(s, entry.getKey(), null, null, entry.getValue(), sys, token)
+                                .replaceWithVoid());
+                    }
+                    return chain;
+                });
             }), label + " arrangements");
         }
 
@@ -407,124 +440,162 @@ public class EventRestService {
                 Mutiny.Session s = tuple.getItem1();
                 ISystems<?, ?> sys = tuple.getItem3();
                 UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                for (var entry : dto.children.entrySet()) {
-                    UUID childId = UUID.fromString(entry.getKey());
-                    chain = chain.chain(() ->
-                            eventService.find(s, childId)
-                                    .chain(child -> event
-                                            .addChild(s, (Event) child, null, entry.getValue(), sys, token)
-                                            .replaceWithVoid()));
-                }
-                return chain;
+                return eventService.find(s, eventId).chain(event -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (var entry : dto.children.entrySet()) {
+                        String classificationName = entry.getKey();
+                        UUID childId = parseUuidOrNull(entry.getValue(), label + " children");
+                        if (childId == null) continue;
+                        chain = chain.chain(() ->
+                                eventService.find(s, childId)
+                                        .chain(child -> event
+                                                .addChild(s, (Event) child, classificationName, null, sys, token)
+                                                .replaceWithVoid()));
+                    }
+                    return chain;
+                });
             }), label + " children");
         }
     }
 
+
     /**
-     * Subscribes to relationship persistence for an updated event.
      * Each relationship category runs in its own session in parallel.
      * Failures are logged but do not affect the caller.
      */
     private void persistUpdateRelationshipsAsync(String enterpriseName, String requestingSystemName,
-                                                  IEvent<?, ?> event, EventUpdateDTO dto) {
-        String label = "event " + event.getId();
+                                                  UUID eventId, EventUpdateDTO dto) {
+        String label = "event " + eventId;
 
         if (hasEntries(dto.classifications)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.classifications, (name, value) ->
-                        event.addOrUpdateClassification(s, name, value, sys, token).replaceWithVoid());
-                chain = chainDelete(chain, dto.classifications, name ->
-                        event.removeClassification(s, name, null, sys, token).replaceWithVoid());
-                return chain;
+                return eventService.find(s, eventId).chain(event -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    chain = chainAddOrUpdate(chain, dto.classifications, (name, value) ->
+                            event.addOrUpdateClassification(s, name, value, sys, token).replaceWithVoid());
+                    chain = chainDelete(chain, dto.classifications, name ->
+                            event.removeClassification(s, name, null, sys, token).replaceWithVoid());
+                    return chain;
+                });
             }), label + " classifications");
         }
 
         if (hasEntries(dto.types)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.types, (name, value) ->
-                        event.addOrUpdateEventTypes(s, name, null, null, value, sys, token).replaceWithVoid());
-                chain = chainDelete(chain, dto.types, name ->
-                        event.removeEventTypes(s, name, null, null, null, sys, token).replaceWithVoid());
-                return chain;
+                return eventService.find(s, eventId).chain(event -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    chain = chainAddOrUpdate(chain, dto.types, (name, value) ->
+                            event.addOrUpdateEventTypes(s, name, null, null, value, sys, token).replaceWithVoid());
+                    chain = chainDelete(chain, dto.types, name ->
+                            event.removeEventTypes(s, name, null, null, null, sys, token).replaceWithVoid());
+                    return chain;
+                });
             }), label + " types");
         }
 
         if (hasEntries(dto.parties)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.parties, (name, value) ->
-                        event.addOrUpdateInvolvedParty(s, name, null, null, value, sys, token).replaceWithVoid());
-                chain = chainDeleteByExpire(chain, dto.parties, s, event, EventXInvolvedParty.class,
-                        EventXInvolvedParty_.eventID, link -> link.getClassificationID(), cls -> cls != null ? cls.getName() : null);
-                return chain;
+                return eventService.find(s, eventId).chain(event -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    if (dto.parties.addOrUpdate != null) {
+                        for (var e : dto.parties.addOrUpdate.entrySet()) {
+                            String classificationName = e.getKey();
+                            UUID partyId = parseUuidOrNull(e.getValue(), label + " parties addOrUpdate");
+                            if (partyId == null) continue;
+                            chain = chain.chain(() -> involvedPartyService.find(s, partyId)
+                                    .chain(party -> event.addOrUpdateInvolvedParty(s, classificationName, party, null, null, sys, token).replaceWithVoid()));
+                        }
+                    }
+                    chain = chainDeleteByExpire(chain, dto.parties, s, event, EventXInvolvedParty.class,
+                            EventXInvolvedParty_.eventID, link -> link.getClassificationID(), cls -> cls != null ? cls.getName() : null);
+                    return chain;
+                });
             }), label + " parties");
         }
 
         if (hasEntries(dto.resources)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.resources, (name, value) ->
-                        event.addOrUpdateResourceItem(s, name, null, null, value, sys, token).replaceWithVoid());
-                chain = chainDeleteByExpire(chain, dto.resources, s, event, EventXResourceItem.class,
-                        EventXResourceItem_.eventID, link -> link.getClassificationID(), cls -> cls != null ? cls.getName() : null);
-                return chain;
+                return eventService.find(s, eventId).chain(event -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    if (dto.resources.addOrUpdate != null) {
+                        for (var e : dto.resources.addOrUpdate.entrySet()) {
+                            String classificationName = e.getKey();
+                            UUID riId = parseUuidOrNull(e.getValue(), label + " resources addOrUpdate");
+                            if (riId == null) continue;
+                            chain = chain.chain(() -> resourceItemService.findByUUID(s, riId)
+                                    .chain(ri -> event.addOrUpdateResourceItem(s, classificationName, ri, null, null, sys, token).replaceWithVoid()));
+                        }
+                    }
+                    chain = chainDeleteByExpire(chain, dto.resources, s, event, EventXResourceItem.class,
+                            EventXResourceItem_.eventID, link -> link.getClassificationID(), cls -> cls != null ? cls.getName() : null);
+                    return chain;
+                });
             }), label + " resources");
         }
 
         if (hasEntries(dto.products)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.products, (name, value) ->
-                        event.addOrUpdateProduct(s, name, null, null, value, sys, token).replaceWithVoid());
-                chain = chainDeleteByExpire(chain, dto.products, s, event, EventXProduct.class,
-                        EventXProduct_.eventID, link -> link.getClassificationID(), cls -> cls != null ? cls.getName() : null);
-                return chain;
+                return eventService.find(s, eventId).chain(event -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    chain = chainAddOrUpdate(chain, dto.products, (name, value) ->
+                            event.addOrUpdateProduct(s, name, null, null, value, sys, token).replaceWithVoid());
+                    chain = chainDeleteByExpire(chain, dto.products, s, event, EventXProduct.class,
+                            EventXProduct_.eventID, link -> link.getClassificationID(), cls -> cls != null ? cls.getName() : null);
+                    return chain;
+                });
             }), label + " products");
         }
 
         if (hasEntries(dto.rules)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.rules, (name, value) ->
-                        event.addOrUpdateRules(s, name, null, null, value, sys, token).replaceWithVoid());
-                chain = chainDeleteByExpire(chain, dto.rules, s, event, EventXRules.class,
-                        EventXRules_.eventID, link -> link.getClassificationID(), cls -> cls != null ? cls.getName() : null);
-                return chain;
+                return eventService.find(s, eventId).chain(event -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    chain = chainAddOrUpdate(chain, dto.rules, (name, value) ->
+                            event.addOrUpdateRules(s, name, null, null, value, sys, token).replaceWithVoid());
+                    chain = chainDeleteByExpire(chain, dto.rules, s, event, EventXRules.class,
+                            EventXRules_.eventID, link -> link.getClassificationID(), cls -> cls != null ? cls.getName() : null);
+                    return chain;
+                });
             }), label + " rules");
         }
 
         if (hasEntries(dto.arrangements)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.arrangements, (name, value) ->
-                        event.addOrUpdateArrangement(s, name, null, null, value, sys, token).replaceWithVoid());
-                chain = chainDeleteByExpire(chain, dto.arrangements, s, event, EventXArrangement.class,
-                        EventXArrangement_.eventID, link -> link.getClassificationID(), cls -> cls != null ? cls.getName() : null);
-                return chain;
+                return eventService.find(s, eventId).chain(event -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    chain = chainAddOrUpdate(chain, dto.arrangements, (name, value) ->
+                            event.addOrUpdateArrangement(s, name, null, null, value, sys, token).replaceWithVoid());
+                    chain = chainDeleteByExpire(chain, dto.arrangements, s, event, EventXArrangement.class,
+                            EventXArrangement_.eventID, link -> link.getClassificationID(), cls -> cls != null ? cls.getName() : null);
+                    return chain;
+                });
             }), label + " arrangements");
         }
 
         if (hasEntries(dto.children)) {
             SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
                 Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                chain = chainAddOrUpdate(chain, dto.children, (childIdStr, value) -> {
-                    UUID childId = UUID.fromString(childIdStr);
-                    return eventService.find(s, childId)
-                            .chain(child -> event.addChild(s, (Event) child, null, value, sys, token).replaceWithVoid());
+                return eventService.find(s, eventId).chain(event -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    if (dto.children.addOrUpdate != null) {
+                        for (var e : dto.children.addOrUpdate.entrySet()) {
+                            String classificationName = e.getKey();
+                            UUID childId = parseUuidOrNull(e.getValue(), label + " children addOrUpdate");
+                            if (childId == null) continue;
+                            chain = chain.chain(() -> eventService.find(s, childId)
+                                    .chain(child -> event.addChild(s, (Event) child, classificationName, null, sys, token).replaceWithVoid()));
+                        }
+                    }
+                    chain = chainDeleteChildrenByExpire(chain, dto.children, s, event);
+                    return chain;
                 });
-                chain = chainDeleteChildrenByExpire(chain, dto.children, s, event);
-                return chain;
             }), label + " children");
         }
     }
@@ -734,6 +805,14 @@ public class EventRestService {
                 || (dto.arrangements != null && !dto.arrangements.isEmpty())
                 || (dto.children != null && !dto.children.isEmpty());
     }
-}
 
+    private UUID parseUuidOrNull(String value, String context) {
+        try {
+            return UUID.fromString(value);
+        } catch (IllegalArgumentException e) {
+            log.warn("Skipping invalid UUID '{}' in {}", value, context);
+            return null;
+        }
+    }
+}
 
