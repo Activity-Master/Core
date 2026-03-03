@@ -2,10 +2,10 @@ package com.guicedee.activitymaster.fsdm.db;
 
 import com.guicedee.client.Environment;
 import com.guicedee.vertx.spi.VertXPreStartup;
-import com.guicedee.vertxpersistence.ConnectionBaseInfo;
-import com.guicedee.vertxpersistence.DatabaseModule;
-import com.guicedee.vertxpersistence.annotations.EntityManager;
-import com.guicedee.vertxpersistence.implementations.postgres.PostgresConnectionBaseInfo;
+import com.guicedee.persistence.ConnectionBaseInfo;
+import com.guicedee.persistence.DatabaseModule;
+import com.guicedee.persistence.annotations.EntityManager;
+import com.guicedee.persistence.implementations.postgres.PostgresConnectionBaseInfo;
 import io.vertx.pgclient.PgBuilder;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.sqlclient.Pool;

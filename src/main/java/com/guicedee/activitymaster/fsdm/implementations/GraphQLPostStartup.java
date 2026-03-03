@@ -3,18 +3,16 @@ package com.guicedee.activitymaster.fsdm.implementations;
 import com.guicedee.client.services.lifecycle.IGuicePostStartup;
 import com.guicedee.vertx.spi.VertXPreStartup;
 import com.guicedee.vertx.web.spi.VertxRouterConfigurator;
-import io.vertx.core.Future;
+import io.smallrye.mutiny.Uni;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.graphql.GraphQLHandler;
 import io.vertx.ext.web.handler.graphql.GraphiQLHandler;
 import io.vertx.ext.web.handler.graphql.GraphiQLHandlerOptions;
-import io.vertx.ext.web.handler.graphql.instrumentation.JsonObjectAdapter;
 
 import java.util.List;
 
 public class GraphQLPostStartup implements IGuicePostStartup<GraphQLPostStartup>, VertxRouterConfigurator<GraphQLPostStartup> {
     @Override
-    public List<Future<Boolean>> postLoad() {
+    public List<Uni<Boolean>> postLoad() {
         return List.of();
     }
 

@@ -15,8 +15,8 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.*;
 import com.guicedee.client.IGuiceContext;
 import com.guicedee.client.utils.Pair;
-import com.guicedee.services.jsonrepresentation.IJsonRepresentation;
-import com.guicedee.services.xmlrepresentation.IXmlRepresentation;
+import com.guicedee.modules.services.jsonrepresentation.IJsonRepresentation;
+import com.guicedee.modules.services.xmlrepresentation.IXmlRepresentation;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.java.Log;
 import org.aopalliance.intercept.MethodInterceptor;

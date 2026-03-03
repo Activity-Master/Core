@@ -25,6 +25,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.Resour
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemXResourceItemTypeQueryBuilder;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
+import jakarta.persistence.LockModeType;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -330,28 +331,16 @@ public class ResourceItemService
     }
 
     Uni<Integer> tryUpdate(Mutiny.Session session, UUID id, byte[] value) {
-        String sql = """
-                WITH tgt AS (
-                  SELECT resourceitemdatavalueid
-                  FROM resource.resourceitemdatavalue
-                  WHERE resourceitemdatavalueid = :id
-                  FOR UPDATE SKIP LOCKED
-                )
-                UPDATE resource.resourceitemdatavalue v
-                SET resourceitemdatavalue = :val
-                FROM tgt
-                WHERE v.resourceitemdatavalueid = tgt.resourceitemdatavalueid
-                """;
-
-        return session.createNativeQuery(sql)
-                .setParameter("id", id)
-                .setParameter("val", value)
-                .executeUpdate();
+        return session.find(ResourceItemDataValue.class, id)
+                .onItem().ifNotNull().transformToUni(entity -> {
+                    entity.setData(value);
+                    return Uni.createFrom().item(1);
+                })
+                .onItem().ifNull().continueWith(0);
     }
 
     @Override
     public Uni<Void> updateResourceData(Mutiny.Session session, byte[] data, UUID resourceItemId) {
-
         return tryUpdate(session, resourceItemId, data)
                 .replaceWithVoid();
     }

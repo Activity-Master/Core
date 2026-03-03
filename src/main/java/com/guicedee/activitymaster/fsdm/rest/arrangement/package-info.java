@@ -1,4 +1,4 @@
-@Verticle(workerPoolName = "arrangement-rest-pool")
+@Verticle(value = "arrangement-rest-pool")
 package com.guicedee.activitymaster.fsdm.rest.arrangement;
 
 import com.guicedee.vertx.spi.Verticle;

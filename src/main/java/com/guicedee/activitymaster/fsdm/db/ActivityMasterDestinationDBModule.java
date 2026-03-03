@@ -1,9 +1,9 @@
 package com.guicedee.activitymaster.fsdm.db;
 
 import com.guicedee.client.Environment;
-import com.guicedee.vertxpersistence.ConnectionBaseInfo;
-import com.guicedee.vertxpersistence.DatabaseModule;
-import com.guicedee.vertxpersistence.implementations.postgres.PostgresConnectionBaseInfo;
+import com.guicedee.persistence.ConnectionBaseInfo;
+import com.guicedee.persistence.DatabaseModule;
+import com.guicedee.persistence.implementations.postgres.PostgresConnectionBaseInfo;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.jpa.boot.spi.PersistenceUnitDescriptor;
 
