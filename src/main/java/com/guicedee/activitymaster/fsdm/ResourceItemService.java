@@ -148,7 +148,7 @@ public class ResourceItemService
                     .chain(count -> {
                         if (count <= 0) {
                             // Resource type doesn't exist, create a new one
-                            xr.setId(key);
+                            xr.setId(key == null ? UUID.randomUUID() : key);
                             xr.setName(value);
                             xr.setDescription(value);
                             xr.setOriginalSourceSystemID(createSystem.getId());
@@ -162,6 +162,7 @@ public class ResourceItemService
                                         xr.setActiveFlagID(activeFlag);
                                         return createSession
                                                 .persist(xr)
+                                                .chain(createSession::flush)
                                                 .replaceWith(Uni
                                                         .createFrom()
                                                         .item(xr));
@@ -330,18 +331,139 @@ public class ResourceItemService
         });
     }
 
-    Uni<Integer> tryUpdate(Mutiny.Session session, UUID id, byte[] value) {
-        return session.find(ResourceItemDataValue.class, id)
-                .onItem().ifNotNull().transformToUni(entity -> {
-                    entity.setData(value);
-                    return Uni.createFrom().item(1);
+    Uni<Integer> tryUpdate(Mutiny.Session session, UUID id, byte[] value, String systemName) {
+        // First resolve the actual resourceitemdatavalueid via the entity graph
+        return session.createQuery(
+                        "SELECT dv.id FROM ResourceItemData rd JOIN rd.dataValue dv WHERE rd.id = :id OR rd.resource.id = :id", UUID.class)
+                .setParameter("id", id)
+                .getSingleResultOrNull()
+                .onItem().ifNotNull().transformToUni(dataValueId -> {
+                    // Use native SQL with FOR UPDATE SKIP LOCKED to perform a safe concurrent update
+                    String sql = """
+                            WITH tgt AS (
+                              SELECT resourceitemdatavalueid
+                              FROM resource.resourceitemdatavalue
+                              WHERE resourceitemdatavalueid = :id
+                              FOR UPDATE SKIP LOCKED
+                            )
+                            UPDATE resource.resourceitemdatavalue v
+                            SET resourceitemdatavalue = :val
+                            FROM tgt
+                            WHERE v.resourceitemdatavalueid = tgt.resourceitemdatavalueid
+                            """;
+                    return session.createNativeQuery(sql)
+                            .setParameter("id", dataValueId)
+                            .setParameter("val", value)
+                            .executeUpdate();
                 })
-                .onItem().ifNull().continueWith(0);
+                .onItem().ifNull().switchTo(() -> createMissingResourceDataForUpdate(session, id, value, systemName));
+    }
+
+    /**
+     * When the ResourceItemDataValue is not found for the given id, check whether the ResourceItem exists.
+     * <ul>
+     *     <li>If the ResourceItem exists but has no ResourceItemData/DataValue → create them.</li>
+     *     <li>If the ResourceItem itself is missing → create a default ResourceItem with the "Unknown" type,
+     *         together with its ResourceItemData and ResourceItemDataValue.</li>
+     * </ul>
+     */
+    private Uni<Integer> createMissingResourceDataForUpdate(Mutiny.Session session, UUID id, byte[] value, String systemName) {
+        String resolvedSystemName = systemName != null ? systemName : com.guicedee.activitymaster.fsdm.client.services.ISystemsService.ActivityMasterSystemName;
+
+        return SessionUtils.withActivityMaster(applicationEnterpriseName, resolvedSystemName, tuple -> {
+            var createSession = tuple.getItem1();
+            var createEnterprise = tuple.getItem2();
+            var createSystem = tuple.getItem3();
+            var createIdentityToken = tuple.getItem4();
+
+            return createSession.find(ResourceItem.class, id)
+                    .onItem().ifNotNull().transformToUni(existingItem ->
+                            createResourceItemDataAndValueInternal(createSession, existingItem, value, createEnterprise, createSystem, createIdentityToken)
+                                    .replaceWith(1))
+                    .onItem().ifNull().switchTo(() ->
+                            createDefaultResourceItemWithDataInternal(createSession, id, value, createEnterprise, createSystem, createIdentityToken)
+                                    .replaceWith(1));
+        });
+    }
+
+    /**
+     * Creates a ResourceItemData and ResourceItemDataValue for an existing ResourceItem that is missing them.
+     * Uses the session directly — must be called from within an existing withActivityMaster block.
+     */
+    private Uni<Void> createResourceItemDataAndValueInternal(Mutiny.Session session, ResourceItem resourceItem, byte[] data,
+                                                             com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?> enterprise,
+                                                             ISystems<?, ?> system, UUID... identityToken) {
+        log.debug("Creating missing ResourceItemData and ResourceItemDataValue for ResourceItem: {}", resourceItem.getId());
+
+        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+        return acService
+                .getActiveFlag(session, enterprise, identityToken)
+                .chain(activeFlag -> {
+                    LocalDateTime now = RootEntity.getNow();
+                    ResourceItemData rid = new ResourceItemData();
+                    rid.setResource(resourceItem);
+                    rid.setEffectiveFromDate(convertToUTCDateTime(now));
+                    rid.setWarehouseCreatedTimestamp(convertToUTCDateTime(now));
+                    rid.setEffectiveToDate(EndOfTime.atOffset(ZoneOffset.UTC));
+                    rid.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(now));
+                    rid.setActiveFlagID(activeFlag);
+                    rid.setOriginalSourceSystemID(system.getId());
+                    rid.setSystemID(system);
+                    rid.setEnterpriseID(enterprise);
+
+                    ResourceItemDataValue dataValue = new ResourceItemDataValue();
+                    dataValue.setId(resourceItem.getId());
+                    dataValue.setData(data != null ? data : new byte[0]);
+                    rid.setDataValue(dataValue);
+
+                    return session.persist(rid)
+                            .chain(() -> session.persist(dataValue))
+                            .chain(session::flush)
+                            .replaceWithVoid();
+                });
+    }
+
+    /**
+     * Creates a default ResourceItem (with the "Unknown" type), along with its ResourceItemData and ResourceItemDataValue,
+     * when no ResourceItem exists for the requested id.
+     * Uses the session directly — must be called from within an existing withActivityMaster block.
+     */
+    private Uni<IResourceItem<?, ?>> createDefaultResourceItemWithDataInternal(Mutiny.Session session, UUID id, byte[] data,
+                                                                               com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?> enterprise,
+                                                                               ISystems<?, ?> system, UUID... identityToken) {
+        log.debug("Creating default ResourceItem with 'Unknown' type for missing id: {}", id);
+
+        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+        return acService
+                .getActiveFlag(session, enterprise, identityToken)
+                .chain(activeFlag -> {
+                    ResourceItem xr = new ResourceItem();
+                    xr.setId(id);
+                    xr.setOriginalSourceSystemID(system.getId());
+                    xr.setOriginalSourceSystemUniqueID(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+                    xr.setEffectiveFromDate(convertToUTCDateTime(RootEntity.getNow()));
+                    xr.setSystemID(system);
+                    xr.setEnterpriseID(enterprise);
+                    xr.setActiveFlagID(activeFlag);
+                    xr.setResourceItemDataType(com.guicedee.activitymaster.fsdm.client.services.classifications.ResourceItemTypes.Unknown.toString());
+
+                    return session.persist(xr)
+                            .replaceWith(xr)
+                            .chain(persisted -> createResourceItemDataAndValueInternal(session, persisted, data, enterprise, system, identityToken)
+                                    .replaceWith(persisted))
+                            .chain(persisted -> addResourceItemTypeRelationshipInternal(
+                                    session, persisted,
+                                    com.guicedee.activitymaster.fsdm.client.services.classifications.ResourceItemTypes.Unknown.toString(),
+                                    com.guicedee.activitymaster.fsdm.client.services.classifications.ResourceItemTypes.Unknown.toString(),
+                                    system, enterprise, identityToken)
+                                    .replaceWith(persisted))
+                            .map(persisted -> (IResourceItem<?, ?>) persisted);
+                });
     }
 
     @Override
-    public Uni<Void> updateResourceData(Mutiny.Session session, byte[] data, UUID resourceItemId) {
-        return tryUpdate(session, resourceItemId, data)
+    public Uni<Void> updateResourceData(Mutiny.Session session, byte[] data, UUID resourceItemId, String systemName) {
+        return tryUpdate(session, resourceItemId, data, systemName)
                 .replaceWithVoid();
     }
 

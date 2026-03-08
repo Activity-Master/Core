@@ -256,7 +256,7 @@ public class ResourceItemRestService
         return SessionUtils.<ResourceItemDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
             Mutiny.Session session = tuple.getItem1();
 
-            return resourceItemService.updateResourceData(session, dto.data, resourceItemId)
+            return resourceItemService.updateResourceData(session, dto.data, resourceItemId, requestingSystemName)
                     .chain(() -> {
                         ResourceItemDTO response = new ResourceItemDTO();
                         response.resourceItemId = resourceItemId;

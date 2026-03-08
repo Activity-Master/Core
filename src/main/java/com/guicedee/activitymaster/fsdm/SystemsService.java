@@ -395,7 +395,7 @@ public class SystemsService
 
                                 // Persist the new system (reactive)
                                 return session.persist(newSystem)
-                                        .chain(a -> session.flush())
+                                        //.chain(a -> session.flush())
                                         .replaceWith(Uni.createFrom()
                                                 .item(newSystem))
                                         .map(persistedSystem -> {

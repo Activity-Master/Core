@@ -255,11 +255,6 @@ public class FSDMMigrate
                 field.setAccessible(true); // Access private fields
 
                 Object fieldValue = field.get(sourceEntity);
-
-                if(field.getName().equals("activeId"))
-                {
-                    System.out.println("Here");
-                }
                 // Handle UUID field specifically, assign a new UUID
                if (Collection.class.isAssignableFrom(field.getType())) {
                     /*Collection<?> sourceCollection = (Collection<?>) fieldValue;
