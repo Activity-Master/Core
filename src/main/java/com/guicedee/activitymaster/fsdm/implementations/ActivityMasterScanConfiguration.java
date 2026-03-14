@@ -4,7 +4,7 @@ import com.guicedee.client.services.IGuiceConfig;
 import com.guicedee.client.services.lifecycle.IGuiceConfigurator;
 
 public class ActivityMasterScanConfiguration
-		implements IGuiceConfigurator
+		implements IGuiceConfigurator<ActivityMasterScanConfiguration>
 {
 	@Override
 	public IGuiceConfig<?> configure(IGuiceConfig<?> config)
