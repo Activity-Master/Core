@@ -53,44 +53,34 @@ public class RulesService
 	@Override
 	public Uni<IRules<?, ?>> createRules(Mutiny.Session session, String rulesType, UUID key, String name, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-			var createSession = tuple.getItem1();
-			var createEnterprise = tuple.getItem2();
-			var createSystem = tuple.getItem3();
-			var createIdentityToken = tuple.getItem4();
+		var enterprise = system.getEnterprise();
 
-			Rules rules = new Rules();
-			if (key != null)
-			{
-				rules.setId(key);
-			}
-			rules.setName(name);
-			rules.setDescription(description);
-			rules.setEnterpriseID(createEnterprise);
-			rules.setSystemID(createSystem);
-			rules.setOriginalSourceSystemID(createSystem.getId());
+		Rules rules = new Rules();
+		if (key != null)
+		{
+			rules.setId(key);
+		}
+		rules.setName(name);
+		rules.setDescription(description);
+		rules.setEnterpriseID(enterprise);
+		rules.setSystemID(system);
+		rules.setOriginalSourceSystemID(system.getId());
 
-			IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+		IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
-			return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
-					.chain(activeFlag -> {
-						rules.setActiveFlagID(activeFlag);
-						return createSession.persist(rules).replaceWith(Uni.createFrom().item(rules));
-					})
-					.chain(persisted -> {
-						// Create rule type
-						createRulesType(createSession, rulesType, rulesType, createSystem, createIdentityToken);
-						return Uni.createFrom().item(persisted);
-					})
-					.chain(ruleType -> {
-						// Chain createDefaultSecurity properly
-						return ruleType.createDefaultSecurity(createSession, createSystem, createIdentityToken)
-								.onItem().invoke(result -> log.trace("Security setup completed successfully for rules"))
-								.onFailure().invoke(error -> log.error("Error in createDefaultSecurity for rules", error))
-								.onFailure().recoverWithItem(() -> null)
-								.replaceWith((IRules<?, ?>) rules);
-					});
-		});
+		return acService.getActiveFlag(session, enterprise, identityToken)
+				.chain(activeFlag -> {
+					rules.setActiveFlagID(activeFlag);
+					return session.persist(rules).replaceWith(Uni.createFrom().item(rules));
+				})
+				.chain(persisted -> {
+					// Chain createDefaultSecurity properly
+					return persisted.createDefaultSecurity(session, system, identityToken)
+							.onItem().invoke(result -> log.trace("Security setup completed successfully for rules"))
+							.onFailure().invoke(error -> log.error("Error in createDefaultSecurity for rules", error))
+							.onFailure().recoverWithItem(() -> null)
+							.replaceWith((IRules<?, ?>) rules);
+				});
 	}
 
 	@Override
