@@ -25,7 +25,6 @@ public class PostgreSQLTestDBModule
             .withPassword("postgres");
 
     static {
-        ActivityMasterDBModule.forTests = true;
         postgresContainer.start();
         try {
             // Prefer classpath resources so scripts work when consumed via test-jar
