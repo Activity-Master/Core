@@ -13,6 +13,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.event
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.client.IGuiceContext;
 import com.guicedee.client.scopes.CallScopeProperties;
+import com.guicedee.client.scopes.CallScoper;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.Vertx;
 import lombok.extern.java.Log;
@@ -45,6 +46,8 @@ public class EventsAOPInterceptor implements MethodInterceptor
 	private IEnterpriseService<?> enterpriseService;
 
 	public static IEvent<?, ?> getCurrentEvent() {
+		CallScoper callScoper = IGuiceContext.get(CallScoper.class);
+		if (!callScoper.isStartedScope()) return null;
 		CallScopeProperties csp = IGuiceContext.get(CallScopeProperties.class);
 		if (csp != null) {
 			return (IEvent<?, ?>) csp.getProperties().get("fsdm.event");
@@ -53,6 +56,8 @@ public class EventsAOPInterceptor implements MethodInterceptor
 	}
 
 	public static void setCurrentEvent(IEvent<?, ?> event) {
+		CallScoper callScoper = IGuiceContext.get(CallScoper.class);
+		if (!callScoper.isStartedScope()) return;
 		CallScopeProperties csp = IGuiceContext.get(CallScopeProperties.class);
 		if (csp != null) {
 			if (event == null) {

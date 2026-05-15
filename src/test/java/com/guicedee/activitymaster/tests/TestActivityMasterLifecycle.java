@@ -34,11 +34,18 @@ public class TestActivityMasterLifecycle {
         sessionFactory = IGuiceContext.get(Key.get(Mutiny.SessionFactory.class, Names.named("ActivityMaster-Test")));
         assertNotNull(sessionFactory, "SessionFactory should not be null");
 
+        // Pre-resolve all service singletons on the test main thread BEFORE entering any Vert.x callback.
+        // GuicedEE's CallScope is only active on the test thread; resolving inside withSession/withTransaction
+        // would trigger OutOfScopeException for CallScopeProperties on the first (construction) call.
+        // Once the singletons are cached here, IGuiceContext.get() calls inside async callbacks are safe.
+        IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+        ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+        IGuiceContext.get(IClassificationService.class);
+        IGuiceContext.get(IActiveFlagService.class);
+
         // Ensure Enterprise is installed and started for this test class context
         sessionFactory.withSession(session ->
                 session.withTransaction(tx -> {
-                    IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
-                    ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
                     // Create or get enterprise
                     return enterpriseService.getEnterprise(session, TestEnterprise.name())
                             .onFailure().recoverWithUni(t -> {
@@ -58,7 +65,6 @@ public class TestActivityMasterLifecycle {
         // Start the enterprise (idempotent)
         sessionFactory.withSession(session ->
                 session.withTransaction(tx -> {
-                    IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
                     return enterpriseService.startNewEnterprise(session, TestEnterprise.name(), "admin", "!@adminadmin")
                             .onFailure().recoverWithItem(e -> null)
                             .replaceWith(Uni.createFrom().voidItem());

@@ -26,6 +26,7 @@ import com.guicedee.activitymaster.fsdm.systems.EventsSystem;
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.client.scopes.CallScoper;
 import io.github.classgraph.ClassInfo;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.NoResultException;
@@ -408,49 +409,60 @@ public class EnterpriseService
     @Override
     public Uni<IEnterprise<?, ?>> startNewEnterprise(Mutiny.Session session, String enterpriseName,
                                                      @NotNull String adminUserName, @NotNull String adminPassword, UUID uuidIdentifier) {
-        com.guicedee.client.IGuiceContext
-                .get(ActivityMasterConfiguration.class)
-                .setSecurityEnabled(false);
+        CallScoper callScoper = IGuiceContext.get(CallScoper.class);
+        boolean startedHere = !callScoper.isStartedScope();
+        if (startedHere) {
+            callScoper.enter();
+        }
+        try {
+            com.guicedee.client.IGuiceContext
+                    .get(ActivityMasterConfiguration.class)
+                    .setSecurityEnabled(false);
 
-        Set<IActivityMasterSystem<?>> allSystems = ActivityMasterConfiguration
-                .get()
-                .getAllSystems();
+            Set<IActivityMasterSystem<?>> allSystems = ActivityMasterConfiguration
+                    .get()
+                    .getAllSystems();
 
-        int totalTasks = allSystems
-                .stream()
-                .mapToInt(IActivityMasterSystem::totalTasks)
-                .sum() + 1;
+            int totalTasks = allSystems
+                    .stream()
+                    .mapToInt(IActivityMasterSystem::totalTasks)
+                    .sum() + 1;
 
-        logProgress("Create Enterprise", "Creating Enterprise", 0, totalTasks);
+            logProgress("Create Enterprise", "Creating Enterprise", 0, totalTasks);
 
-        // Go through all systems in order and run the registerSystem() method
-        List<IActivityMasterSystem<?>> orderedSystems = new ArrayList<>(allSystems);
+            // Go through all systems in order and run the registerSystem() method
+            List<IActivityMasterSystem<?>> orderedSystems = new ArrayList<>(allSystems);
 
-        return installEnterprise(session, enterpriseName)
-                .chain(enterprise -> registerSystemsSequentially(session, orderedSystems, enterprise)
-                        .map(v -> enterprise))
-                .chain(enterprise -> {
-                    return createNewEnterprise(session, enterprise)
-                            .chain(() -> {
-                                ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
-                                return systemsService
-                                        .getActivityMaster(session, enterprise)
-                                        .chain(activityMasterSystem -> {
-                                            // Explicitly cast to ISystems<?, ?>
-                                            ISystems<?, ?> system = (ISystems<?, ?>) activityMasterSystem;
+            return installEnterprise(session, enterpriseName)
+                    .chain(enterprise -> registerSystemsSequentially(session, orderedSystems, enterprise)
+                            .map(v -> enterprise))
+                    .chain(enterprise -> {
+                        return createNewEnterprise(session, enterprise)
+                                .chain(() -> {
+                                    ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+                                    return systemsService
+                                            .getActivityMaster(session, enterprise)
+                                            .chain(activityMasterSystem -> {
+                                                // Explicitly cast to ISystems<?, ?>
+                                                ISystems<?, ?> system = (ISystems<?, ?>) activityMasterSystem;
 
-                                            IPasswordsService<?> passwordsService = com.guicedee.client.IGuiceContext.get(IPasswordsService.class);
-                                            // createAdminAndCreatorUserForEnterprise returns IInvolvedParty directly, not a Uni
-                                            // Wrap it in a Uni to continue the reactive chain
-                                            return passwordsService.createAdminAndCreatorUserForEnterprise(session, system, adminUserName, adminPassword, uuidIdentifier);
-                                        })
-                                        .chain(user -> {
-                                            logProgress("Systems", "Running Systems Post Startups", 1);
-                                            return performPostStartup(session, enterprise)
-                                                    .map(v -> enterprise);
-                                        });
-                            });
-                });
+                                                IPasswordsService<?> passwordsService = com.guicedee.client.IGuiceContext.get(IPasswordsService.class);
+                                                // createAdminAndCreatorUserForEnterprise returns IInvolvedParty directly, not a Uni
+                                                // Wrap it in a Uni to continue the reactive chain
+                                                return passwordsService.createAdminAndCreatorUserForEnterprise(session, system, adminUserName, adminPassword, uuidIdentifier);
+                                            })
+                                            .chain(user -> {
+                                                logProgress("Systems", "Running Systems Post Startups", 1);
+                                                return performPostStartup(session, enterprise)
+                                                        .map(v -> enterprise);
+                                            });
+                                });
+                    });
+        } finally {
+            if (startedHere) {
+                callScoper.exit();
+            }
+        }
     }
 
 
@@ -463,36 +475,47 @@ public class EnterpriseService
 
     @Override
     public Uni<IEnterprise<?, ?>> createNewEnterprise(Mutiny.Session session, @NotNull IEnterprise<?, ?> enterprise) {
-        // 🔓 Disable security before starting
-        IGuiceContext
-                .get(ActivityMasterConfiguration.class)
-                .setSecurityEnabled(false);
+        CallScoper callScoper = IGuiceContext.get(CallScoper.class);
+        boolean startedHere = !callScoper.isStartedScope();
+        if (startedHere) {
+            callScoper.enter();
+        }
+        try {
+            // 🔓 Disable security before starting
+            IGuiceContext
+                    .get(ActivityMasterConfiguration.class)
+                    .setSecurityEnabled(false);
 
-        Set<IActivityMasterSystem<?>> allSystems = ActivityMasterConfiguration
-                .get()
-                .getAllSystems();
+            Set<IActivityMasterSystem<?>> allSystems = ActivityMasterConfiguration
+                    .get()
+                    .getAllSystems();
 
-        return create(session, enterprise.getName(), enterprise.getName())
-                .chain(entUni -> {
-                    return createBase(session, allSystems, entUni)
-                            .chain(() -> createBaseSystems(session, allSystems, entUni))
-                            .chain(() -> installSystems(session, allSystems, entUni))
-                            .invoke(() -> {
-                                setCurrentTask(0);
-                                logProgress("System Configuration", "Starting system updates", 1);
-                            })
-                            //.chain(() -> loadUpdates(session, entUni))
-                            .invoke(() -> {
-                                logProgress("System Configuration", "Done", 1);
-                                // 🔒 Re-enable security here if needed
-                                // IGuiceContext.get(ActivityMasterConfiguration.class).setSecurityEnabled(true);
-                            })
-                            .onFailure()
-                            .invoke(err ->
-                                    log.error("❌ Failed during createNewEnterprise()", err)
-                            )
-                            .map(res -> entUni);
-                });
+            return create(session, enterprise.getName(), enterprise.getName())
+                    .chain(entUni -> {
+                        return createBase(session, allSystems, entUni)
+                                .chain(() -> createBaseSystems(session, allSystems, entUni))
+                                .chain(() -> installSystems(session, allSystems, entUni))
+                                .invoke(() -> {
+                                    setCurrentTask(0);
+                                    logProgress("System Configuration", "Starting system updates", 1);
+                                })
+                                //.chain(() -> loadUpdates(session, entUni))
+                                .invoke(() -> {
+                                    logProgress("System Configuration", "Done", 1);
+                                    // 🔒 Re-enable security here if needed
+                                    // IGuiceContext.get(ActivityMasterConfiguration.class).setSecurityEnabled(true);
+                                })
+                                .onFailure()
+                                .invoke(err ->
+                                        log.error("❌ Failed during createNewEnterprise()", err)
+                                )
+                                .map(res -> entUni);
+                    });
+        } finally {
+            if (startedHere) {
+                callScoper.exit();
+            }
+        }
     }
 
     //@Transactional()
@@ -679,10 +702,7 @@ public class EnterpriseService
                                     log.info("✅ Defaults created for: " + systemName);
                                 })
                                 .onFailure()
-                                .recoverWithItem(e -> {
-                                    log.error("❌ Failed to create defaults for: " + systemName, e);
-                                    throw new RuntimeException(e);
-                                });
+                                .invoke(e -> log.error("❌ Failed to create defaults for: " + systemName, e));
                     })
                     .replaceWithVoid();
         }
