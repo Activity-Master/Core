@@ -130,67 +130,62 @@ public class ResourceItemService
     public Uni<IResourceItemType<?, ?>> createType(Mutiny.Session session, String value, UUID key, String description, ISystems<?, ?> system, UUID... identityToken) {
         log.debug("Creating resource type with value: {}, key: {}, description: {}", value, key, description);
 
-        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-            var createSession = tuple.getItem1();
-            var createEnterprise = tuple.getItem2();
-            var createSystem = tuple.getItem3();
-            var createIdentityToken = tuple.getItem4();
+        var enterprise = system.getEnterprise();
 
-            ResourceItemType xr = new ResourceItemType();
-            // First check if the resource type already exists
-            return xr
-                    .builder(createSession)
-                    .withName(value)
-                    .inActiveRange()
-                    .inDateRange()
-                    .withEnterprise(createEnterprise)
-                    .getCount()
-                    .chain(count -> {
-                        if (count <= 0) {
-                            // Resource type doesn't exist, create a new one
-                            xr.setId(key == null ? UUID.randomUUID() : key);
-                            xr.setName(value);
-                            xr.setDescription(value);
-                            xr.setOriginalSourceSystemID(createSystem.getId());
-                            xr.setSystemID(createSystem);
-                            xr.setEnterpriseID(createEnterprise);
-                            IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+        ResourceItemType xr = new ResourceItemType();
+        // First check if the resource type already exists
+        return xr
+                .builder(session)
+                .withName(value)
+                .inActiveRange()
+                .inDateRange()
+                .withEnterprise(enterprise)
+                .getCount()
+                .chain(count -> {
+                    if (count <= 0) {
+                        // Resource type doesn't exist, create a new one
+                        xr.setId(key == null ? UUID.randomUUID() : key);
+                        xr.setName(value);
+                        xr.setDescription(value);
+                        xr.setOriginalSourceSystemID(system.getId());
+                        xr.setSystemID(system);
+                        xr.setEnterpriseID(enterprise);
+                        IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 
-                            return acService
-                                    .getActiveFlag(createSession, createEnterprise, createIdentityToken)
-                                    .chain(activeFlag -> {
-                                        xr.setActiveFlagID(activeFlag);
-                                        return createSession
-                                                .persist(xr)
-                                                .chain(createSession::flush)
-                                                .replaceWith(Uni
-                                                        .createFrom()
-                                                        .item(xr));
-                                    })
-                                    .map(persisted -> {
-                                        // Create default security
-                                        xr.createDefaultSecurity(createSession, createSystem, createIdentityToken);
-                                        return persisted;
-                                    });
-                        } else {
-                            // Resource type exists, find it
-                            ResourceItemType resourceItemType = new ResourceItemType();
-                            return resourceItemType
-                                    .builder(createSession)
-                                    .withEnterprise(createEnterprise)
-                                    .withName(value)
-                                    .inActiveRange()
-                                    .inDateRange()
-                                    .get()
-                                    .map(existingType -> {
-                                        if (existingType == null) {
-                                            throw new ResourceItemException("Cannot find resource item type [%s]".formatted(value));
-                                        }
-                                        return (IResourceItemType<?, ?>) existingType;
-                                    });
-                        }
-                    });
-        });
+                        return acService
+                                .getActiveFlag(session, enterprise, identityToken)
+                                .chain(activeFlag -> {
+                                    xr.setActiveFlagID(activeFlag);
+                                    return session
+                                            .persist(xr)
+                                            .chain(session::flush)
+                                            .replaceWith(Uni
+                                                    .createFrom()
+                                                    .item(xr));
+                                })
+                                .map(persisted -> {
+                                    // Create default security
+                                    xr.createDefaultSecurity(session, system, identityToken);
+                                    return persisted;
+                                });
+                    } else {
+                        // Resource type exists, find it
+                        ResourceItemType resourceItemType = new ResourceItemType();
+                        return resourceItemType
+                                .builder(session)
+                                .withEnterprise(enterprise)
+                                .withName(value)
+                                .inActiveRange()
+                                .inDateRange()
+                                .get()
+                                .map(existingType -> {
+                                    if (existingType == null) {
+                                        throw new ResourceItemException("Cannot find resource item type [%s]".formatted(value));
+                                    }
+                                    return (IResourceItemType<?, ?>) existingType;
+                                });
+                    }
+                });
     }
 
 
@@ -248,87 +243,82 @@ public class ResourceItemService
                                            ISystems<?, ?> system, UUID... identityToken) {
         log.debug("Creating resource item - type: {}, value: {}", identityResourceType, resourceItemDataValue);
 
-        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-            var createSession = tuple.getItem1();
-            var createEnterprise = tuple.getItem2();
-            var createSystem = tuple.getItem3();
-            var createIdentityToken = tuple.getItem4();
+        var enterprise = system.getEnterprise();
 
-            return findByUUID(createSession, key)
-                    .onFailure(NoResultException.class)
-                    .recoverWithUni(e -> {
-                        // Step 1: Create the resource item
-                        ResourceItem xr = new ResourceItem();
-                        xr.setId(key);
-                        xr.setOriginalSourceSystemID(createSystem.getId());
-                        xr.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
-                        xr.setEffectiveFromDate(convertToUTCDateTime(effectiveFromDate));
-                        xr.setSystemID(createSystem);
-                        xr.setEnterpriseID(createEnterprise);
-                        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+        return findByUUID(session, key)
+                .onFailure(NoResultException.class)
+                .recoverWithUni(e -> {
+                    // Step 1: Create the resource item
+                    ResourceItem xr = new ResourceItem();
+                    xr.setId(key);
+                    xr.setOriginalSourceSystemID(system.getId());
+                    xr.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
+                    xr.setEffectiveFromDate(convertToUTCDateTime(effectiveFromDate));
+                    xr.setSystemID(system);
+                    xr.setEnterpriseID(enterprise);
+                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
-                        return acService
-                                .getActiveFlag(createSession, createEnterprise, createIdentityToken)
-                                .chain(activeFlag -> {
-                                    xr.setActiveFlagID(activeFlag);
-                                    xr.setResourceItemDataType(resourceItemDataValue);
+                    return acService
+                            .getActiveFlag(session, enterprise, identityToken)
+                            .chain(activeFlag -> {
+                                xr.setActiveFlagID(activeFlag);
+                                xr.setResourceItemDataType(resourceItemDataValue);
 
-                                    // Persist the resource item
-                                    return createSession
-                                            .persist(xr)
-                                            .replaceWith(Uni
-                                                    .createFrom()
-                                                    .item(xr))
-                                            .chain(persisted -> {
-                                                // Create resource item data
-                                                ResourceItemData rid = new ResourceItemData();
-                                                rid.setResource(persisted);
-                                                LocalDateTime now = RootEntity.getNow();
-                                                rid.setEffectiveFromDate(convertToUTCDateTime(now));
-                                                rid.setWarehouseCreatedTimestamp(convertToUTCDateTime(now));
-                                                rid.setEffectiveToDate(EndOfTime.atOffset(ZoneOffset.UTC));
-                                                rid.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(now));
-                                                rid.setActiveFlagID(activeFlag);
-                                                rid.setOriginalSourceSystemID(createSystem.getId());
-                                                rid.setSystemID(createSystem);
-                                                rid.setEnterpriseID(createEnterprise);
+                                // Persist the resource item
+                                return session
+                                        .persist(xr)
+                                        .replaceWith(Uni
+                                                .createFrom()
+                                                .item(xr))
+                                        .chain(persisted -> {
+                                            // Create resource item data
+                                            ResourceItemData rid = new ResourceItemData();
+                                            rid.setResource(persisted);
+                                            LocalDateTime now = RootEntity.getNow();
+                                            rid.setEffectiveFromDate(convertToUTCDateTime(now));
+                                            rid.setWarehouseCreatedTimestamp(convertToUTCDateTime(now));
+                                            rid.setEffectiveToDate(EndOfTime.atOffset(ZoneOffset.UTC));
+                                            rid.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(now));
+                                            rid.setActiveFlagID(activeFlag);
+                                            rid.setOriginalSourceSystemID(system.getId());
+                                            rid.setSystemID(system);
+                                            rid.setEnterpriseID(enterprise);
 
-                                                ResourceItemDataValue dataValue = new ResourceItemDataValue();
-                                                dataValue.setId(persisted.getId());
-                                                dataValue.setData(data);
-                                                if (data == null) {
-                                                    dataValue.setData(new byte[0]);
-                                                }
-                                                rid.setDataValue(dataValue);
+                                            ResourceItemDataValue dataValue = new ResourceItemDataValue();
+                                            dataValue.setId(persisted.getId());
+                                            dataValue.setData(data);
+                                            if (data == null) {
+                                                dataValue.setData(new byte[0]);
+                                            }
+                                            rid.setDataValue(dataValue);
 
-                                                // Persist the resource item data
-                                                return createSession
-                                                        .persist(rid)
-                                                        .chain(() -> {
-                                                            return createSession.persist(rid.getDataValue());
-                                                        })
-                                                        .replaceWith(Uni
-                                                                .createFrom()
-                                                                .item(rid))
-                                                        .map(persistedData -> {
-                                                            // Create default security
-                                                            persistedData.createDefaultSecurity(createSession, createSystem, createIdentityToken);
-                                                            return persistedData;
-                                                        })
-                                                        .chain(_ -> {
-                                                            // Step 3: Add resource item types
-                                                            log.trace("Adding resource item type: {}", identityResourceType);
-                                                            return addResourceItemTypeRelationshipInternal(createSession, persisted, identityResourceType, resourceItemDataValue, createSystem, createEnterprise, createIdentityToken);
-                                                        })
-                                                        .replaceWith(persisted);
-                                            });
-                                })
-                                .onFailure()
-                                .invoke(cause -> {
-                                    log.error("Failed to create resource item", cause);
-                                });
-                    });
-        });
+                                            // Persist the resource item data
+                                            return session
+                                                    .persist(rid)
+                                                    .chain(() -> {
+                                                        return session.persist(rid.getDataValue());
+                                                    })
+                                                    .replaceWith(Uni
+                                                            .createFrom()
+                                                            .item(rid))
+                                                    .map(persistedData -> {
+                                                        // Create default security
+                                                        persistedData.createDefaultSecurity(session, system, identityToken);
+                                                        return persistedData;
+                                                    })
+                                                    .chain(_ -> {
+                                                        // Step 3: Add resource item types
+                                                        log.trace("Adding resource item type: {}", identityResourceType);
+                                                        return addResourceItemTypeRelationshipInternal(session, persisted, identityResourceType, resourceItemDataValue, system, enterprise, identityToken);
+                                                    })
+                                                    .replaceWith(persisted);
+                                        });
+                            })
+                            .onFailure()
+                            .invoke(cause -> {
+                                log.error("Failed to create resource item", cause);
+                            });
+                });
     }
 
     Uni<Integer> tryUpdate(Mutiny.Session session, UUID id, byte[] value, String systemName) {
@@ -474,14 +464,8 @@ public class ResourceItemService
     public Uni<Void> addResourceItemTypeRelationship(Mutiny.Session session, IResourceItem<?, ?> resourceItem, String typeName, String value, ISystems<?, ?> system, UUID... identityToken) {
         log.trace("Adding resource item type relationship: {} for item: {}", typeName, resourceItem.getId());
 
-        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-            var createSession = tuple.getItem1();
-            var createEnterprise = tuple.getItem2();
-            var createSystem = tuple.getItem3();
-            var createIdentityToken = tuple.getItem4();
-
-            return addResourceItemTypeRelationshipInternal(createSession, resourceItem, typeName, value, createSystem, createEnterprise, createIdentityToken);
-        });
+        var enterprise = system.getEnterprise();
+        return addResourceItemTypeRelationshipInternal(session, resourceItem, typeName, value, system, enterprise, identityToken);
     }
 
     /**
@@ -578,8 +562,8 @@ public class ResourceItemService
                                 .chain(exists -> exists != null ?
                                         session.fetch(exists.getResourceItemID()) :
                                         Uni
-                                                .createFrom()
-                                                .failure(new ResourceItemException("Cannot find resource item for classification: %s".formatted(classification))));
+                                        .createFrom()
+                                        .failure(new ResourceItemException("Cannot find resource item for classification: %s".formatted(classification))));
                     } catch (Exception e) {
                         log.error("Error finding resource by classification - resourceType: {}, classification: {}, value: {}",
                                 resourceType, classification, value, e);
@@ -682,15 +666,8 @@ public class ResourceItemService
     @Override
     public Uni<IResourceItemType<?, ?>> findResourceItemType(Mutiny.Session session, String type, ISystems<?, ?> system, UUID... identityToken) {
         log.trace("Finding resource item type by name (ID-first): {}", type);
-        var enterprise = system.getEnterprise();
-        java.util.UUID enterpriseId = null;
-        if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
-            enterpriseId = ent.getId();
-        }
-        final java.util.UUID entId = enterpriseId;
-
         // Resolve ResourceItemType UUID by name using cached native resolver, then load entity by UUID
-        return (io.smallrye.mutiny.Uni) resolveResourceItemTypeIdByName(session, entId, type)
+        return (io.smallrye.mutiny.Uni) resolveResourceItemTypeIdByName(session, system.getEnterpriseID(), type)
                 .flatMap(id -> getResourceItemTypeById(session, id))
                 .map(result -> (IResourceItemType<?, ?>) result)
                 .onFailure()

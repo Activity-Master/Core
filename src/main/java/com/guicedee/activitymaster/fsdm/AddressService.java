@@ -87,20 +87,15 @@ public class AddressService
 	////@Transactional()
 	public Uni<IAddress<?, ?>> create(Mutiny.Session session, String addressClassification, UUID key, ISystems<?, ?> system, String value, UUID... identifyingToken)
 	{
-		return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-			var createSession = tuple.getItem1();
-			var createEnterprise = tuple.getItem2();
-			var createSystem = tuple.getItem3();
-			var createIdentityToken = tuple.getItem4();
-
+		var enterprise = system.getEnterprise();
 			Address addy = new Address();
 
-			return classificationServiceProvider.find(createSession, addressClassification, createSystem, createIdentityToken)
+			return classificationServiceProvider.find(session, addressClassification, system, identifyingToken)
 			        .chain(classification -> {
-			            return addy.builder(createSession)
-			                    .withClassification(addressClassification, createSystem)
+			            return addy.builder(session)
+			                    .withClassification(addressClassification, system)
 			                    .withValue(value)
-			                    .withEnterprise(createEnterprise)
+			                    .withEnterprise(enterprise)
 			                    .inDateRange()
 			                    .inActiveRange()
 			                    .getCount()
@@ -111,21 +106,21 @@ public class AddressService
 			                        {
 			                            if(key != null)
 			                                addy.setId(key);
-			                            addy.setEnterpriseID(createEnterprise);
+			                            addy.setEnterpriseID(enterprise);
 			                            addy.setClassificationID((Classification) classification);
 			                            addy.setValue(value);
-			                            addy.setSystemID(createSystem);
-			                            addy.setOriginalSourceSystemID(createSystem.getId());
+			                            addy.setSystemID(system);
+			                            addy.setOriginalSourceSystemID(system.getId());
 
 			                            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
-			                            return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
+			                            return acService.getActiveFlag(session, enterprise, identifyingToken)
 			                                    .chain(activeFlag -> {
 			                                        addy.setActiveFlagID(activeFlag);
-			                                        return createSession.persist(addy).replaceWith(Uni.createFrom().item(addy));
+			                                        return session.persist(addy).replaceWith(Uni.createFrom().item(addy));
 			                                    })
 			                                    .chain(persisted -> {
-			                                        return persisted.createDefaultSecurity(createSession, createSystem, createIdentityToken)
+			                                        return persisted.createDefaultSecurity(session, system, identifyingToken)
 			                                            .onItem().invoke(() -> log.debug("Security setup completed successfully"))
 			                                            .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity", error))
 			                                            .onFailure().recoverWithItem(() -> null)
@@ -134,12 +129,12 @@ public class AddressService
 			                        }
 			                        else
 			                        {
-			                            return addy.builder(createSession)
-			                                    .withClassification(addressClassification, createSystem)
-			                                    .withEnterprise(createEnterprise)
+			                            return addy.builder(session)
+			                                    .withClassification(addressClassification, system)
+			                                    .withEnterprise(enterprise)
 			                                    .withValue(value)
 			                                    .inDateRange()
-			                                    .withEnterprise(createEnterprise)
+			                                    .withEnterprise(enterprise)
 			                                    .get()
 			                                    .onFailure().invoke(error -> log.error("Error finding existing address: {}", error.getMessage(), error))
 			                                    .onItem().ifNull().failWith(() -> new AddressException("Cannot find an address that was already confirmed to exist - " + value))
@@ -147,7 +142,6 @@ public class AddressService
 			                        }
 			                    });
 			        });
-		});
 	}
 	//@Transactional()
 	@Override
@@ -160,19 +154,14 @@ public class AddressService
 			return Uni.createFrom().failure(new AddressException("Invalid IP Address"));
 		}
 
-		return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-			var createSession = tuple.getItem1();
-			var createEnterprise = tuple.getItem2();
-			var createSystem = tuple.getItem3();
-			var createIdentityToken = tuple.getItem4();
-
+		var enterprise = system.getEnterprise();
 			Address address = new Address();
-			return classificationServiceProvider.find(createSession, RemoteAddressIPAddress.name(), createSystem, createIdentityToken)
+			return classificationServiceProvider.find(session, RemoteAddressIPAddress.name(), system, identityToken)
 			        .chain(ipAddressClassification -> {
-			            return address.builder(createSession)
+			            return address.builder(session)
 			                    .withClassification((Classification) ipAddressClassification)
 			                    .withValue(ipAddress)
-			                    .withEnterprise(createEnterprise)
+			                    .withEnterprise(enterprise)
 			                    .inDateRange()
 			                    .inActiveRange()
 			                    .getCount()
@@ -183,19 +172,19 @@ public class AddressService
 			                        {
 			                            address.setValue(ipAddress);
 			                            address.setClassificationID((Classification) ipAddressClassification);
-			                            address.setEnterpriseID(createEnterprise);
-			                            address.setSystemID(createSystem);
-			                            address.setOriginalSourceSystemID(createSystem.getId());
+			                            address.setEnterpriseID(enterprise);
+			                            address.setSystemID(system);
+			                            address.setOriginalSourceSystemID(system.getId());
 
 			                            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
-			                            return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
+			                            return acService.getActiveFlag(session, enterprise, identityToken)
 			                                    .chain(activeFlag -> {
 			                                        address.setActiveFlagID(activeFlag);
-			                                        return createSession.persist(address).replaceWith(Uni.createFrom().item(address));
+			                                        return session.persist(address).replaceWith(Uni.createFrom().item(address));
 			                                    })
 			                                    .chain(persisted -> {
-			                                        return address.createDefaultSecurity(createSession, createSystem, createIdentityToken)
+			                                        return address.createDefaultSecurity(session, system, identityToken)
 			                                            .onItem().invoke(() -> log.debug("Security setup completed successfully for IP address"))
 			                                            .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for IP address", error))
 			                                            .onFailure().recoverWithItem(() -> null)
@@ -204,10 +193,10 @@ public class AddressService
 			                        }
 			                        else
 			                        {
-			                            return address.builder(createSession)
+			                            return address.builder(session)
 			                                    .withClassification((Classification) ipAddressClassification)
 			                                    .withValue(ipAddress)
-			                                    .withEnterprise(createEnterprise)
+			                                    .withEnterprise(enterprise)
 			                                    .inDateRange()
 			                                    .inActiveRange()
 			                                    .get()
@@ -217,26 +206,20 @@ public class AddressService
 			                        }
 			                    });
 			        });
-		});
 	}
 	//@Transactional()
 	@Override
 	////@Transactional()
 	public Uni<IAddress<?, ?>> addOrFindHostName(Mutiny.Session session, String hostName, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
-		return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-			var createSession = tuple.getItem1();
-			var createEnterprise = tuple.getItem2();
-			var createSystem = tuple.getItem3();
-			var createIdentityToken = tuple.getItem4();
-
+		var enterprise = system.getEnterprise();
 			Address address = new Address();
-			return classificationServiceProvider.find(createSession, RemoteAddressHostName.name(), createSystem, createIdentityToken)
+			return classificationServiceProvider.find(session, RemoteAddressHostName.name(), system, identityToken)
 			        .chain(hostNameClassification -> {
-			            return address.builder(createSession)
+			            return address.builder(session)
 			                    .withClassification((Classification) hostNameClassification)
 			                    .withValue(hostName)
-			                    .withEnterprise(createEnterprise)
+			                    .withEnterprise(enterprise)
 			                    .inDateRange()
 			                    .inActiveRange()
 			                    .getCount()
@@ -247,19 +230,19 @@ public class AddressService
 			                        {
 			                            address.setValue(hostName);
 			                            address.setClassificationID((Classification) hostNameClassification);
-			                            address.setEnterpriseID(createEnterprise);
-			                            address.setSystemID(createSystem);
-			                            address.setOriginalSourceSystemID(createSystem.getId());
+			                            address.setEnterpriseID(enterprise);
+			                            address.setSystemID(system);
+			                            address.setOriginalSourceSystemID(system.getId());
 
 			                            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
-			                            return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
+			                            return acService.getActiveFlag(session, enterprise, identityToken)
 			                                    .chain(activeFlag -> {
 			                                        address.setActiveFlagID(activeFlag);
-			                                        return createSession.persist(address).replaceWith(Uni.createFrom().item(address));
+			                                        return session.persist(address).replaceWith(Uni.createFrom().item(address));
 			                                    })
 			                                    .chain(persisted -> {
-			                                        return address.createDefaultSecurity(createSession, createSystem, createIdentityToken)
+			                                        return address.createDefaultSecurity(session, system, identityToken)
 			                                            .onItem().invoke(() -> log.debug("Security setup completed successfully for hostname"))
 			                                            .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for hostname", error))
 			                                            .onFailure().recoverWithItem(() -> null)
@@ -268,10 +251,10 @@ public class AddressService
 			                        }
 			                        else
 			                        {
-			                            return address.builder(createSession)
+			                            return address.builder(session)
 			                                    .withClassification((Classification) hostNameClassification)
 			                                    .withValue(hostName)
-			                                    .withEnterprise(createEnterprise)
+			                                    .withEnterprise(enterprise)
 			                                    .inDateRange()
 			                                    .inActiveRange()
 			                                    .get()
@@ -281,26 +264,20 @@ public class AddressService
 			                        }
 			                    });
 			        });
-		});
 	}
 	//@Transactional()
 	@Override
 	////@Transactional()
 	public Uni<IAddress<?, ?>> addOrFindWebAddress(Mutiny.Session session, String webAddress, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
-		return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-			var createSession = tuple.getItem1();
-			var createEnterprise = tuple.getItem2();
-			var createSystem = tuple.getItem3();
-			var createIdentityToken = tuple.getItem4();
-
+		var enterprise = system.getEnterprise();
 			Address address = new Address();
-			return classificationServiceProvider.find(createSession, WebAddress.name(), createSystem, createIdentityToken)
+			return classificationServiceProvider.find(session, WebAddress.name(), system, identityToken)
 			        .chain(webAddressClassification -> {
-			            return address.builder(createSession)
-			                    .withClassification(WebAddress.name(), createSystem)
+			            return address.builder(session)
+			                    .withClassification(WebAddress.name(), system)
 			                    .withValue(webAddress)
-			                    .withEnterprise(createEnterprise)
+			                    .withEnterprise(enterprise)
 			                    .inDateRange()
 			                    .inActiveRange()
 			                    .getCount()
@@ -311,19 +288,19 @@ public class AddressService
 			                        {
 			                            address.setValue(webAddress);
 			                            address.setClassificationID((Classification) webAddressClassification);
-			                            address.setEnterpriseID(createEnterprise);
-			                            address.setSystemID(createSystem);
-			                            address.setOriginalSourceSystemID(createSystem.getId());
+			                            address.setEnterpriseID(enterprise);
+			                            address.setSystemID(system);
+			                            address.setOriginalSourceSystemID(system.getId());
 
 			                            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
-			                            return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
+			                            return acService.getActiveFlag(session, enterprise, identityToken)
 			                                    .chain(activeFlag -> {
 			                                        address.setActiveFlagID(activeFlag);
-			                                        return createSession.persist(address).replaceWith(Uni.createFrom().item(address));
+			                                        return session.persist(address).replaceWith(Uni.createFrom().item(address));
 			                                    })
 			                                    .chain(persisted -> {
-			                                        return address.createDefaultSecurity(createSession, createSystem, createIdentityToken)
+			                                        return address.createDefaultSecurity(session, system, identityToken)
 			                                            .onItem().invoke(() -> log.debug("Security setup completed successfully for web address"))
 			                                            .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for web address", error))
 			                                            .onFailure().recoverWithItem(() -> null)
@@ -339,70 +316,70 @@ public class AddressService
 			                                                    String port = matcher.group(3);
 			                                                    String uri = matcher.group(4);
 
-			                                                    return classificationServiceProvider.find(createSession, WebAddressPort.name(), createSystem, createIdentityToken)
+			                                                    return classificationServiceProvider.find(session, WebAddressPort.name(), system, identityToken)
 			                                                        .chain(webPortClassification -> {
 			                                                            Address webDetails = new Address();
 			                                                            webDetails.setValue(url.getPort() + "");
 			                                                            webDetails.setClassificationID((Classification) webPortClassification);
-			                                                            webDetails.setOriginalSourceSystemID(createSystem.getId());
-			                                                            webDetails.setSystemID(createSystem);
-			                                                            webDetails.setEnterpriseID(createEnterprise);
+			                                                            webDetails.setOriginalSourceSystemID(system.getId());
+			                                                            webDetails.setSystemID(system);
+			                                                            webDetails.setEnterpriseID(enterprise);
 
-			                                                            return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
+			                                                            return acService.getActiveFlag(session, enterprise, identityToken)
 			                                                                .chain(portActiveFlag -> {
 			                                                                    webDetails.setActiveFlagID(portActiveFlag);
-			                                                                    return createSession.persist(webDetails).replaceWith(Uni.createFrom().item(webDetails));
+			                                                                    return session.persist(webDetails).replaceWith(Uni.createFrom().item(webDetails));
 			                                                                })
 			                                                                .chain(portPersisted -> {
-			                                                                    return classificationServiceProvider.find(createSession, WebAddressDomain.name(), createSystem, createIdentityToken);
+			                                                                    return classificationServiceProvider.find(session, WebAddressDomain.name(), system, identityToken);
 			                                                                });
 			                                                        })
 			                                                        .chain(webDomainClassification -> {
 			                                                            Address domainDetails = new Address();
 			                                                            domainDetails.setValue(domain);
 			                                                            domainDetails.setClassificationID((Classification) webDomainClassification);
-			                                                            domainDetails.setOriginalSourceSystemID(createSystem.getId());
-			                                                            domainDetails.setSystemID(createSystem);
-			                                                            domainDetails.setEnterpriseID(createEnterprise);
+			                                                            domainDetails.setOriginalSourceSystemID(system.getId());
+			                                                            domainDetails.setSystemID(system);
+			                                                            domainDetails.setEnterpriseID(enterprise);
 
-			                                                            return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
+			                                                            return acService.getActiveFlag(session, enterprise, identityToken)
 			                                                                .chain(domainActiveFlag -> {
 			                                                                    domainDetails.setActiveFlagID(domainActiveFlag);
-			                                                                    return createSession.persist(domainDetails).replaceWith(Uni.createFrom().item(domainDetails));
+			                                                                    return session.persist(domainDetails).replaceWith(Uni.createFrom().item(domainDetails));
 			                                                                })
 			                                                                .chain(domainPersisted -> {
-			                                                                    return classificationServiceProvider.find(createSession, WebAddressProtocol.name(), createSystem, createIdentityToken);
+			                                                                    return classificationServiceProvider.find(session, WebAddressProtocol.name(), system, identityToken);
 			                                                                });
 			                                                        })
 			                                                        .chain(webProtocolClassification -> {
 			                                                            Address protocolDetails = new Address();
 			                                                            protocolDetails.setValue(protocol);
 			                                                            protocolDetails.setClassificationID((Classification) webProtocolClassification);
-			                                                            protocolDetails.setOriginalSourceSystemID(createSystem.getId());
-			                                                            protocolDetails.setSystemID(createSystem);
-			                                                            protocolDetails.setEnterpriseID(createEnterprise);
+			                                                            protocolDetails.setOriginalSourceSystemID(system.getId());
+			                                                            protocolDetails.setSystemID(system);
+			                                                            protocolDetails.setEnterpriseID(enterprise);
 
-			                                                            return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
+			                                                            return acService.getActiveFlag(session, enterprise, identityToken)
 			                                                                .chain(protocolActiveFlag -> {
 			                                                                    protocolDetails.setActiveFlagID(protocolActiveFlag);
-			                                                                    return createSession.persist(protocolDetails).replaceWith(Uni.createFrom().item(protocolDetails));
+			                                                                    return session.persist(protocolDetails).replaceWith(Uni.createFrom().item(protocolDetails));
 			                                                                })
 			                                                                .chain(protocolPersisted -> {
-			                                                                    return classificationServiceProvider.find(createSession, WebAddressSite.name(), createSystem, createIdentityToken);
+			                                                                    return classificationServiceProvider.find(session, WebAddressSite.name(), system, identityToken);
 			                                                                });
 			                                                        })
 			                                                        .chain(webSiteClassification -> {
 			                                                            Address siteDetails = new Address();
 			                                                            siteDetails.setValue(uri);
 			                                                            siteDetails.setClassificationID((Classification) webSiteClassification);
-			                                                            siteDetails.setOriginalSourceSystemID(createSystem.getId());
-			                                                            siteDetails.setSystemID(createSystem);
-			                                                            siteDetails.setEnterpriseID(createEnterprise);
+			                                                            siteDetails.setOriginalSourceSystemID(system.getId());
+			                                                            siteDetails.setSystemID(system);
+			                                                            siteDetails.setEnterpriseID(enterprise);
 
-			                                                            return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
+			                                                            return acService.getActiveFlag(session, enterprise, identityToken)
 			                                                                .chain(siteActiveFlag -> {
 			                                                                    siteDetails.setActiveFlagID(siteActiveFlag);
-			                                                                    return createSession.persist(siteDetails).replaceWith(Uni.createFrom().item(siteDetails));
+			                                                                    return session.persist(siteDetails).replaceWith(Uni.createFrom().item(siteDetails));
 			                                                                })
 			                                                                .map(siteResult -> (IAddress<?, ?>) address);
 			                                                        });
@@ -415,10 +392,10 @@ public class AddressService
 			                        }
 			                        else
 			                        {
-			                            return address.builder(createSession)
+			                            return address.builder(session)
 			                                    .withClassification((Classification) webAddressClassification)
 			                                    .withValue(webAddress)
-			                                    .withEnterprise(createEnterprise)
+			                                    .withEnterprise(enterprise)
 			                                    .inDateRange()
 			                                    .inActiveRange()
 			                                    .get()
@@ -428,7 +405,6 @@ public class AddressService
 			                        }
 			                    });
 			        });
-		});
 	}
 	//@Transactional()
 	@Override
@@ -437,19 +413,14 @@ public class AddressService
 	{
 		PhoneNumberDTO phoneNumberDTO = new PhoneNumberDTO(phoneNumber);
 
-		return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-			var createSession = tuple.getItem1();
-			var createEnterprise = tuple.getItem2();
-			var createSystem = tuple.getItem3();
-			var createIdentityToken = tuple.getItem4();
-
+		var enterprise = system.getEnterprise();
 			Address streetAddress = new Address();
-			return classificationServiceProvider.find(createSession, TelephoneNumber.name(), createSystem, createIdentityToken)
+			return classificationServiceProvider.find(session, TelephoneNumber.name(), system, identityToken)
 			    .chain(homePhoneNumber -> {
-			        return streetAddress.builder(createSession)
-			            .withClassification(TelephoneNumber.name(), createSystem)
+			        return streetAddress.builder(session)
+			            .withClassification(TelephoneNumber.name(), system)
 			            .withValue(phoneNumber)
-			            .withEnterprise(createEnterprise)
+			            .withEnterprise(enterprise)
 			            .inDateRange()
 			            .inActiveRange()
 			            .getCount()
@@ -459,62 +430,62 @@ public class AddressService
 			                if (!found) {
 			                    streetAddress.setValue(phoneNumber);
 			                    streetAddress.setClassificationID((Classification) homePhoneNumber);
-			                    streetAddress.setEnterpriseID(createEnterprise);
-			                    streetAddress.setSystemID(createSystem);
-			                    streetAddress.setOriginalSourceSystemID(createSystem.getId());
+			                    streetAddress.setEnterpriseID(enterprise);
+			                    streetAddress.setSystemID(system);
+			                    streetAddress.setOriginalSourceSystemID(system.getId());
 
 			                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
-			                    return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
+			                    return acService.getActiveFlag(session, enterprise, identityToken)
 			                        .chain(activeFlag -> {
 			                            streetAddress.setActiveFlagID(activeFlag);
-			                            return createSession.persist(streetAddress).replaceWith(Uni.createFrom().item(streetAddress));
+			                            return session.persist(streetAddress).replaceWith(Uni.createFrom().item(streetAddress));
 			                        })
 			                        .chain(persisted -> {
-			                            return streetAddress.createDefaultSecurity(createSession, createSystem, createIdentityToken)
+			                            return streetAddress.createDefaultSecurity(session, system, identityToken)
 			                                .onItem().invoke(() -> log.debug("Security setup completed successfully for phone number"))
 			                                .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for phone number", error))
 			                                .onFailure().recoverWithItem(() -> null)
 			                                .chain(securityResult -> {
-			                                    return classificationServiceProvider.find(createSession, TelephoneCountryCode.name(), createSystem, createIdentityToken)
+			                                    return classificationServiceProvider.find(session, TelephoneCountryCode.name(), system, identityToken)
 			                                        .chain(homePhoneNumberCountryCodeClassification -> {
 			                                            return streetAddress.addClassification(
-			                                                    createSession,
+			                                                    session,
 			                                                    ((Classification) homePhoneNumberCountryCodeClassification).getName(),
 			                                                    phoneNumberDTO.getCountryCode(),
-			                                                    createSystem,
-			                                                    createIdentityToken);
+			                                                    system,
+			                                                    identityToken);
 			                                        })
 			                                        .chain(() -> {
-			                                            return classificationServiceProvider.find(createSession, TelephoneExtensionNumber.name(), createSystem, createIdentityToken);
+			                                            return classificationServiceProvider.find(session, TelephoneExtensionNumber.name(), system, identityToken);
 			                                        })
 			                                        .chain(homePhoneExtensionNumberClassification -> {
 			                                            return streetAddress.addClassification(
-			                                                    createSession,
+			                                                    session,
 			                                                    ((Classification) homePhoneExtensionNumberClassification).getName(),
 			                                                    Strings.nullToEmpty(phoneNumberDTO.getExtension()),
-			                                                    createSystem,
-			                                                    createIdentityToken);
+			                                                    system,
+			                                                    identityToken);
 			                                        })
 			                                        .chain(() -> {
-			                                            return classificationServiceProvider.find(createSession, TelephoneAreaCode.name(), createSystem, createIdentityToken);
+			                                            return classificationServiceProvider.find(session, TelephoneAreaCode.name(), system, identityToken);
 			                                        })
 			                                        .chain(homePhoneAreaCodeClassification -> {
 			                                            return streetAddress.addClassification(
-			                                                    createSession,
+			                                                    session,
 			                                                    ((Classification) homePhoneAreaCodeClassification).getName(),
 			                                                    phoneNumberDTO.getAreaCode(),
-			                                                    createSystem,
-			                                                    createIdentityToken);
+			                                                    system,
+			                                                    identityToken);
 			                                        })
 			                                        .map(result -> (IAddress<?, ?>) streetAddress);
 			                                });
 			                        });
 			                } else {
-			                    return streetAddress.builder(createSession)
-			                        .withClassification(TelephoneNumber.name(), createSystem)
+			                    return streetAddress.builder(session)
+			                        .withClassification(TelephoneNumber.name(), system)
 			                        .withValue(phoneNumber)
-			                        .withEnterprise(createEnterprise)
+			                        .withEnterprise(enterprise)
 			                        .inDateRange()
 			                        .inActiveRange()
 			                        .get()
@@ -524,7 +495,6 @@ public class AddressService
 			                }
 			            });
 			    });
-		});
 	}
 	//@Transactional()
 	@Override
@@ -541,19 +511,14 @@ public class AddressService
 			return Uni.createFrom().failure(new AddressException("Unable to create email address - invalid value", T));
 		}
 
-		return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-			var createSession = tuple.getItem1();
-			var createEnterprise = tuple.getItem2();
-			var createSystem = tuple.getItem3();
-			var createIdentityToken = tuple.getItem4();
-
+		var enterprise = system.getEnterprise();
 			Address emailAddy = new Address();
-			return classificationServiceProvider.find(createSession, AddressEmailClassifications.EmailAddress.name(), createSystem, createIdentityToken)
+			return classificationServiceProvider.find(session, AddressEmailClassifications.EmailAddress.name(), system, identityToken)
 			    .chain(emailAddress -> {
-			        return emailAddy.builder(createSession)
-			            .withClassification(AddressEmailClassifications.EmailAddress.name(), createSystem)
+			        return emailAddy.builder(session)
+			            .withClassification(AddressEmailClassifications.EmailAddress.name(), system)
 			            .withValue(emailAddressString)
-			            .withEnterprise(createEnterprise)
+			            .withEnterprise(enterprise)
 			            .inDateRange()
 			            .inActiveRange()
 			            .getCount()
@@ -563,62 +528,62 @@ public class AddressService
 			                if (!found) {
 			                    emailAddy.setValue(emailAddressString);
 			                    emailAddy.setClassificationID((Classification) emailAddress);
-			                    emailAddy.setEnterpriseID(createEnterprise);
-			                    emailAddy.setSystemID(createSystem);
-			                    emailAddy.setOriginalSourceSystemID(createSystem.getId());
+			                    emailAddy.setEnterpriseID(enterprise);
+			                    emailAddy.setSystemID(system);
+			                    emailAddy.setOriginalSourceSystemID(system.getId());
 
 			                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
-			                    return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
+			                    return acService.getActiveFlag(session, enterprise, identityToken)
 			                        .chain(activeFlag -> {
 			                            emailAddy.setActiveFlagID(activeFlag);
-			                            return createSession.persist(emailAddy).replaceWith(Uni.createFrom().item(emailAddy));
+			                            return session.persist(emailAddy).replaceWith(Uni.createFrom().item(emailAddy));
 			                        })
 			                        .chain(persisted -> {
-			                            return emailAddy.createDefaultSecurity(createSession, createSystem, createIdentityToken)
+			                            return emailAddy.createDefaultSecurity(session, system, identityToken)
 			                                .onItem().invoke(() -> log.debug("Security setup completed successfully for email address"))
 			                                .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for email address", error))
 			                                .onFailure().recoverWithItem(() -> null)
 			                                .chain(securityResult -> {
-			                                    return classificationServiceProvider.find(createSession, AddressEmailClassifications.EmailAddressHost.name(), createSystem, createIdentityToken)
+			                                    return classificationServiceProvider.find(session, AddressEmailClassifications.EmailAddressHost.name(), system, identityToken)
 			                                        .chain(emailAddressHost -> {
 			                                            return emailAddy.addOrReuseClassification(
-			                                                    createSession,
+			                                                    session,
 			                                                    ((Classification) emailAddressHost).toString(),
 			                                                    host,
-			                                                    createSystem,
-			                                                    createIdentityToken);
+			                                                    system,
+			                                                    identityToken);
 			                                        })
 			                                        .chain(() -> {
-			                                            return classificationServiceProvider.find(createSession, AddressEmailClassifications.EmailAddressDomain.name(), createSystem, createIdentityToken);
+			                                            return classificationServiceProvider.find(session, AddressEmailClassifications.EmailAddressDomain.name(), system, identityToken);
 			                                        })
 			                                        .chain(emailAddressDomain -> {
 			                                            return emailAddy.addOrReuseClassification(
-			                                                    createSession,
+			                                                    session,
 			                                                    ((Classification) emailAddressDomain).toString(),
 			                                                    domain,
-			                                                    createSystem,
-			                                                    createIdentityToken);
+			                                                    system,
+			                                                    identityToken);
 			                                        })
 			                                        .chain(() -> {
-			                                            return classificationServiceProvider.find(createSession, AddressEmailClassifications.EmailAddressUser.name(), createSystem, createIdentityToken);
+			                                            return classificationServiceProvider.find(session, AddressEmailClassifications.EmailAddressUser.name(), system, identityToken);
 			                                        })
 			                                        .chain(emailAddressUser -> {
 			                                            return emailAddy.addOrReuseClassification(
-			                                                    createSession,
+			                                                    session,
 			                                                    ((Classification) emailAddressUser).toString(),
 			                                                    user,
-			                                                    createSystem,
-			                                                    createIdentityToken);
+			                                                    system,
+			                                                    identityToken);
 			                                        })
 			                                        .map(result -> (IAddress<?, ?>) emailAddy);
 			                                });
 			                        });
 			                } else {
-			                    return emailAddy.builder(createSession)
-			                        .withClassification(AddressEmailClassifications.EmailAddress.name(), createSystem)
+			                    return emailAddy.builder(session)
+			                        .withClassification(AddressEmailClassifications.EmailAddress.name(), system)
 			                        .withValue(emailAddressString)
-			                        .withEnterprise(createEnterprise)
+			                        .withEnterprise(enterprise)
 			                        .inDateRange()
 			                        .inActiveRange()
 			                        .get()
@@ -628,7 +593,6 @@ public class AddressService
 			                }
 			            });
 			    });
-		});
 	}
 	//@Transactional()
 	@Override
@@ -647,19 +611,14 @@ public class AddressService
 	////@Transactional()
 	public Uni<IAddress<?, ?>> addOrFindStreetAddress(Mutiny.Session session, String number, String street, String streetType, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
-		return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-			var createSession = tuple.getItem1();
-			var createEnterprise = tuple.getItem2();
-			var createSystem = tuple.getItem3();
-			var createIdentityToken = tuple.getItem4();
-
+		var enterprise = system.getEnterprise();
 			Address streetAddress = new Address();
-			return classificationServiceProvider.find(createSession, AddressBuildingClassifications.BuildingAddress.name(), createSystem, createIdentityToken)
+			return classificationServiceProvider.find(session, AddressBuildingClassifications.BuildingAddress.name(), system, identityToken)
 			    .chain(buildingAddressClassification -> {
-			        return streetAddress.builder(createSession)
-			            .withClassification(AddressBuildingClassifications.BuildingAddress.name(), createSystem)
+			        return streetAddress.builder(session)
+			            .withClassification(AddressBuildingClassifications.BuildingAddress.name(), system)
 			            .withValue(number + " " + street + " " + streetType)
-			            .withEnterprise(createEnterprise)
+			            .withEnterprise(enterprise)
 			            .inDateRange()
 			            .inActiveRange()
 			            .getCount()
@@ -670,62 +629,62 @@ public class AddressService
 			                    Address address = new Address();
 			                    address.setValue(number + " " + street + " " + streetType);
 			                    address.setClassificationID((Classification) buildingAddressClassification);
-			                    address.setEnterpriseID(createEnterprise);
-			                    address.setSystemID(createSystem);
-			                    address.setOriginalSourceSystemID(createSystem.getId());
+			                    address.setEnterpriseID(enterprise);
+			                    address.setSystemID(system);
+			                    address.setOriginalSourceSystemID(system.getId());
 
 			                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
-			                    return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
+			                    return acService.getActiveFlag(session, enterprise, identityToken)
 			                        .chain(activeFlag -> {
 			                            address.setActiveFlagID(activeFlag);
-			                            return createSession.persist(address).replaceWith(Uni.createFrom().item(address));
+			                            return session.persist(address).replaceWith(Uni.createFrom().item(address));
 			                        })
 			                        .chain(persisted -> {
-			                            return address.createDefaultSecurity(createSession, createSystem, createIdentityToken)
+			                            return address.createDefaultSecurity(session, system, identityToken)
 			                                .onItem().invoke(() -> log.debug("Security setup completed successfully for street address"))
 			                                .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for street address", error))
 			                                .onFailure().recoverWithItem(() -> null)
 			                                .chain(securityResult -> {
-			                                    return classificationServiceProvider.find(createSession, AddressBuildingClassifications.BuildingNumber.name(), createSystem, createIdentityToken)
+			                                    return classificationServiceProvider.find(session, AddressBuildingClassifications.BuildingNumber.name(), system, identityToken)
 			                                        .chain(buildingNumberClassification -> {
 			                                            return address.addClassification(
-			                                                    createSession,
+			                                                    session,
 			                                                    ((Classification) buildingNumberClassification).getName(),
 			                                                    number,
-			                                                    createSystem,
-			                                                    createIdentityToken);
+			                                                    system,
+			                                                    identityToken);
 			                                        })
 			                                        .chain(() -> {
-			                                            return classificationServiceProvider.find(createSession, AddressBuildingClassifications.BuildingStreet.name(), createSystem, createIdentityToken);
+			                                            return classificationServiceProvider.find(session, AddressBuildingClassifications.BuildingStreet.name(), system, identityToken);
 			                                        })
 			                                        .chain(buildingStreetClassification -> {
 			                                            return address.addClassification(
-			                                                    createSession,
+			                                                    session,
 			                                                    ((Classification) buildingStreetClassification).getName(),
 			                                                    street,
-			                                                    createSystem,
-			                                                    createIdentityToken);
+			                                                    system,
+			                                                    identityToken);
 			                                        })
 			                                        .chain(() -> {
-			                                            return classificationServiceProvider.find(createSession, AddressBuildingClassifications.BuildingStreetType.name(), createSystem, createIdentityToken);
+			                                            return classificationServiceProvider.find(session, AddressBuildingClassifications.BuildingStreetType.name(), system, identityToken);
 			                                        })
 			                                        .chain(buildingStreetTypeClassification -> {
 			                                            return address.addClassification(
-			                                                    createSession,
+			                                                    session,
 			                                                    ((Classification) buildingStreetTypeClassification).getName(),
 			                                                    streetType,
-			                                                    createSystem,
-			                                                    createIdentityToken);
+			                                                    system,
+			                                                    identityToken);
 			                                        })
 			                                        .map(result -> (IAddress<?, ?>) address);
 			                                });
 			                        });
 			                } else {
-			                    return streetAddress.builder(createSession)
-			                        .withClassification(AddressBuildingClassifications.BuildingAddress.name(), createSystem)
+			                    return streetAddress.builder(session)
+			                        .withClassification(AddressBuildingClassifications.BuildingAddress.name(), system)
 			                        .withValue(number + " " + street + " " + streetType)
-			                        .withEnterprise(createEnterprise)
+			                        .withEnterprise(enterprise)
 			                        .inDateRange()
 			                        .inActiveRange()
 			                        .get()
@@ -735,26 +694,20 @@ public class AddressService
 			                }
 			            });
 			    });
-		});
 	}
 	//@Transactional()
 	@Override
 	////@Transactional()
 	public Uni<IAddress<?, ?>> addOrFindPostalAddress(Mutiny.Session session, String boxIdentifier, String boxNumber, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
-		return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-			var createSession = tuple.getItem1();
-			var createEnterprise = tuple.getItem2();
-			var createSystem = tuple.getItem3();
-			var createIdentityToken = tuple.getItem4();
-
+		var enterprise = system.getEnterprise();
 			Address address = new Address();
-			return classificationServiceProvider.find(createSession, BoxAddress.name(), createSystem, createIdentityToken)
+			return classificationServiceProvider.find(session, BoxAddress.name(), system, identityToken)
 			    .chain(boxAddressClassification -> {
-			        return address.builder(createSession)
-			            .withClassification(BoxAddress.name(), createSystem)
+			        return address.builder(session)
+			            .withClassification(BoxAddress.name(), system)
 			            .withValue(boxIdentifier + " " + boxNumber)
-			            .withEnterprise(createEnterprise)
+			            .withEnterprise(enterprise)
 			            .inDateRange()
 			            .inActiveRange()
 			            .getCount()
@@ -765,51 +718,51 @@ public class AddressService
 			                    Address postalAddress = new Address();
 			                    postalAddress.setValue(boxIdentifier + " " + boxNumber);
 			                    postalAddress.setClassificationID((Classification) boxAddressClassification);
-			                    postalAddress.setEnterpriseID(createEnterprise);
-			                    postalAddress.setSystemID(createSystem);
-			                    postalAddress.setOriginalSourceSystemID(createSystem.getId());
+			                    postalAddress.setEnterpriseID(enterprise);
+			                    postalAddress.setSystemID(system);
+			                    postalAddress.setOriginalSourceSystemID(system.getId());
 
 			                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
-			                    return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
+			                    return acService.getActiveFlag(session, enterprise, identityToken)
 			                        .chain(activeFlag -> {
 			                            postalAddress.setActiveFlagID(activeFlag);
-			                            return createSession.persist(postalAddress).replaceWith(Uni.createFrom().item(postalAddress));
+			                            return session.persist(postalAddress).replaceWith(Uni.createFrom().item(postalAddress));
 			                        })
 			                        .chain(persisted -> {
-			                            return postalAddress.createDefaultSecurity(createSession, createSystem, createIdentityToken)
+			                            return postalAddress.createDefaultSecurity(session, system, identityToken)
 			                                .onItem().invoke(() -> log.debug("Security setup completed successfully for postal address"))
 			                                .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for postal address", error))
 			                                .onFailure().recoverWithItem(() -> null)
 			                                .chain(securityResult -> {
-			                                    return classificationServiceProvider.find(createSession, BoxNumber.name(), createSystem, createIdentityToken)
+			                                    return classificationServiceProvider.find(session, BoxNumber.name(), system, identityToken)
 			                                        .chain(boxNumberClassification -> {
 			                                            return postalAddress.addClassification(
-			                                                    createSession,
+			                                                    session,
 			                                                    ((Classification) boxNumberClassification).getName(),
 			                                                    boxNumber,
-			                                                    createSystem,
-			                                                    createIdentityToken);
+			                                                    system,
+			                                                    identityToken);
 			                                        })
 			                                        .chain(() -> {
-			                                            return classificationServiceProvider.find(createSession, BoxIdentifier.name(), createSystem, createIdentityToken);
+			                                            return classificationServiceProvider.find(session, BoxIdentifier.name(), system, identityToken);
 			                                        })
 			                                        .chain(boxidentifierClassification -> {
 			                                            return postalAddress.addClassification(
-			                                                    createSession,
+			                                                    session,
 			                                                    ((Classification) boxidentifierClassification).getName(),
 			                                                    boxIdentifier,
-			                                                    createSystem,
-			                                                    createIdentityToken);
+			                                                    system,
+			                                                    identityToken);
 			                                        })
 			                                        .map(result -> (IAddress<?, ?>) postalAddress);
 			                                });
 			                        });
 			                } else {
-			                    return address.builder(createSession)
-			                        .withClassification(BoxAddress.name(), createSystem)
+			                    return address.builder(session)
+			                        .withClassification(BoxAddress.name(), system)
 			                        .withValue(boxIdentifier + " " + boxNumber)
-			                        .withEnterprise(createEnterprise)
+			                        .withEnterprise(enterprise)
 			                        .inDateRange()
 			                        .inActiveRange()
 			                        .get()
@@ -819,7 +772,6 @@ public class AddressService
 			                }
 			            });
 			    });
-		});
 	}
 
 }

@@ -51,6 +51,9 @@ public class EnterpriseService
         implements IProgressable,
         IEnterpriseService<EnterpriseService> {
 
+    @com.google.inject.Inject
+    private Mutiny.SessionFactory sessionFactory;
+
     // Local, lightweight name -> ID cache to enable fast UUID lookups that can hit 2nd-level cache
     private final Map<String, UUID> enterpriseNameToId = new ConcurrentHashMap<>();
 
@@ -71,6 +74,7 @@ public class EnterpriseService
                 .recoverWithUni(u -> {
                     return session
                             .persist(enterprise)
+                            .chain(() -> session.flush())
                             .replaceWith(Uni
                                     .createFrom()
                                     .item(enterprise));
@@ -384,7 +388,7 @@ public class EnterpriseService
     public Uni<IEnterprise<?, ?>> getEnterprise(Mutiny.StatelessSession session, String name) {
         log.trace("📦 Session & transaction started for enterprise lookup: {}", name);
         // Cold path: query by name, then remember the UUID for next calls
-        return (Uni) new Enterprise()
+        return (Uni)new Enterprise()
                 .builder(session)
                 .withName(name)
                 .inDateRange()
@@ -490,27 +494,30 @@ public class EnterpriseService
                     .get()
                     .getAllSystems();
 
-            return create(session, enterprise.getName(), enterprise.getName())
-                    .chain(entUni -> {
-                        return createBase(session, allSystems, entUni)
-                                .chain(() -> createBaseSystems(session, allSystems, entUni))
-                                .chain(() -> installSystems(session, allSystems, entUni))
-                                .invoke(() -> {
-                                    setCurrentTask(0);
-                                    logProgress("System Configuration", "Starting system updates", 1);
-                                })
-                                //.chain(() -> loadUpdates(session, entUni))
-                                .invoke(() -> {
-                                    logProgress("System Configuration", "Done", 1);
-                                    // 🔒 Re-enable security here if needed
-                                    // IGuiceContext.get(ActivityMasterConfiguration.class).setSecurityEnabled(true);
-                                })
-                                .onFailure()
-                                .invoke(err ->
-                                        log.error("❌ Failed during createNewEnterprise()", err)
-                                )
-                                .map(res -> entUni);
-                    });
+            // Phase 1: Create the enterprise record (commits)
+            return sessionFactory.withTransaction(s1 -> create(s1, enterprise.getName(), enterprise.getName()))
+                    // Phase 2: Create active flags (commits)
+                    .chain(entUni -> sessionFactory.withTransaction(s2 -> createBase(s2, allSystems, entUni))
+                            .replaceWith(entUni))
+                    // Phase 3: Create base systems (commits)
+                    .chain(entUni -> sessionFactory.withTransaction(s3 -> createBaseSystems(s3, allSystems, entUni))
+                            .replaceWith(entUni))
+                    // Phase 4: Install systems (commits)
+                    .chain(entUni -> sessionFactory.withTransaction(s4 -> installSystems(s4, allSystems, entUni))
+                            .replaceWith(entUni))
+                    .invoke(() -> {
+                        setCurrentTask(0);
+                        logProgress("System Configuration", "Starting system updates", 1);
+                    })
+                    //.chain(() -> loadUpdates(session, entUni))
+                    .invoke(() -> {
+                        logProgress("System Configuration", "Done", 1);
+                    })
+                    .onFailure()
+                    .invoke(err ->
+                            log.error("❌ Failed during createNewEnterprise()", err)
+                    )
+                    .map(entUni -> (IEnterprise<?, ?>) entUni);
         } finally {
             if (startedHere) {
                 callScoper.exit();
@@ -596,6 +603,7 @@ public class EnterpriseService
         // Chain the rest of the systems sequentially
         for (int i = 1; i < systems.size(); i++) {
             final int index = i;
+            log.info("Installing system " + (index + 1) + " of " + systems.size() + ": " + systems.get(index).getClass().getSimpleName());
             result = result.chain(() -> installSystem(session, systems.get(index), enterprise, registerSystem));
         }
 
@@ -704,6 +712,7 @@ public class EnterpriseService
                                 .onFailure()
                                 .invoke(e -> log.error("❌ Failed to create defaults for: " + systemName, e));
                     })
+                    .chain(() -> session.flush())
                     .replaceWithVoid();
         }
 

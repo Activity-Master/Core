@@ -8,7 +8,6 @@ import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
-import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangement;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEventType;
@@ -37,7 +36,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.entityassist.enumerations.Operand.*;
-import static com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.applicationEnterpriseName;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification;
 
 @Log4j2
@@ -76,95 +74,83 @@ public class EventsService
     @Override
     public Uni<IEvent<?, ?>> createEvent(Mutiny.Session session, String eventType, UUID key, ISystems<?, ?> system, UUID... identityToken)
     {
-        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-            var createSession = tuple.getItem1();
-            var createEnterprise = tuple.getItem2();
-            var createSystem = tuple.getItem3();
-            var createIdentityToken = tuple.getItem4();
+        var enterprise = system.getEnterprise();
 
-            Event event = new Event();
-            if (key != null)
-            {
-                event.setId(key);
-            }
-            event.setEnterpriseID(createEnterprise);
-            event.setSystemID(createSystem);
-            event.setOriginalSourceSystemID(createSystem.getId());
+        Event event = new Event();
+        if (key != null)
+        {
+            event.setId(key);
+        }
+        event.setEnterpriseID(enterprise);
+        event.setSystemID(system);
+        event.setOriginalSourceSystemID(system.getId());
 
-            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-            return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
-                           .chain(activeFlag -> {
-                               event.setActiveFlagID(activeFlag);
-                               return createSession.persist(event)
-                                              .replaceWith(Uni.createFrom()
-                                                                   .item(event));
-                           })
-                           .chain(persistedEvent -> {
-                               // Chain the createDefaultSecurity operation properly
-                               return persistedEvent.createDefaultSecurity(createSession, createSystem, createIdentityToken)
-                                   .onItem().invoke(() -> log.trace("Security setup completed successfully for event"))
-                                   .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for event: " + error.getMessage()))
-                                   .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
-                                   .chain(() -> persistedEvent.addEventTypes(createSession, eventType, "", NoClassification.toString(), createSystem, createIdentityToken)
-                                              .map(result -> persistedEvent));
-                           });
-        });
+        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+        return acService.getActiveFlag(session, enterprise, identityToken)
+                       .chain(activeFlag -> {
+                           event.setActiveFlagID(activeFlag);
+                           return session.persist(event)
+                                          .replaceWith(Uni.createFrom()
+                                                               .item(event));
+                       })
+                       .chain(persistedEvent -> {
+                           return persistedEvent.createDefaultSecurity(session, system, identityToken)
+                               .onItem().invoke(() -> log.trace("Security setup completed successfully for event"))
+                               .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for event: " + error.getMessage()))
+                               .onFailure().recoverWithItem(() -> null)
+                               .chain(() -> persistedEvent.addEventTypes(session, eventType, "", NoClassification.toString(), system, identityToken)
+                                          .map(result -> persistedEvent));
+                       });
     }
 
     @Override
     public Uni<IEventType<?, ?>> createEventType(Mutiny.Session session, String eventType, ISystems<?, ?> system, UUID... identityToken)
     {
-        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-            var createSession = tuple.getItem1();
-            var createEnterprise = tuple.getItem2();
-            var createSystem = tuple.getItem3();
-            var createIdentityToken = tuple.getItem4();
+        var enterprise = system.getEnterprise();
 
-            EventType et = new EventType();
-            return et.builder(createSession)
-                           .withName(eventType)
-                           .withEnterprise(createEnterprise)
-                           .inActiveRange()
-                           .inDateRange()
-                           .getCount()
-                           .map(count -> count > 0)
-                           .chain(exists -> {
-                               if (!exists)
+        EventType et = new EventType();
+        return et.builder(session)
+                       .withName(eventType)
+                       .withEnterprise(enterprise)
+                       .inActiveRange()
+                       .inDateRange()
+                       .getCount()
+                       .map(count -> count > 0)
+                       .chain(exists -> {
+                           if (!exists)
+                           {
+                               if (et.getId() == null)
                                {
-                                   if (et.getId() == null)
-                                   {
-                                       et.setId(UUID.randomUUID());
-                                   }
-
-                                   EventType etBuilt = new EventType();
-                                   etBuilt.setId(et.getId());
-                                   etBuilt.setName(eventType);
-                                   etBuilt.setDescription(eventType);
-                                   etBuilt.setSystemID(createSystem);
-                                   etBuilt.setEnterpriseID(createEnterprise);
-
-                                   IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-                                   return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
-                                                  .chain(activeFlag -> {
-                                                      etBuilt.setActiveFlagID(activeFlag);
-                                                      etBuilt.setOriginalSourceSystemID(createSystem.getId());
-                                                      return createSession.persist(etBuilt).replaceWith(Uni.createFrom().item(etBuilt));
-                                                  })
-                                                  .chain(persistedEt -> {
-                                                      // Chain the createDefaultSecurity operation properly
-                                                      return persistedEt.createDefaultSecurity(createSession, createSystem, createIdentityToken)
-                                                          .onItem().invoke(() -> log.trace("Security setup completed successfully for event type"))
-                                                          .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for event type: " + error.getMessage()))
-                                                          .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
-                                                          .map(_ -> persistedEt);
-                                                  });
+                                   et.setId(UUID.randomUUID());
                                }
-                               else
-                               {
-                                   return findEventType(createSession, eventType, createSystem, createIdentityToken);
-                               }
-                           });
-        });
+
+                               EventType etBuilt = new EventType();
+                               etBuilt.setId(et.getId());
+                               etBuilt.setName(eventType);
+                               etBuilt.setDescription(eventType);
+                               etBuilt.setSystemID(system);
+                               etBuilt.setEnterpriseID(enterprise);
+
+                               IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                               return acService.getActiveFlag(session, enterprise, identityToken)
+                                              .chain(activeFlag -> {
+                                                  etBuilt.setActiveFlagID(activeFlag);
+                                                  etBuilt.setOriginalSourceSystemID(system.getId());
+                                                  return session.persist(etBuilt).replaceWith(Uni.createFrom().item(etBuilt));
+                                              })
+                                              .chain(persistedEt -> {
+                                                  return persistedEt.createDefaultSecurity(session, system, identityToken)
+                                                      .onItem().invoke(() -> log.trace("Security setup completed successfully for event type"))
+                                                      .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for event type: " + error.getMessage()))
+                                                      .onFailure().recoverWithItem(() -> null)
+                                                      .map(_ -> persistedEt);
+                                              });
+                           }
+                           else
+                           {
+                               return findEventType(session, eventType, system, identityToken);
+                           }
+                       });
     }
 
     @Override

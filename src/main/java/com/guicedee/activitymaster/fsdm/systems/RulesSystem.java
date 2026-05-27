@@ -72,16 +72,12 @@ public class RulesSystem
     log.info("🚀 Creating rules defaults in a new session and transaction");
     log.debug("📋 Starting rule defaults creation for enterprise: '{}'", enterprise.getName());
 
-    // Use sessionFactory.withTransaction to create a new session
-    return sessionFactory.withTransaction((newSession, tx) -> {
-          log.debug("📋 Created new transaction with session: {}", newSession.hashCode());
-
-          // Get the ActivityMaster system
-          return systemsService.findSystem(newSession, enterprise, ActivityMasterSystemName)
+    // Use the passed-in session
+    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
                      .onItem()
                      .invoke(activityMasterSystem ->
                                  log.debug("✅ Found ActivityMaster system: '{}' with session: {}",
-                                     activityMasterSystem.getName(), newSession.hashCode()))
+                                     activityMasterSystem.getName(), session.hashCode()))
                      .onFailure()
                      .invoke(error ->
                                  log.error("❌ Failed to find ActivityMaster system: {}", error.getMessage(), error))
@@ -90,7 +86,7 @@ public class RulesSystem
                        log.debug("🔍 Creating rule classifications");
 
                        // Get system token once and reuse it
-                       return getSystemToken(newSession, enterprise)
+                       return getSystemToken(session, enterprise)
                                   .onItem()
                                   .invoke(systemToken ->
                                               log.debug("🔑 Retrieved system token for enterprise: '{}'", enterprise.getName()))
@@ -102,7 +98,7 @@ public class RulesSystem
                                     log.debug("📋 Creating rule classifications sequentially");
 
                                     // Create Rules classification first
-                                    return classificationService.create(newSession, "Rules", "The main rules concept", activityMasterSystem, systemToken)
+                                    return classificationService.create(session, "Rules", "The main rules concept", activityMasterSystem, systemToken)
                                                .onItem()
                                                .invoke(classification ->
                                                            log.debug("✅ Created Rules classification: '{}'", classification.getName()))
@@ -112,7 +108,7 @@ public class RulesSystem
 
                                                // Then create RulesType classification
                                                .chain(rulesClassification ->
-                                                          classificationService.create(newSession, "RulesType", "The concept for rule types", activityMasterSystem, systemToken)
+                                                          classificationService.create(session, "RulesType", "The concept for rule types", activityMasterSystem, systemToken)
                                                               .onItem()
                                                               .invoke(classification ->
                                                                           log.debug("✅ Created RulesType classification: '{}'", classification.getName()))
@@ -136,8 +132,7 @@ public class RulesSystem
                      .invoke(() -> log.info("✅ Successfully created all rule defaults"))
                      .onFailure()
                      .invoke(error ->
-                                 log.error("❌ Failed to create rule defaults: {}", error.getMessage(), error));
-        })
+                                 log.error("❌ Failed to create rule defaults: {}", error.getMessage(), error))
                .replaceWithVoid();
   }
 

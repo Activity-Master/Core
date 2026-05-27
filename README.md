@@ -9,23 +9,25 @@
 
 <!-- Tech icons row -->
 ![Vert.x](https://img.shields.io/badge/Vert.x-5-4B9?logo=eclipsevertdotx&logoColor=white)
-![Hibernate Reactive](https://img.shields.io/badge/Hibernate-Reactive-59666C?logo=hibernate)
+![Hibernate Reactive](https://img.shields.io/badge/Hibernate-Reactive_7-59666C?logo=hibernate)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-4169E1?logo=postgresql&logoColor=white)
-![Guice](https://img.shields.io/badge/Guice-Enabled-2F4F4F)
+![Guice](https://img.shields.io/badge/Guice-7-2F4F4F)
 ![GuicedEE](https://img.shields.io/badge/GuicedEE-Core-0A7)
 
-ActivityMaster Core is the open-source implementation of the Functional Service Data Model (FSDM) services—Enterprise, Address, Events, Arrangements, ResourceItem, Classification, and the supporting security/ActiveFlag infrastructure. Built for Java 25 with Maven, Vert.x 5, GuicedEE, Hibernate Reactive 7, and PostgreSQL, the library exposes Guiced client interfaces so downstream applications can manage the canonical warehouse schema without a dedicated desktop client.
+Open-source implementation of the Functional Service Data Model (FSDM) services — Enterprise, Address, Events, Arrangements, ResourceItem, Classification, and the supporting security/ActiveFlag infrastructure. Built on **Java 25+**, **Vert.x 5**, **GuicedEE**, **Hibernate Reactive 7**, and **PostgreSQL**, the library exposes Guice client interfaces so downstream applications can manage the canonical warehouse schema without a dedicated desktop client.
+
+Built on [Vert.x 5](https://vertx.io/) · [Google Guice](https://github.com/google/guice) · [Hibernate Reactive](https://hibernate.org/reactive/) · [Mutiny](https://smallrye.io/smallrye-mutiny/) · JPMS module `com.guicedee.activitymaster` · Java 25+
 
 ## ✨ Features
-- Canonical FSDM domain services (Enterprise, Address, Events, Arrangements, ResourceItem, Classification)
-- Reactive persistence with Hibernate Reactive 7 + PostgreSQL
-- Vert.x 5 integrations for async workflows and messaging patterns
-- GuicedEE DI bootstrap with lifecycle and post-startup hooks
-- Security token propagation and ActiveFlag row-state enforcement
-- Test harness and fixtures aligned to the rules repository
 
-## 📦 Install (Maven)
-Add the dependency to your Maven project. Versions are managed by the parent/BOM.
+- **Canonical FSDM domain services** — Enterprise, Address, Events, Arrangements, ResourceItem, Classification
+- **Reactive persistence** — Hibernate Reactive 7 + PostgreSQL via Vert.x reactive SQL clients
+- **Vert.x 5 integration** — async workflows, event-bus messaging, and verticle deployment
+- **GuicedEE DI bootstrap** — lifecycle hooks, post-startup actions, and ServiceLoader-driven module discovery
+- **Security token propagation** — `SecurityToken` metadata on every service call with ActiveFlag row-state enforcement
+- **Enterprise lifecycle** — `createNewEnterprise` → `loadUpdates` → `startNewEnterprise` bootstrapping order with `ISystemUpdate`/`@SortedUpdate` classification loading and `IPasswordsService` admin registration
+
+## 📦 Installation
 
 ```xml
 <dependency>
@@ -34,68 +36,103 @@ Add the dependency to your Maven project. Versions are managed by the parent/BOM
 </dependency>
 ```
 
+<details>
+<summary>Gradle (Kotlin DSL)</summary>
+
+```kotlin
+implementation("com.activity-master:activity-master")
+```
+</details>
+
 ## 🚀 Quick Start
-1. Copy `.env.example` to `.env` and adjust values for your environment.
-2. Build and run tests locally:
 
 ```bash
-mvn -B clean verify
+cp .env.example .env   # update DB credentials + toggles
+mvn -B clean verify    # compilation + tests (uses Testcontainers)
 ```
 
-3. Consume services via the Activity Master Client module in your host app; follow the docs and diagrams listed below.
+Consume services via the Activity Master Client module in your host app.
 
 ## ⚙️ Configuration
-Environment variables mirror the Rules Repository guidance (`rules/generative/platform/secrets-config/env-variables.md`). Typical keys used by CI and tests:
-- DB_URL, DB_USER, DB_PASS
-- JWT_TEST_TOKEN
-- TEST_DB_CONTAINER_IMAGE
-- OAUTH2_ISSUER_URL, JWKS_URI
 
-Keep secrets out of VCS. For local runs, populate `.env`; for CI, set GitHub Action secrets.
+### Environment Variables
+
+Copy `.env.example` to `.env` for local development. Keep secrets out of version control.
+
+| Variable | Purpose | Default |
+|---|---|---|
+| `DB_URL` | Database JDBC URL | — |
+| `DB_USER` | Database username | — |
+| `DB_PASS` | Database password | — |
+| `JWT_TEST_TOKEN` | JWT token for test harness | — |
+| `TEST_DB_CONTAINER_IMAGE` | Testcontainers Postgres image | `postgres:latest` |
+| `OAUTH2_ISSUER_URL` | OAuth2 issuer URL | — |
+| `JWKS_URI` | JSON Web Key Set URI | — |
+| `ENVIRONMENT` | Runtime environment | `dev` |
+
+CI secrets (`SONA_USERNAME`, `SONA_PASSWORD`, `GPG_PRIVATE_KEY`, `GPG_PASSPHRASE`, `GITHUB_ACTOR`, `GITHUB_TOKEN`) are managed via GitHub Actions repository/environment secrets.
 
 ## 🧩 JPMS & SPI
-- JPMS-friendly; ServiceLoader discovery is used for DI/lifecycle hooks.
-- Follow module rules documented under `docs/architecture/*` and RULES.
 
-## Open Source on GitHub
-- License: Apache 2.0 (see `rules/LICENSE` and the root `rules/` submodule for the governance materials that apply to this repo).
-- Contribution flow: Fork the repo, work within the Java 25 + Maven toolchain, and open a pull request that references the relevant documentation artifact (PACT, RULES, GUIDES, IMPLEMENTATION, GLOSSARY, `docs/architecture/*`, etc.). The PR description should link to the issue it closes, note any security token/ActiveFlag impacts, and cite the diagrams that change.
-- Community guidelines: Every change must honor the Documentation-as-Code / Forward-Only policy anchored in `RULES.md`. Stage 1/2 documents (architecture/diagrams, glossary, rules/guides) must be updated before stage 3/4 implementation code, ensuring the PACT ↔ RULES ↔ GUIDES ↔ IMPLEMENTATION ↔ GLOSSARY loop remains closed.
-- Lifecycle flow: The test harness and client expectations enforce a `createNewEnterprise` → `loadUpdates` → `startNewEnterprise` order so classifications/types are loaded via `ISystemUpdate`/`@SortedUpdate`, then the admin user is registered through `IPasswordsService`, and finally post-startup actions execute.
-- Security / Access: Every service propagates `SecurityToken` metadata (see `docs/architecture/c4-component-fsdm.md`) and respects ActiveFlag row status, so changes in capabilities must describe how value-level access is enforced.
+Module name: **`com.guicedee.activitymaster`**
 
-## Key Documents
-- `rules/` submodule (`rules/README.md`) is the Rules Repository source; do not modify its contents—only reference it.
-- `PACT.md` defines the Human–AI collaboration pact and stage approvals.
-- `RULES.md`, `GUIDES.md`, and `GLOSSARY.md` capture project conventions, how-to guidance, and topic-first terminology.
-- `IMPLEMENTATION.md` describes the module layout plus runtime/bootstrapping expectations.
-- `docs/PROMPT_REFERENCE.md` records selected stacks (Java 25, Maven, Vert.x, GuicedEE, Hibernate Reactive, PostgreSQL, EntityAssist, etc.).
-- `docs/architecture/*` contains the Stage 1 artifacts (C4 context/container/component, sequences—including the enterprise lifecycle harness—ERD) with Mermaid sources.
-- `docs/implementation-plan.md` summarizes the Stage 3 rollout, environment, CI, and validation roadmap.
-- `.env.example` mirrors `rules/generative/platform/secrets-config/env-variables.md` and is the canonical local config template.
-- `.github/workflows/maven-verify.yml` demonstrates how CI runs `mvn -B verify` over Java 25 with the required secrets while checking out the `rules/` submodule.
+JPMS-friendly with ServiceLoader discovery for DI and lifecycle hooks.
 
-## Environment & CI
-- Local development uses `.env.example` variables (DB, OAuth2, observability, testing) and the `PostgreSQLTestDBModule` + Testcontainers from `src/test/java/com/guicedee/activitymaster/tests`.
-- CI via `.github/workflows/maven-verify.yml` installs Java 25 with `actions/setup-java@v4`, sets the required secrets (`DB_URL`, `DB_USER`, `DB_PASS`, `JWT_TEST_TOKEN`, `TEST_DB_CONTAINER_IMAGE`, `OAUTH2_ISSUER_URL`, `JWKS_URI`), and executes `mvn -B verify`.
-- Jacoco and the Java Micro Harness run within that Maven lifecycle; any new tests must re-use the existing harness to keep coverage aligned.
+```java
+module my.app {
+    requires com.guicedee.activitymaster;
+    requires com.guicedee.client;
+    requires com.guicedee.persistence;
+
+    opens my.app.entities to org.hibernate.orm.core, com.google.guice, com.entityassist;
+    opens my.app.services to com.google.guice;
+
+    provides com.guicedee.client.services.lifecycle.IGuiceModule
+        with my.app.AppModule;
+}
+```
+
+## 🧪 Testing
+
+The test harness uses Testcontainers to spin up a PostgreSQL instance automatically. Tests enforce the enterprise lifecycle order:
+
+1. `createNewEnterprise` — bootstrap the enterprise
+2. `loadUpdates` — classifications and types loaded via `ISystemUpdate`/`@SortedUpdate`
+3. `startNewEnterprise` — admin user registered through `IPasswordsService`, post-startup actions execute
+
+```bash
+# Run all tests
+mvn -B clean verify
+
+# Skip integration tests
+mvn -B clean verify -DskipITs
+```
+
+CI via `.github/workflows/maven-verify.yml` installs Java 25, sets the required secrets, and executes `mvn -B verify`.
 
 ## 🧰 Troubleshooting & Best Practices
-- Verify `.env` is present for local runs and matches the keys above.
-- Ensure the `rules/` submodule is initialized if you need to browse referenced docs.
-- Keep Stage 1/2 documents updated before changing code in Stage 3/4.
 
-## Documentation & AI Workspace Policy
-- AI assistants rely on `.aiassistant/rules/summary.md`, `.github/copilot-instructions.md`, and `.cursor/rules.md` for constraints (Rules sections 4/5, Document Modularity, Forward-Only). Keep those files synchronized with `RULES.md`.
-- Update architecture diagrams (`docs/architecture/*`) whenever the service or persistence models change, and reflect the updates in the glossary or guides before touching implementation code.
-- Close loops by linking from PACT ↔ RULES ↔ GUIDES ↔ IMPLEMENTATION ↔ GLOSSARY; stage approvals (blanket for this run) must still be recorded in doc headers/notes.
+- Verify `.env` is present for local runs and matches the required variables
+- Every service propagates `SecurityToken` metadata and respects ActiveFlag row status — changes in capabilities must describe how value-level access is enforced
+- Keep transactions short; chain `Uni` calls and reuse a single session within `withTransaction`
+- Use Testcontainers for local integration testing to avoid external database dependencies
 
-## Next Steps
-1. When introducing new services or DB entities, refresh the relevant Mermaid diagrams, glossary entries, and guides before code changes.
-2. Add any new environment variables to `.env.example`, document their use in `docs/implementation-plan.md`, and wire them into the GitHub workflow secrets.
-3. Keep this README updated with the chosen stacks + OSS guidance so contributors understand the Rules Repository requirements before coding.
+## 🤝 Contributing
+
+Issues and pull requests are welcome.
+
+- Follow existing code style and patterns
+- Include tests for new features
+- Update documentation for behavior changes
+- Ensure JPMS `module-info.java` is correct
+- Run `mvn -B clean verify` before submitting a PR
+
+## 📄 License
+
+[Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 ## Repository & Links
+
 - GitHub: https://github.com/Activity-Master/Core
 - Issues: https://github.com/Activity-Master/Core/issues
 - Pull Requests: https://github.com/Activity-Master/Core/pulls

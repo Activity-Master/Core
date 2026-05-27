@@ -94,23 +94,13 @@ public class SystemsService
     //@Transactional()
     @Override
     public Uni<Boolean> doesSystemExist(Mutiny.Session session, IEnterprise<?, ?> enterprise, String systemName, UUID... identityToken) {
-        UUID enterpriseId = null;
-        if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
-            enterpriseId = ent.getId();
-        }
-        // Use ID-first resolution with ActiveFlag visible range: if we can resolve an ID, it exists
-        final UUID entId = enterpriseId;
-        return activeFlagService.getVisibleRangeAndUpIds(session, entId)
-                .flatMap(visibleIds -> session.createNativeQuery(
-                                "select systemid from dbo.systems where enterpriseid = :ent and systemname = :name " +
-                                        "and (effectivefromdate <= current_timestamp) and (effectivetodate > current_timestamp) " +
-                                        "and activeflagid in (:visible)"
-                        )
-                        .setParameter("ent", entId)
-                        .setParameter("name", systemName)
-                        .setParameter("visible", visibleIds)
-                        .getSingleResult()
-                        .map(res -> true))
+        return new Systems().builder(session)
+                .withName(systemName)
+                .withEnterprise(enterprise)
+                .inDateRange()
+                .inActiveRange()
+                .get()
+                .map(system -> true)
                 .onFailure()
                 .recoverWithUni(t -> {
                     log.warn("System {} check failed: {}", systemName, t.getMessage());
@@ -122,58 +112,12 @@ public class SystemsService
     //@CacheResult(cacheName = "FindSystemEnterpriseLevel")
     @Override
     public Uni<ISystems<?, ?>> findSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise, String systemName, UUID... identityToken) {
-        UUID enterpriseId = null;
-        if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
-            enterpriseId = ent.getId();
-        }
-        final UUID entId = enterpriseId;
-        String key = enterpriseId + "|" + systemName;
-        UUID cachedId = systemKeyToId.get(key);
-        if (cachedId != null) {
-            log.trace("🔁 Systems cache hit for key '{}': {} — loading by UUID", key, cachedId);
-            return (Uni) getSystemById(session, cachedId)
-                    .flatMap(found -> {
-                        if (found != null) {
-                            return Uni.createFrom().item(found);
-                        }
-                        // Stale mapping: remove and fallback to name+enterprise query using visible ActiveFlags
-                        systemKeyToId.remove(key);
-                        return activeFlagService.getVisibleRangeAndUpIds(session, entId)
-                                .flatMap(visibleIds -> session.createNativeQuery(
-                                                "select systemid from dbo.systems where enterpriseid = :ent and systemname = :name " +
-                                                        "and (effectivefromdate <= current_timestamp) and (effectivetodate > current_timestamp) " +
-                                                        "and activeflagid in (:visible)"
-                                        )
-                                        .setParameter("ent", entId)
-                                        .setParameter("name", systemName)
-                                        .setParameter("visible", visibleIds)
-                                        .getSingleResult()
-                                        .map(r -> (UUID) r))
-                                .flatMap(resolvedId -> {
-                                    if (resolvedId == null) return Uni.createFrom().failure(new NoResultException("No system found for name '" + systemName + "'"));
-                                    systemKeyToId.put(key, resolvedId);
-                                    return (Uni) getSystemById(session, resolvedId);
-                                });
-                    });
-        }
-
-        // Cold path: resolve ID by name+enterprise using visible ActiveFlags, then load by UUID and remember mapping
-        return activeFlagService.getVisibleRangeAndUpIds(session, entId)
-                .flatMap(visibleIds -> session.createNativeQuery(
-                                "select systemid from dbo.systems where enterpriseid = :ent and systemname = :name " +
-                                        "and (effectivefromdate <= current_timestamp) and (effectivetodate > current_timestamp) " +
-                                        "and activeflagid in (:visible)"
-                        )
-                        .setParameter("ent", entId)
-                        .setParameter("name", systemName)
-                        .setParameter("visible", visibleIds)
-                        .getSingleResult()
-                        .map(r -> (UUID) r))
-                .flatMap(id -> {
-                    if (id == null) return Uni.createFrom().failure(new NoResultException("No system found for name '" + systemName + "'"));
-                    systemKeyToId.put(key, id);
-                    return (Uni) getSystemById(session, id);
-                });
+        return (Uni) new Systems().builder(session)
+                .withName(systemName)
+                .withEnterprise(enterprise)
+                .inDateRange()
+                .inActiveRange()
+                .get();
     }
 
     // UUID-based lookup to leverage L2 cache (@Cacheable on entity + L2 cache enabled)
@@ -388,11 +332,10 @@ public class SystemsService
                     IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
                     // Get active flag (reactive)
-                    return (Uni) acService.getActiveFlag(session, enterprise)
+                    return acService.getActiveFlag(session, enterprise)
                             .chain(activeFlag -> {
                                 // Set active flag
                                 newSystem.setActiveFlagID(activeFlag);
-
                                 // Persist the new system (reactive)
                                 return session.persist(newSystem)
                                         //.chain(a -> session.flush())
@@ -400,49 +343,12 @@ public class SystemsService
                                                 .item(newSystem))
                                         .map(persistedSystem -> {
                                             log.info("Successfully created new system: {}", systemName);
-
-                                            // Skip ActivityMaster setup for EnterpriseSystem and ActiveFlagSystem
-                                            // since ActivityMaster system is created after these systems
-                                            if (systemName.equals(EnterpriseSystemName) || systemName.equals(ActivateFlagSystemName)) {
-                                                log.debug("Skipping ActivityMaster setup for system: {} as ActivityMaster doesn't exist yet", systemName);
-                                            } else {
-                                                // Start getActivityMaster in parallel without waiting for it
-                                                //todo
-                                       /*return getActivityMaster(session, enterprise)
-                                           .subscribe().with(
-                                               activityMaster -> {
-                                                   try {
-                                                       // Call createDefaultSecurity
-                                                       persistedSystem.createDefaultSecurity(session, activityMaster, identityToken)
-                                                           .subscribe().with(
-                                                               result -> {
-                                                                   // Security setup completed successfully
-                                                                   log.debug("Security setup completed for system: {}", systemName);
-                                                               },
-                                                               error -> {
-                                                                   // Log error but don't fail the main operation
-                                                                   log.warn("Error in createDefaultSecurity for system {}: {}", systemName, error.getMessage(), error);
-                                                               }
-                                                           );
-                                                   } catch (Exception e) {
-                                                       // Log error but don't fail the main operation
-                                                       log.warn("Exception in createDefaultSecurity for system {}: {}", systemName, e.getMessage(), e);
-                                                   }
-                                               },
-                                               error -> {
-                                                   // Log error but don't fail the main operation
-                                                   log.warn("Error in getActivityMaster for system {}: {}", systemName, error.getMessage(), error);
-                                               }
-                                           );*/
-                                            }
-
-                                            // Return the persisted system immediately without waiting for getActivityMaster or security setup
                                             return persistedSystem;
                                         });
                             });
                 })
                 .onItem()
-                .invoke(item->{
+                .invoke(item -> {
                     log.debug("System {} created successfully", systemName);
                 });
     }

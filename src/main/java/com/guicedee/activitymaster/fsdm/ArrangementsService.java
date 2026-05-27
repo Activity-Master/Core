@@ -38,8 +38,6 @@ import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IArrangementsService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
-import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
-import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangement;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangementType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
@@ -74,7 +72,6 @@ import java.util.stream.Collectors;
 
 import static com.entityassist.enumerations.Operand.*;
 import static com.entityassist.enumerations.OrderByType.DESC;
-import static com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.applicationEnterpriseName;
 import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.EndOfTime;
 import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.convertToUTCDateTime;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification;
@@ -128,45 +125,39 @@ public class ArrangementsService
             ISystems<?, ?> system,
             UUID... identityToken) {
         var finalKey = key != null ? key : UUID.randomUUID();
+        var enterprise = system.getEnterprise();
 
-        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-                    log.debug("Creating arrangement - type: {}, key: {}, classification: {}, value: {}",
-                            type, key, arrangementTypeClassification, arrangementTypeValue);
-                    // Step 1: Create the arrangement
-                    var createSession = tuple.getItem1();
-                    var createEnterprise = tuple.getItem2();
-                    var createSystem = tuple.getItem3();
-                    var createIdentityToken = tuple.getItem4();
-                    Arrangement arrangement = new Arrangement();
-                    arrangement.setId(finalKey);
-                    arrangement.setSystemID(tuple.getItem3());
-                    arrangement.setOriginalSourceSystemID(tuple.getItem3().getId());
-                    arrangement.setEnterpriseID(tuple.getItem2());
-                    return (Uni) activeFlagService.getActiveFlag(createSession, createEnterprise)
-                            .chain(activeFlag -> {
-                                arrangement.setActiveFlagID(activeFlag);
-                                return createSession.persist(arrangement).replaceWith(Uni.createFrom().item(arrangement));
-                            })
-                            .invoke(persisted -> {
-                                // Step 2: Create default security with proper chaining
-                                persisted.createDefaultSecurity(createSession, createSystem, createIdentityToken);
-                            })
-                            .chain(arrangementPass->{
-                                return find(createSession, type, createSystem)
-                                        .chain(arrangementType ->
-                                                {
-                                                    return arrangementPass.addArrangementType(
-                                                            createSession, arrangementType, arrangementTypeClassification,
-                                                            arrangementTypeValue,
-                                                            createSystem,
-                                                            createIdentityToken
-                                                    ).replaceWith(Uni.createFrom().item(arrangementPass));
-                                                }
-                                        );
-                            })
-                            .onItem().invoke(() -> log.debug("Arrangement created successfully - proceeding to add arrangement type"));
+        log.debug("Creating arrangement - type: {}, key: {}, classification: {}, value: {}",
+                type, key, arrangementTypeClassification, arrangementTypeValue);
+        // Step 1: Create the arrangement
+        Arrangement arrangement = new Arrangement();
+        arrangement.setId(finalKey);
+        arrangement.setSystemID(system);
+        arrangement.setOriginalSourceSystemID(system.getId());
+        arrangement.setEnterpriseID(enterprise);
+        return (Uni) activeFlagService.getActiveFlag(session, enterprise)
+                .chain(activeFlag -> {
+                    arrangement.setActiveFlagID(activeFlag);
+                    return session.persist(arrangement).replaceWith(Uni.createFrom().item(arrangement));
                 })
-                ;
+                .invoke(persisted -> {
+                    // Step 2: Create default security with proper chaining
+                    persisted.createDefaultSecurity(session, system, identityToken);
+                })
+                .chain(arrangementPass->{
+                    return find(session, type, system)
+                            .chain(arrangementType ->
+                                    {
+                                        return arrangementPass.addArrangementType(
+                                                session, arrangementType, arrangementTypeClassification,
+                                                arrangementTypeValue,
+                                                system,
+                                                identityToken
+                                        ).replaceWith(Uni.createFrom().item(arrangementPass));
+                                    }
+                            );
+                })
+                .onItem().invoke(() -> log.debug("Arrangement created successfully - proceeding to add arrangement type"));
     }
 
     @Override
@@ -179,39 +170,34 @@ public class ArrangementsService
     ////@CacheResult(cacheName = "ArrangementTypes")
     //
     public Uni<IArrangementType<?, ?>> createArrangementType(Mutiny.Session session, String type, UUID key, ISystems<?, ?> system, UUID... identityToken) {
-        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-            log.trace("Creating arrangement type: {}, key: {}", type, key);
-            var createSession = tuple.getItem1();
-            var createEnterprise = tuple.getItem2();
-            var createSystem = tuple.getItem3();
-            var createIdentityToken = tuple.getItem4();
+        log.trace("Creating arrangement type: {}, key: {}", type, key);
+        var enterprise = system.getEnterprise();
 
-            ArrangementType xr = new ArrangementType();
-            xr.setId(key);
-            xr.setName(type);
-            xr.setDescription(type);
-            xr.setSystemID(createSystem);
-            xr.setOriginalSourceSystemID(createSystem.getId());
-            xr.setEnterpriseID(createEnterprise);
+        ArrangementType xr = new ArrangementType();
+        xr.setId(key);
+        xr.setName(type);
+        xr.setDescription(type);
+        xr.setSystemID(system);
+        xr.setOriginalSourceSystemID(system.getId());
+        xr.setEnterpriseID(enterprise);
 
-            return (Uni) activeFlagService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
-                    .chain(activeFlag -> {
-                        xr.setActiveFlagID(activeFlag);
-                        return createSession.persist(xr).replaceWith(Uni.createFrom().item(xr));
-                    })
-                    .chain(persisted -> {
-                        // Create default security with proper chaining
-                        return persisted.createDefaultSecurity(createSession, createSystem, createIdentityToken)
-                                .onItem().invoke(() -> log.trace("Security setup completed successfully for arrangement type"))
-                                .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for arrangement type", error))
-                                .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
-                                .map(result -> (IArrangementType<?, ?>) persisted);
-                    })
-                    .onFailure()
-                    .invoke(error ->
-                            log.error("Failed to create arrangement type: {}", type, error)
-                    );
-        });
+        return (Uni) activeFlagService.getActiveFlag(session, enterprise, identityToken)
+                .chain(activeFlag -> {
+                    xr.setActiveFlagID(activeFlag);
+                    return session.persist(xr).replaceWith(Uni.createFrom().item(xr));
+                })
+                .chain(persisted -> {
+                    // Create default security with proper chaining
+                    return persisted.createDefaultSecurity(session, system, identityToken)
+                            .onItem().invoke(() -> log.trace("Security setup completed successfully for arrangement type"))
+                            .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for arrangement type", error))
+                            .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
+                            .map(result -> (IArrangementType<?, ?>) persisted);
+                })
+                .onFailure()
+                .invoke(error ->
+                        log.error("Failed to create arrangement type: {}", type, error)
+                );
     }
 
 

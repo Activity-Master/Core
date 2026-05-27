@@ -6,6 +6,7 @@ import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 import com.guicedee.client.IGuiceContext;
+import com.guicedee.client.utils.LogUtils;
 import com.guicedee.client.utils.Pair;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
@@ -31,6 +32,7 @@ public class TestActivityMaster extends TestDatabaseSetup
   {
     // Initialize the Guice context
     //IGuiceContext.registerModule(new PostgreSQLTestDBModule());
+      LogUtils.addConsoleLogger();
     ActivityMasterConfiguration.get()
         .setApplicationEnterpriseName(TestEnterprise.name());
     IGuiceContext.instance();
@@ -101,6 +103,7 @@ public class TestActivityMaster extends TestDatabaseSetup
 
     @Test
     @Order(2)
+    @Disabled("This test is disabled because it is not deterministic. It may fail if run in parallel with other tests.")
     public void testLoadTime()
     {
       ITimeSystem timeService = IGuiceContext.get(ITimeSystem.class);

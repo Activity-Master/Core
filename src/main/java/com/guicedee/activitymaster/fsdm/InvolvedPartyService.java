@@ -60,7 +60,6 @@ import java.util.UUID;
 import static com.entityassist.enumerations.Operand.Equals;
 import static com.entityassist.enumerations.OrderByType.DESC;
 import static com.guicedee.activitymaster.fsdm.SystemsService.ActivityMasterSystemName;
-import static com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.applicationEnterpriseName;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.types.IdentificationTypes.IdentificationTypeUUID;
 
@@ -184,214 +183,194 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     public Uni<IInvolvedPartyNameType<?, ?>> createNameType(Mutiny.Session session, String name, String description, ISystems<?, ?> system, UUID... identityToken) {
         log.debug("Creating InvolvedPartyNameType: name={}, description={}", name, description);
 
-        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-            var createSession = tuple.getItem1();
-            var createEnterprise = tuple.getItem2();
-            var createSystem = tuple.getItem3();
-            var createIdentityToken = tuple.getItem4();
+        var enterprise = system.getEnterprise();
 
-            // Find-or-create using NoResultException handling (finders never return null)
-            return findInvolvedPartyNameType(createSession, name, createSystem, createIdentityToken)
-                    .onItem()
-                    .invoke(found -> log.debug("InvolvedPartyNameType already exists: {}", name))
-                    .onFailure(NoResultException.class)
-                    .recoverWithUni(err -> {
-                        log.debug("Creating new InvolvedPartyNameType: {} (not found)", name);
-                        InvolvedPartyNameType xr = new InvolvedPartyNameType();
-                        xr.setName(name);
-                        xr.setDescription(description);
-                        xr.setSystemID(createSystem);
-                        xr.setOriginalSourceSystemID(createSystem.getId());
-                        xr.setEnterpriseID(createEnterprise);
+        // Find-or-create using NoResultException handling (finders never return null)
+        return findInvolvedPartyNameType(session, name, system, identityToken)
+                .onItem()
+                .invoke(found -> log.debug("InvolvedPartyNameType already exists: {}", name))
+                .onFailure(NoResultException.class)
+                .recoverWithUni(err -> {
+                    log.debug("Creating new InvolvedPartyNameType: {} (not found)", name);
+                    InvolvedPartyNameType xr = new InvolvedPartyNameType();
+                    xr.setName(name);
+                    xr.setDescription(description);
+                    xr.setSystemID(system);
+                    xr.setOriginalSourceSystemID(system.getId());
+                    xr.setEnterpriseID(enterprise);
 
-                        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-                        return acService
-                                .getActiveFlag(createSession, createEnterprise, createIdentityToken)
-                                .chain(activeFlag -> {
-                                    xr.setActiveFlagID(activeFlag);
-                                    return createSession
-                                            .persist(xr)
-                                            .replaceWith(Uni
-                                                    .createFrom()
-                                                    .item(xr));
-                                })
-                                .chain(persisted -> {
-                                    // Handle security setup sequentially on the same session/thread
-                                    return persisted
-                                            .createDefaultSecurity(createSession, createSystem, createIdentityToken)
-                                            .onItem()
-                                            .invoke(result -> log.debug("Security setup completed successfully for name type {}", persisted.getName()))
-                                            .onFailure()
-                                            .recoverWithItem(error2 -> {
-                                                log.warn("Error in createDefaultSecurity for name type", error2);
-                                                return null; // Continue chain even if security creation fails
-                                            })
-                                            .chain(() -> Uni
-                                                    .createFrom()
-                                                    .item((IInvolvedPartyNameType<?, ?>) persisted));
-                                });
-                    });
-        });
+                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                    return acService
+                            .getActiveFlag(session, enterprise, identityToken)
+                            .chain(activeFlag -> {
+                                xr.setActiveFlagID(activeFlag);
+                                return session
+                                        .persist(xr)
+                                        .replaceWith(Uni
+                                                .createFrom()
+                                                .item(xr));
+                            })
+                            .chain(persisted -> {
+                                // Handle security setup sequentially on the same session/thread
+                                return persisted
+                                        .createDefaultSecurity(session, system, identityToken)
+                                        .onItem()
+                                        .invoke(result -> log.debug("Security setup completed successfully for name type {}", persisted.getName()))
+                                        .onFailure()
+                                        .recoverWithItem(error2 -> {
+                                            log.warn("Error in createDefaultSecurity for name type", error2);
+                                            return null; // Continue chain even if security creation fails
+                                        })
+                                        .chain(() -> Uni
+                                                .createFrom()
+                                                .item((IInvolvedPartyNameType<?, ?>) persisted));
+                            });
+                });
     }
 
     @Override
     public Uni<IInvolvedPartyIdentificationType<?, ?>> createIdentificationType(Mutiny.Session session, ISystems<?, ?> system, String name, String description, UUID... identityToken) {
         log.debug("Creating InvolvedPartyIdentificationType: name={}, description={}", name, description);
 
-        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-            var createSession = tuple.getItem1();
-            var createEnterprise = tuple.getItem2();
-            var createSystem = tuple.getItem3();
-            var createIdentityToken = tuple.getItem4();
+        var enterprise = system.getEnterprise();
 
-            // Find-or-create using NoResultException handling (finders never return null)
-            return findInvolvedPartyIdentificationType(createSession, name, createSystem, createIdentityToken)
-                    .onItem()
-                    .invoke(found -> log.debug("InvolvedPartyIdentificationType already exists: {}", name))
-                    .onFailure(NoResultException.class)
-                    .recoverWithUni(err -> {
-                        log.debug("Creating new InvolvedPartyIdentificationType: {} (not found)", name);
-                        InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
-                        xr.setName(name);
-                        xr.setDescription(description);
-                        xr.setSystemID(createSystem);
-                        xr.setOriginalSourceSystemID(createSystem.getId());
-                        xr.setEnterpriseID(createEnterprise);
+        // Find-or-create using NoResultException handling (finders never return null)
+        return findInvolvedPartyIdentificationType(session, name, system, identityToken)
+                .onItem()
+                .invoke(found -> log.debug("InvolvedPartyIdentificationType already exists: {}", name))
+                .onFailure(NoResultException.class)
+                .recoverWithUni(err -> {
+                    log.debug("Creating new InvolvedPartyIdentificationType: {} (not found)", name);
+                    InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
+                    xr.setName(name);
+                    xr.setDescription(description);
+                    xr.setSystemID(system);
+                    xr.setOriginalSourceSystemID(system.getId());
+                    xr.setEnterpriseID(enterprise);
 
-                        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-                        return acService
-                                .getActiveFlag(createSession, createEnterprise, createIdentityToken)
-                                .chain(activeFlag -> {
-                                    xr.setActiveFlagID(activeFlag);
-                                    return createSession
-                                            .persist(xr)
-                                            .replaceWith(Uni
-                                                    .createFrom()
-                                                    .item(xr));
-                                })
-                                .chain(persisted -> {
-                                    // Handle security setup sequentially on the same session/thread
-                                    return persisted
-                                            .createDefaultSecurity(createSession, createSystem, createIdentityToken)
-                                            .onItem()
-                                            .invoke(result -> log.debug("Security setup completed successfully for identification type {}", persisted.getName()))
-                                            .onFailure()
-                                            .recoverWithItem(error2 -> {
-                                                log.warn("Error in createDefaultSecurity for identification type", error2);
-                                                return null; // Continue chain even if security creation fails
-                                            })
-                                            .chain(() -> Uni
-                                                    .createFrom()
-                                                    .item((IInvolvedPartyIdentificationType<?, ?>) persisted));
-                                });
-                    });
-        });
+                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                    return acService
+                            .getActiveFlag(session, enterprise, identityToken)
+                            .chain(activeFlag -> {
+                                xr.setActiveFlagID(activeFlag);
+                                return session
+                                        .persist(xr)
+                                        .replaceWith(Uni
+                                                .createFrom()
+                                                .item(xr));
+                            })
+                            .chain(persisted -> {
+                                // Handle security setup sequentially on the same session/thread
+                                return persisted
+                                        .createDefaultSecurity(session, system, identityToken)
+                                        .onItem()
+                                        .invoke(result -> log.debug("Security setup completed successfully for identification type {}", persisted.getName()))
+                                        .onFailure()
+                                        .recoverWithItem(error2 -> {
+                                            log.warn("Error in createDefaultSecurity for identification type", error2);
+                                            return null; // Continue chain even if security creation fails
+                                        })
+                                        .chain(() -> Uni
+                                                .createFrom()
+                                                .item((IInvolvedPartyIdentificationType<?, ?>) persisted));
+                            });
+                });
     }
 
     @Override
     public Uni<IInvolvedPartyType<?, ?>> createType(Mutiny.Session session, ISystems<?, ?> system, String name, String description, UUID... identityToken) {
         log.debug("Creating InvolvedPartyType: name={}, description={}", name, description);
 
-        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-            var createSession = tuple.getItem1();
-            var createEnterprise = tuple.getItem2();
-            var createSystem = tuple.getItem3();
-            var createIdentityToken = tuple.getItem4();
+        var enterprise = system.getEnterprise();
 
-            // First try to find the entity
-            return findType(createSession, name, createSystem, createIdentityToken)
-                    .onItem()
-                    .invoke(found -> log.debug("InvolvedPartyType already exists: {}", name))
-                    .onFailure(NoResultException.class)
-                    .recoverWithUni(err -> {
-                        // Create new entity if not found
-                        log.debug("Creating new InvolvedPartyType: {} (not found)", name);
-                        InvolvedPartyType xr = new InvolvedPartyType();
-                        xr.setName(name);
-                        xr.setDescription(description);
-                        xr.setSystemID(createSystem);
-                        xr.setOriginalSourceSystemID(createSystem.getId());
-                        xr.setEnterpriseID(createEnterprise);
+        // First try to find the entity
+        return findType(session, name, system, identityToken)
+                .onItem()
+                .invoke(found -> log.debug("InvolvedPartyType already exists: {}", name))
+                .onFailure(NoResultException.class)
+                .recoverWithUni(err -> {
+                    // Create new entity if not found
+                    log.debug("Creating new InvolvedPartyType: {} (not found)", name);
+                    InvolvedPartyType xr = new InvolvedPartyType();
+                    xr.setName(name);
+                    xr.setDescription(description);
+                    xr.setSystemID(system);
+                    xr.setOriginalSourceSystemID(system.getId());
+                    xr.setEnterpriseID(enterprise);
 
-                        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-                        return acService
-                                .getActiveFlag(createSession, createEnterprise, createIdentityToken)
-                                .chain(activeFlag -> {
-                                    xr.setActiveFlagID(activeFlag);
-                                    return createSession
-                                            .persist(xr)
-                                            .replaceWith(Uni
-                                                    .createFrom()
-                                                    .item(xr));
-                                })
-                                .chain(persisted -> {
-                                    // Get activity master system and handle security setup sequentially
-                                    return systemsService
-                                            .findSystem(createSession, createEnterprise, ActivityMasterSystemName)
-                                            .chain(activityMasterSystem -> {
-                                                return persisted
-                                                        .createDefaultSecurity(createSession, activityMasterSystem, createIdentityToken)
-                                                        .onItem()
-                                                        .invoke(result -> log.debug("Security setup completed successfully for type {}", persisted.getName()))
-                                                        .onFailure()
-                                                        .recoverWithItem(error2 -> {
-                                                            log.warn("Error in createDefaultSecurity for type", error2);
-                                                            return null; // Continue the chain even if security creation fails
-                                                        })
-                                                        .chain(() -> Uni
-                                                                .createFrom()
-                                                                .item((IInvolvedPartyType<?, ?>) persisted));
-                                            });
-                                });
-                    });
-        });
+                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                    return acService
+                            .getActiveFlag(session, enterprise, identityToken)
+                            .chain(activeFlag -> {
+                                xr.setActiveFlagID(activeFlag);
+                                return session
+                                        .persist(xr)
+                                        .replaceWith(Uni
+                                                .createFrom()
+                                                .item(xr));
+                            })
+                            .chain(persisted -> {
+                                // Get activity master system and handle security setup sequentially
+                                return systemsService
+                                        .findSystem(session, enterprise, ActivityMasterSystemName)
+                                        .chain(activityMasterSystem -> {
+                                            return persisted
+                                                    .createDefaultSecurity(session, activityMasterSystem, identityToken)
+                                                    .onItem()
+                                                    .invoke(result -> log.debug("Security setup completed successfully for type {}", persisted.getName()))
+                                                    .onFailure()
+                                                    .recoverWithItem(error2 -> {
+                                                        log.warn("Error in createDefaultSecurity for type", error2);
+                                                        return null; // Continue the chain even if security creation fails
+                                                    })
+                                                    .chain(() -> Uni
+                                                            .createFrom()
+                                                            .item((IInvolvedPartyType<?, ?>) persisted));
+                                        });
+                            });
+                });
     }
 
     private Uni<InvolvedPartyOrganicType> createOrganicType(Mutiny.Session session, ISystems<?, ?> system, UUID key, String name, String description, UUID... identityToken) {
         log.debug("Creating InvolvedPartyOrganicType: name={}, description={}", name, description);
 
-        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-            var createSession = tuple.getItem1();
-            var createEnterprise = tuple.getItem2();
-            var createSystem = tuple.getItem3();
-            var createIdentityToken = tuple.getItem4();
+        var enterprise = system.getEnterprise();
 
-            InvolvedPartyOrganicType xr = new InvolvedPartyOrganicType();
-            xr.setId(key);
-            xr.setName(name);
-            xr.setDescription(description);
-            xr.setSystemID(createSystem);
-            xr.setOriginalSourceSystemID(createSystem.getId());
-            xr.setEnterpriseID(createEnterprise);
+        InvolvedPartyOrganicType xr = new InvolvedPartyOrganicType();
+        xr.setId(key);
+        xr.setName(name);
+        xr.setDescription(description);
+        xr.setSystemID(system);
+        xr.setOriginalSourceSystemID(system.getId());
+        xr.setEnterpriseID(enterprise);
 
-            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-            return acService
-                    .getActiveFlag(createSession, createEnterprise, createIdentityToken)
-                    .chain(activeFlag -> {
-                        xr.setActiveFlagID(activeFlag);
-                        return createSession
-                                .persist(xr)
-                                .replaceWith(Uni
-                                        .createFrom()
-                                        .item(xr));
-                    })
-                    .chain(persisted -> {
-                        // Get activity master system and handle security setup sequentially
-                        return systemsService
-                                .findSystem(createSession, createEnterprise, ActivityMasterSystemName)
-                                .chain(activityMasterSystem -> {
-                                    return persisted
-                                            .createDefaultSecurity(createSession, activityMasterSystem, createIdentityToken)
-                                            .onItem()
-                                            .invoke(result ->
-                                                    log.debug("Security setup completed successfully for organic type {}", persisted.getName())
-                                            )
-                                            .chain(() -> Uni
-                                                    .createFrom()
-                                                    .item(persisted));
-                                });
-                    });
-        });
+        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+        return acService
+                .getActiveFlag(session, enterprise, identityToken)
+                .chain(activeFlag -> {
+                    xr.setActiveFlagID(activeFlag);
+                    return session
+                            .persist(xr)
+                            .replaceWith(Uni
+                                    .createFrom()
+                                    .item(xr));
+                })
+                .chain(persisted -> {
+                    // Get activity master system and handle security setup sequentially
+                    return systemsService
+                            .findSystem(session, enterprise, ActivityMasterSystemName)
+                            .chain(activityMasterSystem -> {
+                                return persisted
+                                        .createDefaultSecurity(session, activityMasterSystem, identityToken)
+                                        .onItem()
+                                        .invoke(result ->
+                                                log.debug("Security setup completed successfully for organic type {}", persisted.getName())
+                                        )
+                                        .chain(() -> Uni
+                                                .createFrom()
+                                                .item(persisted));
+                            });
+                });
     }
 
     @Override
@@ -474,143 +453,133 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     public Uni<IInvolvedParty<?, ?>> create(Mutiny.Session session, ISystems<?, ?> system, UUID key, Pair<String, String> idTypes, boolean isOrganic, UUID... identityToken) {
         log.trace("Creating InvolvedParty: key={}, idTypes={}, isOrganic={}", key, idTypes, isOrganic);
 
-        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-            var createSession = tuple.getItem1();
-            var createEnterprise = tuple.getItem2();
-            var createSystem = tuple.getItem3();
-            var createIdentityToken = tuple.getItem4();
+        var enterprise = system.getEnterprise();
 
-            final InvolvedParty ip = new InvolvedParty();
-            ip.setEnterpriseID(createEnterprise);
+        final InvolvedParty ip = new InvolvedParty();
+        ip.setEnterpriseID(enterprise);
 
-            final UUID finalKey = (key == null) ? UUID.randomUUID() : key;
-            ip.setId(finalKey);
-            ip.setSystemID(createSystem);
-            ip.setOriginalSourceSystemID(createSystem.getId());
+        final UUID finalKey = (key == null) ? UUID.randomUUID() : key;
+        ip.setId(finalKey);
+        ip.setSystemID(system);
+        ip.setOriginalSourceSystemID(system.getId());
 
-            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-            return acService
-                    .getActiveFlag(createSession, createEnterprise, createIdentityToken)
-                    .chain(activeFlag -> {
-                        ip.setActiveFlagID(activeFlag);
-                        return createSession
-                                .persist(ip)
-                                .replaceWith(ip);
-                    })
-                    .chain(persisted -> {
-                        // Handle security setup sequentially
-                        return persisted
-                                .createDefaultSecurity(createSession, createSystem, createIdentityToken)
-                                .chain(() -> findInvolvedPartyIdentificationType(createSession, idTypes.getKey(), createSystem, createIdentityToken)
-                                        .chain(involvedPartyIdentificationType -> {
-                                            // Add identification type to involved party
-                                            try {
-                                                return persisted
-                                                        .addOrUpdateInvolvedPartyIdentificationType(
-                                                                createSession, NoClassification.toString(),
-                                                                involvedPartyIdentificationType,
-                                                                idTypes.getValue(),
-                                                                idTypes.getValue(),
-                                                                createSystem,
-                                                                createIdentityToken
-                                                        )
-                                                        .replaceWith(persisted);
-                                            } catch (Exception e) {
-                                                return Uni
+        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+        return acService
+                .getActiveFlag(session, enterprise, identityToken)
+                .chain(activeFlag -> {
+                    ip.setActiveFlagID(activeFlag);
+                    return session
+                            .persist(ip)
+                            .replaceWith(ip);
+                })
+                .chain(persisted -> {
+                    // Handle security setup sequentially
+                    return persisted
+                            .createDefaultSecurity(session, system, identityToken)
+                            .chain(() -> findInvolvedPartyIdentificationType(session, idTypes.getKey(), system, identityToken)
+                                    .chain(involvedPartyIdentificationType -> {
+                                        // Add identification type to involved party
+                                        try {
+                                            return persisted
+                                                    .addOrUpdateInvolvedPartyIdentificationType(
+                                                            session, NoClassification.toString(),
+                                                            involvedPartyIdentificationType,
+                                                            idTypes.getValue(),
+                                                            idTypes.getValue(),
+                                                            system,
+                                                            identityToken
+                                                    )
+                                                    .replaceWith(persisted);
+                                        } catch (Exception e) {
+                                            return Uni
+                                                    .createFrom()
+                                                    .failure(e);
+                                        }
+                                    })
+                                    .chain(updatedPersisted -> {
+                                        // Setup organic status sequentially
+                                        return setupInvolvedPartyOrganicStatus(session, isOrganic, updatedPersisted, system, identityToken)
+                                                .chain(() -> Uni
                                                         .createFrom()
-                                                        .failure(e);
-                                            }
-                                        })
-                                        .chain(updatedPersisted -> {
-                                            // Setup organic status sequentially
-                                            return setupInvolvedPartyOrganicStatus(createSession, isOrganic, updatedPersisted, createSystem, createIdentityToken)
-                                                    .chain(() -> Uni
-                                                            .createFrom()
-                                                            .item((IInvolvedParty<?, ?>) updatedPersisted));
-                                        })
-                                );
-                    });
-        });
+                                                        .item((IInvolvedParty<?, ?>) updatedPersisted));
+                                    })
+                            );
+                });
     }
 
     private Uni<Void> setupInvolvedPartyOrganicStatus(Mutiny.Session session, boolean isOrganic, IInvolvedParty<?, ?> ip, ISystems<?, ?> system, UUID... identityToken) {
         log.debug("Setting up InvolvedParty organic status: isOrganic={}, id={}", isOrganic, ip.getId());
 
-        return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-            var createSession = tuple.getItem1();
-            var createEnterprise = tuple.getItem2();
-            var createSystem = tuple.getItem3();
-            var createIdentityToken = tuple.getItem4();
+        var enterprise = system.getEnterprise();
 
-            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-            if (isOrganic) {
-                InvolvedPartyOrganic ipo = new InvolvedPartyOrganic();
-                ipo.setInvolvedParty((InvolvedParty) ip);
-                ipo.setId(ip.getId());
-                ipo.setEnterpriseID(createEnterprise);
-                ipo.setSystemID(createSystem);
-                ipo.setOriginalSourceSystemID(createSystem.getId());
+        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+        if (isOrganic) {
+            InvolvedPartyOrganic ipo = new InvolvedPartyOrganic();
+            ipo.setInvolvedParty((InvolvedParty) ip);
+            ipo.setId(ip.getId());
+            ipo.setEnterpriseID(enterprise);
+            ipo.setSystemID(system);
+            ipo.setOriginalSourceSystemID(system.getId());
 
-                return acService
-                        .getActiveFlag(createSession, createEnterprise, createIdentityToken)
-                        .chain(activeFlag -> {
-                            ipo.setActiveFlagID(activeFlag);
-                            return createSession
-                                    .persist(ipo)
-                                    .replaceWith(ipo);
-                        })
-                        .chain(persisted -> {
-                            // Handle security setup sequentially
-                            return persisted
-                                    .createDefaultSecurity(createSession, createSystem, createIdentityToken)
-                                    .onItem()
-                                    .invoke(result ->
-                                            log.debug("Security setup completed successfully for organic involved party {}", persisted.getId())
-                                    )
-                                    .onFailure()
-                                    .recoverWithItem(error -> {
-                                        log.warn("Error in createDefaultSecurity for organic", error);
-                                        return null; // Continue the chain even if security creation fails
-                                    })
-                                    .chain(() -> Uni
-                                            .createFrom()
-                                            .voidItem());
-                        });
-            } else {
-                InvolvedPartyNonOrganic ipo = new InvolvedPartyNonOrganic();
-                ipo.setInvolvedParty((InvolvedParty) ip);
-                ipo.setId(ip.getId());
-                ipo.setEnterpriseID(createEnterprise);
-                ipo.setSystemID(createSystem);
-                ipo.setOriginalSourceSystemID(createSystem.getId());
+            return acService
+                    .getActiveFlag(session, enterprise, identityToken)
+                    .chain(activeFlag -> {
+                        ipo.setActiveFlagID(activeFlag);
+                        return session
+                                .persist(ipo)
+                                .replaceWith(ipo);
+                    })
+                    .chain(persisted -> {
+                        // Handle security setup sequentially
+                        return persisted
+                                .createDefaultSecurity(session, system, identityToken)
+                                .onItem()
+                                .invoke(result ->
+                                        log.debug("Security setup completed successfully for organic involved party {}", persisted.getId())
+                                )
+                                .onFailure()
+                                .recoverWithItem(error -> {
+                                    log.warn("Error in createDefaultSecurity for organic", error);
+                                    return null; // Continue the chain even if security creation fails
+                                })
+                                .chain(() -> Uni
+                                        .createFrom()
+                                        .voidItem());
+                    });
+        } else {
+            InvolvedPartyNonOrganic ipo = new InvolvedPartyNonOrganic();
+            ipo.setInvolvedParty((InvolvedParty) ip);
+            ipo.setId(ip.getId());
+            ipo.setEnterpriseID(enterprise);
+            ipo.setSystemID(system);
+            ipo.setOriginalSourceSystemID(system.getId());
 
-                return acService
-                        .getActiveFlag(createSession, createEnterprise, createIdentityToken)
-                        .chain(activeFlag -> {
-                            ipo.setActiveFlagID(activeFlag);
-                            return createSession
-                                    .persist(ipo)
-                                    .replaceWith(ipo);
-                        })
-                        .chain(persisted -> {
-                            // Handle security setup sequentially
-                            return persisted
-                                    .createDefaultSecurity(createSession, createSystem, createIdentityToken)
-                                    .onItem()
-                                    .invoke(result ->
-                                            log.debug("Security setup completed successfully for non-organic involved party {}", persisted.getId())
-                                    )
-                                    .onFailure()
-                                    .recoverWithItem(error -> {
-                                        log.warn("Error in createDefaultSecurity for non-organic", error);
-                                        return null; // Continue the chain even if security creation fails
-                                    })
-                                    .chain(() -> Uni
-                                            .createFrom()
-                                            .voidItem());
-                        });
-            }
-        });
+            return acService
+                    .getActiveFlag(session, enterprise, identityToken)
+                    .chain(activeFlag -> {
+                        ipo.setActiveFlagID(activeFlag);
+                        return session
+                                .persist(ipo)
+                                .replaceWith(ipo);
+                    })
+                    .chain(persisted -> {
+                        // Handle security setup sequentially
+                        return persisted
+                                .createDefaultSecurity(session, system, identityToken)
+                                .onItem()
+                                .invoke(result ->
+                                        log.debug("Security setup completed successfully for non-organic involved party {}", persisted.getId())
+                                )
+                                .onFailure()
+                                .recoverWithItem(error -> {
+                                    log.warn("Error in createDefaultSecurity for non-organic", error);
+                                    return null; // Continue the chain even if security creation fails
+                                })
+                                .chain(() -> Uni
+                                        .createFrom()
+                                        .voidItem());
+                    });
+        }
     }
 
     @Override

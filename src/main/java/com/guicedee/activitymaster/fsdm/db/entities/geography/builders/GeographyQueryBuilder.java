@@ -52,9 +52,24 @@ public class GeographyQueryBuilder
 		return this;
 	}
 	
-	public GeographyQueryBuilder withGeoNameID(UUID id)
+	public GeographyQueryBuilder withGeoNameID(String id)
 	{
-		where(Geography_.originalSourceSystemUniqueID, Equals, id);
+		JoinExpression joinExpression = new JoinExpression();
+		var builder = isStateless() ?
+			new GeographyXClassification()
+				.builder(getEntityManagerStateless())
+				.inActiveRange()
+				.inDateRange()
+				.where(GeographyXClassification_.value, Equals, id)
+			:
+			new GeographyXClassification()
+				.builder(getEntityManager())
+				.inActiveRange()
+				.inDateRange()
+				.where(GeographyXClassification_.value, Equals, id);
+		join(Geography_.classifications,
+			builder,
+			JoinType.INNER, joinExpression);
 		return this;
 	}
 }

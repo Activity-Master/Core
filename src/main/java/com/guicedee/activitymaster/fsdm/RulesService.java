@@ -23,7 +23,6 @@ import org.hibernate.reactive.mutiny.Mutiny;
 import java.util.List;
 import java.util.UUID;
 
-import static com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.applicationEnterpriseName;
 
 @Log4j2
 @Singleton
@@ -137,62 +136,57 @@ public class RulesService
 	@Override
 	public Uni<IRulesType<?, ?>> createRulesType(Mutiny.Session session, String rulesType, UUID key, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return SessionUtils.withActivityMaster(applicationEnterpriseName, system.getName(), tuple -> {
-			var createSession = tuple.getItem1();
-			var createEnterprise = tuple.getItem2();
-			var createSystem = tuple.getItem3();
-			var createIdentityToken = tuple.getItem4();
+		var enterprise = system.getEnterprise();
 
-			RulesType et = new RulesType();
+		RulesType et = new RulesType();
 
-			// Check if rule type exists
-			return et.builder(createSession)
-					.withName(rulesType)
-					.withEnterprise(createEnterprise)
-					.inActiveRange()
-					.inDateRange()
-					.getCount()
-					.onFailure().invoke(error -> log.error("Error checking if rule type exists: {}", error.getMessage(), error))
-					.chain(count -> {
-						boolean exists = count > 0;
-						if (!exists)
+		// Check if rule type exists
+		return et.builder(session)
+				.withName(rulesType)
+				.withEnterprise(enterprise)
+				.inActiveRange()
+				.inDateRange()
+				.getCount()
+				.onFailure().invoke(error -> log.error("Error checking if rule type exists: {}", error.getMessage(), error))
+				.chain(count -> {
+					boolean exists = count > 0;
+					if (!exists)
+					{
+						// Rule type doesn't exist, create it
+						if (key != null)
 						{
-							// Rule type doesn't exist, create it
-							if (key != null)
-							{
-								et.setId(key);
-							}
-							et.setName(rulesType);
-							et.setDescription(description);
-							et.setSystemID(createSystem);
-							et.setEnterpriseID(createEnterprise);
-							et.setOriginalSourceSystemID(createSystem.getId());
-
-							IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-
-							// Get active flag using reactive pattern
-							return acService.getActiveFlag(createSession, createEnterprise, createIdentityToken)
-									.chain(activeFlag -> {
-										et.setActiveFlagID(activeFlag);
-										return createSession.persist(et).replaceWith(Uni.createFrom().item(et));
-									})
-									.chain(persisted -> {
-										// Chain createDefaultSecurity properly
-										RulesType rulesTypeImpl = (RulesType) persisted;
-										return rulesTypeImpl.createDefaultSecurity(createSession, createSystem, createIdentityToken)
-												.onItem().invoke(result -> log.trace("Security setup completed successfully for rule type"))
-												.onFailure().invoke(error -> log.error("Error in createDefaultSecurity for rule type", error))
-												.onFailure().recoverWithItem(() -> null)
-												.replaceWith((IRulesType<?, ?>) et);
-									});
+							et.setId(key);
 						}
-						else
-						{
-							// Rule type exists, find and return it
-							return findRulesTypes(createSession, rulesType, createSystem, createIdentityToken);
-						}
-					});
-		});
+						et.setName(rulesType);
+						et.setDescription(description);
+						et.setSystemID(system);
+						et.setEnterpriseID(enterprise);
+						et.setOriginalSourceSystemID(system.getId());
+
+						IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+
+						// Get active flag using reactive pattern
+						return acService.getActiveFlag(session, enterprise, identityToken)
+								.chain(activeFlag -> {
+									et.setActiveFlagID(activeFlag);
+									return session.persist(et).replaceWith(Uni.createFrom().item(et));
+								})
+								.chain(persisted -> {
+									// Chain createDefaultSecurity properly
+									RulesType rulesTypeImpl = (RulesType) persisted;
+									return rulesTypeImpl.createDefaultSecurity(session, system, identityToken)
+											.onItem().invoke(result -> log.trace("Security setup completed successfully for rule type"))
+											.onFailure().invoke(error -> log.error("Error in createDefaultSecurity for rule type", error))
+											.onFailure().recoverWithItem(() -> null)
+											.replaceWith((IRulesType<?, ?>) et);
+								});
+					}
+					else
+					{
+						// Rule type exists, find and return it
+						return findRulesTypes(session, rulesType, system, identityToken);
+					}
+				});
 	}
 
 	@Override
