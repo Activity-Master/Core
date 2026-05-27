@@ -1534,19 +1534,12 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
   {
     log.info("Populating transformation tables for date: " + date + " with fiscal lag: " + fiscalLag);
 
-    // Build all entities first (pure in-memory), then persist them using a stateful session
-    Uni<List<TransYtd>> ytdUni = getDayYTD(session, date);
-    Uni<List<TransQtd>> qtdUni = getDayQTD(session, date);
-    Uni<List<TransMtd>> mtdUni = getDayMTD(session, date);
-    Uni<List<TransFiscal>> fiscalUni = getDayFiscal(session, date, fiscalLag);
-
-    return Uni.combine().all().unis(ytdUni, qtdUni, mtdUni, fiscalUni)
-        .asTuple()
-        .chain(tuple -> {
-          List<TransYtd> ytdEntities = tuple.getItem1();
-          List<TransQtd> qtdEntities = tuple.getItem2();
-          List<TransMtd> mtdEntities = tuple.getItem3();
-          List<TransFiscal> fiscalEntities = tuple.getItem4();
+    // Build all entities sequentially (cannot run parallel on same session)
+    return getDayYTD(session, date)
+        .chain(ytdEntities -> getDayQTD(session, date)
+            .chain(qtdEntities -> getDayMTD(session, date)
+                .chain(mtdEntities -> getDayFiscal(session, date, fiscalLag)
+                    .chain(fiscalEntities -> {
 
           log.info("Created {} YTD relationships", ytdEntities.size());
           log.info("Created {} QTD relationships", qtdEntities.size());
@@ -1561,7 +1554,6 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
           log.info("Inserting {} total relationships using stateful session (sequential persist)", allEntities.size());
 
-          // Use a stateful session for persisting composite-id entities to avoid stateless reflection issues
           return sessionFactory.withTransaction((Mutiny.Session s) -> {
             Uni<Void> chain = Uni.createFrom().voidItem();
             for (Object entity : allEntities)
@@ -1570,7 +1562,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
             }
             return chain.replaceWithVoid();
           });
-        })
+        }))))
         .onItem()
         .invoke(() -> log.info("Transformation tables populated for date: {}", date))
         .onFailure()

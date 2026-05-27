@@ -45,17 +45,15 @@ public abstract class TestDatabaseSetup
 
         sessionFactory.withSession(session1 -> {
                     return session1.withTransaction(tx -> {
-                        List<Uni<?>> executions = new ArrayList<>();
+                        Uni<Void> chain = Uni.createFrom().voidItem();
                         for (String stmt : statements)
                         {
-                            executions.add(session1.createNativeQuery(stmt)
+                            chain = chain.chain(() -> session1.createNativeQuery(stmt)
                                                    .executeUpdate()
-                                                   .log("Executed: " + stmt));
+                                                   .log("Executed: " + stmt)
+                                                   .replaceWithVoid());
                         }
-                        return Uni.combine()
-                                       .all()
-                                       .unis(executions)
-                                       .discardItems();
+                        return chain;
                     });
                 })
                 .await()

@@ -130,29 +130,24 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
                                       .ifNull()
                                       .failWith(() -> new SecurityAccessException("Involved Party does not have password credentials"));
 
-                              // Combine salt and password entities
-                              return Uni.combine()
-                                         .all()
-                                         .unis(saltEntityUni, passEntityUni)
-                                         .asTuple()
-                                         .chain(tuple -> {
-                                           IRelationshipValue<InvolvedParty, IClassification<?, ?>, ?> saltEntity = tuple.getItem1();
-                                           IRelationshipValue<InvolvedParty, IClassification<?, ?>, ?> passEntity = tuple.getItem2();
+                              // Resolve salt and password entities sequentially
+                              return saltEntityUni
+                                         .chain(saltEntity -> passEntityUni
+                                             .chain(passEntity -> {
+                                               String saltString = saltEntity.getValue();
+                                               byte[] salt = new Passwords().integerDecrypt(saltString);
+                                               String passMatch = passEntity.getValue();
+                                               String passEncrypted = encrypt(password, salt);
 
-                                           String saltString = saltEntity.getValue();
-                                           byte[] salt = new Passwords().integerDecrypt(saltString);
-                                           String passMatch = passEntity.getValue();
-                                           String passEncrypted = encrypt(password, salt);
+                                               if (!passEncrypted.equalsIgnoreCase(passMatch))
+                                               {
+                                                 return Uni.createFrom()
+                                                            .failure(new SecurityAccessException("Password Incorrect"));
+                                               }
 
-                                           if (!passEncrypted.equalsIgnoreCase(passMatch))
-                                           {
-                                             return Uni.createFrom()
-                                                        .failure(new SecurityAccessException("Password Incorrect"));
-                                           }
-
-                                           return Uni.createFrom()
-                                                      .item((IInvolvedParty<?, ?>) foundPart);
-                                         });
+                                               return Uni.createFrom()
+                                                          .item((IInvolvedParty<?, ?>) foundPart);
+                                             }));
                             });
                });
   }
@@ -237,18 +232,12 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
     log.debug("Creating admin and creator user for enterprise: {}", system.getEnterpriseID());
     logProgress("Checking base administrator user", "The default user is being checked for compliance", 1);
 
-    // Resolve bootstrap context: identity token + administrators group
+    // Resolve bootstrap context: identity token + administrators group (sequentially to avoid parallel session usage)
     ISystemsService<?> systemsService = get(ISystemsService.class);
-    return (Uni) Uni.combine()
-               .all()
-               .unis(
-                   systemsService.getSecurityIdentityToken(session, system),
-                   get(SecurityTokenService.class).getAdministratorsFolder(session, system)
-               )
-               .asTuple()
-               .chain(ctx -> {
-                 UUID identityToken = ctx.getItem1();
-                 SecurityToken administratorsGroup = (SecurityToken) ctx.getItem2();
+    return (Uni) systemsService.getSecurityIdentityToken(session, system)
+               .chain(identityToken -> get(SecurityTokenService.class).getAdministratorsFolder(session, system)
+                   .chain(administratorsGroup -> {
+                     SecurityToken adminsGroup = (SecurityToken) administratorsGroup;
 
                  // Check if user already exists
                  return (Uni) new InvolvedParty().builder(session)
@@ -318,7 +307,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
                                         adminUserName,
                                         "The creator of the enterprise",
                                         system,
-                                        administratorsGroup,
+                                        adminsGroup,
                                         identityToken)
                                         .replaceWith(adminUser);
                                   })
@@ -345,7 +334,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
                                     return result;
                                   });
                             });
-               });
+                   }));
   }
 }
 

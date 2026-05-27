@@ -100,7 +100,12 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 					}
 					
 					if (operations.isEmpty()) return Uni.createFrom().voidItem();
-					return Uni.combine().all().unis(operations).discardItems();
+					Uni<?> chain = operations.get(0);
+					for (int i = 1; i < operations.size(); i++) {
+						final int idx = i;
+						chain = chain.chain(() -> operations.get(idx));
+					}
+					return chain.replaceWithVoid();
 				});
 		});
 	}
