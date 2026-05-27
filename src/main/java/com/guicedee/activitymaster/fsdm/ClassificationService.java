@@ -28,6 +28,7 @@ package com.guicedee.activitymaster.fsdm;
  * See ReactivityMigrationGuide.md for more details on these rules.
  */
 
+import com.entityassist.enumerations.Operand;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
@@ -37,6 +38,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
+import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification_;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.ClassificationQueryBuilder;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
@@ -246,46 +248,24 @@ public class ClassificationService
 
         var enterprise = system.getEnterprise();
 
-        UUID enterpriseId = null;
-        UUID systemId = null;
-        if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
-            enterpriseId = ent.getId();
-        }
-        if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys) {
-            systemId = sys.getId();
-        }
-        final UUID entId = enterpriseId;
-        final UUID sysId = systemId;
-
-        // If we have a concept, resolve its ID via CDC resolver; then resolve classification ID; else resolve by enterprise+name
         if (concept != null) {
-            return dataConceptService
-                    .resolveCdcIdByName(session, enterprise, sysId, concept.classificationValue())
-                    .flatMap(conceptId -> {
-                        var afService = IGuiceContext.get(IActiveFlagService.class);
-                        return afService.getVisibleRangeAndUpIds(session, enterprise)
-                                .flatMap(visibleIds -> {
-                                    return new Classification()
-                                            .builder(session)
-                                            .withEnterprise(enterprise)
-                                            .withConcept(concept, system, identityToken)
-                                            .inActiveRange()
-                                            .inDateRange()
-                                            .get();
-                                });
-
-                    });
+            return dataConceptService.find(session, concept, system, identityToken)
+                    .chain(dc -> (Uni) new Classification()
+                            .builder(session)
+                            .withEnterprise(enterprise)
+                            .withName(name)
+                            .where(Classification_.concept, Operand.Equals, (ClassificationDataConcept) dc)
+                            .inActiveRange()
+                            .inDateRange()
+                            .get());
         } else {
-            var afService = IGuiceContext.get(IActiveFlagService.class);
-            return afService.getVisibleRangeAndUpIds(session, enterprise)
-                    .flatMap(visibleIds ->
-                            new Classification()
-                                    .builder(session)
-                                    .withEnterprise(enterprise)
-                                    .inActiveRange()
-                                    .inDateRange()
-                                    .get()
-                    );
+            return (Uni) new Classification()
+                    .builder(session)
+                    .withEnterprise(enterprise)
+                    .withName(name)
+                    .inActiveRange()
+                    .inDateRange()
+                    .get();
         }
     }
 
@@ -354,4 +334,3 @@ public class ClassificationService
                         log.error("❌ Error finding identity type classification: {}", error.getMessage(), error));
     }
 }
-

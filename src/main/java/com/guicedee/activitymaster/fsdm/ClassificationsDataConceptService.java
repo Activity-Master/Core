@@ -9,7 +9,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
-import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.NoResultException;
 import lombok.extern.log4j.Log4j2;
@@ -37,21 +36,14 @@ public class ClassificationsDataConceptService
     public Uni<UUID> resolveCdcIdByName(Mutiny.Session session, IEnterprise<?, ?> enterpriseId, UUID systemId, String conceptName) {
         return com.guicedee.activitymaster.fsdm.client.services.cache.NameIdCache
                 .getClassificationDataConceptId(session, enterpriseId.getId(), systemId, conceptName, (sess, name) -> {
-                    // Get the visible range IDs from the ActiveFlag service (via Guice context) and query with IN clause
-                    return activeFlagService.getVisibleRangeAndUpIds(sess, enterpriseId)
-                            .flatMap(visibleIds -> {
-                                String sql = "select classificationdataconceptid from classification.classificationdataconcept " +
-                                        "where enterpriseid = :ent and classificationdataconceptname = :name " +
-                                        "and (effectivefromdate <= current_timestamp) " +
-                                        "and (effectivetodate > current_timestamp) " +
-                                        "and activeflagid in (:visibleIds)";
-                                return sess.createNativeQuery(sql)
-                                        .setParameter("ent", enterpriseId)
-                                        .setParameter("name", name)
-                                        .setParameter("visibleIds", visibleIds)
-                                        .getSingleResult()
-                                        .map(result -> (UUID) result);
-                            });
+                    return new ClassificationDataConcept()
+                            .builder(sess)
+                            .withEnterprise(enterpriseId)
+                            .withName(name)
+                            .inActiveRange()
+                            .inDateRange()
+                            .get()
+                            .map(result -> result.getId());
                 });
     }
 
@@ -105,17 +97,14 @@ public class ClassificationsDataConceptService
 
     public Uni<IClassificationDataConcept<?, ?>> find(Mutiny.Session session, String name, ISystems<?, ?> system, UUID... identityToken) {
         var enterprise = system.getEnterprise();
-        // ID-first resolution using ActiveFlag VisibleRangeAndUp IDs and SCD window, then load by UUID
-        return activeFlagService.getVisibleRangeAndUpIds(session, enterprise)
-                .flatMap(visibleIds ->
-                        new ClassificationDataConcept()
-                                .builder(session)
-                                .withEnterprise(enterprise)
-                                .inActiveRange()
-                                .inDateRange()
-                                .withName(name)
-                                .get()
-                                .map(r -> r.getId()))
+        return new ClassificationDataConcept()
+                .builder(session)
+                .withEnterprise(enterprise)
+                .inActiveRange()
+                .inDateRange()
+                .withName(name)
+                .get()
+                .map(r -> r.getId())
                 .flatMap(id -> getConceptById(session, id));
     }
 
