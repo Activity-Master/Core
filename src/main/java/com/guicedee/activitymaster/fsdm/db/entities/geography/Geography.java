@@ -38,6 +38,10 @@ import static jakarta.persistence.FetchType.*;
  */
 @SuppressWarnings({"unused", "rawtypes"})
 @Entity
+@Cacheable
+@org.hibernate.annotations.Cache(
+        usage = org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
+        region = "geography")
 @Table(schema = "Geography",
         name = "Geography")
 @XmlRootElement

@@ -273,12 +273,18 @@
             <property name="hibernate.cache.use_query_cache" value="false"/>
             <property name="hibernate.generate_statistics" value="true"/>
             <property name="hibernate.bytecode.use_reflection_optimizer" value="true"/>
-<!--
+
+            <!--
+              Entity second-level cache for stable reference data (e.g. @Cacheable Geography).
+              shared-cache-mode=ENABLE_SELECTIVE limits caching to @Cacheable entities only, so the
+              blast radius is exactly the annotated reference tables. Missing regions are created on
+              demand (see hibernate.jakarta.cache.missing_cache_strategy=create above), so no
+              ehcache.xml is required. Query cache stays disabled (reactive query caching is limited).
+            -->
             <property name="hibernate.cache.use_second_level_cache" value="true"/>
             <property name="hibernate.cache.region.factory_class"
                       value="org.hibernate.cache.jcache.JCacheRegionFactory"/>
             <property name="hibernate.javax.cache.provider" value="org.ehcache.jsr107.EhcacheCachingProvider"/>
-            <property name="hibernate.javax.cache.uri" value="/ehcache.xml"/>-->
 
 
         </properties>
