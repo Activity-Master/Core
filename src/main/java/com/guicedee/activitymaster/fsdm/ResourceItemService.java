@@ -686,33 +686,45 @@ public class ResourceItemService
         log.trace("Finding resources by type: {} and value: {}", type, value);
         var enterprise = systems.getEnterprise();
 
-        // Build query by joining ResourceItem to its types and filtering by type name without blocking
-        ResourceItemQueryBuilder aqb = new ResourceItem().builder(session);
-        aqb
-                .withEnterprise(enterprise)
-                .inActiveRange()
-                .inDateRange()
-        ;
+        // Resolve the ResourceItemType entity by name first, then filter the type relationship by its ID.
+        // (The metamodel attribute lookup is flat — it cannot navigate the dotted "resourceItemTypeID.name"
+        // path — so we compare against the resolved entity exactly like findByClassification does.)
+        return findResourceItemType(session, type, systems, identityToken)
+                .onFailure(jakarta.persistence.NoResultException.class)
+                .recoverWithItem((com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItemType<?, ?>) null)
+                .chain(resourceItemType -> {
+                    if (resourceItemType == null) {
+                        return Uni.createFrom().item(Collections.<IResourceItem<?, ?>>emptyList());
+                    }
 
-        com.entityassist.querybuilder.builders.JoinExpression<?, ?, ?> joinExpression = new com.entityassist.querybuilder.builders.JoinExpression<>();
-        ResourceItemXResourceItemTypeQueryBuilder qb = new ResourceItemXResourceItemType().builder(session);
-        qb
-                .withEnterprise(enterprise)
-                .inActiveRange()
-                .inDateRange()
-        ;
-        if (value != null) {
-            qb.withValue(value);
-        }
-        // Filter by the ResourceItemType name without resolving the entity
-        qb.where(qb.getAttribute("resourceItemTypeID.name"), Equals, type);
+                    // Build query by joining ResourceItem to its types and filtering by the resolved type ID.
+                    ResourceItemQueryBuilder aqb = new ResourceItem().builder(session);
+                    aqb
+                            .withEnterprise(enterprise)
+                            .inActiveRange()
+                            .inDateRange()
+                    ;
 
-        aqb.join(ResourceItem_.types, qb, jakarta.persistence.criteria.JoinType.INNER, joinExpression);
+                    com.entityassist.querybuilder.builders.JoinExpression<?, ?, ?> joinExpression = new com.entityassist.querybuilder.builders.JoinExpression<>();
+                    ResourceItemXResourceItemTypeQueryBuilder qb = new ResourceItemXResourceItemType().builder(session);
+                    qb
+                            .withEnterprise(enterprise)
+                            .inActiveRange()
+                            .inDateRange()
+                    ;
+                    if (value != null) {
+                        qb.withValue(value);
+                    }
+                    // Filter by the resolved ResourceItemType entity (no dotted-path attribute resolution).
+                    qb.where(ResourceItemXResourceItemType_.resourceItemTypeID, Equals, (ResourceItemType) resourceItemType);
 
-        return (Uni) aqb
-                .getAll()
-                .onFailure()
-                .invoke(e -> log.error("Error finding resources by type: {} and value: {}", type, value, e));
+                    aqb.join(ResourceItem_.types, qb, jakarta.persistence.criteria.JoinType.INNER, joinExpression);
+
+                    return (Uni<List<IResourceItem<?, ?>>>) (Uni<?>) aqb
+                            .getAll()
+                            .onFailure()
+                            .invoke(e -> log.error("Error finding resources by type: {} and value: {}", type, value, e));
+                });
     }
 
     /**

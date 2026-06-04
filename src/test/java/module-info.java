@@ -22,6 +22,10 @@ open module activity.master.test {
     requires io.vertx.sql.client.pg;
     requires com.guicedee.activitymaster.fsdm;
 
+    requires com.graphqljava;
+
+    uses com.guicedee.vertx.graphql.services.IGraphQLSchemaProvider;
+
     provides IGuiceModule with PostgreSQLTestDBModule;
 
 }

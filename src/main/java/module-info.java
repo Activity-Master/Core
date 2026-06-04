@@ -14,6 +14,8 @@ module com.guicedee.activitymaster.fsdm {
     requires transitive com.guicedee.activitymaster.fsdm.client;
 
     requires transitive com.guicedee.rest;
+    requires transitive com.guicedee.vertx.graphql;
+    requires transitive com.guicedee.service.registry;
 
 
     requires transitive com.fasterxml.jackson.databind;
@@ -81,6 +83,9 @@ module com.guicedee.activitymaster.fsdm {
 
     provides IGuiceConfigurator with ActivityMasterScanConfiguration;
 
+    provides com.guicedee.vertx.graphql.services.IGraphQLSchemaProvider
+            with com.guicedee.activitymaster.fsdm.graphql.FsdmGraphQLSchemaProvider;
+
     provides IActivityMasterSystem with EnterpriseSystem,
             ActiveFlagSystem,
             SystemsSystem,
@@ -133,6 +138,8 @@ module com.guicedee.activitymaster.fsdm {
 
     exports com.guicedee.activitymaster.fsdm.db.abstraction.builders;
     opens com.guicedee.activitymaster.fsdm.db.abstraction.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+
+    exports com.guicedee.activitymaster.fsdm.graphql;
 
 
     opens com.guicedee.activitymaster.fsdm.db.entities.enterprise to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geography, net.bytebuddy;

@@ -246,4 +246,102 @@ public class TestActivityMasterManageResourceItems {
           });
     })).await().atMost(Duration.ofMinutes(2));
   }
+
+  /**
+   * Replicates the cerial read-path bug: locate a resource item by its type + classification + value.
+   * Mirrors the cerial flow exactly — the resource item TYPE and the CLASSIFICATION are created and
+   * committed first (as cerial's install does), then the resource item is created in a second committed
+   * transaction, then it is located via {@link IResourceItemService#findByClassification}.
+   */
+  @Test
+  public void testFindByClassification_LocatesResourceItem() {
+    final String typeName = "MRI_FindByClassyType";
+    final String classyName = "MRI_FindByClassyClassification";
+    final String classyValue = "MRI-FIND-20";
+
+    // TX1: commit the reference data (type + classification), exactly like a system install would.
+    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+      IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+      ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+      IClassificationService<?> classificationService = IGuiceContext.get(IClassificationService.class);
+      IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
+      return enterpriseService.getEnterprise(session, TestEnterprise.name())
+          .chain(ent -> systemsService.getActivityMaster(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent))
+          .chain(sys -> resourceItemService.createType(session, typeName, typeName, (ISystems<?, ?>) sys)
+              .chain(t -> classificationService.create(session, classyName, "Find-by-classification test classification",
+                  com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, (ISystems<?, ?>) sys)));
+    })).await().atMost(Duration.ofMinutes(2));
+
+    // TX2: create and commit the resource item plus its classification value.
+    java.util.UUID resourceId = sessionFactory.withSession(session -> session.withTransaction(tx -> {
+      IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+      ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+      IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
+      return enterpriseService.getEnterprise(session, TestEnterprise.name())
+          .chain(ent -> systemsService.getActivityMaster(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent))
+          .chain(sys -> resourceItemService.create(session, typeName, classyValue, (ISystems<?, ?>) sys)
+              .chain(res -> res.addClassification(session, classyName, classyValue, (ISystems<?, ?>) sys).replaceWith(res.getId())));
+    })).await().atMost(Duration.ofMinutes(2));
+
+    Assertions.assertNotNull(resourceId, "Setup should persist a resource item");
+
+    // TX3: locate the committed resource item by type + classification + value.
+    IResourceItem<?, ?> found = sessionFactory.withSession(session -> session.withTransaction(tx -> {
+      IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+      ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+      IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
+      return enterpriseService.getEnterprise(session, TestEnterprise.name())
+          .chain(ent -> systemsService.getActivityMaster(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent))
+          .chain(sys -> resourceItemService.findByClassification(session, typeName, classyName, classyValue, (ISystems<?, ?>) sys));
+    })).await().atMost(Duration.ofMinutes(2));
+
+    Assertions.assertNotNull(found, "findByClassification should locate the resource item");
+    Assertions.assertEquals(resourceId, found.getId(), "findByClassification should return the same resource item");
+  }
+
+  /**
+   * Replicates the cerial list read-path bug: list all resource items of a given type via
+   * {@link IResourceItemService#findByResourceItemType}.
+   */
+  @Test
+  public void testFindByResourceItemType_ListsResourceItems() {
+    final String typeName = "MRI_FindByTypeType";
+
+    // TX1: commit the resource item type (reference data).
+    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+      IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+      ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+      IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
+      return enterpriseService.getEnterprise(session, TestEnterprise.name())
+          .chain(ent -> systemsService.getActivityMaster(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent))
+          .chain(sys -> resourceItemService.createType(session, typeName, typeName, (ISystems<?, ?>) sys));
+    })).await().atMost(Duration.ofMinutes(2));
+
+    // TX2: create and commit a resource item of the target type.
+    java.util.UUID resourceId = sessionFactory.withSession(session -> session.withTransaction(tx -> {
+      IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+      ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+      IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
+      return enterpriseService.getEnterprise(session, TestEnterprise.name())
+          .chain(ent -> systemsService.getActivityMaster(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent))
+          .chain(sys -> resourceItemService.create(session, typeName, "res-find-by-type-1", (ISystems<?, ?>) sys).map(IResourceItem::getId));
+    })).await().atMost(Duration.ofMinutes(2));
+
+    Assertions.assertNotNull(resourceId, "Setup should persist a resource item");
+
+    // TX3: list every committed resource item of the target type.
+    java.util.List<? extends IResourceItem<?, ?>> items = sessionFactory.withSession(session -> session.withTransaction(tx -> {
+      IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+      ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+      IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
+      return enterpriseService.getEnterprise(session, TestEnterprise.name())
+          .chain(ent -> systemsService.getActivityMaster(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent))
+          .chain(sys -> resourceItemService.findByResourceItemType(session, typeName, (ISystems<?, ?>) sys));
+    })).await().atMost(Duration.ofMinutes(2));
+
+    Assertions.assertNotNull(items, "findByResourceItemType should return a list");
+    Assertions.assertFalse(items.isEmpty(), "findByResourceItemType should return at least one item");
+    Assertions.assertTrue(items.stream().anyMatch(i -> i.getId().equals(resourceId)),
+        "findByResourceItemType should include the created resource item");
+  }
 }

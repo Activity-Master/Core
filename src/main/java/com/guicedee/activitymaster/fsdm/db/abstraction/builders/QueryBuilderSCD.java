@@ -6,6 +6,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderFl
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -109,5 +110,77 @@ public abstract class QueryBuilderSCD<
 	{
 		orderBy(getAttribute(WAREHOUSE_UPDATED_DATE_COLUMN_NAME), OrderByType.DESC);
 		return (J)this;
+	}
+
+	/**
+	 * Dynamically applies a transport-neutral {@link WarehouseQuerySpec} to this builder.
+	 *
+	 * <p>This is the single reusable entry point used by the GraphQL (and any other) layer to
+	 * build an EntityAssist query from external input. It applies, in order:</p>
+	 * <ol>
+	 *     <li>enterprise scoping via {@link IQueryBuilderEnterprise#withEnterprise}</li>
+	 *     <li>active-flag range via {@link IQueryBuilderFlags#inActiveRange()} (when requested)</li>
+	 *     <li>effective date range via {@code inDateRange()} (when requested)</li>
+	 *     <li>each dynamic {@link WarehouseQueryFilter} via dot-notation {@code where(path, operand, value)}</li>
+	 *     <li>an optional order-by attribute</li>
+	 *     <li>pagination via {@code setFirstResults} / {@code setMaxResults}</li>
+	 * </ol>
+	 *
+	 * <p>The final built query is then executed by the caller (e.g. {@code getAll()} / {@code getCount()}).</p>
+	 *
+	 * @param spec the query specification, may be {@code null}
+	 * @return this builder for chaining
+	 */
+	@SuppressWarnings("unchecked")
+	public J applyQuerySpec(WarehouseQuerySpec spec)
+	{
+		if (spec == null)
+		{
+			return (J) this;
+		}
+		if (spec.getEnterprise() != null)
+		{
+			withEnterprise(spec.getEnterprise());
+		}
+		if (spec.isActiveOnly())
+		{
+			inActiveRange();
+		}
+		if (spec.isInDateRange())
+		{
+			inDateRange();
+		}
+		List<WarehouseQueryFilter> filters = spec.getFilters();
+		if (filters != null)
+		{
+			for (WarehouseQueryFilter filter : filters)
+			{
+				if (filter == null || filter.getPath() == null)
+				{
+					continue;
+				}
+				if (filter.getValues() != null && !filter.getValues().isEmpty())
+				{
+					where(filter.getPath(), filter.getOperand(), filter.getValues());
+				}
+				else
+				{
+					where(filter.getPath(), filter.getOperand(), filter.getValue());
+				}
+			}
+		}
+		if (spec.getOrderBy() != null && !spec.getOrderBy().isBlank())
+		{
+			orderBy(getAttribute(spec.getOrderBy()), spec.isDescending() ? OrderByType.DESC : OrderByType.ASC);
+		}
+		if (spec.getFirst() != null)
+		{
+			setFirstResults(spec.getFirst());
+		}
+		if (spec.getMax() != null)
+		{
+			setMaxResults(spec.getMax());
+		}
+		return (J) this;
 	}
 }
