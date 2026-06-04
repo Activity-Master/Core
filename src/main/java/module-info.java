@@ -115,6 +115,10 @@ module com.guicedee.activitymaster.fsdm {
     exports com.guicedee.activitymaster.fsdm;
     exports com.guicedee.activitymaster.fsdm.services;
 
+    // Internal password hashing utilities — exported only to the test module so the lifecycle
+    // tests can seed legacy-format credentials and exercise the migration path.
+    exports com.guicedee.activitymaster.fsdm.api to activity.master.test;
+
     exports com.guicedee.activitymaster.fsdm.services.system;
     exports com.guicedee.activitymaster.fsdm.db.entities.time;
 

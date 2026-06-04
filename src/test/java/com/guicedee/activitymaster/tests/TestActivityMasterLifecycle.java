@@ -2,11 +2,15 @@ package com.guicedee.activitymaster.tests;
 
 import com.google.inject.Key;
 import com.google.inject.name.Names;
+import com.guicedee.activitymaster.fsdm.api.Passwords;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedParty;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
+import com.guicedee.activitymaster.fsdm.client.services.exceptions.SecurityAccessException;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
@@ -17,6 +21,8 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
 import static com.guicedee.activitymaster.fsdm.DefaultEnterprise.TestEnterprise;
+import static com.guicedee.activitymaster.fsdm.client.services.classifications.InvolvedPartyClassifications.SecurityPassword;
+import static com.guicedee.activitymaster.fsdm.client.services.classifications.InvolvedPartyClassifications.SecurityPasswordSalt;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Log4j2
@@ -192,6 +198,117 @@ public class TestActivityMasterLifecycle {
                                                     );
                                         })
                                 )
+                        );
+            });
+            uni.await().atMost(Duration.ofMinutes(2));
+        }
+    }
+
+    /**
+     * Exercises the modern password mechanism and its migration path:
+     * <ol>
+     *   <li>The admin user (seeded in {@link #setup()}) authenticates and its credential is stored
+     *       in the modern self-describing PHC format ({@code $pbkdf2-sha256$...}).</li>
+     *   <li>An incorrect password is rejected.</li>
+     *   <li>A credential downgraded to the legacy PBKDF2-HMAC-SHA1 format (with a separately stored
+     *       salt) still authenticates and is transparently re-hashed to the modern format on
+     *       successful login — proving the upgrade/migration path.</li>
+     * </ol>
+     */
+    @Nested
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    class PasswordLifecycle {
+
+        private static final String ADMIN_USER = "admin";
+        private static final String ADMIN_PASSWORD = "!@adminadmin";
+
+        @Test
+        @Order(1)
+        public void testModernPasswordLoginAndFormat() {
+            var uni = sessionFactory.withTransaction(session -> {
+                IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+                ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+                IPasswordsService<?> passwordsService = IGuiceContext.get(IPasswordsService.class);
+
+                return enterpriseService.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> systemsService.getActivityMaster(session, (IEnterprise<?, ?>) ent)
+                                .chain(sysObj -> {
+                                    ISystems<?, ?> sys = (ISystems<?, ?>) sysObj;
+                                    return passwordsService.findByUsernameAndPassword(session, ADMIN_USER, ADMIN_PASSWORD, sys, true)
+                                            .invoke(party -> assertNotNull(party, "Admin should authenticate with the correct password"))
+                                            .chain(party -> ((IInvolvedParty<?, ?>) party).findClassification(session, SecurityPassword, sys)
+                                                    .invoke(rel -> {
+                                                        assertNotNull(rel, "Stored password credential should exist");
+                                                        Assertions.assertTrue(rel.getValue().startsWith("$pbkdf2-sha256$"),
+                                                                "Password must be stored in the modern PHC format, was: " + rel.getValue());
+                                                    }));
+                                })
+                        );
+            });
+            uni.await().atMost(Duration.ofMinutes(2));
+        }
+
+        @Test
+        @Order(2)
+        public void testIncorrectPasswordRejected() {
+            var uni = sessionFactory.withTransaction(session -> {
+                IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+                ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+                IPasswordsService<?> passwordsService = IGuiceContext.get(IPasswordsService.class);
+
+                return enterpriseService.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> systemsService.getActivityMaster(session, (IEnterprise<?, ?>) ent)
+                                .chain(sysObj -> {
+                                    ISystems<?, ?> sys = (ISystems<?, ?>) sysObj;
+                                    return passwordsService.findByUsernameAndPassword(session, ADMIN_USER, "definitely-the-wrong-password", sys, true)
+                                            .onItem().transform(p -> Boolean.FALSE)
+                                            .onFailure(SecurityAccessException.class).recoverWithItem(Boolean.TRUE)
+                                            .invoke(rejected -> Assertions.assertTrue(rejected,
+                                                    "An incorrect password must be rejected with a SecurityAccessException"));
+                                })
+                        );
+            });
+            uni.await().atMost(Duration.ofMinutes(2));
+        }
+
+        @Test
+        @Order(3)
+        public void testLegacyPasswordMigratedOnLogin() {
+            var uni = sessionFactory.withTransaction(session -> {
+                IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+                ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+                IPasswordsService<?> passwordsService = IGuiceContext.get(IPasswordsService.class);
+
+                return enterpriseService.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> systemsService.getActivityMaster(session, (IEnterprise<?, ?>) ent)
+                                .chain(sysObj -> {
+                                    ISystems<?, ?> sys = (ISystems<?, ?>) sysObj;
+                                    return passwordsService.findByUsername(session, ADMIN_USER, sys)
+                                            .chain(partyObj -> {
+                                                IInvolvedParty<?, ?> party = (IInvolvedParty<?, ?>) partyObj;
+
+                                                // Seed a LEGACY credential (PBKDF2-HMAC-SHA1 + integer-encoded salt) for the same password
+                                                Passwords pw = new Passwords();
+                                                byte[] salt = pw.getNextSalt();
+                                                byte[] hash = pw.hash(ADMIN_PASSWORD.toCharArray(), salt);
+                                                String legacyPass = pw.integerEncrypt(hash);
+                                                String legacySalt = pw.integerEncrypt(salt);
+
+                                                return party.addOrUpdateClassification(session, SecurityPassword, null, legacyPass, sys)
+                                                        .chain(() -> party.addOrUpdateClassification(session, SecurityPasswordSalt, null, legacySalt, sys))
+                                                        // Confirm the stored credential is now in the legacy (non-PHC) format
+                                                        .chain(() -> party.findClassification(session, SecurityPassword, sys)
+                                                                .invoke(rel -> Assertions.assertFalse(rel.getValue().startsWith("$"),
+                                                                        "Seeded legacy hash should not be in PHC format")))
+                                                        // Authenticate — this should succeed AND upgrade the stored hash
+                                                        .chain(() -> passwordsService.findByUsernameAndPassword(session, ADMIN_USER, ADMIN_PASSWORD, sys, true)
+                                                                .invoke(p -> assertNotNull(p, "Legacy credential should still authenticate")))
+                                                        // Verify the credential was migrated to the modern PHC format
+                                                        .chain(() -> party.findClassification(session, SecurityPassword, sys)
+                                                                .invoke(rel -> Assertions.assertTrue(rel.getValue().startsWith("$pbkdf2-sha256$"),
+                                                                        "After login the legacy hash must be migrated to the modern PHC format, was: " + rel.getValue())));
+                                            });
+                                })
                         );
             });
             uni.await().atMost(Duration.ofMinutes(2));
