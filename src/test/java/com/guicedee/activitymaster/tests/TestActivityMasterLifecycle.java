@@ -314,4 +314,102 @@ public class TestActivityMasterLifecycle {
             uni.await().atMost(Duration.ofMinutes(2));
         }
     }
+
+    /**
+     * Verifies that row-level security is <em>opt-in</em>: it only activates when the
+     * {@link ActivityMasterConfiguration#isSecurityEnabled() security flag} is set.
+     * <p>
+     * The flag is stored in the {@code CallScopeProperties} of the active call scope, which is
+     * backed by a Vert.x context. The plain JUnit test thread has no Vert.x context, so the toggling
+     * assertions are executed inside a freshly entered call scope on a Vert.x context.
+     * <ul>
+     *   <li>Security is enabled by default (secure-by-default) inside a fresh call scope.</li>
+     *   <li>Clearing the flag deactivates security for the current call scope.</li>
+     *   <li>Re-setting the flag re-activates it.</li>
+     *   <li>{@link ActivityMasterConfiguration#configureThread} propagates the flag onto the scope.</li>
+     *   <li>With no active call scope the flag falls back to the secure default (enabled).</li>
+     * </ul>
+     */
+    @Nested
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    class SecurityFlagLifecycle {
+
+        /**
+         * Executes {@code action} inside a started call scope on a Vert.x context and returns its result.
+         */
+        private <T> T inCallScope(java.util.function.Supplier<T> action) {
+            io.vertx.core.Vertx vertx = IGuiceContext.get(io.vertx.core.Vertx.class);
+            com.guicedee.client.scopes.CallScoper scoper = IGuiceContext.get(com.guicedee.client.scopes.CallScoper.class);
+            return Uni.createFrom().<T>emitter(em -> vertx.runOnContext(v -> {
+                        boolean entered = false;
+                        try {
+                            if (!scoper.isStartedScope()) {
+                                scoper.enterQuietly();
+                                entered = true;
+                            }
+                            em.complete(action.get());
+                        } catch (Throwable t) {
+                            em.fail(t);
+                        } finally {
+                            if (entered) {
+                                scoper.exitQuietly();
+                            }
+                        }
+                    }))
+                    .await().atMost(Duration.ofSeconds(30));
+        }
+
+        @Test
+        @Order(1)
+        public void testSecurityEnabledByDefaultWithinScope() {
+            Boolean enabled = inCallScope(() -> ActivityMasterConfiguration.get().isSecurityEnabled());
+            Assertions.assertTrue(enabled,
+                    "Security must default to enabled (secure-by-default) inside a fresh call scope");
+        }
+
+        @Test
+        @Order(2)
+        public void testSecurityDeactivatesWhenFlagCleared() {
+            boolean[] state = inCallScope(() -> {
+                ActivityMasterConfiguration config = ActivityMasterConfiguration.get();
+                boolean def = config.isSecurityEnabled();
+                config.setSecurityEnabled(false);
+                boolean off = config.isSecurityEnabled();
+                config.setSecurityEnabled(true);
+                boolean on = config.isSecurityEnabled();
+                return new boolean[]{def, off, on};
+            });
+            Assertions.assertTrue(state[0], "Security must start enabled by default");
+            Assertions.assertFalse(state[1], "Security must be inactive once the flag is explicitly cleared");
+            Assertions.assertTrue(state[2], "Security must re-activate once the flag is set again");
+        }
+
+        @Test
+        @Order(3)
+        public void testConfigureThreadHonoursSecurityFlag() {
+            boolean[] state = inCallScope(() -> {
+                ActivityMasterConfiguration config = ActivityMasterConfiguration.get();
+                config.configureThread(new ActivityMasterConfiguration.ActivityMasterConfigurationDTO()
+                        .setEnterpriseName(TestEnterprise.name())
+                        .setSecurities(false));
+                boolean off = config.isSecurityEnabled();
+                config.configureThread(new ActivityMasterConfiguration.ActivityMasterConfigurationDTO()
+                        .setEnterpriseName(TestEnterprise.name())
+                        .setSecurities(true));
+                boolean on = config.isSecurityEnabled();
+                return new boolean[]{off, on};
+            });
+            Assertions.assertFalse(state[0], "configureThread must deactivate security when the DTO flag is false");
+            Assertions.assertTrue(state[1], "configureThread must activate security when the DTO flag is true");
+        }
+
+        @Test
+        @Order(4)
+        public void testSecurityFallsBackToSecureDefaultWithoutScope() {
+            // Outside any active call scope (plain test thread) the flag must fall back to the
+            // secure default — security is ON — so it can never be silently disabled.
+            Assertions.assertTrue(ActivityMasterConfiguration.get().isSecurityEnabled(),
+                    "With no active call scope, security must fall back to the secure default (enabled)");
+        }
+    }
 }

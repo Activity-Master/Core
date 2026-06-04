@@ -224,10 +224,6 @@ module com.guicedee.activitymaster.fsdm {
     exports com.guicedee.activitymaster.fsdm.db.entities.time.builders;
     opens com.guicedee.activitymaster.fsdm.db.entities.time.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
 
-    opens com.guicedee.activitymaster.fsdm.db.hierarchies to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
-
-    exports com.guicedee.activitymaster.fsdm.db.hierarchies.builders;
-    opens com.guicedee.activitymaster.fsdm.db.hierarchies.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
 
 
     exports com.guicedee.activitymaster.fsdm.injections;

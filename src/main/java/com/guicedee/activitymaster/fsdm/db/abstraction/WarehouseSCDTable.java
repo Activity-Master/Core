@@ -32,16 +32,15 @@ import static com.guicedee.client.IGuiceContext.get;
  */
 @MappedSuperclass
 public abstract class WarehouseSCDTable<
-                                               J extends WarehouseSCDTable<J, Q, I, S>,
-                                               Q extends QueryBuilderSCD<Q, J, I,?>,
-                                               I extends java.util.UUID,
-                                               S extends WarehouseSecurityTable<S, ?, I>
-                                               >
+        J extends WarehouseSCDTable<J, Q, I, S>,
+        Q extends QueryBuilderSCD<Q, J, I, ?>,
+        I extends java.util.UUID,
+        S extends WarehouseSecurityTable<S, ?, I>
+        >
         extends WarehouseTable<J, Q, I, S>
         implements IContainsActiveFlags<J>,
-                           IContainsEnterprise<J>,
-                           IContainsSystem<J>
-{
+        IContainsEnterprise<J>,
+        IContainsSystem<J> {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -62,27 +61,24 @@ public abstract class WarehouseSCDTable<
     private Systems systemID;
 
 
-    public WarehouseSCDTable()
-    {
+    public WarehouseSCDTable() {
     }
 
     @NotNull
     @SuppressWarnings("unchecked")
-    public Class<S> findPersistentSecurityClass()
-    {
+    public Class<S> findPersistentSecurityClass() {
         return (Class<S>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];
     }
 
     @SuppressWarnings("unchecked")
-    protected J configureDefaultsSystemValues(Mutiny.Session session, Systems requestingSystem)
-    {
+    protected J configureDefaultsSystemValues(Mutiny.Session session, Systems requestingSystem) {
         setSystemID(requestingSystem);
         IActiveFlagService<?> service = IGuiceContext.get(IActiveFlagService.class);
         service.getActiveFlag(session, requestingSystem.getEnterpriseID())
-                       .chain(flag->{
-                           setActiveFlagID(flag);
-                           return Uni.createFrom().voidItem();
-                       })
+                .chain(flag -> {
+                    setActiveFlagID(flag);
+                    return Uni.createFrom().voidItem();
+                })
                 .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
         setEnterpriseID(requestingSystem.getEnterpriseID());
         return (J) this;
@@ -90,12 +86,11 @@ public abstract class WarehouseSCDTable<
 
 
     @SuppressWarnings("unchecked")
-    public Uni<J> remove(Mutiny.Session session)
-    {
+    public Uni<J> remove(Mutiny.Session session) {
         IActiveFlagService<?> service = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-        return (Uni)get(ActiveFlagSystem.class).getSystemToken(session, getEnterpriseID())
-                .chain(systemToken -> 
-                    service.getDeletedFlag(session, getEnterpriseID(), systemToken)
+        return (Uni) get(ActiveFlagSystem.class).getSystemToken(session, getEnterpriseID())
+                .chain(systemToken ->
+                        service.getDeletedFlag(session, getEnterpriseID(), systemToken)
                 )
                 .onItem()
                 .invoke(flag -> {
@@ -104,17 +99,16 @@ public abstract class WarehouseSCDTable<
                 })
                 .chain(flag -> session.merge(this))
                 .log("Removed record from database")
-        ;
+                ;
     }
 
 
     @SuppressWarnings("unchecked")
-    public Uni<J> archive(Mutiny.Session session)
-    {
+    public Uni<J> archive(Mutiny.Session session) {
         IActiveFlagService<?> service = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
         return (Uni) get(ActiveFlagSystem.class).getSystemToken(session, getEnterpriseID())
-                .chain(systemToken -> 
-                    service.getArchivedFlag(session, getEnterpriseID(), systemToken)
+                .chain(systemToken ->
+                        service.getArchivedFlag(session, getEnterpriseID(), systemToken)
                 )
                 .onItem()
                 .invoke(flag -> {
@@ -125,27 +119,23 @@ public abstract class WarehouseSCDTable<
                 .log("Archived record in database");
     }
 
-    public ActiveFlag getActiveFlagID()
-    {
+    public ActiveFlag getActiveFlagID() {
         return this.activeFlagID;
     }
 
     @SuppressWarnings("unchecked")
-    public @org.jspecify.annotations.NonNull J setActiveFlagID(IActiveFlag<?, ?> activeFlagID)
-    {
+    public @org.jspecify.annotations.NonNull J setActiveFlagID(IActiveFlag<?, ?> activeFlagID) {
         this.activeFlagID = (ActiveFlag) activeFlagID;
         return (J) this;
     }
 
 
-    public Systems getSystemID()
-    {
+    public Systems getSystemID() {
         return this.systemID;
     }
 
     @SuppressWarnings("unchecked")
-    public @org.jspecify.annotations.NonNull J setSystemID(ISystems<?, ?> systemID)
-    {
+    public @org.jspecify.annotations.NonNull J setSystemID(ISystems<?, ?> systemID) {
         this.systemID = (Systems) systemID;
         return (J) this;
     }
