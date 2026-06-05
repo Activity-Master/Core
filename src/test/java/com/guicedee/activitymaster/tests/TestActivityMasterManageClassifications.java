@@ -332,4 +332,50 @@ public class TestActivityMasterManageClassifications {
           });
     })).await().atMost(java.time.Duration.ofMinutes(2));
   }
+
+  /**
+   * Validates the batched {@code findClassificationValues} read path introduced for read-only
+   * hydration (GraphQL/REST DTO assembly). Adds several classifications to a single entity, then
+   * asserts that the single security-checked batched read returns every {@code name -> value} pair,
+   * and that those values match the per-field {@code findClassification} read path exactly.
+   */
+  @Test
+  public void testFindClassificationValues_BatchedReadMatchesPerFieldReads() {
+    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+      IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+      ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+      IArrangementsService<?> arrangementsService = IGuiceContext.get(IArrangementsService.class);
+      return enterpriseService.getEnterprise(session, TestEnterprise.name())
+          .chain(ent -> systemsService.getActivityMaster(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent))
+          .chain(sys -> arrangementsService.createArrangementType(session, "MC_OrderType_FCV", sys)
+              .chain(type -> arrangementsService.create(session, "MC_OrderType_FCV", null,
+                  com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification.name(), "ARR-FCV-1", sys))
+              .chain(arr -> {
+                String n1 = "MC_FCV_Alpha"; String v1 = "alpha-1";
+                String n2 = "MC_FCV_Beta";  String v2 = "beta-2";
+                String n3 = "MC_FCV_Gamma"; String v3 = "gamma-3";
+                IArrangement<?, ?> a = (IArrangement<?, ?>) arr;
+                return ensureClassification(session, sys, n1)
+                    .chain(() -> ensureClassification(session, sys, n2))
+                    .chain(() -> ensureClassification(session, sys, n3))
+                    .chain(() -> a.addClassification(session, n1, v1, sys))
+                    .chain(() -> a.addClassification(session, n2, v2, sys))
+                    .chain(() -> a.addClassification(session, n3, v3, sys))
+                    // single batched, security-checked read of every classification on the entity
+                    .chain(() -> a.findClassificationValues(session, sys))
+                    .invoke(values -> {
+                      Assertions.assertNotNull(values, "Batched classification map should not be null");
+                      Assertions.assertEquals(v1, values.get(n1), "Alpha value via batched read");
+                      Assertions.assertEquals(v2, values.get(n2), "Beta value via batched read");
+                      Assertions.assertEquals(v3, values.get(n3), "Gamma value via batched read");
+                    })
+                    // equivalence: the per-field read path must yield the same value
+                    .chain(() -> a.findClassification(session, n2, sys)
+                        .invoke(rel -> Assertions.assertEquals(v2, ((IRelationshipValue<?, ?, ?>) rel).getValue(),
+                            "Per-field read must match batched read for Beta")))
+                    .replaceWith(arr);
+              })
+          );
+    })).await().atMost(Duration.ofMinutes(2));
+  }
 }
