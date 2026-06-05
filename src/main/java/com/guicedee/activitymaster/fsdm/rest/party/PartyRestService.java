@@ -19,6 +19,10 @@ import com.guicedee.activitymaster.fsdm.client.services.rest.RelationshipUpdateE
 import com.guicedee.client.utils.Pair;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple4;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.*;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
@@ -26,6 +30,7 @@ import org.hibernate.reactive.mutiny.Mutiny;
 import static com.entityassist.enumerations.Operand.Equals;
 
 @Path("{enterprise}/party")
+@Tag(name = "Parties", description = "Involved party (person/organisation) lifecycle and classification/identification search.")
 @Log4j2
 public class PartyRestService {
 
@@ -44,8 +49,12 @@ public class PartyRestService {
 
     @POST
     @Path("{requestingSystemName}/find")
-    public Uni<PartyDTO> find(@PathParam("enterprise") String enterpriseName,
-                              @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Find a party",
+            description = "Returns an involved party by id, hydrating only the relationship categories named in the request's includes list.")
+    @ApiResponse(responseCode = "200", description = "Party found (relationships populated per includes)")
+    @ApiResponse(responseCode = "500", description = "Lookup failure")
+    public Uni<PartyDTO> find(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                              @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                               PartyFindDTO findDto) {
         UUID partyId = findDto.partyId;
         List<PartyDataIncludes> includesList = findDto.includes;
@@ -81,8 +90,12 @@ public class PartyRestService {
 
     @POST
     @Path("{requestingSystemName}/search/classification")
-    public Uni<List<PartyDTO>> searchByClassification(@PathParam("enterprise") String enterpriseName,
-                                                       @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Search parties by classification",
+            description = "Returns parties linked to the given classification name (optionally filtered by classification value), capped by maxResults and hydrated per includes.")
+    @ApiResponse(responseCode = "200", description = "Matching parties returned")
+    @ApiResponse(responseCode = "500", description = "Search failure")
+    public Uni<List<PartyDTO>> searchByClassification(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                                                       @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                                        PartySearchByClassificationDTO searchDto) {
         return SessionUtils.<List<PartyDTO>>withActivityMaster(enterpriseName, requestingSystemName,
                 (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
@@ -147,8 +160,12 @@ public class PartyRestService {
 
     @POST
     @Path("{requestingSystemName}/search/identification")
-    public Uni<List<PartyDTO>> searchByIdentification(@PathParam("enterprise") String enterpriseName,
-                                                       @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Search parties by identification",
+            description = "Returns parties holding the given identification type and value, capped by maxResults and hydrated per includes.")
+    @ApiResponse(responseCode = "200", description = "Matching parties returned")
+    @ApiResponse(responseCode = "500", description = "Search failure")
+    public Uni<List<PartyDTO>> searchByIdentification(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                                                       @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                                        PartySearchByIdentificationDTO searchDto) {
         return SessionUtils.<List<PartyDTO>>withActivityMaster(enterpriseName, requestingSystemName,
                 (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
@@ -203,26 +220,32 @@ public class PartyRestService {
 
     @POST
     @Path("{requestingSystemName}/create")
-    public Uni<PartyDTO> create(@PathParam("enterprise") String enterpriseName,
-                                @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Create a party",
+            description = "Creates an involved party (organic person or organisation) with an optional seed identification, then persists supplied relationships asynchronously. The response echoes the submitted DTO immediately.")
+    @ApiResponse(responseCode = "200", description = "Party created; relationships persist asynchronously")
+    @ApiResponse(responseCode = "500", description = "Creation failure")
+    public Uni<PartyDTO> create(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                                @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                 PartyCreateDTO dto) {
-        return SessionUtils.<ISystems<?, ?>>withActivityMaster(enterpriseName, requestingSystemName,
-                (java.util.function.Function<Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]>, Uni<ISystems<?, ?>>>) tuple ->
-                        Uni.createFrom().item(tuple.getItem3())
-        ).chain(system -> involvedPartyService.create(null, system,dto.key,
-                        new Pair<>(dto.identificationType, dto.identificationValue), dto.organic)
-                .map(party -> {
-                    UUID partyId = party.getId();
-                    if (hasAnyRelationship(dto)) {
-                        persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, partyId, dto);
-                    }
+        // Run the create inside the managed session/transaction. The create MUST use the session
+        // provided by withActivityMaster — passing null leaves the EntityAssist query builder without
+        // an entity manager (NPE in QueryBuilder.getQuery()).
+        return SessionUtils.<PartyDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.Session session = tuple.getItem1();
+            ISystems<?, ?> system = tuple.getItem3();
+            return involvedPartyService.create(session, system, dto.key,
+                            new Pair<>(dto.identificationType, dto.identificationValue), dto.organic)
+                    .map(party -> {
+                        UUID partyId = party.getId();
+                        if (hasAnyRelationship(dto)) {
+                            persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, partyId, dto);
+                        }
 
-                    return buildCreateResponseFromDto((InvolvedParty) party, dto);
-                })
-                .onFailure().invoke(e ->
-                        log.error("Error creating party for enterprise {} and system {}: {}",
-                                enterpriseName, requestingSystemName, e.getMessage(), e)
-                )
+                        return buildCreateResponseFromDto((InvolvedParty) party, dto);
+                    });
+        }).onFailure().invoke(e ->
+                log.error("Error creating party for enterprise {} and system {}: {}",
+                        enterpriseName, requestingSystemName, e.getMessage(), e)
         );
     }
 
@@ -232,8 +255,12 @@ public class PartyRestService {
 
     @PUT
     @Path("{requestingSystemName}/update")
-    public Uni<PartyDTO> update(@PathParam("enterprise") String enterpriseName,
-                                @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Update a party",
+            description = "Applies addOrUpdate (upsert by name) and delete (expire by name) operations to each relationship category. Relationship persistence is fire-and-forget; the response echoes the intended addOrUpdate state.")
+    @ApiResponse(responseCode = "200", description = "Update accepted; relationships persist asynchronously")
+    @ApiResponse(responseCode = "500", description = "Update failure")
+    public Uni<PartyDTO> update(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                                @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                 PartyUpdateDTO dto) {
         UUID partyId = dto.partyId;
         // Step 1: Find the party in its own session (just to validate it exists)

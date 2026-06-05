@@ -128,6 +128,17 @@
             <groupId>com.guicedee</groupId>
         </dependency>
 
+        <!-- OpenAPI 3.1 spec generation + browsable Swagger UI -->
+        <dependency>
+            <groupId>com.guicedee</groupId>
+            <artifactId>openapi</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.guicedee</groupId>
+            <artifactId>swagger-ui</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.guicedee</groupId>
             <artifactId>graphql</artifactId>

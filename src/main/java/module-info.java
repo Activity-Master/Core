@@ -17,6 +17,9 @@ module com.guicedee.activitymaster.fsdm {
     requires transitive com.guicedee.vertx.graphql;
     requires transitive com.guicedee.service.registry;
 
+    // OpenAPI 3.1 (Swagger) annotation support + browsable UI
+    requires transitive com.guicedee.openapi;
+
 
     requires transitive com.fasterxml.jackson.databind;
 
@@ -131,6 +134,8 @@ module com.guicedee.activitymaster.fsdm {
     opens com.guicedee.activitymaster.fsdm.rest.resourceitem to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
     opens com.guicedee.activitymaster.fsdm.rest.event to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
     opens com.guicedee.activitymaster.fsdm.rest.party to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
+    opens com.guicedee.activitymaster.fsdm.rest.classification to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
+    opens com.guicedee.activitymaster.fsdm.rest.rules to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
 
 
 
@@ -254,4 +259,11 @@ module com.guicedee.activitymaster.fsdm {
     exports com.guicedee.activitymaster.fsdm.rest.resourceitem;
     exports com.guicedee.activitymaster.fsdm.rest.event;
     exports com.guicedee.activitymaster.fsdm.rest.party;
+    exports com.guicedee.activitymaster.fsdm.rest.product;
+    exports com.guicedee.activitymaster.fsdm.rest.classification;
+    exports com.guicedee.activitymaster.fsdm.rest.rules;
+
+    // App-level @OpenAPIDefinition holder — scanned for the global API document
+    exports com.guicedee.activitymaster.fsdm.rest;
+    opens com.guicedee.activitymaster.fsdm.rest to com.google.guice, com.fasterxml.jackson.databind, com.guicedee.rest;
 }

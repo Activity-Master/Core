@@ -22,6 +22,10 @@ import com.guicedee.activitymaster.fsdm.client.services.rest.PivotEntry;
 import com.guicedee.activitymaster.fsdm.client.services.rest.RelationshipUpdateEntry;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple4;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.NoResultException;
 import jakarta.ws.rs.*;
 import lombok.extern.log4j.Log4j2;
@@ -30,6 +34,7 @@ import org.hibernate.reactive.mutiny.Mutiny;
 import static com.entityassist.enumerations.Operand.Equals;
 
 @Path("{enterprise}/arrangement")
+@Tag(name = "Arrangements", description = "Resource arrangements and bookings, including the optimised pivot read.")
 @Log4j2
 public class ArrangementRestService {
 
@@ -45,8 +50,12 @@ public class ArrangementRestService {
 
     @POST
     @Path("{requestingSystemName}/find")
-    public Uni<ArrangementDTO> find(@PathParam("enterprise") String enterpriseName,
-                                    @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Find an arrangement",
+            description = "Returns an arrangement by id, hydrating only the relationship categories named in the request's includes list.")
+    @ApiResponse(responseCode = "200", description = "Arrangement found (null body if no result)")
+    @ApiResponse(responseCode = "500", description = "Lookup failure")
+    public Uni<ArrangementDTO> find(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                                    @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                     ArrangementFindDTO findDto) {
         UUID arrangementId = findDto.arrangementId;
         List<ArrangementDataIncludes> includesList = findDto.includes;
@@ -279,8 +288,12 @@ public class ArrangementRestService {
      */
     @POST
     @Path("{requestingSystemName}/pivot")
-    public Uni<ArrangementPivotResponse> findPivoted(@PathParam("enterprise") String enterpriseName,
-                                                     @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Pivot-read arrangement relationships",
+            description = "Single optimised native-SQL (UNION ALL) read returning rich entries (entity ref + value + timestamp) for the requested classification and type names in one database round-trip.")
+    @ApiResponse(responseCode = "200", description = "Pivoted classifications/types returned")
+    @ApiResponse(responseCode = "500", description = "Pivot query failure")
+    public Uni<ArrangementPivotResponse> findPivoted(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                                                     @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                                      ArrangementPivotRequest request) {
         UUID arrangementId = request.arrangementId;
         return SessionUtils.<ArrangementPivotResponse>withActivityMaster(enterpriseName, requestingSystemName,
@@ -405,32 +418,38 @@ public class ArrangementRestService {
 
     @POST
     @Path("{requestingSystemName}/create")
-    public Uni<ArrangementDTO> create(@PathParam("enterprise") String enterpriseName,
-                                      @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Create an arrangement",
+            description = "Creates an arrangement with its primary type/classification, then persists supplied relationships asynchronously. The response echoes the submitted DTO immediately.")
+    @ApiResponse(responseCode = "200", description = "Arrangement created; relationships persist asynchronously")
+    @ApiResponse(responseCode = "500", description = "Creation failure")
+    public Uni<ArrangementDTO> create(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                                      @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                       ArrangementCreateDTO dto) {
-        // Step 1: Create the arrangement — ArrangementsService.create() manages its own session+transaction
-        return SessionUtils.<ISystems<?, ?>>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            return Uni.createFrom().item(tuple.getItem3());
-        }).chain(system -> arrangementsService.create(null,dto.key, dto.type, dto.classification, dto.typeValue, system)
-                .map(arrangement -> {
-                    UUID arrangementId = arrangement.getId();
-                    boolean hasRelationships = (dto.classifications != null && !dto.classifications.isEmpty())
-                            || (dto.parties != null && !dto.parties.isEmpty())
-                            || (dto.resources != null && !dto.resources.isEmpty())
-                            || (dto.rules != null && !dto.rules.isEmpty())
-                            || (dto.products != null && !dto.products.isEmpty())
-                            || (dto.childArrangements != null && !dto.childArrangements.isEmpty());
+        // Run the create inside the managed session/transaction. The create MUST use the session
+        // provided by withActivityMaster — passing null leaves the EntityAssist query builder without
+        // an entity manager (NPE in QueryBuilder.getQuery()).
+        return SessionUtils.<ArrangementDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.Session session = tuple.getItem1();
+            ISystems<?, ?> system = tuple.getItem3();
+            return arrangementsService.create(session, dto.key, dto.type, dto.classification, dto.typeValue, system)
+                    .map(arrangement -> {
+                        UUID arrangementId = arrangement.getId();
+                        boolean hasRelationships = (dto.classifications != null && !dto.classifications.isEmpty())
+                                || (dto.parties != null && !dto.parties.isEmpty())
+                                || (dto.resources != null && !dto.resources.isEmpty())
+                                || (dto.rules != null && !dto.rules.isEmpty())
+                                || (dto.products != null && !dto.products.isEmpty())
+                                || (dto.childArrangements != null && !dto.childArrangements.isEmpty());
 
-                    if (hasRelationships) {
-                        persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, arrangementId, dto);
-                    }
+                        if (hasRelationships) {
+                            persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, arrangementId, dto);
+                        }
 
-                    return buildCreateResponseFromDto((Arrangement) arrangement, dto);
-                })
-                .onFailure().invoke(e ->
-                        log.error("Error creating arrangement for enterprise {} and system {}: {}",
-                                enterpriseName, requestingSystemName, e.getMessage(), e)
-                )
+                        return buildCreateResponseFromDto((Arrangement) arrangement, dto);
+                    });
+        }).onFailure().invoke(e ->
+                log.error("Error creating arrangement for enterprise {} and system {}: {}",
+                        enterpriseName, requestingSystemName, e.getMessage(), e)
         );
     }
 
@@ -757,8 +776,12 @@ public class ArrangementRestService {
      */
     @PUT
     @Path("{requestingSystemName}/update")
-    public Uni<ArrangementDTO> update(@PathParam("enterprise") String enterpriseName,
-                                      @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Update an arrangement",
+            description = "Applies addOrUpdate (upsert by name) and delete (expire by name) operations to each relationship category. Child arrangement keys are UUID strings. Persistence is fire-and-forget; the response echoes the intended addOrUpdate state.")
+    @ApiResponse(responseCode = "200", description = "Update accepted; relationships persist asynchronously")
+    @ApiResponse(responseCode = "500", description = "Update failure")
+    public Uni<ArrangementDTO> update(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                                      @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                       ArrangementUpdateDTO dto) {
         UUID arrangementId = dto.arrangementId;
         // Step 1: Find the arrangement in its own session (just to validate it exists)

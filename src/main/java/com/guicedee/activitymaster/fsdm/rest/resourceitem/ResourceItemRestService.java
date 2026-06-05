@@ -16,6 +16,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
 import com.guicedee.activitymaster.fsdm.client.services.rest.RelationshipUpdateEntry;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple4;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.NoResultException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -25,6 +29,7 @@ import org.hibernate.reactive.mutiny.Mutiny;
 import static com.entityassist.enumerations.Operand.Equals;
 
 @Path("{enterprise}/resource-item")
+@Tag(name = "Resource Items", description = "Physical and virtual resource catalogue, including binary data management.")
 @Log4j2
 public class ResourceItemRestService
 {
@@ -44,8 +49,12 @@ public class ResourceItemRestService
     @Path("{requestingSystemName}/find")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<ResourceItemDTO> find(@PathParam("enterprise") String enterpriseName,
-                                     @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Find a resource item",
+            description = "Returns a resource item by id, hydrating only the relationship categories named in the request's includes list.")
+    @ApiResponse(responseCode = "200", description = "Resource item found (relationships populated per includes)")
+    @ApiResponse(responseCode = "500", description = "Lookup failure")
+    public Uni<ResourceItemDTO> find(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                                     @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                      ResourceItemFindDTO findDto) {
         UUID resourceItemId = findDto.resourceItemId;
         List<ResourceItemDataIncludes> includesList = findDto.includes;
@@ -87,8 +96,12 @@ public class ResourceItemRestService
     @Path("{requestingSystemName}/search")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<List<ResourceItemDTO>> search(@PathParam("enterprise") String enterpriseName,
-                                              @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Search resource items by classification",
+            description = "Returns resource items of a given type matching a classification name/value, with optional sorting and a maxResults cap, hydrated per includes.")
+    @ApiResponse(responseCode = "200", description = "Matching resource items returned")
+    @ApiResponse(responseCode = "500", description = "Search failure")
+    public Uni<List<ResourceItemDTO>> search(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                                              @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                               ResourceItemSearchDTO searchDto) {
         return SessionUtils.<List<ResourceItemDTO>>withActivityMaster(enterpriseName, requestingSystemName,
             (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
@@ -166,22 +179,28 @@ public class ResourceItemRestService
     @Path("{requestingSystemName}/create")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<ResourceItemDTO> create(@PathParam("enterprise") String enterpriseName,
-                                       @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Create a resource item",
+            description = "Creates a resource item (optionally with inline binary data), then persists supplied relationships asynchronously. The response echoes the submitted DTO immediately.")
+    @ApiResponse(responseCode = "200", description = "Resource item created; relationships persist asynchronously")
+    @ApiResponse(responseCode = "500", description = "Creation failure")
+    public Uni<ResourceItemDTO> create(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                                       @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                        ResourceItemCreateDTO dto) {
-        // Step 1: Resolve system, then create — ResourceItemService.create() manages its own session
-        return SessionUtils.<ISystems<?,?>>withActivityMaster(enterpriseName, requestingSystemName,
-            (java.util.function.Function<Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]>, Uni<ISystems<?,?>>>) tuple ->
-                Uni.createFrom().item(tuple.getItem3())
-        ).chain(system -> {
+        // Resolve enterprise/system context and run the create inside the managed session/transaction.
+        // The create MUST use the session provided by withActivityMaster — passing null leaves the
+        // EntityAssist query builder without an entity manager (NPE in QueryBuilder.getQuery()).
+        return SessionUtils.<ResourceItemDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.Session session = tuple.getItem1();
+            ISystems<?, ?> system = tuple.getItem3();
+
             Uni<IResourceItem<?, ?>> createUni;
             if (dto.data != null && dto.data.length > 0)
             {
-                createUni = resourceItemService.create(null, dto.type,dto.key, dto.dataValue, dto.data, system);
+                createUni = resourceItemService.create(session, dto.type, dto.key, dto.dataValue, dto.data, system);
             }
             else
             {
-                createUni = resourceItemService.create(null, dto.type,dto.key, dto.dataValue, system);
+                createUni = resourceItemService.create(session, dto.type, dto.key, dto.dataValue, system);
             }
 
             return createUni.map(resourceItem -> {
@@ -201,12 +220,12 @@ public class ResourceItemRestService
                 }
 
                 return buildCreateResponseFromDto(resourceItem, dto);
-            })
-            .onFailure().invoke(e ->
-                log.error("Error creating resource item for enterprise {} and system {}: {}",
-                        enterpriseName, requestingSystemName, e.getMessage(), e)
-            );
-        });
+            });
+        })
+        .onFailure().invoke(e ->
+            log.error("Error creating resource item for enterprise {} and system {}: {}",
+                    enterpriseName, requestingSystemName, e.getMessage(), e)
+        );
     }
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -217,8 +236,12 @@ public class ResourceItemRestService
     @Path("{requestingSystemName}/update")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<ResourceItemDTO> update(@PathParam("enterprise") String enterpriseName,
-                                       @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Update a resource item",
+            description = "Applies addOrUpdate (upsert by name) and delete (expire by name) operations to classifications, types and child links. Persistence is fire-and-forget; the response echoes the intended addOrUpdate state.")
+    @ApiResponse(responseCode = "200", description = "Update accepted; relationships persist asynchronously")
+    @ApiResponse(responseCode = "500", description = "Update failure")
+    public Uni<ResourceItemDTO> update(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                                       @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                        ResourceItemUpdateDTO dto) {
         UUID resourceItemId = dto.resourceItemId;
         // Step 1: Find the resource item in its own session (just to validate it exists)
@@ -249,8 +272,12 @@ public class ResourceItemRestService
      */
     @PATCH
     @Path("{requestingSystemName}/data")
-    public Uni<ResourceItemDTO> updateData(@PathParam("enterprise") String enterpriseName,
-                                            @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Replace resource item binary data",
+            description = "Replaces only the binary data payload of an existing resource item. No metadata, classifications or relationships are affected.")
+    @ApiResponse(responseCode = "200", description = "Binary data replaced")
+    @ApiResponse(responseCode = "500", description = "Update failure")
+    public Uni<ResourceItemDTO> updateData(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                                            @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                             ResourceItemUpdateDataDTO dto) {
         UUID resourceItemId = dto.resourceItemId;
         return SessionUtils.<ResourceItemDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
@@ -279,9 +306,13 @@ public class ResourceItemRestService
     @GET
     @Path("{requestingSystemName}/data/{resourceItemId}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Uni<byte[]> getData(@PathParam("enterprise") String enterpriseName,
-                               @PathParam("requestingSystemName") String requestingSystemName,
-                               @PathParam("resourceItemId") UUID resourceItemId) {
+    @Operation(summary = "Download resource item binary data",
+            description = "Streams the decrypted binary data of a resource item as application/octet-stream. Returns an empty body if the item is not found.")
+    @ApiResponse(responseCode = "200", description = "Binary data stream")
+    @ApiResponse(responseCode = "500", description = "Read failure")
+    public Uni<byte[]> getData(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                               @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
+                               @Parameter(description = "Resource item id") @PathParam("resourceItemId") UUID resourceItemId) {
         return SessionUtils.<byte[]>withActivityMaster(enterpriseName, requestingSystemName,
             (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
                 Mutiny.Session session = tuple.getItem1();

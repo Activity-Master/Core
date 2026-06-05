@@ -18,6 +18,10 @@ import com.guicedee.activitymaster.fsdm.client.services.rest.RelationshipUpdateE
 
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple4;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.*;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
@@ -25,6 +29,7 @@ import org.hibernate.reactive.mutiny.Mutiny;
 import static com.entityassist.enumerations.Operand.Equals;
 
 @Path("{enterprise}/event")
+@Tag(name = "Events", description = "Event and activity tracking — create, find, update and relationship management.")
 @Log4j2
 public class EventRestService {
 
@@ -43,8 +48,12 @@ public class EventRestService {
 
     @POST
     @Path("{requestingSystemName}/find")
-    public Uni<EventDTO> find(@PathParam("enterprise") String enterpriseName,
-                              @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Find an event",
+            description = "Returns an event by id, hydrating only the relationship categories named in the request's includes list.")
+    @ApiResponse(responseCode = "200", description = "Event found (relationships populated per includes)")
+    @ApiResponse(responseCode = "500", description = "Lookup failure")
+    public Uni<EventDTO> find(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                              @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                               EventFindDTO findDto) {
         UUID eventId = findDto.eventId;
         List<EventDataIncludes> includesList = findDto.includes;
@@ -80,30 +89,35 @@ public class EventRestService {
 
     @POST
     @Path("{requestingSystemName}/create")
-    public Uni<EventDTO> create(@PathParam("enterprise") String enterpriseName,
-                                @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Create an event",
+            description = "Creates an event from the first entry in 'types' as the primary type, then persists all supplied relationships asynchronously (fire-and-forget). The response echoes the submitted DTO immediately.")
+    @ApiResponse(responseCode = "200", description = "Event created; relationships persist asynchronously")
+    @ApiResponse(responseCode = "500", description = "Creation failure")
+    public Uni<EventDTO> create(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                                @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                 EventCreateDTO dto) {
-        // Step 1: Resolve system then create — EventsService.createEvent() manages its own session
+        // Run the create inside the managed session/transaction. The create MUST use the session
+        // provided by withActivityMaster — passing null leaves the EntityAssist query builder without
+        // an entity manager (NPE in QueryBuilder.getQuery()).
         //         Use the first entry in dto.types as the primary event type
         Map.Entry<String, String> primaryType = dto.types.entrySet().iterator().next();
-        return SessionUtils.<ISystems<?, ?>>withActivityMaster(enterpriseName, requestingSystemName,
-                (java.util.function.Function<Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]>, Uni<ISystems<?, ?>>>) tuple ->
-                        Uni.createFrom().item(tuple.getItem3())
-        ).chain(system -> eventService.createEvent(null, primaryType.getKey(), system)
-                .map(event -> {
-                    UUID eventId = event.getId();
-                    // Step 2: Fire-and-forget relationship persistence in parallel
-                    if (hasAnyRelationship(dto)) {
-                        persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, eventId, dto);
-                    }
+        return SessionUtils.<EventDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.Session session = tuple.getItem1();
+            ISystems<?, ?> system = tuple.getItem3();
+            return eventService.createEvent(session, primaryType.getKey(), system)
+                    .map(event -> {
+                        UUID eventId = event.getId();
+                        // Step 2: Fire-and-forget relationship persistence in parallel
+                        if (hasAnyRelationship(dto)) {
+                            persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, eventId, dto);
+                        }
 
-                    // Step 3: Build response immediately from the DTO input — no DB round-trip needed
-                    return buildCreateResponseFromDto((Event) event, dto);
-                })
-                .onFailure().invoke(e ->
-                        log.error("Error creating event for enterprise {} and system {}: {}",
-                                enterpriseName, requestingSystemName, e.getMessage(), e)
-                )
+                        // Step 3: Build response immediately from the DTO input — no DB round-trip needed
+                        return buildCreateResponseFromDto((Event) event, dto);
+                    });
+        }).onFailure().invoke(e ->
+                log.error("Error creating event for enterprise {} and system {}: {}",
+                        enterpriseName, requestingSystemName, e.getMessage(), e)
         );
     }
 
@@ -113,8 +127,12 @@ public class EventRestService {
 
     @PUT
     @Path("{requestingSystemName}/update")
-    public Uni<EventDTO> update(@PathParam("enterprise") String enterpriseName,
-                                @PathParam("requestingSystemName") String requestingSystemName,
+    @Operation(summary = "Update an event",
+            description = "Applies addOrUpdate (upsert by name) and delete (expire by name) operations to each relationship category. Relationship persistence is fire-and-forget; the response echoes the intended addOrUpdate state.")
+    @ApiResponse(responseCode = "200", description = "Update accepted; relationships persist asynchronously")
+    @ApiResponse(responseCode = "500", description = "Update failure")
+    public Uni<EventDTO> update(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
+                                @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                 EventUpdateDTO dto) {
         UUID eventId = dto.eventId;
         // Step 1: Find the event in its own session (just to validate it exists)
