@@ -247,7 +247,10 @@
 
             <property name="jakarta.persistence.validation.mode" value="none"/>
 
-            <!--<property name="hibernate.jdbc.batch_size" value="500"/>-->
+            <!-- JDBC batching: lets the batched, stateless-session default-security inserts
+                 (SecurityTokenSystem install path) be flushed as multi-row batches. -->
+            <property name="hibernate.jdbc.batch_size" value="50"/>
+            <property name="hibernate.jdbc.batch_versioned_data" value="true"/>
 
             <property name="hibernate.vertx.prepared_statement_cache.max_size" value="500"/>
 

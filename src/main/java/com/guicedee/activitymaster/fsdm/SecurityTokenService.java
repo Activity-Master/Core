@@ -5,9 +5,11 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.UserGroupSecurityTokenClassifications;
+import com.guicedee.activitymaster.fsdm.client.services.exceptions.SecurityAccessException;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.security.*;
@@ -180,6 +182,19 @@ public class SecurityTokenService
         log.debug("🔗 Linking security tokens: parent '{}' -> child '{}' with session: {}",
                 parent.getName(), child.getName(), session.hashCode());
 
+        // Enforce the canonical membership policy: once the base hierarchy is built the type folders are
+        // locked down — Systems accepts only System-typed tokens, Applications only Application-typed
+        // (always involved parties), Plugins only Plugin-typed; conversely System/Application/Plugin
+        // tokens may only be parented under their matching folder (or the enterprise root during build).
+        // Generic groups/folders may add further groups and users, but never into the type folders.
+        try {
+            enforceMembershipPolicy(enterprise, parent, child, classification);
+        } catch (SecurityAccessException policyViolation) {
+            log.warn("⛔ Rejected security-token link parent '{}' -> child '{}': {}",
+                    parent.getName(), child.getName(), policyViolation.getMessage());
+            return Uni.createFrom().failure(policyViolation);
+        }
+
         return root.builder(session)
                 .withEnterprise(enterprise)
                 .findLink((SecurityToken) parent, (SecurityToken) child, null)
@@ -223,6 +238,77 @@ public class SecurityTokenService
 
     private void updateSecurityHierarchy(UUID securityTokenID) {
         //TODO hierarchy updates? i wonder
+    }
+
+    /**
+     * Enforces the canonical security-hierarchy membership policy on a parent &rarr; child link.
+     *
+     * <p>Once the base security hierarchy is built the root and the default groups/folders are
+     * structurally read-only (only the administrators group may restructure them). The type folders
+     * are additionally constrained by the <em>type</em> of token they accept:</p>
+     *
+     * <ul>
+     *   <li><strong>Systems</strong> folder — accepts only {@code System}-typed tokens.</li>
+     *   <li><strong>Applications</strong> folder — accepts only {@code Application}-typed tokens
+     *       (which are always involved parties).</li>
+     *   <li><strong>Plugins</strong> folder — accepts only {@code Plugin}-typed tokens.</li>
+     *   <li>Conversely a {@code System}/{@code Application}/{@code Plugin}-typed token may only be
+     *       parented under its matching folder (or under the enterprise root while the canonical tree
+     *       is first being built).</li>
+     *   <li>Generic groups/folders may add further groups and users (membership types), but never into
+     *       the type folders — so a group can add groups/users <em>except</em> for the Systems folder.</li>
+     * </ul>
+     *
+     * @throws SecurityAccessException when the link would violate the policy.
+     */
+    private void enforceMembershipPolicy(IEnterprise<?, ?> enterprise, ISecurityToken<?, ?> parent,
+                                         ISecurityToken<?, ?> child, IClassification<?, ?> classification) {
+        if (parent == null || classification == null) {
+            return;
+        }
+        String childType = classification.getName();
+        if (childType == null) {
+            return;
+        }
+        String parentName = parent.getName();
+
+        boolean parentIsRoot = enterprise != null && enterprise.getName() != null
+                && enterprise.getName().equals(parentName);
+        boolean parentIsSystemsFolder = UserGroupSecurityTokenClassifications.System.toString().equals(parentName);
+        boolean parentIsApplicationsFolder = UserGroupSecurityTokenClassifications.Applications.toString().equals(parentName);
+        boolean parentIsPluginsFolder = UserGroupSecurityTokenClassifications.Plugins.toString().equals(parentName);
+
+        if (UserGroupSecurityTokenClassifications.System.toString().equals(childType)) {
+            if (!parentIsSystemsFolder && !parentIsRoot) {
+                throw new SecurityAccessException(
+                        "System-typed security tokens may only be added under the Systems folder (parent was '" + parentName + "')");
+            }
+        } else if (Application.toString().equals(childType)) {
+            if (!parentIsApplicationsFolder && !parentIsRoot) {
+                throw new SecurityAccessException(
+                        "Application-typed security tokens may only be added under the Applications folder (parent was '" + parentName + "')");
+            }
+        } else if (Plugin.toString().equals(childType)) {
+            if (!parentIsPluginsFolder && !parentIsRoot) {
+                throw new SecurityAccessException(
+                        "Plugin-typed security tokens may only be added under the Plugins folder (parent was '" + parentName + "')");
+            }
+        } else {
+            // Membership types (UserGroup, User, Guests, Visitors, Registered, Identity): groups/folders
+            // may add further groups and users, but never into the locked type folders.
+            if (parentIsSystemsFolder) {
+                throw new SecurityAccessException(
+                        "The Systems folder only accepts System-typed tokens; groups/users cannot be added to it");
+            }
+            if (parentIsApplicationsFolder) {
+                throw new SecurityAccessException(
+                        "The Applications folder only accepts Application-typed tokens");
+            }
+            if (parentIsPluginsFolder) {
+                throw new SecurityAccessException(
+                        "The Plugins folder only accepts Plugin-typed tokens");
+            }
+        }
     }
 
     //@CacheResult(cacheName = "SecuritiesGetEveryoneGroup")

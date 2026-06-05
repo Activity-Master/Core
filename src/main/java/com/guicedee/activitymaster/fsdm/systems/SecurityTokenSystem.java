@@ -3,8 +3,11 @@ package com.guicedee.activitymaster.fsdm.systems;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseCoreTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.*;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
@@ -27,7 +30,9 @@ import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.*;
@@ -50,6 +55,21 @@ public class SecurityTokenSystem
 
     @Inject
     private ISystemsService<?> systemsService;
+
+    /**
+     * Pre-resolved, shared security context for the in-progress install. The canonical group/folder
+     * tokens, enterprise and active-flag are identical for every record across every table, so they
+     * are resolved <em>once</em> and reused while batch-inserting default security on stateless
+     * sessions. Reset at the start of each {@link #createDefaults} run so it never leaks across
+     * enterprises.
+     */
+    private DefaultSecurityContext defaultSecurityContext;
+
+    /** Immutable holder for the shared default-security context (tokens + enterprise + active flag). */
+    private record DefaultSecurityContext(Map<String, ISecurityToken<?, ?>> tokens,
+                                          IEnterprise<?, ?> enterprise,
+                                          IActiveFlag<?, ?> activeFlag) {
+    }
 
     @Override
     public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
@@ -84,6 +104,9 @@ public class SecurityTokenSystem
     public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
         logProgress("Security Token Service", "Starting Security Structure Checks/Install");
         log.info("Creating security token defaults in a new session and transaction");
+
+        // Fresh install run: drop any context cached from a previous enterprise.
+        defaultSecurityContext = null;
 
         // Use the passed-in session
         return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
@@ -676,64 +699,114 @@ public class SecurityTokenSystem
                 });
     }
 
-    private Uni<Void> createDefaultSecurityForTableReactive(Mutiny.Session session, WarehouseCoreTable<?, ?, ?, ?> table, ISystems<?, ?> system, java.util.UUID... identityToken) {
-        log.debug("🔐 Creating reactive security for table: {}",
-                table.getClass()
-                        .getSimpleName());
-
-        return table.builder(session)
-                //todo.withEnterprise(system.getEnterpriseID())
-                // todo .whereNoSecurityIsApplied()
-                .inDateRange()
-                .getAll()
-                .onItem()
-                .invoke(items -> log.debug("Found {} items without security for {}",
-                        items.size(),
-                        table.getClass()
-                                .getSimpleName()))
-                .chain(items -> {
-                    // Check if there are any items to process
-                    if (items.isEmpty()) {
-                        log.debug("✅ No security operations needed for {}",
-                                table.getClass()
-                                        .getSimpleName());
-                        return Uni.createFrom()
-                                .voidItem();
-                    }
-
-                    log.debug("🚀 Executing {} security operations sequentially for {}",
-                            items.size(),
-                            table.getClass()
-                                    .getSimpleName());
-
-                    // Start with an empty Uni that completes immediately
-                    Uni<Void> chain = Uni.createFrom()
-                            .voidItem();
-
-                    // For each item, chain a security operation to run sequentially
-                    for (Object next : items) {
-                        WarehouseCoreTable<?, ?, ?, ?> tableItem = (WarehouseCoreTable<?, ?, ?, ?>) next;
-                        chain = chain.chain(v -> {
-                            logProgress("Security Token Service",
-                                    "Checking - " + tableItem.getClass()
-                                            .getSimpleName(),
-                                    0);
-                            // Execute security operation and chain to the next one
-                            return tableItem.createDefaultSecurity(session, system, identityToken);
-                        });
-                    }
-
-                    // Add logging for completion or failure
-                    return chain
-                            .onItem()
-                            .invoke(() -> log.debug("✅ Completed security for {}",
-                                    table.getClass()
-                                            .getSimpleName()))
-                            .onFailure()
-                            .invoke(error -> log.error("❌ Error creating default security for {}: {}",
-                                    table.getClass()
-                                            .getSimpleName(), error.getMessage(), error));
+    /**
+     * Resolves the shared default-security context (canonical group/folder tokens + enterprise +
+     * active flag) <em>once</em> per install and caches it. Every record across every table gets the
+     * same set of grants, so there is no need to re-query these for each table.
+     */
+    private Uni<DefaultSecurityContext> resolveDefaultSecurityContext(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
+        if (defaultSecurityContext != null) {
+            return Uni.createFrom().item(defaultSecurityContext);
+        }
+        Map<String, ISecurityToken<?, ?>> tokens = new LinkedHashMap<>();
+        return securityTokenService.getAdministratorsFolder(session, system, identityToken)
+                .invoke(t -> tokens.put(IWarehouseCoreTable.SECURITY_ADMINISTRATORS, t))
+                .chain(() -> securityTokenService.getEveryoneGroup(session, system, identityToken)
+                        .invoke(t -> tokens.put(IWarehouseCoreTable.SECURITY_EVERYONE, t)))
+                .chain(() -> securityTokenService.getEverywhereGroup(session, system, identityToken)
+                        .invoke(t -> tokens.put(IWarehouseCoreTable.SECURITY_EVERYWHERE, t)))
+                .chain(() -> securityTokenService.getSystemsFolder(session, system, identityToken)
+                        .invoke(t -> tokens.put(IWarehouseCoreTable.SECURITY_SYSTEMS, t)))
+                .chain(() -> securityTokenService.getApplicationsFolder(session, system, identityToken)
+                        .invoke(t -> tokens.put(IWarehouseCoreTable.SECURITY_APPLICATIONS, t)))
+                .chain(() -> securityTokenService.getPluginsFolder(session, system, identityToken)
+                        .invoke(t -> tokens.put(IWarehouseCoreTable.SECURITY_PLUGINS, t)))
+                .chain(() -> securityTokenService.getGuestsFolder(session, system, identityToken)
+                        .invoke(t -> tokens.put(IWarehouseCoreTable.SECURITY_GUESTS, t)))
+                .map(ignored -> {
+                    IEnterprise<?, ?> enterprise = system.getEnterprise();
+                    IActiveFlag<?, ?> activeFlag = ((Systems) system).getActiveFlagID();
+                    defaultSecurityContext = new DefaultSecurityContext(tokens, enterprise, activeFlag);
+                    log.debug("🔐 Resolved {} default-security tokens for system '{}'", tokens.size(), system.getName());
+                    return defaultSecurityContext;
                 });
+    }
+
+    /**
+     * Default-security creation for every row in {@code table}, written as <strong>batched inserts on a
+     * {@link Mutiny.StatelessSession}</strong>. This is the production default: the shared context is
+     * resolved once, rows already carrying security are skipped (idempotent re-installs), and the
+     * remaining inserts are issued on a stateless session whose persistence context never grows — so an
+     * exhaustive number of records no longer makes the install crawl.
+     * <p>
+     * The {@link com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration#isSecurityEnabled()
+     * security-enabled flag} is enforced by the underlying stateless batch mechanism
+     * ({@link WarehouseCoreTable#createDefaultSecurity(Mutiny.StatelessSession, ISystems, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag, java.util.Map, java.util.UUID...)}),
+     * not here: the install deliberately disables the flag for read-enforcement during bootstrap, while
+     * the stateless inserts run in their own (scope-free) transaction where the flag falls back to its
+     * secure-by-default {@code true} state — so install always provisions default security.
+     */
+    private Uni<Void> createDefaultSecurityForTableReactive(Mutiny.Session session, WarehouseCoreTable<?, ?, ?, ?> table, ISystems<?, ?> system, java.util.UUID... identityToken) {
+        log.debug("🔐 Creating reactive (batched/stateless) security for table: {}",
+                table.getClass().getSimpleName());
+
+        return resolveDefaultSecurityContext(session, system, identityToken)
+                .chain(ctx -> table.builder(session)
+                        .inDateRange()
+                        .getAll()
+                        .onItem()
+                        .invoke(items -> log.debug("Found {} items to evaluate for security on {}",
+                                items.size(), table.getClass().getSimpleName()))
+                        .chain(items -> {
+                            if (items.isEmpty()) {
+                                log.debug("✅ No security operations needed for {}", table.getClass().getSimpleName());
+                                return Uni.createFrom().voidItem();
+                            }
+
+                            // Idempotency gate: only rows that do not yet have any default security are
+                            // (re)created. These are cheap COUNT reads; the expensive inserts are batched below.
+                            List<IWarehouseCoreTable<?, ?, ?, ?>> pending = new ArrayList<>();
+                            Uni<Void> gate = Uni.createFrom().voidItem();
+                            for (Object next : items) {
+                                final IWarehouseCoreTable<?, ?, ?, ?> item = (IWarehouseCoreTable<?, ?, ?, ?>) next;
+                                gate = gate.chain(() -> item.countDefaultSecurity(session)
+                                        .invoke(count -> {
+                                            if (count == null || count == 0L) {
+                                                pending.add(item);
+                                            }
+                                        })
+                                        .replaceWithVoid());
+                            }
+
+                            return gate.chain(() -> {
+                                if (pending.isEmpty()) {
+                                    log.debug("✅ All {} {} rows already have default security", items.size(),
+                                            table.getClass().getSimpleName());
+                                    return Uni.createFrom().voidItem();
+                                }
+                                logProgress("Security Token Service",
+                                        "Batch securing " + pending.size() + " - " + table.getClass().getSimpleName(), 0);
+
+                                // Write every pending row's default security in ONE stateless transaction.
+                                return sessionFactory.withStatelessTransaction(statelessSession -> {
+                                            Uni<Long> chain = Uni.createFrom().item(0L);
+                                            for (IWarehouseCoreTable<?, ?, ?, ?> item : pending) {
+                                                chain = chain.chain(runningTotal -> item
+                                                        .createDefaultSecurity(statelessSession, system, ctx.enterprise(),
+                                                                ctx.activeFlag(), ctx.tokens(), identityToken)
+                                                        .map(perRecord -> runningTotal + perRecord));
+                                            }
+                                            return chain;
+                                        })
+                                        .onItem()
+                                        .invoke(inserted -> log.debug("✅ Batched {} default-security rows across {} {} records",
+                                                inserted, pending.size(), table.getClass().getSimpleName()))
+                                        .onFailure()
+                                        .invoke(error -> log.error("❌ Error creating default security for {}: {}",
+                                                table.getClass().getSimpleName(), error.getMessage(), error))
+                                        .replaceWithVoid();
+                            });
+                        }));
     }
 
     @Override
