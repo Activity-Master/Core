@@ -36,6 +36,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedPartyNameType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedPartyType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseCoreTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.InvolvedPartyException;
@@ -451,6 +452,30 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
 
     @Override
     public Uni<IInvolvedParty<?, ?>> create(Mutiny.Session session, ISystems<?, ?> system, UUID key, Pair<String, String> idTypes, boolean isOrganic, UUID... identityToken) {
+        // Public create → world-readable (public/default security matrix).
+        return createWithSecurity(session, system, key, idTypes, isOrganic,
+                rec -> rec.createDefaultSecurity(session, system, identityToken), identityToken);
+    }
+
+    /**
+     * Opt-in <strong>scope-restricted</strong> involved-party create. Identical to
+     * {@link #create(Mutiny.Session, ISystems, UUID, Pair, boolean, UUID...)} except the party (and its
+     * organic/non-organic record) are secured with the restricted matrix: only Administrators / Systems /
+     * Applications / Plugins retain access, plus a <em>read</em> grant for {@code scopeToken}. Only identity
+     * tokens at that scope node or below it may read the party.
+     */
+    @Override
+    public Uni<IInvolvedParty<?, ?>> createScopeRestricted(Mutiny.Session session, ISystems<?, ?> system, UUID key,
+                                                           Pair<String, String> idTypes, boolean isOrganic,
+                                                           ISecurityToken<?, ?> scopeToken, UUID... identityToken) {
+        return createWithSecurity(session, system, key, idTypes, isOrganic,
+                rec -> rec.createScopeRestrictedSecurity(session, system, scopeToken, identityToken), identityToken);
+    }
+
+    private Uni<IInvolvedParty<?, ?>> createWithSecurity(Mutiny.Session session, ISystems<?, ?> system, UUID key,
+                                                         Pair<String, String> idTypes, boolean isOrganic,
+                                                         java.util.function.Function<IWarehouseCoreTable<?, ?, ?, ?>, Uni<?>> securityFn,
+                                                         UUID... identityToken) {
         log.trace("Creating InvolvedParty: key={}, idTypes={}, isOrganic={}", key, idTypes, isOrganic);
 
         var enterprise = system.getEnterprise();
@@ -473,9 +498,8 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                             .replaceWith(ip);
                 })
                 .chain(persisted -> {
-                    // Handle security setup sequentially
-                    return persisted
-                            .createDefaultSecurity(session, system, identityToken)
+                    // Handle security setup sequentially (strategy supplied by the caller).
+                    return securityFn.apply(persisted)
                             .chain(() -> findInvolvedPartyIdentificationType(session, idTypes.getKey(), system, identityToken)
                                     .chain(involvedPartyIdentificationType -> {
                                         // Add identification type to involved party
@@ -498,7 +522,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                     })
                                     .chain(updatedPersisted -> {
                                         // Setup organic status sequentially
-                                        return setupInvolvedPartyOrganicStatus(session, isOrganic, updatedPersisted, system, identityToken)
+                                        return setupInvolvedPartyOrganicStatus(session, isOrganic, updatedPersisted, securityFn, system, identityToken)
                                                 .chain(() -> Uni
                                                         .createFrom()
                                                         .item((IInvolvedParty<?, ?>) updatedPersisted));
@@ -507,7 +531,9 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                 });
     }
 
-    private Uni<Void> setupInvolvedPartyOrganicStatus(Mutiny.Session session, boolean isOrganic, IInvolvedParty<?, ?> ip, ISystems<?, ?> system, UUID... identityToken) {
+    private Uni<Void> setupInvolvedPartyOrganicStatus(Mutiny.Session session, boolean isOrganic, IInvolvedParty<?, ?> ip,
+                                                      java.util.function.Function<IWarehouseCoreTable<?, ?, ?, ?>, Uni<?>> securityFn,
+                                                      ISystems<?, ?> system, UUID... identityToken) {
         log.debug("Setting up InvolvedParty organic status: isOrganic={}, id={}", isOrganic, ip.getId());
 
         var enterprise = system.getEnterprise();
@@ -531,15 +557,14 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                     })
                     .chain(persisted -> {
                         // Handle security setup sequentially
-                        return persisted
-                                .createDefaultSecurity(session, system, identityToken)
+                        return securityFn.apply(persisted)
                                 .onItem()
                                 .invoke(result ->
                                         log.debug("Security setup completed successfully for organic involved party {}", persisted.getId())
                                 )
                                 .onFailure()
                                 .recoverWithItem(error -> {
-                                    log.warn("Error in createDefaultSecurity for organic", error);
+                                    log.warn("Error in security setup for organic", error);
                                     return null; // Continue the chain even if security creation fails
                                 })
                                 .chain(() -> Uni
@@ -564,15 +589,14 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                     })
                     .chain(persisted -> {
                         // Handle security setup sequentially
-                        return persisted
-                                .createDefaultSecurity(session, system, identityToken)
+                        return securityFn.apply(persisted)
                                 .onItem()
                                 .invoke(result ->
                                         log.debug("Security setup completed successfully for non-organic involved party {}", persisted.getId())
                                 )
                                 .onFailure()
                                 .recoverWithItem(error -> {
-                                    log.warn("Error in createDefaultSecurity for non-organic", error);
+                                    log.warn("Error in security setup for non-organic", error);
                                     return null; // Continue the chain even if security creation fails
                                 })
                                 .chain(() -> Uni

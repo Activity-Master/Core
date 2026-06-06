@@ -70,6 +70,22 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
         // idempotent (find-linked-token-or-create), so it is safe on the caller's session. This is fine for
         // the low-volume single-create paths that call it directly.
         //
+        // 🔐 Security-flag gating (post-install secure-by-default): once the enterprise is installed and the
+        // administrator + canonical security tokens exist, the call-scope security flag is ENABLED
+        // (ActivityMasterConfiguration.isSecurityEnabled() — secure-by-default true). In that state every
+        // single-entity create is SCOPE-RESTRICTED: the world-readable Everyone / Everywhere / Guests grants
+        // are withheld (default-deny) and only the Administrators + System/Application/Plugin hierarchy
+        // retains access. When the flag is DISABLED — explicitly cleared during enterprise install/bootstrap
+        // — the historical world-readable default matrix is written instead, so reference data provisioned
+        // during install stays public. NB: this gates only the LIVE single-create path; the stateless batch
+        // path used by the installer (createDefaultSecurity(StatelessSession, …)) is intentionally NOT gated
+        // and always provisions the public default matrix for canonical/reference rows.
+        if (com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.get().isSecurityEnabled()) {
+            // Scope-restricted default — no explicit per-record scope token (null): Administrators=CRUD,
+            // Systems/Applications/Plugins=create/update/read, NO Everyone/Everywhere/Guests. Per-item
+            // scoping remains the explicit opt-in via createScopeRestrictedSecurity(session, system, scope, …).
+            return createScopeRestrictedSecurity(session, system, null, identity);
+        }
         // ⚠️ Do NOT call this per row in a BULK loader (thousands of rows): it re-resolves the seven
         // group/folder tokens and round-trips per row (~21 round-trips/row). Bulk paths must instead use
         // ISecurityTokenService.applyDefaultSecurityToRows(...) (scan-free, for just-created rows) or
@@ -178,6 +194,143 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
             });
         }
         return chain.replaceWith(() -> inserted[0]);
+    }
+
+    @Override
+    public Uni<Long> createSecurityGrant(Mutiny.StatelessSession session,
+                                         ISystems<?, ?> system,
+                                         com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?> enterprise,
+                                         com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag<?, ?> activeFlag,
+                                         com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> token,
+                                         boolean create, boolean update, boolean delete, boolean read, UUID... identityToken) {
+        if (token == null) {
+            return Uni.createFrom().item(0L);
+        }
+        // Single arbitrary-token grant row — mirrors one iteration of the default-matrix loop above, but
+        // with caller-supplied grant flags and any (e.g. scope) token rather than the canonical seven.
+        S st = get(findPersistentSecurityClass());
+        st.setSystemID(system);
+        st.setOriginalSourceSystemID(system.getId());
+        st.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
+        st.setEnterpriseID(enterprise);
+        st.setActiveFlagID(activeFlag);
+        st.setSecurityTokenID(token);
+        st.setCreateAllowed(create);
+        st.setUpdateAllowed(update);
+        st.setDeleteAllowed(delete);
+        st.setReadAllowed(read);
+        // Links the security row back to this owning entity (sets the base FK).
+        configureSecurityEntity(st);
+        return st.builder(session).persist().replaceWith(1L);
+    }
+
+    @Override
+    public Uni<Long> createScopeRestrictedSecurity(Mutiny.StatelessSession session,
+                                                   ISystems<?, ?> system,
+                                                   com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?> enterprise,
+                                                   com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag<?, ?> activeFlag,
+                                                   java.util.Map<String, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?>> groupFolderTokens,
+                                                   com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                                   UUID... identityToken) {
+        // Scope-restricted matrix: NO Everyone / Everywhere / Guests grants (those rows are intentionally
+        // omitted → default-deny), so the record is NOT world-readable. Only Administrators and the
+        // System/Application/Plugin folders retain access, PLUS a read grant for the supplied scope token —
+        // so only identity tokens located at that scope node OR BELOW it (whose upward climb reaches the
+        // scope token) may read the record.
+        record Grant(String key, boolean create, boolean update, boolean delete, boolean read) {
+        }
+        List<Grant> grants = List.of(
+                new Grant(SECURITY_ADMINISTRATORS, true, true, true, true),
+                new Grant(SECURITY_SYSTEMS, true, true, false, true),
+                new Grant(SECURITY_APPLICATIONS, true, true, false, true),
+                new Grant(SECURITY_PLUGINS, true, true, false, true)
+        );
+        Uni<Long> chain = Uni.createFrom().item(0L);
+        for (Grant grant : grants) {
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> token =
+                    groupFolderTokens.get(grant.key());
+            if (token == null) {
+                continue;
+            }
+            chain = chain.chain(total -> createSecurityGrant(session, system, enterprise, activeFlag, token,
+                    grant.create(), grant.update(), grant.delete(), grant.read(), identityToken)
+                    .map(perRow -> total + perRow));
+        }
+        // The scope read-grant: the only path by which scoped identities (and their descendants) may read.
+        if (scopeToken != null) {
+            chain = chain.chain(total -> createSecurityGrant(session, system, enterprise, activeFlag, scopeToken,
+                    false, false, false, true, identityToken)
+                    .map(perRow -> total + perRow));
+        }
+        return chain;
+    }
+
+    /**
+     * <strong>Live-session</strong> scope-restricted security for a <em>single just-created</em> record
+     * (e.g. a classification created on the caller's session, not yet committed). The stateless batch
+     * variant cannot be used in that case because it opens a separate transaction that cannot see the
+     * uncommitted row (FK to {@code base} would fail). This mirrors the live
+     * {@link #createDefaultSecurity(Mutiny.Session, ISystems, UUID...)} find-or-create pattern, but writes
+     * the restricted matrix: Administrators=CRUD, Systems/Applications/Plugins=create/update/read,
+     * <strong>no</strong> Everyone/Everywhere/Guests grants (→ not world-readable), and {@code scopeToken}=read.
+     */
+    public Uni<Void> createScopeRestrictedSecurity(Mutiny.Session session, ISystems<?, ?> system,
+                                                   com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                                   java.util.UUID... identity) {
+        // Flush first so this owning row is persisted before its security rows reference it (base FK).
+        return session.flush()
+                .chain(() -> securityTokenService().getAdministratorsFolder(session, system, identity)
+                        .chain(admin -> grantOnLiveSession(session, system, admin, true, true, true, true)))
+                .chain(() -> securityTokenService().getSystemsFolder(session, system, identity)
+                        .chain(sys -> grantOnLiveSession(session, system, sys, true, true, false, true)))
+                .chain(() -> securityTokenService().getApplicationsFolder(session, system, identity)
+                        .chain(app -> grantOnLiveSession(session, system, app, true, true, false, true)))
+                .chain(() -> securityTokenService().getPluginsFolder(session, system, identity)
+                        .chain(plugin -> grantOnLiveSession(session, system, plugin, true, true, false, true)))
+                .chain(() -> scopeToken == null
+                        ? Uni.createFrom().item((S) null)
+                        : grantOnLiveSession(session, system, scopeToken, false, false, false, true))
+                .replaceWithVoid()
+                // Same bootstrap tolerance as the live default path: when the canonical structure or the
+                // owning row is not ready yet, the row is secured by a later batch pass instead of failing.
+                .onFailure().recoverWithUni(t -> {
+                    if (isSecurityNotApplicableYet(t)) {
+                        log.debug("⏭️ Skipping live scope-restricted security ({}): {}",
+                                t.getClass().getSimpleName(), t.getMessage());
+                        return Uni.createFrom().voidItem();
+                    }
+                    return Uni.createFrom().failure(t);
+                });
+    }
+
+    /**
+     * Find-or-create a single grant row linking {@code token} to this record on the LIVE session, with the
+     * supplied flags. Shared by the live scope-restricted matrix.
+     */
+    private Uni<S> grantOnLiveSession(Mutiny.Session session, ISystems<?, ?> system,
+                                      com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> token,
+                                      boolean create, boolean update, boolean delete, boolean read) {
+        S stAdmin = get(findPersistentSecurityClass());
+        QueryBuilderSecurities<?, ?, ?> securities = stAdmin.builder(session);
+        return securities.findLinkedSecurityToken((SecurityToken) token, this)
+                .inDateRange()
+                .setReturnFirst(true)
+                .get()
+                .onItemOrFailure()
+                .transformToUni((result, throwable) -> {
+                    if (throwable != null) {
+                        S stEntity = get(findPersistentSecurityClass());
+                        configureDefaultsForNewToken(stEntity, system);
+                        stEntity.setSecurityTokenID(token);
+                        stEntity.setCreateAllowed(create);
+                        stEntity.setUpdateAllowed(update);
+                        stEntity.setDeleteAllowed(delete);
+                        stEntity.setReadAllowed(read);
+                        configureSecurityEntity(stEntity);
+                        return session.persist(stEntity).replaceWith(stEntity);
+                    }
+                    return Uni.createFrom().item((S) result);
+                });
     }
 
     @Override

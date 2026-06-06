@@ -124,6 +124,39 @@ public class ArrangementsService
             String arrangementTypeValue,
             ISystems<?, ?> system,
             UUID... identityToken) {
+        // Public create — world-readable (public/default security matrix).
+        return createWithSecurity(session, type, key, arrangementTypeClassification, arrangementTypeValue, system,
+                arrangement -> arrangement.createDefaultSecurity(session, system, identityToken), identityToken);
+    }
+
+    /**
+     * Opt-in <strong>scope-restricted</strong> arrangement create. Identical to
+     * {@link #create(Mutiny.Session, String, UUID, String, String, ISystems, UUID...)} except the arrangement
+     * is secured with the restricted matrix: only Administrators / Systems / Applications / Plugins retain
+     * access, plus a <em>read</em> grant for {@code scopeToken}. Only identity tokens at that scope node or
+     * below it may read the arrangement.
+     */
+    @Override
+    public Uni<IArrangement<?, ?>> createScopeRestricted(
+            Mutiny.Session session, String type,
+            UUID key,
+            String arrangementTypeClassification,
+            String arrangementTypeValue,
+            ISystems<?, ?> system,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+            UUID... identityToken) {
+        return createWithSecurity(session, type, key, arrangementTypeClassification, arrangementTypeValue, system,
+                arrangement -> arrangement.createScopeRestrictedSecurity(session, system, scopeToken, identityToken), identityToken);
+    }
+
+    private Uni<IArrangement<?, ?>> createWithSecurity(
+            Mutiny.Session session, String type,
+            UUID key,
+            String arrangementTypeClassification,
+            String arrangementTypeValue,
+            ISystems<?, ?> system,
+            java.util.function.Function<Arrangement, Uni<?>> securityFn,
+            UUID... identityToken) {
         var finalKey = key != null ? key : UUID.randomUUID();
         var enterprise = system.getEnterprise();
 
@@ -141,8 +174,8 @@ public class ArrangementsService
                     return session.persist(arrangement).replaceWith(Uni.createFrom().item(arrangement));
                 })
                 .call(persisted ->
-                        // Step 2: Create default security (subscribed via call so it actually runs)
-                        persisted.createDefaultSecurity(session, system, identityToken))
+                        // Step 2: Create security (strategy supplied by the caller; subscribed via call so it actually runs)
+                        securityFn.apply(persisted))
                 .chain(arrangementPass->{
                     return find(session, type, system)
                             .chain(arrangementType ->

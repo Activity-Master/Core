@@ -76,6 +76,32 @@ public class ActiveFlagService
 
     //@Transactional()
     public Uni<IActiveFlag<?, ?>> create(Mutiny.Session session, IEnterprise<?, ?> enterprise, String name, String description, UUID... identifyingToken) {
+        // Public create — ActiveFlags are enterprise reference data; no per-record security is stamped (unchanged).
+        return createWithSecurity(session, enterprise, name, description,
+                af -> Uni.createFrom().nullItem(), identifyingToken);
+    }
+
+    /**
+     * Opt-in <strong>scope-restricted</strong> ActiveFlag create. Unlike the public {@link #create} (which stamps
+     * <em>no</em> security on this reference-data row), this variant secures the new flag with the restricted
+     * matrix: only Administrators / Systems / Applications / Plugins retain access, plus a <em>read</em> grant for
+     * {@code scopeToken}. Because the applicable-token climb is child&rarr;parent, only identity tokens at the
+     * {@code scopeToken} node <em>or below it</em> may read the flag.
+     *
+     * <p><strong>Caveat:</strong> ActiveFlags gate row visibility for every record that references them and are
+     * normally enterprise-global. Restricting a flag is unusual — use only for tenant/branch-private flags.</p>
+     */
+    @Override
+    public Uni<IActiveFlag<?, ?>> createScopeRestricted(Mutiny.Session session, IEnterprise<?, ?> enterprise, String name, String description,
+                                                        com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems<?, ?> system,
+                                                        com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                                        UUID... identifyingToken) {
+        return createWithSecurity(session, enterprise, name, description,
+                af -> af.createScopeRestrictedSecurity(session, system, scopeToken, identifyingToken), identifyingToken);
+    }
+
+    private Uni<IActiveFlag<?, ?>> createWithSecurity(Mutiny.Session session, IEnterprise<?, ?> enterprise, String name, String description,
+                                                      java.util.function.Function<ActiveFlag, Uni<?>> securityFn, UUID... identifyingToken) {
         return findFlagByName(session, name, enterprise, identifyingToken)
                 .onFailure(NoResultException.class).recoverWithUni(() -> {
                     ActiveFlag af = new ActiveFlag();
@@ -84,7 +110,8 @@ public class ActiveFlagService
                     af.setAllowAccess(true);
                     af.setEnterpriseID((Enterprise) enterprise);
                     return af.builder(session)
-                            .persist(af).replaceWith(Uni.createFrom().item(af));
+                            .persist(af).replaceWith(Uni.createFrom().item(af))
+                            .call(persisted -> securityFn.apply(af));
                 });
     }
 

@@ -128,6 +128,25 @@ public class ResourceItemService
 
     @Override
     public Uni<IResourceItemType<?, ?>> createType(Mutiny.Session session, String value, UUID key, String description, ISystems<?, ?> system, UUID... identityToken) {
+        // Public create — world-readable (public/default security matrix).
+        return createTypeInternal(session, value, key, description, system, null, identityToken);
+    }
+
+    /**
+     * Opt-in <strong>scope-restricted</strong> resource-item-type create. Same as
+     * {@link #createType(Mutiny.Session, String, UUID, String, ISystems, UUID...)} but secured with the restricted
+     * matrix plus a <em>read</em> grant for {@code scopeToken}.
+     */
+    @Override
+    public Uni<IResourceItemType<?, ?>> createTypeScopeRestricted(Mutiny.Session session, String value, UUID key, String description, ISystems<?, ?> system,
+                                                                  com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                                                  UUID... identityToken) {
+        return createTypeInternal(session, value, key, description, system, scopeToken, identityToken);
+    }
+
+    private Uni<IResourceItemType<?, ?>> createTypeInternal(Mutiny.Session session, String value, UUID key, String description, ISystems<?, ?> system,
+                                                            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                                            UUID... identityToken) {
         log.debug("Creating resource type with value: {}, key: {}, description: {}", value, key, description);
 
         var enterprise = system.getEnterprise();
@@ -164,8 +183,10 @@ public class ResourceItemService
                                                     .item(xr));
                                 })
                                 .call(persisted ->
-                                        // Create default security (subscribed via call so it actually runs)
-                                        xr.createDefaultSecurity(session, system, identityToken));
+                                        // Apply the chosen security matrix (subscribed via call so it runs)
+                                        scopeToken == null
+                                                ? xr.createDefaultSecurity(session, system, identityToken)
+                                                : xr.createScopeRestrictedSecurity(session, system, scopeToken, identityToken));
                     } else {
                         // Resource type exists, find it
                         ResourceItemType resourceItemType = new ResourceItemType();
@@ -239,6 +260,36 @@ public class ResourceItemService
                                            UUID originalSourceSystemUniqueID,
                                            LocalDateTime effectiveFromDate, byte[] data,
                                            ISystems<?, ?> system, UUID... identityToken) {
+        // Public create — world-readable (public/default security matrix).
+        return createInternal(session, identityResourceType, key, resourceItemDataValue, originalSourceSystemUniqueID,
+                effectiveFromDate, data, system, null, identityToken);
+    }
+
+    /**
+     * Opt-in <strong>scope-restricted</strong> resource-item create. Identical to
+     * {@link #create(Mutiny.Session, String, UUID, String, UUID, LocalDateTime, byte[], ISystems, UUID...)} except
+     * the resource item's data row and its type relationship are secured with the restricted matrix: only
+     * Administrators / Systems / Applications / Plugins retain access, plus a <em>read</em> grant for
+     * {@code scopeToken}. Because the applicable-token climb is child&rarr;parent, only identity tokens located at
+     * the {@code scopeToken} node <em>or below it</em> may read.
+     */
+    @Override
+    public Uni<IResourceItem<?, ?>> createScopeRestricted(Mutiny.Session session, String identityResourceType, UUID key, String resourceItemDataValue,
+                                                          UUID originalSourceSystemUniqueID,
+                                                          LocalDateTime effectiveFromDate, byte[] data,
+                                                          ISystems<?, ?> system,
+                                                          com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                                          UUID... identityToken) {
+        return createInternal(session, identityResourceType, key, resourceItemDataValue, originalSourceSystemUniqueID,
+                effectiveFromDate, data, system, scopeToken, identityToken);
+    }
+
+    private Uni<IResourceItem<?, ?>> createInternal(Mutiny.Session session, String identityResourceType, UUID key, String resourceItemDataValue,
+                                                    UUID originalSourceSystemUniqueID,
+                                                    LocalDateTime effectiveFromDate, byte[] data,
+                                                    ISystems<?, ?> system,
+                                                    com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                                    UUID... identityToken) {
         log.debug("Creating resource item - type: {}, value: {}", identityResourceType, resourceItemDataValue);
 
         var enterprise = system.getEnterprise();
@@ -300,12 +351,14 @@ public class ResourceItemService
                                                             .createFrom()
                                                             .item(rid))
                                                     .call(persistedData ->
-                                                            // Create default security (subscribed via call so it actually runs)
-                                                            persistedData.createDefaultSecurity(session, system, identityToken))
+                                                            // Apply the chosen security matrix (subscribed via call so it runs)
+                                                            scopeToken == null
+                                                                    ? persistedData.createDefaultSecurity(session, system, identityToken)
+                                                                    : persistedData.createScopeRestrictedSecurity(session, system, scopeToken, identityToken))
                                                     .chain(_ -> {
                                                         // Step 3: Add resource item types
                                                         log.trace("Adding resource item type: {}", identityResourceType);
-                                                        return addResourceItemTypeRelationshipInternal(session, persisted, identityResourceType, resourceItemDataValue, system, enterprise, identityToken);
+                                                        return addResourceItemTypeRelationshipInternal(session, persisted, identityResourceType, resourceItemDataValue, system, enterprise, scopeToken, identityToken);
                                                     })
                                                     .replaceWith(persisted);
                                         });
@@ -469,6 +522,18 @@ public class ResourceItemService
      */
     private Uni<Void> addResourceItemTypeRelationshipInternal(Mutiny.Session session, IResourceItem<?, ?> resourceItem, String typeName, String value,
                                                               ISystems<?, ?> system, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?> enterprise, UUID... identityToken) {
+        return addResourceItemTypeRelationshipInternal(session, resourceItem, typeName, value, system, enterprise, null, identityToken);
+    }
+
+    /**
+     * Internal method that uses the session directly — called from within an existing withActivityMaster block.
+     * When {@code scopeToken} is non-null the relationship is secured with the restricted matrix instead of the
+     * public/default matrix.
+     */
+    private Uni<Void> addResourceItemTypeRelationshipInternal(Mutiny.Session session, IResourceItem<?, ?> resourceItem, String typeName, String value,
+                                                              ISystems<?, ?> system, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?> enterprise,
+                                                              com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                                              UUID... identityToken) {
         return findResourceItemType(session, typeName, system, identityToken)
                 .chain(resourceItemType -> {
                     return classificationService
@@ -501,9 +566,10 @@ public class ResourceItemService
                                                             .item(relationship));
                                         })
                                         .chain(persisted -> {
-                                            // Create default security
-                                            return relationship
-                                                    .createDefaultSecurity(session, system, identityToken)
+                                            // Apply the chosen security matrix to the relationship row
+                                            return (scopeToken == null
+                                                    ? relationship.createDefaultSecurity(session, system, identityToken)
+                                                    : relationship.createScopeRestrictedSecurity(session, system, scopeToken, identityToken))
                                                     .replaceWithVoid();
                                         });
                             });

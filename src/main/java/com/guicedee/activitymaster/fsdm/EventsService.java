@@ -74,6 +74,24 @@ public class EventsService
     @Override
     public Uni<IEvent<?, ?>> createEvent(Mutiny.Session session, String eventType, UUID key, ISystems<?, ?> system, UUID... identityToken)
     {
+        // Public create → world-readable (public/default security matrix).
+        return createEventWithSecurity(session, eventType, key,
+                event -> event.createDefaultSecurity(session, system, identityToken), system, identityToken);
+    }
+
+    @Override
+    public Uni<IEvent<?, ?>> createEventScopeRestricted(Mutiny.Session session, String eventType, UUID key,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+            ISystems<?, ?> system, UUID... identityToken)
+    {
+        // Opt-in scope-restricted create: only Administrators/Systems/Apps/Plugins + the scope token may read.
+        return createEventWithSecurity(session, eventType, key,
+                event -> event.createScopeRestrictedSecurity(session, system, scopeToken, identityToken), system, identityToken);
+    }
+
+    private Uni<IEvent<?, ?>> createEventWithSecurity(Mutiny.Session session, String eventType, UUID key,
+            java.util.function.Function<Event, Uni<?>> securityFn, ISystems<?, ?> system, UUID... identityToken)
+    {
         var enterprise = system.getEnterprise();
 
         Event event = new Event();
@@ -94,9 +112,9 @@ public class EventsService
                                                                .item(event));
                        })
                        .chain(persistedEvent -> {
-                           return persistedEvent.createDefaultSecurity(session, system, identityToken)
+                           return securityFn.apply(persistedEvent)
                                .onItem().invoke(() -> log.trace("Security setup completed successfully for event"))
-                               .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for event: " + error.getMessage()))
+                               .onFailure().invoke(error -> log.warn("Error in security setup for event: " + error.getMessage()))
                                .onFailure().recoverWithItem(() -> null)
                                .chain(() -> persistedEvent.addEventTypes(session, eventType, "", NoClassification.toString(), system, identityToken)
                                           .map(result -> persistedEvent));

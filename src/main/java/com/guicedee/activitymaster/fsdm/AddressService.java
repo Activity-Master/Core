@@ -86,6 +86,31 @@ public class AddressService
 	////@Transactional()
 	public Uni<IAddress<?, ?>> create(Mutiny.Session session, String addressClassification, UUID key, ISystems<?, ?> system, String value, UUID... identifyingToken)
 	{
+		// Public create — world-readable (public/default security matrix).
+		return createWithSecurity(session, addressClassification, key, system, value,
+				addy -> addy.createDefaultSecurity(session, system, identifyingToken), identifyingToken);
+	}
+
+	/**
+	 * Opt-in <strong>scope-restricted</strong> address create. Identical to
+	 * {@link #create(Mutiny.Session, String, UUID, ISystems, String, UUID...)} except the address is secured
+	 * with the restricted matrix: only Administrators / Systems / Applications / Plugins retain access, plus a
+	 * <em>read</em> grant for {@code scopeToken}. Only identity tokens at that scope node or below it may read
+	 * the address.
+	 */
+	@Override
+	public Uni<IAddress<?, ?>> createScopeRestricted(Mutiny.Session session, String addressClassification, UUID key, ISystems<?, ?> system,
+													 String value,
+													 com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+													 UUID... identifyingToken)
+	{
+		return createWithSecurity(session, addressClassification, key, system, value,
+				addy -> addy.createScopeRestrictedSecurity(session, system, scopeToken, identifyingToken), identifyingToken);
+	}
+
+	private Uni<IAddress<?, ?>> createWithSecurity(Mutiny.Session session, String addressClassification, UUID key, ISystems<?, ?> system, String value,
+												   java.util.function.Function<Address, Uni<?>> securityFn, UUID... identifyingToken)
+	{
 		var enterprise = system.getEnterprise();
 			Address addy = new Address();
 
@@ -119,9 +144,9 @@ public class AddressService
 			                                        return session.persist(addy).replaceWith(Uni.createFrom().item(addy));
 			                                    })
 			                                    .chain(persisted -> {
-			                                        return persisted.createDefaultSecurity(session, system, identifyingToken)
+			                                        return securityFn.apply(addy)
 			                                            .onItem().invoke(() -> log.debug("Security setup completed successfully"))
-			                                            .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity", error))
+			                                            .onFailure().invoke(error -> log.warn("Error in security setup", error))
 			                                            .onFailure().recoverWithItem(() -> null)
 			                                            .map(result -> (IAddress<?, ?>) addy);
 			                                    });

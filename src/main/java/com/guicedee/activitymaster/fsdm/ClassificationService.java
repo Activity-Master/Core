@@ -101,6 +101,33 @@ public class ClassificationService
     public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
                                              ISystems<?, ?> system,
                                              Integer sequenceNumber, IClassification<?, ?> parent, UUID... identityToken) {
+        // Public create → world-readable (public/default security matrix).
+        return createWithSecurity(session, name, description, conceptName, system, sequenceNumber, parent,
+                rootCl -> rootCl.createDefaultSecurity(session, system, identityToken), identityToken);
+    }
+
+    /**
+     * Opt-in <strong>scope-restricted</strong> classification create. Identical to
+     * {@link #create(Mutiny.Session, String, String, EnterpriseClassificationDataConcepts, ISystems, Integer, IClassification, UUID...)}
+     * except the classification is secured with the <em>restricted</em> matrix (NOT world-readable): only
+     * Administrators / Systems / Applications / Plugins retain access, plus a <em>read</em> grant for
+     * {@code scopeToken}. Because the applicable-token climb is child&rarr;parent, only identity tokens at
+     * that scope node <em>or below it</em> may then read the classification.
+     */
+    @Override
+    public Uni<IClassification<?, ?>> createScopeRestricted(Mutiny.Session session, String name, String description,
+                                                            EnterpriseClassificationDataConcepts conceptName, ISystems<?, ?> system,
+                                                            Integer sequenceNumber, IClassification<?, ?> parent,
+                                                            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                                            UUID... identityToken) {
+        return createWithSecurity(session, name, description, conceptName, system, sequenceNumber, parent,
+                rootCl -> rootCl.createScopeRestrictedSecurity(session, system, scopeToken, identityToken), identityToken);
+    }
+
+    private Uni<IClassification<?, ?>> createWithSecurity(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
+                                             ISystems<?, ?> system,
+                                             Integer sequenceNumber, IClassification<?, ?> parent,
+                                             java.util.function.Function<Classification, Uni<?>> securityFn, UUID... identityToken) {
 
         log.trace("🚀 Creating new classification: '{}' for system: '{}' with session: {}", name, system.getName(), session.hashCode());
 
@@ -182,7 +209,7 @@ public class ClassificationService
                             )
                             .chain(persisted -> {
                                 log.trace("🔐 Starting security creation for classification '{}'", name);
-                                return rootCl.createDefaultSecurity(session, system, identityToken)
+                                return securityFn.apply(rootCl)
                                         .onItem()
                                         .invoke(result -> log.trace("🛡️ Security setup completed successfully for classification '{}'", name))
                                         .onFailure()

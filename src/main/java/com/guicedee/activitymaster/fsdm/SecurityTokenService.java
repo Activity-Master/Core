@@ -118,6 +118,43 @@ public class SecurityTokenService
                 "explicit-rows", identityToken));
     }
 
+    @Override
+    public Uni<Void> applyScopeRestrictedSecurity(Mutiny.Session session,
+                                                  Map<? extends IWarehouseCoreTable<?, ?, ?, ?>, ? extends ISecurityToken<?, ?>> recordScopes,
+                                                  ISystems<?, ?> system, UUID... identityToken) {
+        if (recordScopes == null || recordScopes.isEmpty()) {
+            return Uni.createFrom().voidItem();
+        }
+        log.debug("🔐 Applying scope-restricted security for {} records", recordScopes.size());
+
+        Map<String, ISecurityToken<?, ?>> tokens = new LinkedHashMap<>();
+        Uni<Void> resolve = resolveGroupFolderTokens(session, system, tokens, identityToken);
+
+        IEnterprise<?, ?> enterprise = system.getEnterprise();
+        IActiveFlag<?, ?> activeFlag = ((Systems) system).getActiveFlagID();
+
+        // Snapshot the entries so the iteration order is stable inside the stateless transaction.
+        List<Map.Entry<? extends IWarehouseCoreTable<?, ?, ?, ?>, ? extends ISecurityToken<?, ?>>> entries =
+                new ArrayList<>(recordScopes.entrySet());
+
+        return resolve.chain(() -> sessionFactory.withStatelessTransaction(statelessSession -> {
+                    Uni<Long> chain = Uni.createFrom().item(0L);
+                    for (Map.Entry<? extends IWarehouseCoreTable<?, ?, ?, ?>, ? extends ISecurityToken<?, ?>> entry : entries) {
+                        IWarehouseCoreTable<?, ?, ?, ?> record = entry.getKey();
+                        ISecurityToken<?, ?> scope = entry.getValue();
+                        chain = chain.chain(runningTotal -> record
+                                .createScopeRestrictedSecurity(statelessSession, system, enterprise, activeFlag, tokens, scope, identityToken)
+                                .map(perRecord -> runningTotal + perRecord));
+                    }
+                    return chain;
+                })
+                .invoke(inserted -> log.debug("✅ Batched {} scope-restricted security rows across {} records",
+                        inserted, entries.size()))
+                .onFailure()
+                .invoke(error -> log.error("❌ Error applying scope-restricted security: {}", error.getMessage(), error))
+                .replaceWithVoid());
+    }
+
     /**
      * Resolves the seven canonical group/folder tokens into {@code target}, keyed by the
      * {@code IWarehouseCoreTable.SECURITY_*} constants, in a single reactive chain.
@@ -190,15 +227,15 @@ public class SecurityTokenService
                 .get()
                 .onFailure(NoResultException.class)
                 .recoverWithUni(() -> {
-                    sta.setSystemID((Systems) system);
-                    sta.setOriginalSourceSystemID((Systems) system);
+                    sta.setSystemID(system);
+                    sta.setOriginalSourceSystemID(system);
                     sta.setEnterpriseID(enterprise);
                     sta.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
                     IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
                     return acService.getActiveFlag(session, enterprise)
                             .chain(activeFlag -> {
-                                sta.setActiveFlagID((ActiveFlag) activeFlag);
-                                sta.setSecurityTokenID((SecurityToken) fromToken);
+                                sta.setActiveFlagID(activeFlag);
+                                sta.setSecurityTokenID(fromToken);
                                 sta.setBase((SecurityToken) toToken);
                                 sta.setCreateAllowed(create);
                                 sta.setUpdateAllowed(update);
@@ -277,7 +314,7 @@ public class SecurityTokenService
                                             IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
                                             return acService.getActiveFlag(session, enterprise)
                                                     .chain(activeFlag -> {
-                                                        st.setActiveFlagID((ActiveFlag) activeFlag);
+                                                        st.setActiveFlagID(activeFlag);
                                                         return session.persist(st)
                                                                 .replaceWith(Uni.createFrom()
                                                                         .item(st))
@@ -294,7 +331,7 @@ public class SecurityTokenService
                                             .item(securityToken);
                                 }
 
-                                return link(session, parent, securityToken, (Classification) classification)
+                                return link(session, parent, securityToken, classification)
                                         .map(v -> securityToken);
                             });
                 });
@@ -343,7 +380,7 @@ public class SecurityTokenService
                     IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
                     return acService.getActiveFlag(session, enterprise)
                             .chain(activeFlag -> {
-                                root.setActiveFlagID((ActiveFlag) activeFlag);
+                                root.setActiveFlagID(activeFlag);
                                 return session.persist(root)
                                         .replaceWith(Uni.createFrom()
                                                 .item(root))
@@ -364,6 +401,55 @@ public class SecurityTokenService
 
     private void updateSecurityHierarchy(UUID securityTokenID) {
         //TODO hierarchy updates? i wonder
+    }
+
+    //@Transactional()
+    @Override
+    public Uni<Void> moveToken(Mutiny.Session session, ISecurityToken<?, ?> oldParent, ISecurityToken<?, ?> newParent,
+                               ISecurityToken<?, ?> child, IClassification<?, ?> classification, String... identifyingToken) {
+        var enterprise = child.getEnterprise();
+        log.debug("🔀 Moving security token '{}' from '{}' to '{}'", child.getName(),
+                oldParent != null ? oldParent.getName() : "<all parents>", newParent.getName());
+
+        // Enforce the canonical membership policy on the destination BEFORE mutating anything, so an
+        // illegal move fails without having closed any existing edge.
+        try {
+            enforceMembershipPolicy(enterprise, newParent, child, classification);
+        } catch (SecurityAccessException policyViolation) {
+            log.warn("⛔ Rejected security-token move of '{}' to '{}': {}",
+                    child.getName(), newParent.getName(), policyViolation.getMessage());
+            return Uni.createFrom().failure(policyViolation);
+        }
+
+        // Find the child's current, in-range parent edges (optionally narrowed to a single oldParent).
+        SecurityTokenXSecurityToken edge = new SecurityTokenXSecurityToken();
+        return edge.builder(session)
+                .withEnterprise(enterprise)
+                .findLink(oldParent == null ? null : (SecurityToken) oldParent, (SecurityToken) child, null)
+                .inActiveRange()
+                .inDateRange()
+                .getAll()
+                .chain(edges -> {
+                    java.time.OffsetDateTime now = com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD
+                            .convertToUTCDateTime(com.entityassist.RootEntity.getNow());
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (Object next : edges) {
+                        SecurityTokenXSecurityToken existing = (SecurityTokenXSecurityToken) next;
+                        // Skip an edge that already points at the new parent (idempotent move/no-op).
+                        SecurityToken existingParent = existing.getParentSecurityTokenID();
+                        if (existingParent != null && newParent.getId() != null
+                                && newParent.getId().equals(existingParent.getId())) {
+                            continue;
+                        }
+                        chain = chain.chain(() -> {
+                            existing.setEffectiveToDate(now);
+                            return session.merge(existing).replaceWithVoid();
+                        });
+                    }
+                    return chain;
+                })
+                // Create (or reuse) the new parent edge.
+                .chain(() -> link(session, newParent, child, classification, identifyingToken));
     }
 
     /**
@@ -437,7 +523,6 @@ public class SecurityTokenService
         }
     }
 
-    //@CacheResult(cacheName = "SecuritiesGetEveryoneGroup")
     @Override
     public Uni<ISecurityToken<?, ?>> getEveryoneGroup(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
         SecurityToken st = new SecurityToken();
@@ -454,7 +539,6 @@ public class SecurityTokenService
                 .transform(token -> (ISecurityToken<?, ?>) token);
     }
 
-    //@CacheResult(cacheName = "SecuritiesGetEverywhereGroup")
     @Override
     public Uni<ISecurityToken<?, ?>> getEverywhereGroup(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
         SecurityToken st = new SecurityToken();
@@ -471,7 +555,6 @@ public class SecurityTokenService
                 .transform(token -> (ISecurityToken<?, ?>) token);
     }
 
-    //@CacheResult(cacheName = "SecuritiesGetGuestsFolder")
     @Override
     public Uni<ISecurityToken<?, ?>> getGuestsFolder(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
         SecurityToken st = new SecurityToken();
@@ -488,7 +571,6 @@ public class SecurityTokenService
                 .transform(token -> (ISecurityToken<?, ?>) token);
     }
 
-    //@CacheResult(cacheName = "SecuritiesGetRegisteredGuestsFolder")
     @Override
     public Uni<ISecurityToken<?, ?>> getRegisteredGuestsFolder(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
         SecurityToken st = new SecurityToken();
@@ -505,7 +587,6 @@ public class SecurityTokenService
                 .transform(token -> (ISecurityToken<?, ?>) token);
     }
 
-    //@CacheResult(cacheName = "SecuritiesGetVisitorsFolder")
     @Override
     public Uni<ISecurityToken<?, ?>> getVisitorsGuestsFolder(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
         SecurityToken st = new SecurityToken();
@@ -522,7 +603,6 @@ public class SecurityTokenService
                 .transform(token -> (ISecurityToken<?, ?>) token);
     }
 
-    //@CacheResult(cacheName = "SecuritiesGetAdministratorsFolder")
     @Override
     public Uni<ISecurityToken<?, ?>> getAdministratorsFolder(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
         SecurityToken st = new SecurityToken();
@@ -539,7 +619,6 @@ public class SecurityTokenService
                 .transform(token -> (ISecurityToken<?, ?>) token);
     }
 
-    //@CacheResult(cacheName = "SecuritiesGetSystemsFolder")
     @Override
     public Uni<ISecurityToken<?, ?>> getSystemsFolder(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
         SecurityToken st = new SecurityToken();
@@ -553,10 +632,9 @@ public class SecurityTokenService
                 //.canRead(enterprise, identityToken)
                 .get()
                 .onItem()
-                .transform(token -> (ISecurityToken<?, ?>) token);
+                .transform(token ->  token);
     }
 
-    //@CacheResult(cacheName = "SecuritiesGetPluginsFolder")
     @Override
     public Uni<ISecurityToken<?, ?>> getPluginsFolder(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
         SecurityToken st = new SecurityToken();
@@ -570,10 +648,9 @@ public class SecurityTokenService
                 .withEnterprise(enterprise)
                 .get()
                 .onItem()
-                .transform(token -> (ISecurityToken<?, ?>) token);
+                .transform(token -> token);
     }
 
-    //@CacheResult(cacheName = "SecuritiesGetApplicationsFolder")
     @Override
     public Uni<ISecurityToken<?, ?>> getApplicationsFolder(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
         SecurityToken st = new SecurityToken();
@@ -587,10 +664,9 @@ public class SecurityTokenService
                 .withEnterprise(enterprise)
                 .get()
                 .onItem()
-                .transform(token -> (ISecurityToken<?, ?>) token);
+                .transform(token -> token);
     }
 
-    //@CacheResult(cacheName = "SecurityGetSecurityToken")
     @Override
     public Uni<ISecurityToken<?, ?>> getSecurityToken(Mutiny.Session session, UUID identifyingToken, ISystems<?, ?> system, UUID... identityToken) {
         var enterprise = system.getEnterprise();
@@ -605,10 +681,9 @@ public class SecurityTokenService
                 .onFailure(NoResultException.class)
                 .recoverWithNull()
                 .onItem()
-                .transform(token -> (ISecurityToken<?, ?>) token);
+                .transform(token -> token);
     }
 
-    //@CacheResult(cacheName = "SecurityGetSecurityTokenNoActiveFlag")
     @Override
     public Uni<ISecurityToken<?, ?>> getSecurityToken(Mutiny.Session session, UUID identifyingToken, boolean overrideActiveFlag, ISystems<?, ?> system, UUID... identityToken) {
         SecurityTokenQueryBuilder builder = new SecurityToken().builder(session);
@@ -626,6 +701,21 @@ public class SecurityTokenService
                 .recoverWithNull()
                 .onItem()
                 .transform(token -> (ISecurityToken<?, ?>) token);
+    }
+
+    @Override
+    public Uni<ISecurityToken<?, ?>> getSecurityTokenByName(Mutiny.Session session, String name, ISystems<?, ?> system, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        return new SecurityToken().builder(session)
+                .withName(name)
+                .withEnterprise(enterprise)
+                .inActiveRange()
+                .inDateRange()
+                .get()
+                .onFailure(NoResultException.class)
+                .recoverWithNull()
+                .onItem()
+                .transform(token -> token);
     }
 }
 

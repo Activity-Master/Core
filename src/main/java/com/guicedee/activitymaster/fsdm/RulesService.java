@@ -52,6 +52,29 @@ public class RulesService
 	@Override
 	public Uni<IRules<?, ?>> createRules(Mutiny.Session session, String rulesType, UUID key, String name, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
+		// Public create — world-readable (public/default security matrix).
+		return createRulesWithSecurity(session, rulesType, key, name, description, system,
+				r -> r.createDefaultSecurity(session, system, identityToken), identityToken);
+	}
+
+	/**
+	 * Opt-in <strong>scope-restricted</strong> rules create. Identical to
+	 * {@link #createRules(Mutiny.Session, String, UUID, String, String, ISystems, UUID...)} except the rules record
+	 * is secured with the restricted matrix: only Administrators / Systems / Applications / Plugins retain access,
+	 * plus a <em>read</em> grant for {@code scopeToken}. Only identity tokens at that scope node or below it may read.
+	 */
+	@Override
+	public Uni<IRules<?, ?>> createRulesScopeRestricted(Mutiny.Session session, String rulesType, UUID key, String name, String description, ISystems<?, ?> system,
+														com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+														UUID... identityToken)
+	{
+		return createRulesWithSecurity(session, rulesType, key, name, description, system,
+				r -> r.createScopeRestrictedSecurity(session, system, scopeToken, identityToken), identityToken);
+	}
+
+	private Uni<IRules<?, ?>> createRulesWithSecurity(Mutiny.Session session, String rulesType, UUID key, String name, String description, ISystems<?, ?> system,
+													  java.util.function.Function<Rules, Uni<?>> securityFn, UUID... identityToken)
+	{
 		var enterprise = system.getEnterprise();
 
 		Rules rules = new Rules();
@@ -73,10 +96,10 @@ public class RulesService
 					return session.persist(rules).replaceWith(Uni.createFrom().item(rules));
 				})
 				.chain(persisted -> {
-					// Chain createDefaultSecurity properly
-					return persisted.createDefaultSecurity(session, system, identityToken)
+					// Chain security creation properly
+					return securityFn.apply(persisted)
 							.onItem().invoke(result -> log.trace("Security setup completed successfully for rules"))
-							.onFailure().invoke(error -> log.error("Error in createDefaultSecurity for rules", error))
+							.onFailure().invoke(error -> log.error("Error in createRules security", error))
 							.onFailure().recoverWithItem(() -> null)
 							.replaceWith((IRules<?, ?>) rules);
 				});
@@ -136,6 +159,28 @@ public class RulesService
 	@Override
 	public Uni<IRulesType<?, ?>> createRulesType(Mutiny.Session session, String rulesType, UUID key, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
+		// Public create — world-readable (public/default security matrix).
+		return createRulesTypeWithSecurity(session, rulesType, key, description, system,
+				rt -> rt.createDefaultSecurity(session, system, identityToken), identityToken);
+	}
+
+	/**
+	 * Opt-in <strong>scope-restricted</strong> rules-type create. Same as
+	 * {@link #createRulesType(Mutiny.Session, String, UUID, String, ISystems, UUID...)} but secured with the
+	 * restricted matrix plus a <em>read</em> grant for {@code scopeToken}.
+	 */
+	@Override
+	public Uni<IRulesType<?, ?>> createRulesTypeScopeRestricted(Mutiny.Session session, String rulesType, UUID key, String description, ISystems<?, ?> system,
+															   com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+															   UUID... identityToken)
+	{
+		return createRulesTypeWithSecurity(session, rulesType, key, description, system,
+				rt -> rt.createScopeRestrictedSecurity(session, system, scopeToken, identityToken), identityToken);
+	}
+
+	private Uni<IRulesType<?, ?>> createRulesTypeWithSecurity(Mutiny.Session session, String rulesType, UUID key, String description, ISystems<?, ?> system,
+															  java.util.function.Function<RulesType, Uni<?>> securityFn, UUID... identityToken)
+	{
 		var enterprise = system.getEnterprise();
 
 		RulesType et = new RulesType();
@@ -172,11 +217,11 @@ public class RulesService
 									return session.persist(et).replaceWith(Uni.createFrom().item(et));
 								})
 								.chain(persisted -> {
-									// Chain createDefaultSecurity properly
+									// Chain security creation properly
 									RulesType rulesTypeImpl = (RulesType) persisted;
-									return rulesTypeImpl.createDefaultSecurity(session, system, identityToken)
+									return securityFn.apply(rulesTypeImpl)
 											.onItem().invoke(result -> log.trace("Security setup completed successfully for rule type"))
-											.onFailure().invoke(error -> log.error("Error in createDefaultSecurity for rule type", error))
+											.onFailure().invoke(error -> log.error("Error in createRulesType security", error))
 											.onFailure().recoverWithItem(() -> null)
 											.replaceWith((IRulesType<?, ?>) et);
 								});
