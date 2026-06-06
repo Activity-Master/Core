@@ -1,7 +1,7 @@
 package com.guicedee.activitymaster.fsdm.implementations;
 
 import com.google.inject.*;
-import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
+import com.guicedee.activitymaster.fsdm.client.services.systems.IMasterSystem;
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.client.services.lifecycle.IGuiceModule;
 
@@ -11,13 +11,13 @@ public class ActivityMasterSystemBinder extends AbstractModule implements IGuice
 	protected void configure()
 	{
 		@SuppressWarnings("Convert2Diamond")
-		Key<IActivityMasterSystem<?>> enterpriseServiceKey = Key.get(new TypeLiteral<IActivityMasterSystem<?>>() {});
+		Key<IMasterSystem<?>> enterpriseServiceKey = Key.get(new TypeLiteral<IMasterSystem<?>>() {});
 		@SuppressWarnings("Convert2Diamond")
-		Key<IActivityMasterSystem<SystemsSystem>> enterpriseServiceKeyLegit = Key.get(new TypeLiteral<IActivityMasterSystem<SystemsSystem>>() {});
+		Key<IMasterSystem<SystemsSystem>> enterpriseServiceKeyLegit = Key.get(new TypeLiteral<IMasterSystem<SystemsSystem>>() {});
 		
 		bind(enterpriseServiceKey).to(enterpriseServiceKeyLegit);
 		bind(enterpriseServiceKeyLegit).to(SystemsSystem.class);
-		bind(IActivityMasterSystem.class).to(enterpriseServiceKey);
+		bind(IMasterSystem.class).to(enterpriseServiceKey);
 
 	}
 }

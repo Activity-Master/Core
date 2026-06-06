@@ -5,24 +5,21 @@ import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.ActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
-import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
+import com.guicedee.activitymaster.fsdm.client.services.administration.MasterDefaultSystem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
+import com.guicedee.activitymaster.fsdm.client.services.systems.IMasterSystem;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
-import java.time.Duration;
-
 import static com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService.ActivateFlagSystemName;
-import static com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.EnterpriseSystemName;
 
 
 @Log4j2
 public class ActiveFlagSystem
-    extends ActivityMasterDefaultSystem<ActiveFlagSystem>
-    implements IActivityMasterSystem<ActiveFlagSystem>
+    extends MasterDefaultSystem<ActiveFlagSystem>
+    implements IMasterSystem<ActiveFlagSystem>
 {
   @Inject
   private ISystemsService<?> systemsService;

@@ -2,18 +2,14 @@ package com.guicedee.activitymaster.fsdm.systems;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
+import com.guicedee.activitymaster.fsdm.client.services.administration.MasterDefaultSystem;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.LogItemTypes;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
-import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
+import com.guicedee.activitymaster.fsdm.client.services.systems.IMasterSystem;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
-
-import java.time.Duration;
-import java.util.Date;
 
 import static com.guicedee.activitymaster.fsdm.client.services.IEventService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.ISystemsService.ActivityMasterSystemName;
@@ -22,8 +18,8 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.E
 
 @Log4j2
 public class EventsSystem
-    extends ActivityMasterDefaultSystem<EventsSystem>
-    implements IActivityMasterSystem<EventsSystem>
+    extends MasterDefaultSystem<EventsSystem>
+    implements IMasterSystem<EventsSystem>
 {
   @Inject
   private ISystemsService<?> systemsService;

@@ -2,16 +2,14 @@ package com.guicedee.activitymaster.fsdm.systems;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
+import com.guicedee.activitymaster.fsdm.client.services.administration.MasterDefaultSystem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.*;
-import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
+import com.guicedee.activitymaster.fsdm.client.services.systems.IMasterSystem;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
-
-import java.time.Duration;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.IClassificationService.*;
@@ -19,8 +17,8 @@ import static com.guicedee.activitymaster.fsdm.client.services.IClassificationSe
 
 @Log4j2
 public class ClassificationsSystem
-        extends ActivityMasterDefaultSystem<ClassificationsSystem>
-        implements IActivityMasterSystem<ClassificationsSystem> {
+        extends MasterDefaultSystem<ClassificationsSystem>
+        implements IMasterSystem<ClassificationsSystem> {
     @Inject
     private IClassificationService<?> service;
 

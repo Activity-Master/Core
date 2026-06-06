@@ -3,13 +3,13 @@ package com.guicedee.activitymaster.fsdm.systems;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.InvolvedPartyService;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
-import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
+import com.guicedee.activitymaster.fsdm.client.services.administration.MasterDefaultSystem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.types.*;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ActivityMasterException;
-import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
+import com.guicedee.activitymaster.fsdm.client.services.systems.IMasterSystem;
 import com.guicedee.client.utils.Pair;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
@@ -25,8 +25,8 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.D
 
 @Log4j2
 public class SystemsSystem
-        extends ActivityMasterDefaultSystem<SystemsSystem>
-        implements IActivityMasterSystem<SystemsSystem> {
+        extends MasterDefaultSystem<SystemsSystem>
+        implements IMasterSystem<SystemsSystem> {
 
     @Inject
     private ISystemsService<?> systemsService;

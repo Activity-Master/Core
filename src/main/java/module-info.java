@@ -1,6 +1,6 @@
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemInstall;
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemUpdate;
-import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
+import com.guicedee.activitymaster.fsdm.client.services.systems.IMasterSystem;
 import com.guicedee.activitymaster.fsdm.db.ActivityMasterDBModule;
 import com.guicedee.activitymaster.fsdm.implementations.*;
 import com.guicedee.activitymaster.fsdm.injections.*;
@@ -89,7 +89,7 @@ module com.guicedee.activitymaster.fsdm {
     provides com.guicedee.vertx.graphql.services.IGraphQLSchemaProvider
             with com.guicedee.activitymaster.fsdm.graphql.FsdmGraphQLSchemaProvider;
 
-    provides IActivityMasterSystem with EnterpriseSystem,
+    provides IMasterSystem with EnterpriseSystem,
             ActiveFlagSystem,
             SystemsSystem,
             ClassificationsDataConceptSystem,

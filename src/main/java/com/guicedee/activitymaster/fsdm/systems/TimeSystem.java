@@ -2,10 +2,10 @@ package com.guicedee.activitymaster.fsdm.systems;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
-import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
+import com.guicedee.activitymaster.fsdm.client.services.administration.MasterDefaultSystem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
+import com.guicedee.activitymaster.fsdm.client.services.systems.IMasterSystem;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IProgressable;
 import com.guicedee.activitymaster.fsdm.db.entities.time.*;
 import com.guicedee.activitymaster.fsdm.db.timelord.EnglishNumberToWords;
@@ -41,8 +41,8 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.t
  * All operations use reactive patterns with Uni return types and proper error handling.
  */
 @Log4j2
-public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
-    implements IActivityMasterSystem<TimeSystem>, ITimeSystem, IProgressable
+public class TimeSystem extends MasterDefaultSystem<TimeSystem>
+    implements IMasterSystem<TimeSystem>, ITimeSystem, IProgressable
 {
   private final AtomicInteger totalTasksCount = new AtomicInteger(0);
 

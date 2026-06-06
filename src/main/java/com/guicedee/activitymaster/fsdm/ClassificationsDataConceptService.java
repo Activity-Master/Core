@@ -33,19 +33,6 @@ public class ClassificationsDataConceptService
         return new ClassificationDataConcept();
     }
 
-    public Uni<UUID> resolveCdcIdByName(Mutiny.Session session, IEnterprise<?, ?> enterpriseId, UUID systemId, String conceptName) {
-        return com.guicedee.activitymaster.fsdm.client.services.cache.NameIdCache
-                .getClassificationDataConceptId(session, enterpriseId.getId(), systemId, conceptName, (sess, name) -> {
-                    return new ClassificationDataConcept()
-                            .builder(sess)
-                            .withEnterprise(enterpriseId)
-                            .withName(name)
-                            .inActiveRange()
-                            .inDateRange()
-                            .get()
-                            .map(com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept::getId);
-                });
-    }
 
     @Override
     public Uni<IClassificationDataConcept<?, ?>> createDataConcept(Mutiny.Session session, EnterpriseClassificationDataConcepts name,

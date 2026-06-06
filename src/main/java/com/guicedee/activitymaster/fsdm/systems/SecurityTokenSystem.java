@@ -2,7 +2,7 @@ package com.guicedee.activitymaster.fsdm.systems;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
+import com.guicedee.activitymaster.fsdm.client.services.administration.MasterDefaultSystem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseCoreTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
@@ -10,7 +10,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.*;
-import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
+import com.guicedee.activitymaster.fsdm.client.services.systems.IMasterSystem;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.*;
@@ -28,7 +28,6 @@ import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,8 +40,8 @@ import static com.guicedee.activitymaster.fsdm.client.services.ISystemsService.A
 
 @Log4j2
 public class SecurityTokenSystem
-        extends ActivityMasterDefaultSystem<SecurityTokenSystem>
-        implements IActivityMasterSystem<SecurityTokenSystem> {
+        extends MasterDefaultSystem<SecurityTokenSystem>
+        implements IMasterSystem<SecurityTokenSystem> {
 
     @Inject
     private IClassificationService<?> classificationService;

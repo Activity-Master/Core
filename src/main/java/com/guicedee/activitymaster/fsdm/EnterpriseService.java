@@ -13,7 +13,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemInstall;
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemUpdate;
-import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
+import com.guicedee.activitymaster.fsdm.client.services.systems.IMasterSystem;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IProgressable;
 import com.guicedee.activitymaster.fsdm.client.services.systems.ISystemUpdate;
 import com.guicedee.activitymaster.fsdm.client.services.systems.SortedUpdate;
@@ -421,19 +421,19 @@ public class EnterpriseService
                     .get(ActivityMasterConfiguration.class)
                     .setSecurityEnabled(false);
 
-            Set<IActivityMasterSystem<?>> allSystems = ActivityMasterConfiguration
+            Set<IMasterSystem<?>> allSystems = ActivityMasterConfiguration
                     .get()
                     .getAllSystems();
 
             int totalTasks = allSystems
                     .stream()
-                    .mapToInt(IActivityMasterSystem::totalTasks)
+                    .mapToInt(IMasterSystem::totalTasks)
                     .sum() + 1;
 
             logProgress("Create Enterprise", "Creating Enterprise", 0, totalTasks);
 
             // Go through all systems in order and run the registerSystem() method
-            List<IActivityMasterSystem<?>> orderedSystems = new ArrayList<>(allSystems);
+            List<IMasterSystem<?>> orderedSystems = new ArrayList<>(allSystems);
 
             return installEnterprise(session, enterpriseName)
                     .chain(enterprise -> registerSystemsSequentially(session, orderedSystems, enterprise)
@@ -488,7 +488,7 @@ public class EnterpriseService
                     .get(ActivityMasterConfiguration.class)
                     .setSecurityEnabled(false);
 
-            Set<IActivityMasterSystem<?>> allSystems = ActivityMasterConfiguration
+            Set<IMasterSystem<?>> allSystems = ActivityMasterConfiguration
                     .get()
                     .getAllSystems();
 
@@ -529,14 +529,14 @@ public class EnterpriseService
         return getEnterprise(session, applicationEnterpriseName);
     }
 
-    private Uni<Void> installSystems(Mutiny.Session session, Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise) {
+    private Uni<Void> installSystems(Mutiny.Session session, Set<IMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise) {
         boolean found = true;
-        List<IActivityMasterSystem<?>> filteredBeforeEvents = new ArrayList<>();
-        List<IActivityMasterSystem<?>> filteredUpToEvents = new ArrayList<>();
-        List<IActivityMasterSystem<?>> allFilteredSystems = new ArrayList<>();
+        List<IMasterSystem<?>> filteredBeforeEvents = new ArrayList<>();
+        List<IMasterSystem<?>> filteredUpToEvents = new ArrayList<>();
+        List<IMasterSystem<?>> allFilteredSystems = new ArrayList<>();
 
         // First pass: categorize systems
-        for (IActivityMasterSystem<?> system : allSystems) {
+        for (IMasterSystem<?> system : allSystems) {
             // Start collecting from SystemsSystem
             if (!found && SystemsSystem.class.isAssignableFrom(system.getClass())) {
                 found = true;
@@ -588,7 +588,7 @@ public class EnterpriseService
                 .invoke(v -> log.info("✅ Completed all installation steps for systems"));
     }
 
-    private Uni<Void> installSystemsSequentially(Mutiny.Session session, List<IActivityMasterSystem<?>> systems, IEnterprise<?, ?> enterprise, boolean registerSystem) {
+    private Uni<Void> installSystemsSequentially(Mutiny.Session session, List<IMasterSystem<?>> systems, IEnterprise<?, ?> enterprise, boolean registerSystem) {
         if (systems.isEmpty()) {
             return Uni
                     .createFrom()
@@ -608,7 +608,7 @@ public class EnterpriseService
         return result.invoke(v -> log.info("✅ Processed " + systems.size() + " systems"));
     }
 
-    private Uni<Void> registerSystemsSequentially(Mutiny.Session session, List<IActivityMasterSystem<?>> systems, IEnterprise<?, ?> enterprise) {
+    private Uni<Void> registerSystemsSequentially(Mutiny.Session session, List<IMasterSystem<?>> systems, IEnterprise<?, ?> enterprise) {
         if (systems.isEmpty()) {
             return Uni
                     .createFrom()
@@ -633,7 +633,7 @@ public class EnterpriseService
         return result.invoke(v -> log.info("✅ Registered " + systems.size() + " systems"));
     }
 
-    private Uni<Void> installSystem(Mutiny.Session session, IActivityMasterSystem<?> system, IEnterprise<?, ?> enterprise, boolean registerSystem) {
+    private Uni<Void> installSystem(Mutiny.Session session, IMasterSystem<?> system, IEnterprise<?, ?> enterprise, boolean registerSystem) {
         String className = system
                 .getClass()
                 .getSimpleName();
@@ -646,13 +646,13 @@ public class EnterpriseService
                 .invoke(err -> log.error("❌ System install failed: " + className, err));
     }
 
-    private Uni<Void> performSystemInstall(Mutiny.Session session, IEnterprise<?, ?> enterprise, IActivityMasterSystem<?> system, boolean registerSystem) {
+    private Uni<Void> performSystemInstall(Mutiny.Session session, IEnterprise<?, ?> enterprise, IMasterSystem<?> system, boolean registerSystem) {
         String className = system
                 .getClass()
                 .getSimpleName();
         String systemName = system.getSystemName();
         String cleanedName = cleanName(className);
-        IActivityMasterSystem<?> registeredSystem = system;
+        IMasterSystem<?> registeredSystem = system;
 
         log.info("➡️ Starting install for: " + systemName + " [" + cleanedName + "]");
 
@@ -753,10 +753,10 @@ public class EnterpriseService
                 );
     }
 
-    private Uni<Void> createBaseSystems(Mutiny.Session session, Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise) {
+    private Uni<Void> createBaseSystems(Mutiny.Session session, Set<IMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise) {
         logProgress("Creating Base Systems", "Initializing Base Systems");
 
-        List<IActivityMasterSystem<?>> filtered = allSystems
+        List<IMasterSystem<?>> filtered = allSystems
                 .stream()
                 .filter(a -> a
                         .getClass()
@@ -779,8 +779,8 @@ public class EnterpriseService
                 .voidItem();
 
         // Chain each system installation sequentially
-        for (IActivityMasterSystem<?> system : filtered) {
-            final IActivityMasterSystem<?> currentSystem = system; // Create final reference for lambda
+        for (IMasterSystem<?> system : filtered) {
+            final IMasterSystem<?> currentSystem = system; // Create final reference for lambda
             systemsChain = systemsChain.chain(() -> {
                 log.debug("🔄 Installing base system: {}", currentSystem.getSystemName());
                 return performSystemInstall(session, enterprise, currentSystem, false);
@@ -793,10 +793,10 @@ public class EnterpriseService
                 .invoke(err -> log.error("❌ Error during base system installs", err));
     }
 
-    private Uni<Void> createBase(Mutiny.Session session, Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise) {
+    private Uni<Void> createBase(Mutiny.Session session, Set<IMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise) {
         logProgress("Creating Core", "Initializing Core Systems");
 
-        List<IActivityMasterSystem<?>> filtered = allSystems
+        List<IMasterSystem<?>> filtered = allSystems
                 .stream()
                 .takeWhile(system -> !SystemsSystem.class.isAssignableFrom(system.getClass()))
                 .toList();
@@ -817,8 +817,8 @@ public class EnterpriseService
                 .voidItem();
 
         // Chain each system installation sequentially
-        for (IActivityMasterSystem<?> system : filtered) {
-            final IActivityMasterSystem<?> currentSystem = system; // Create final reference for lambda
+        for (IMasterSystem<?> system : filtered) {
+            final IMasterSystem<?> currentSystem = system; // Create final reference for lambda
             systemsChain = systemsChain.chain(() -> {
                 log.debug("🔄 Installing core system: {}", currentSystem.getSystemName());
                 return performSystemInstall(session, enterprise, currentSystem, false);
