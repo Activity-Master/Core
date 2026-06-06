@@ -211,7 +211,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService> {
         String encoded = passwordEncoder.encode(password);
 
         // Store the modern password credential
-        return (Uni) involvedParty.addOrUpdateClassification(session, SecurityPassword, null, encoded, system, identityToken)
+        return (Uni) involvedParty.addOrUpdateClassification(session, SecurityPassword, (String) null, encoded, system, identityToken)
                 .chain(() -> {
                     // Get identification type
                     return involvedPartyService.findInvolvedPartyIdentificationType(

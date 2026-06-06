@@ -8,6 +8,8 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.class
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseCoreTable;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.UserGroupSecurityTokenClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.SecurityAccessException;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
@@ -36,9 +38,134 @@ public class SecurityTokenService
     @Inject
     private IClassificationService<?> classificationService;
 
+    @Inject
+    private Mutiny.SessionFactory sessionFactory;
+
     @Override
     public ISecurityToken<?, ?> get() {
         return new SecurityToken();
+    }
+
+    /**
+     * Bulk, batched, stateless default-security application for an entire table. See
+     * {@link ISecurityTokenService#applyDefaultSecurityToTable(Mutiny.Session, IWarehouseCoreTable, ISystems, UUID...)}.
+     * <p>
+     * The seven canonical group/folder tokens are resolved <strong>once</strong> for the whole pass (not
+     * per row), rows that already carry security are skipped via a cheap COUNT gate, and the remaining
+     * inserts are written in a single {@link Mutiny.StatelessSession} transaction so the persistence
+     * context never grows. This is the efficient counterpart of the per-row
+     * {@link IWarehouseCoreTable#createDefaultSecurity(Mutiny.Session, ISystems, UUID...)} and is the
+     * preferred path after bulk imports (e.g. geography loads).
+     */
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<Void> applyDefaultSecurityToTable(Mutiny.Session session, IWarehouseCoreTable<?, ?, ?, ?> table,
+                                                 ISystems<?, ?> system, UUID... identityToken) {
+        log.debug("🔐 Applying batched/stateless default security for table: {}", table.getClass().getSimpleName());
+
+        // Resolve the shared group/folder tokens ONCE for the whole table pass.
+        Map<String, ISecurityToken<?, ?>> tokens = new LinkedHashMap<>();
+        Uni<Void> resolve = resolveGroupFolderTokens(session, system, tokens, identityToken);
+
+        IEnterprise<?, ?> enterprise = system.getEnterprise();
+        IActiveFlag<?, ?> activeFlag = ((Systems) system).getActiveFlagID();
+
+        return resolve.chain(() -> table.builder(session)
+                .inDateRange()
+                .getAll()
+                .chain(items -> {
+                    if (items == null || items.isEmpty()) {
+                        log.debug("✅ No rows to secure for {}", table.getClass().getSimpleName());
+                        return Uni.createFrom().voidItem();
+                    }
+
+                    // Idempotency gate: only rows without existing default security are (re)created.
+                    List<IWarehouseCoreTable<?, ?, ?, ?>> pending = new ArrayList<>();
+                    Uni<Void> gate = Uni.createFrom().voidItem();
+                    for (Object next : items) {
+                        final IWarehouseCoreTable<?, ?, ?, ?> item = (IWarehouseCoreTable<?, ?, ?, ?>) next;
+                        gate = gate.chain(() -> item.countDefaultSecurity(session)
+                                .invoke(count -> {
+                                    if (count == null || count == 0L) {
+                                        pending.add(item);
+                                    }
+                                })
+                                .replaceWithVoid());
+                    }
+
+                    return gate.chain(() -> batchInsertSecurity(pending, system, enterprise, activeFlag, tokens,
+                            table.getClass().getSimpleName(), identityToken));
+                }));
+    }
+
+    @Override
+    public Uni<Void> applyDefaultSecurityToRows(Mutiny.Session session,
+                                                java.util.Collection<? extends IWarehouseCoreTable<?, ?, ?, ?>> rows,
+                                                ISystems<?, ?> system, UUID... identityToken) {
+        if (rows == null || rows.isEmpty()) {
+            return Uni.createFrom().voidItem();
+        }
+        log.debug("🔐 Applying batched/stateless default security for {} explicit rows", rows.size());
+
+        Map<String, ISecurityToken<?, ?>> tokens = new LinkedHashMap<>();
+        Uni<Void> resolve = resolveGroupFolderTokens(session, system, tokens, identityToken);
+
+        IEnterprise<?, ?> enterprise = system.getEnterprise();
+        IActiveFlag<?, ?> activeFlag = ((Systems) system).getActiveFlagID();
+
+        // Scan-free, gate-free: the caller guarantees these rows are new.
+        List<IWarehouseCoreTable<?, ?, ?, ?>> pending = new ArrayList<>(rows);
+        return resolve.chain(() -> batchInsertSecurity(pending, system, enterprise, activeFlag, tokens,
+                "explicit-rows", identityToken));
+    }
+
+    /**
+     * Resolves the seven canonical group/folder tokens into {@code target}, keyed by the
+     * {@code IWarehouseCoreTable.SECURITY_*} constants, in a single reactive chain.
+     */
+    private Uni<Void> resolveGroupFolderTokens(Mutiny.Session session, ISystems<?, ?> system,
+                                               Map<String, ISecurityToken<?, ?>> target, UUID... identityToken) {
+        return getAdministratorsFolder(session, system, identityToken)
+                .invoke(t -> target.put(IWarehouseCoreTable.SECURITY_ADMINISTRATORS, t))
+                .chain(() -> getEveryoneGroup(session, system, identityToken)
+                        .invoke(t -> target.put(IWarehouseCoreTable.SECURITY_EVERYONE, t)))
+                .chain(() -> getEverywhereGroup(session, system, identityToken)
+                        .invoke(t -> target.put(IWarehouseCoreTable.SECURITY_EVERYWHERE, t)))
+                .chain(() -> getSystemsFolder(session, system, identityToken)
+                        .invoke(t -> target.put(IWarehouseCoreTable.SECURITY_SYSTEMS, t)))
+                .chain(() -> getApplicationsFolder(session, system, identityToken)
+                        .invoke(t -> target.put(IWarehouseCoreTable.SECURITY_APPLICATIONS, t)))
+                .chain(() -> getPluginsFolder(session, system, identityToken)
+                        .invoke(t -> target.put(IWarehouseCoreTable.SECURITY_PLUGINS, t)))
+                .chain(() -> getGuestsFolder(session, system, identityToken)
+                        .invoke(t -> target.put(IWarehouseCoreTable.SECURITY_GUESTS, t)))
+                .replaceWithVoid();
+    }
+
+    /**
+     * Writes default security for every row in {@code pending} in ONE stateless transaction.
+     */
+    private Uni<Void> batchInsertSecurity(List<IWarehouseCoreTable<?, ?, ?, ?>> pending, ISystems<?, ?> system,
+                                          IEnterprise<?, ?> enterprise, IActiveFlag<?, ?> activeFlag,
+                                          Map<String, ISecurityToken<?, ?>> tokens, String label, UUID... identityToken) {
+        if (pending.isEmpty()) {
+            log.debug("✅ No pending rows to secure for {}", label);
+            return Uni.createFrom().voidItem();
+        }
+        return sessionFactory.withStatelessTransaction(statelessSession -> {
+                    Uni<Long> chain = Uni.createFrom().item(0L);
+                    for (IWarehouseCoreTable<?, ?, ?, ?> item : pending) {
+                        chain = chain.chain(runningTotal -> item
+                                .createDefaultSecurity(statelessSession, system, enterprise, activeFlag, tokens, identityToken)
+                                .map(perRecord -> runningTotal + perRecord));
+                    }
+                    return chain;
+                })
+                .invoke(inserted -> log.debug("✅ Batched {} default-security rows across {} {} records",
+                        inserted, pending.size(), label))
+                .onFailure()
+                .invoke(error -> log.error("❌ Error batch-securing {}: {}", label, error.getMessage(), error))
+                .replaceWithVoid();
     }
 
     //@Transactional()

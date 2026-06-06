@@ -294,8 +294,8 @@ public class TestActivityMasterLifecycle {
                                                 String legacyPass = pw.integerEncrypt(hash);
                                                 String legacySalt = pw.integerEncrypt(salt);
 
-                                                return party.addOrUpdateClassification(session, SecurityPassword, null, legacyPass, sys)
-                                                        .chain(() -> party.addOrUpdateClassification(session, SecurityPasswordSalt, null, legacySalt, sys))
+                                                return party.addOrUpdateClassification(session, SecurityPassword, (String) null, legacyPass, sys)
+                                                        .chain(() -> party.addOrUpdateClassification(session, SecurityPasswordSalt, (String) null, legacySalt, sys))
                                                         // Confirm the stored credential is now in the legacy (non-PHC) format
                                                         .chain(() -> party.findClassification(session, SecurityPassword, sys)
                                                                 .invoke(rel -> Assertions.assertFalse(rel.getValue().startsWith("$"),

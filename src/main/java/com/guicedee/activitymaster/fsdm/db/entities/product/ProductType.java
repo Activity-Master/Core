@@ -189,10 +189,11 @@ public class ProductType
     }
 
     @Override
-    public void configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
     {
         ProductTypeXClassification pxc = (ProductTypeXClassification) linkTable;
         pxc.setProductTypeID(this);
+        return io.smallrye.mutiny.Uni.createFrom().voidItem();
     }
 
 }

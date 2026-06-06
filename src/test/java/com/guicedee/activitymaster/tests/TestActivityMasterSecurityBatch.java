@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.tests;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
+import com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConceptService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
 import com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService;
@@ -15,6 +16,8 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
+import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
+import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
@@ -27,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.guicedee.activitymaster.fsdm.DefaultEnterprise.TestEnterprise;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,7 +47,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * <ol>
  *     <li>resolve the shared security context (system, enterprise, active flag, group/folder tokens)
  *         <em>once</em> on a normal session;</li>
- *     <li>create the owning records;</li>
+ *     <li>create the owning records <strong>raw</strong> (a direct persist, <em>without</em> the per-row
+ *         {@code createDefaultSecurity} that {@code ClassificationService.create()} runs) so they enter
+ *         this test unsecured — exactly how a bulk loader produces rows;</li>
  *     <li>write all of their default-security rows inside a single {@code withStatelessTransaction}
  *         block, so the persistence context never grows and the inserts can be JDBC-batched;</li>
  *     <li>assert every record ended up with the expected number of security rows.</li>
@@ -119,7 +125,7 @@ public class TestActivityMasterSecurityBatch {
         sessionFactory.withTransaction(session -> {
             IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
             ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
-            IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
+            IClassificationDataConceptService<?> dcs = IGuiceContext.get(IClassificationDataConceptService.class);
             IActiveFlagService<?> afs = IGuiceContext.get(IActiveFlagService.class);
             ISecurityTokenService<?> sec = IGuiceContext.get(ISecurityTokenService.class);
 
@@ -134,13 +140,33 @@ public class TestActivityMasterSecurityBatch {
                     })
                     .chain(af -> {
                         ctx.activeFlag = (IActiveFlag<?, ?>) af;
+                        // Resolve the default data concept once; raw records below reference it by FK.
+                        return dcs.find(session, EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, ctx.system);
+                    })
+                    .chain(dataConcept -> {
+                        // Create the owning records RAW — a direct persist that deliberately SKIPS the per-row
+                        // createDefaultSecurity that ClassificationService.create() would run. This mirrors a bulk
+                        // loader (rows in, no per-row security), leaving Phase B's stateless batch as the SOLE
+                        // securer so the 7-rows-per-record assertions are deterministic.
+                        final ClassificationDataConcept concept = (ClassificationDataConcept) dataConcept;
                         Uni<Void> chain = Uni.createFrom().voidItem();
                         for (int i = 0; i < recordCount; i++) {
                             final int idx = i;
-                            chain = chain.chain(() -> cs.create(session, "BatchSec_" + runId + "_" + idx,
-                                            "batch security test record", EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, ctx.system)
-                                    .invoke(ctx.records::add)
-                                    .replaceWithVoid());
+                            chain = chain.chain(() -> {
+                                Classification record = new Classification();
+                                record.setName("BatchSec_" + runId + "_" + idx);
+                                record.setDescription("batch security test record");
+                                record.setClassificationSequenceNumber(1);
+                                record.setSystemID(ctx.system);
+                                record.setOriginalSourceSystemID(ctx.system.getId());
+                                record.setOriginalSourceSystemUniqueID(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+                                record.setEnterpriseID(ctx.enterprise);
+                                record.setConcept(concept);
+                                record.setActiveFlagID(ctx.activeFlag);
+                                return record.builder(session).persist(record)
+                                        .invoke(ctx.records::add)
+                                        .replaceWithVoid();
+                            });
                         }
                         return chain;
                     })

@@ -153,10 +153,11 @@ public class Enterprise
 	}
 	
 	@Override
-	public void configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+	public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
 		EnterpriseXClassification x = (EnterpriseXClassification) linkTable;
 		x.setEnterpriseID(this);
+		return io.smallrye.mutiny.Uni.createFrom().voidItem();
 	}
 	
 	@Override

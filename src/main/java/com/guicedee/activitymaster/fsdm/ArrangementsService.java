@@ -140,10 +140,9 @@ public class ArrangementsService
                     arrangement.setActiveFlagID(activeFlag);
                     return session.persist(arrangement).replaceWith(Uni.createFrom().item(arrangement));
                 })
-                .invoke(persisted -> {
-                    // Step 2: Create default security with proper chaining
-                    persisted.createDefaultSecurity(session, system, identityToken);
-                })
+                .call(persisted ->
+                        // Step 2: Create default security (subscribed via call so it actually runs)
+                        persisted.createDefaultSecurity(session, system, identityToken))
                 .chain(arrangementPass->{
                     return find(session, type, system)
                             .chain(arrangementType ->

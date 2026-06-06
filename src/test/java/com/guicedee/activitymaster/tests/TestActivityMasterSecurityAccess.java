@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.tests;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
+import com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConceptService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
 import com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService;
@@ -16,6 +17,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.secur
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
+import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
@@ -29,6 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.guicedee.activitymaster.fsdm.DefaultEnterprise.TestEnterprise;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -123,7 +126,7 @@ public class TestActivityMasterSecurityAccess {
         sessionFactory.withTransaction(session -> {
             IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
             ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
-            IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
+            IClassificationDataConceptService<?> dcs = IGuiceContext.get(IClassificationDataConceptService.class);
             IActiveFlagService<?> afs = IGuiceContext.get(IActiveFlagService.class);
             ISecurityTokenService<?> sec = IGuiceContext.get(ISecurityTokenService.class);
 
@@ -144,12 +147,23 @@ public class TestActivityMasterSecurityAccess {
                         ctx.systemToken = systemToken;
                         return sec.getSystemsFolder(session, ctx.system).invoke(t -> ctx.systemsFolder = t);
                     })
-                    .chain(() -> cs.create(session, "SecAccessSecured_" + runId, "secured access record",
-                            EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, ctx.system)
-                            .invoke(c -> ctx.securedRecord = c))
-                    .chain(() -> cs.create(session, "SecAccessUnsecured_" + runId, "unsecured access record",
-                            EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, ctx.system)
-                            .invoke(c -> ctx.unsecuredRecord = c))
+                    // Resolve the default data concept once; both raw records below reference it by FK.
+                    .chain(() -> dcs.find(session, EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, ctx.system))
+                    .chain(dataConcept -> {
+                        // Create BOTH records RAW — a direct persist that deliberately SKIPS the per-row
+                        // createDefaultSecurity that ClassificationService.create() would run. The 'secured'
+                        // record is then secured by the stateless batch in Phase B; the 'unsecured' record is
+                        // never secured. This makes the no-access assertions deterministic instead of relying on
+                        // the per-row path silently being a no-op.
+                        final ClassificationDataConcept concept = (ClassificationDataConcept) dataConcept;
+                        Classification secured = newRawClassification("SecAccessSecured_" + runId, "secured access record", concept, ctx);
+                        Classification unsecured = newRawClassification("SecAccessUnsecured_" + runId, "unsecured access record", concept, ctx);
+                        return secured.builder(session).persist(secured)
+                                .invoke(c -> ctx.securedRecord = c)
+                                .chain(() -> unsecured.builder(session).persist(unsecured)
+                                        .invoke(c -> ctx.unsecuredRecord = c))
+                                .replaceWithVoid();
+                    })
                     .chain(() -> sec.getAdministratorsFolder(session, ctx.system).invoke(t -> ctx.tokens.put(IWarehouseCoreTable.SECURITY_ADMINISTRATORS, t)))
                     .chain(() -> sec.getEveryoneGroup(session, ctx.system).invoke(t -> ctx.tokens.put(IWarehouseCoreTable.SECURITY_EVERYONE, t)))
                     .chain(() -> sec.getEverywhereGroup(session, ctx.system).invoke(t -> ctx.tokens.put(IWarehouseCoreTable.SECURITY_EVERYWHERE, t)))
@@ -166,9 +180,30 @@ public class TestActivityMasterSecurityAccess {
                         .createDefaultSecurity(session, ctx.system, ctx.enterprise, ctx.activeFlag, ctx.tokens)
         ).await().atMost(Duration.ofMinutes(1));
         assertNotNull(inserted);
-        assertTrue(inserted >= SECURITY_ROWS_PER_RECORD, "Secured record should have its default security written");
+        assertEquals((long) SECURITY_ROWS_PER_RECORD, inserted,
+                "Secured record should have exactly its default security written by the batch pass");
 
         return ctx;
+    }
+
+    /**
+     * Builds (but does not persist) a raw {@link Classification} with all required FKs set, deliberately
+     * <strong>without</strong> running the per-row {@code createDefaultSecurity}. This mirrors how a bulk
+     * loader produces rows, leaving security entirely to the explicit stateless batch pass under test.
+     */
+    private static Classification newRawClassification(String name, String description,
+                                                       ClassificationDataConcept concept, Ctx ctx) {
+        Classification record = new Classification();
+        record.setName(name);
+        record.setDescription(description);
+        record.setClassificationSequenceNumber(1);
+        record.setSystemID(ctx.system);
+        record.setOriginalSourceSystemID(ctx.system.getId());
+        record.setOriginalSourceSystemUniqueID(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+        record.setEnterpriseID(ctx.enterprise);
+        record.setConcept(concept);
+        record.setActiveFlagID(ctx.activeFlag);
+        return record;
     }
 
     @Test

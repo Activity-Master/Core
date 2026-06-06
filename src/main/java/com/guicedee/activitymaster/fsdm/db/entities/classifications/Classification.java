@@ -17,6 +17,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import io.smallrye.mutiny.Uni;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -265,8 +266,14 @@ public class Classification
 		
 	}
 	
+	/**
+	 * Reactive, non-blocking link configuration. Sets the parent/child synchronously and resolves
+	 * the NoClassification marker reactively via {@code map(...)}. The previous implementation
+	 * blocked the Vert.x event loop with {@code await().atMost(...)}, which deadlocks for
+	 * classification-&gt;classification links.
+	 */
 	@Override
-	public void configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+	public Uni<Void> configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
 		ClassificationXClassification c = (ClassificationXClassification) linkTable;
 
@@ -274,6 +281,10 @@ public class Classification
 		c.setChildClassificationID((Classification) classificationValue);
 
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		c.setClassificationID(classificationService.getNoClassification(session, system).await().atMost(Duration.of(50L, ChronoUnit.SECONDS)));
+		return classificationService.getNoClassification(session, system)
+				.map(noClassification -> {
+					c.setClassificationID(noClassification);
+					return (Void) null;
+				});
 	}
 }

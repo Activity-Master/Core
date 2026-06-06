@@ -51,33 +51,76 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 
     }
 
+    /**
+     * Resolves the {@link SecurityTokenService} for per-row default-security creation. The {@code @Inject}
+     * field is only populated on Guice-constructed instances; entities materialised by Hibernate (or via
+     * {@code new}) have a {@code null} field, so fall back to a context lookup to stay robust on any
+     * instance.
+     */
+    private SecurityTokenService securityTokenService() {
+        return securityTokenService != null ? securityTokenService : get(SecurityTokenService.class);
+    }
+
     public abstract void configureSecurityEntity(S securityEntity);
 
     @Override
     public Uni<Void> createDefaultSecurity(Mutiny.Session session, ISystems<?, ?> system, UUID... identity) {
-        log.trace("🛡️ Creating default security for system: {} with session: {}", system.getName(), session.hashCode());
-
-        // Use the provided session and execute operations sequentially
-        log.trace("📋 Starting sequential security operations with session: {}", session.hashCode());
-        if (false)
-            // Chain all security operations sequentially
-            return createDefaultAdministratorSecurityAccess(session, system, identity)
-                    .chain(() -> createDefaultEveryoneSecurityAccess(session, system, identity))
-                    .chain(() -> createDefaultEverywhereSecurityAccess(session, system, identity))
-                    .chain(() -> createDefaultSystemsSecurityAccess(session, system, identity))
-                    .chain(() -> createDefaultApplicationsSecurityAccess(session, system, identity))
-                    .chain(() -> createDefaultPluginsSecurityAccess(session, system, identity))
-                    .chain(() -> createDefaultGuestReadSecurityAccess(session, system, identity))
-                    .onItem()
-                    .invoke(() -> log.trace("✅ All security operations completed successfully"))
-                    .onFailure()
-                    .invoke(error -> log.error("❌ Failed to complete security operations: {}", error.getMessage(), error))
-                    .replaceWithVoid();
-        else {
-            return Uni.createFrom()
-                    .voidItem();
-        }
+        // Per-row default security for SINGLE-entity creates (rules, products, involved parties, events,
+        // resource items, mail classifications, etc.). Each step is fully reactive (no blocking await) and
+        // idempotent (find-linked-token-or-create), so it is safe on the caller's session. This is fine for
+        // the low-volume single-create paths that call it directly.
+        //
+        // ⚠️ Do NOT call this per row in a BULK loader (thousands of rows): it re-resolves the seven
+        // group/folder tokens and round-trips per row (~21 round-trips/row). Bulk paths must instead use
+        // ISecurityTokenService.applyDefaultSecurityToRows(...) (scan-free, for just-created rows) or
+        // applyDefaultSecurityToTable(...) (idempotent full-table pass) on a stateless session — see the
+        // geography GeographySecurityCollector for the per-session record/flush pattern.
+        // Flush pending inserts first so the owning row (this) and any related rows are persisted before we
+        // build their security tokens — otherwise the token's not-null FK ("base") can reference a still
+        // transient value during bootstrap and fail at commit (outside this reactive chain).
+        return session.flush()
+                .chain(() -> createDefaultAdministratorSecurityAccess(session, system, identity))
+                .chain(() -> createDefaultEveryoneSecurityAccess(session, system, identity))
+                .chain(() -> createDefaultEverywhereSecurityAccess(session, system, identity))
+                .chain(() -> createDefaultSystemsSecurityAccess(session, system, identity))
+                .chain(() -> createDefaultApplicationsSecurityAccess(session, system, identity))
+                .chain(() -> createDefaultPluginsSecurityAccess(session, system, identity))
+                .chain(() -> createDefaultGuestReadSecurityAccess(session, system, identity))
+                .replaceWithVoid()
+                // Best-effort: per-row default security is for low-volume single-entity creates AFTER the
+                // enterprise is bootstrapped. When it is invoked during install — before the canonical
+                // security structure (the seven group/folder tokens) exists, or before the owning row has
+                // been flushed (so its FK is still transient) — the corresponding rows are instead secured
+                // by the stateless batch pass during install. In those "not ready yet" cases we skip rather
+                // than fail; genuine errors still propagate.
+                .onFailure().recoverWithUni(t -> {
+                    if (isSecurityNotApplicableYet(t)) {
+                        log.debug("⏭️ Skipping per-row default security ({}): {}",
+                                t.getClass().getSimpleName(), t.getMessage());
+                        return Uni.createFrom().voidItem();
+                    }
+                    return Uni.createFrom().failure(t);
+                });
     }
+
+    /**
+     * @return {@code true} when {@code t} (or any cause) indicates the per-row default security cannot be
+     * applied yet during bootstrap: the canonical security structure is missing
+     * ({@link jakarta.persistence.NoResultException}) or the owning/related row is not yet persisted
+     * (Hibernate transient/not-null property states). Such rows are secured by the stateless batch pass.
+     */
+    private static boolean isSecurityNotApplicableYet(Throwable t) {
+        for (Throwable c = t; c != null && c.getCause() != c; c = c.getCause()) {
+            if (c instanceof jakarta.persistence.NoResultException
+                    || c instanceof org.hibernate.PropertyValueException
+                    || c instanceof org.hibernate.TransientObjectException
+                    || c instanceof org.hibernate.TransientPropertyValueException) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Batch, stateless-session variant of default-security creation. See
@@ -289,7 +332,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
         log.debug("🔧 Creating default administrator security access");
 
         S stAdmin = get(findPersistentSecurityClass());
-        return securityTokenService.getAdministratorsFolder(session, system, identity)
+        return securityTokenService().getAdministratorsFolder(session, system, identity)
                 .chain(administrators -> {
                     @SuppressWarnings("rawtypes")
                     QueryBuilderSecurities<?, ?, ?> securities = stAdmin.builder(session);
@@ -307,12 +350,11 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                 stEntity.setUpdateAllowed(true);
                                 stEntity.setDeleteAllowed(true);
                                 stEntity.setReadAllowed(true);
+                                // Set the not-null "base" FK to this row BEFORE persisting so the insert is valid.
+                                configureSecurityEntity(stEntity);
 
                                 return (Uni) session.persist(stEntity)
-                                        .chain(s -> {
-                                            configureSecurityEntity(stEntity);
-                                            return session.merge(stEntity);
-                                        });
+                                        .replaceWith(stEntity);
                             })
                             .chain(result -> {
                                 if (result instanceof Uni) {
@@ -341,7 +383,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                             .setReturnFirst(true)
                             .get()
                             .onItemOrFailure()
-                            .call((result, throwable) -> {
+                            .transformToUni((result, throwable) -> {
                                 if (throwable != null) {
                                     log.debug("🔧 Creating new everyone security token");
                                     S stEntity = get(findPersistentSecurityClass());
@@ -352,13 +394,11 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                     stEntity.setDeleteAllowed(false);
                                     stEntity.setReadAllowed(false);
 
+                                    // Set the not-null "base" FK to this row BEFORE persisting so the insert is valid.
+                                    configureSecurityEntity(stEntity);
+                                    log.debug("✅ Everyone security token created successfully");
                                     return session.persist(stEntity)
-                                            .chain(s -> {
-                                                configureSecurityEntity(stEntity);
-                                                log.debug("✅ Everyone security token created successfully");
-                                                return Uni.createFrom()
-                                                        .item(stEntity);
-                                            });
+                                            .replaceWith(stEntity);
                                 } else {
                                     log.debug("✅ Everyone security token already exists");
                                     return Uni.createFrom()
@@ -384,7 +424,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                             .setReturnFirst(true)
                             .get()
                             .onItemOrFailure()
-                            .call((result, throwable) -> {
+                            .transformToUni((result, throwable) -> {
                                 if (throwable != null) {
                                     log.debug("🔧 Creating new everywhere security token");
                                     S stEntity = get(findPersistentSecurityClass());
@@ -395,13 +435,11 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                     stEntity.setDeleteAllowed(false);
                                     stEntity.setReadAllowed(true);
 
+                                    // Set the not-null "base" FK to this row BEFORE persisting so the insert is valid.
+                                    configureSecurityEntity(stEntity);
+                                    log.debug("✅ Everywhere security token created successfully");
                                     return session.persist(stEntity)
-                                            .chain(s -> {
-                                                configureSecurityEntity(stEntity);
-                                                log.debug("✅ Everywhere security token created successfully");
-                                                return Uni.createFrom()
-                                                        .item(stEntity);
-                                            });
+                                            .replaceWith(stEntity);
                                 } else {
                                     log.debug("✅ Everywhere security token already exists");
                                     return Uni.createFrom()
@@ -427,7 +465,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                             .setReturnFirst(true)
                             .get()
                             .onItemOrFailure()
-                            .call((result, throwable) -> {
+                            .transformToUni((result, throwable) -> {
                                 if (throwable != null) {
                                     log.debug("🔧 Creating new systems security token");
                                     S stEntity = get(findPersistentSecurityClass());
@@ -438,13 +476,11 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                     stEntity.setDeleteAllowed(false);
                                     stEntity.setReadAllowed(true);
 
+                                    // Set the not-null "base" FK to this row BEFORE persisting so the insert is valid.
+                                    configureSecurityEntity(stEntity);
+                                    log.debug("✅ Systems security token created successfully");
                                     return session.persist(stEntity)
-                                            .chain(s -> {
-                                                configureSecurityEntity(stEntity);
-                                                log.debug("✅ Systems security token created successfully");
-                                                return Uni.createFrom()
-                                                        .item(stEntity);
-                                            });
+                                            .replaceWith(stEntity);
                                 } else {
                                     log.debug("✅ Systems security token already exists");
                                     return Uni.createFrom()
@@ -470,7 +506,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                             .setReturnFirst(true)
                             .get()
                             .onItemOrFailure()
-                            .call((result, throwable) -> {
+                            .transformToUni((result, throwable) -> {
                                 if (throwable != null) {
                                     log.debug("🔧 Creating new applications security token");
                                     S stEntity = get(findPersistentSecurityClass());
@@ -481,13 +517,11 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                     stEntity.setDeleteAllowed(false);
                                     stEntity.setReadAllowed(true);
 
+                                    // Set the not-null "base" FK to this row BEFORE persisting so the insert is valid.
+                                    configureSecurityEntity(stEntity);
+                                    log.debug("✅ Applications security token created successfully");
                                     return session.persist(stEntity)
-                                            .chain(s -> {
-                                                configureSecurityEntity(stEntity);
-                                                log.debug("✅ Applications security token created successfully");
-                                                return Uni.createFrom()
-                                                        .item(stEntity);
-                                            });
+                                            .replaceWith(stEntity);
                                 } else {
                                     log.debug("✅ Applications security token already exists");
                                     return Uni.createFrom()
@@ -513,7 +547,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                             .setReturnFirst(true)
                             .get()
                             .onItemOrFailure()
-                            .call((result, throwable) -> {
+                            .transformToUni((result, throwable) -> {
                                 if (throwable != null) {
                                     log.debug("🔧 Creating new plugins security token");
                                     S stEntity = get(findPersistentSecurityClass());
@@ -524,13 +558,11 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                     stEntity.setDeleteAllowed(false);
                                     stEntity.setReadAllowed(true);
 
+                                    // Set the not-null "base" FK to this row BEFORE persisting so the insert is valid.
+                                    configureSecurityEntity(stEntity);
+                                    log.debug("✅ Plugins security token created successfully");
                                     return session.persist(stEntity)
-                                            .chain(s -> {
-                                                configureSecurityEntity(stEntity);
-                                                log.debug("✅ Plugins security token created successfully");
-                                                return Uni.createFrom()
-                                                        .item(stEntity);
-                                            });
+                                            .replaceWith(stEntity);
                                 } else {
                                     log.debug("✅ Plugins security token already exists");
                                     return Uni.createFrom()
@@ -556,7 +588,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                             .setReturnFirst(true)
                             .get()
                             .onItemOrFailure()
-                            .call((result, throwable) -> {
+                            .transformToUni((result, throwable) -> {
                                 if (throwable != null) {
                                     log.debug("🔧 Creating new guest read security token");
                                     S stEntity = get(findPersistentSecurityClass());
@@ -567,13 +599,11 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                     stEntity.setDeleteAllowed(false);
                                     stEntity.setReadAllowed(true);
 
+                                    // Set the not-null "base" FK to this row BEFORE persisting so the insert is valid.
+                                    configureSecurityEntity(stEntity);
+                                    log.debug("✅ Guest read security token created successfully");
                                     return session.persist(stEntity)
-                                            .chain(s -> {
-                                                configureSecurityEntity(stEntity);
-                                                log.debug("✅ Guest read security token created successfully");
-                                                return Uni.createFrom()
-                                                        .item(stEntity);
-                                            });
+                                            .replaceWith(stEntity);
                                 } else {
                                     log.debug("✅ Guest read security token already exists");
                                     return Uni.createFrom()
@@ -599,7 +629,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
     public Uni<S> createDefaultGuestNoSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity) {
         log.debug("🎭 Creating default guest no-security access token for system: {}", system.getName());
 
-        return securityTokenService.getGuestsFolder(session, system, identity)
+        return securityTokenService().getGuestsFolder(session, system, identity)
                 .chain(administrators -> {
                     S stAdmin = get(findPersistentSecurityClass());
 

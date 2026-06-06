@@ -292,10 +292,11 @@ public class ResourceItem
   }
 
   @Override
-  public void configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+  public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
   {
     ResourceItemXClassification rxc = (ResourceItemXClassification) linkTable;
     rxc.setResourceItemID(this);
+    return io.smallrye.mutiny.Uni.createFrom().voidItem();
   }
 
   @Override

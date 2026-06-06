@@ -246,7 +246,7 @@ public class SecurityTokenSystem
                                 try {
                                     enterprise.addOrUpdateClassification(session,
                                             EnterpriseClassifications.EnterpriseIdentity,
-                                            null,
+                                            (String) null,
                                             rootToken.getSecurityToken(),
                                             system);
                                     log.debug("✅ Added classification to enterprise: {}",

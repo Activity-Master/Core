@@ -261,10 +261,11 @@ public class Rules
     }
 
     @Override
-    public void configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
     {
         RulesXClassification rxc = (RulesXClassification) linkTable;
         rxc.setRulesID(this);
+        return io.smallrye.mutiny.Uni.createFrom().voidItem();
     }
 
     @Override

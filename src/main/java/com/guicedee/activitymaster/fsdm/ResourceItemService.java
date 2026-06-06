@@ -163,11 +163,9 @@ public class ResourceItemService
                                                     .createFrom()
                                                     .item(xr));
                                 })
-                                .map(persisted -> {
-                                    // Create default security
-                                    xr.createDefaultSecurity(session, system, identityToken);
-                                    return persisted;
-                                });
+                                .call(persisted ->
+                                        // Create default security (subscribed via call so it actually runs)
+                                        xr.createDefaultSecurity(session, system, identityToken));
                     } else {
                         // Resource type exists, find it
                         ResourceItemType resourceItemType = new ResourceItemType();
@@ -301,11 +299,9 @@ public class ResourceItemService
                                                     .replaceWith(Uni
                                                             .createFrom()
                                                             .item(rid))
-                                                    .map(persistedData -> {
-                                                        // Create default security
-                                                        persistedData.createDefaultSecurity(session, system, identityToken);
-                                                        return persistedData;
-                                                    })
+                                                    .call(persistedData ->
+                                                            // Create default security (subscribed via call so it actually runs)
+                                                            persistedData.createDefaultSecurity(session, system, identityToken))
                                                     .chain(_ -> {
                                                         // Step 3: Add resource item types
                                                         log.trace("Adding resource item type: {}", identityResourceType);
