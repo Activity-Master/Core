@@ -139,8 +139,7 @@ public class TestActivityMasterRelationshipSecurity {
     private void assertLinkSecured(Ctx ctx, IWarehouseCoreTable<?, ?, ?, ?> link, String what) {
         assertNotNull(link, what + " link must have been created");
 
-        Long count = sessionFactory.withTransaction(session ->
-                link.countDefaultSecurity(session)
+        Long count = sessionFactory.withTransaction(link::countDefaultSecurity
         ).await().atMost(Duration.ofMinutes(1));
         assertEquals((long) SECURITY_ROWS_PER_RECORD, count,
                 what + " link must carry exactly " + SECURITY_ROWS_PER_RECORD + " default-security rows");

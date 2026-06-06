@@ -278,7 +278,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
         for (Uni<Days> dayOp : batch)
         {
-          batchChain = batchChain.chain(() -> dayOp.replaceWithVoid());
+          batchChain = batchChain.chain(dayOp::replaceWithVoid);
         }
 
         return batchChain

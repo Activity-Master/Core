@@ -114,7 +114,7 @@ public class TestActivityMasterManageArrangements {
                   .replaceWith(rule))
               .chain(rule -> ((IRules<?, ?>) rule).findArrangement(session,
                   com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification.name(), "RUL-ARR-1", (ISystems<?, ?>) sys, true, true)
-                  .invoke(found -> Assertions.assertNotNull(found))
+                  .invoke(Assertions::assertNotNull)
               )
           );
     })).await().atMost(Duration.ofMinutes(2));
@@ -134,7 +134,7 @@ public class TestActivityMasterManageArrangements {
                           com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification.name(),
                           "ARR-PT-1",
                           (ISystems<?, ?>) sys)
-                      .invoke(list -> Assertions.assertNotNull(list))
+                      .invoke(Assertions::assertNotNull)
                   )
               )
           );
@@ -160,28 +160,28 @@ public class TestActivityMasterManageArrangements {
                   null,
                   "15",
                   (ISystems<?, ?>) sys)
-                  .invoke(list -> Assertions.assertNotNull(list))
+                  .invoke(Assertions::assertNotNull)
                   .replaceWith(rule))
               .chain(rule -> ((IRules<?, ?>) rule).findArrangementsByClassificationGTE(session,
                   com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification.name(),
                   null,
                   "20",
                   (ISystems<?, ?>) sys)
-                  .invoke(list -> Assertions.assertNotNull(list))
+                  .invoke(Assertions::assertNotNull)
                   .replaceWith(rule))
               .chain(rule -> ((IRules<?, ?>) rule).findArrangementsByClassificationLT(session,
                   com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification.name(),
                   null,
                   "20",
                   (ISystems<?, ?>) sys)
-                  .invoke(list -> Assertions.assertNotNull(list))
+                  .invoke(Assertions::assertNotNull)
                   .replaceWith(rule))
               .chain(rule -> ((IRules<?, ?>) rule).findArrangementsByClassificationLTE(session,
                   com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification.name(),
                   null,
                   "20",
                   (ISystems<?, ?>) sys)
-                  .invoke(list -> Assertions.assertNotNull(list))
+                  .invoke(Assertions::assertNotNull)
               )
           );
     })).await().atMost(Duration.ofMinutes(2));

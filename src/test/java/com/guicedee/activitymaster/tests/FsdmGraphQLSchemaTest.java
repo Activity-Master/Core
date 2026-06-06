@@ -15,7 +15,9 @@ import graphql.language.ObjectValue;
 import graphql.language.StringValue;
 import graphql.schema.Coercing;
 import graphql.schema.GraphQLEnumType;
+import graphql.schema.GraphQLEnumValueDefinition;
 import graphql.schema.GraphQLFieldDefinition;
+import graphql.schema.GraphQLInputObjectField;
 import graphql.schema.GraphQLInputObjectType;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLScalarType;
@@ -108,7 +110,7 @@ public class FsdmGraphQLSchemaTest
 
         Set<String> sdlValues = operand.getValues()
                 .stream()
-                .map(v -> v.getName())
+                .map(GraphQLEnumValueDefinition::getName)
                 .collect(Collectors.toSet());
         Set<String> entityAssistValues = java.util.Arrays.stream(Operand.values())
                 .map(Enum::name)
@@ -126,7 +128,7 @@ public class FsdmGraphQLSchemaTest
 
         Set<String> fields = input.getFieldDefinitions()
                 .stream()
-                .map(f -> f.getName())
+                .map(GraphQLInputObjectField::getName)
                 .collect(Collectors.toSet());
         assertTrue(fields.containsAll(Set.of(
                         "enterprise", "system", "filters", "orderBy", "descending",
@@ -139,7 +141,7 @@ public class FsdmGraphQLSchemaTest
     }
 
     @Test
-    @SuppressWarnings({"rawtypes", "unchecked", "deprecation"})
+    @SuppressWarnings({"rawtypes", "deprecation"})
     public void jsonScalarCoercesLiteralsAndPassesThroughResults()
     {
         Coercing coercing = WarehouseJsonScalar.create().getCoercing();

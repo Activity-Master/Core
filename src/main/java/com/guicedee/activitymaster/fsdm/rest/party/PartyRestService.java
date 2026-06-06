@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.fsdm.rest.party;
 
 import java.util.*;
 
+import com.entityassist.services.entities.IRootEntity;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.InvolvedPartyService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
@@ -266,7 +267,7 @@ public class PartyRestService {
         // Step 1: Find the party in its own session (just to validate it exists)
         return SessionUtils.<UUID>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
             Mutiny.Session session = tuple.getItem1();
-            return involvedPartyService.find(session, partyId).map(party -> party.getId());
+            return involvedPartyService.find(session, partyId).map(IRootEntity::getId);
         }).map(foundId -> {
             // Step 2: Fire-and-forget relationship persistence
             persistUpdateRelationshipsAsync(enterpriseName, requestingSystemName, foundId, dto);

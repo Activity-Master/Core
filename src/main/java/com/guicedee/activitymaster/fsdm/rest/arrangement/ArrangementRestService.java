@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.fsdm.rest.arrangement;
 
 import java.util.*;
 
+import com.entityassist.services.entities.IRootEntity;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.ArrangementsService;
 import com.guicedee.activitymaster.fsdm.client.services.IArrangementsService;
@@ -789,7 +790,7 @@ public class ArrangementRestService {
             Mutiny.Session session = tuple.getItem1();
             ISystems<?, ?> system = tuple.getItem3();
             UUID[] identityToken = tuple.getItem4();
-            return arrangementsService.find(session, arrangementId, system, identityToken).map(arrangement -> arrangement.getId());
+            return arrangementsService.find(session, arrangementId, system, identityToken).map(IRootEntity::getId);
         }).map(foundId -> {
             // Step 2: Fire-and-forget relationship persistence
             persistUpdateRelationshipsAsync(enterpriseName, requestingSystemName, foundId, dto);

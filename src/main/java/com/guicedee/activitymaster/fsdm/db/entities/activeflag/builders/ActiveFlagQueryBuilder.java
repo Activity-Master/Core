@@ -9,7 +9,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 
 import java.util.UUID;
 
-@SuppressWarnings("Duplicates")
 public class ActiveFlagQueryBuilder
 		extends QueryBuilderCore<ActiveFlagQueryBuilder, ActiveFlag, UUID>
 		implements IActiveFlagQueryBuilder<ActiveFlagQueryBuilder, ActiveFlag>,

@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.fsdm.rest.event;
 
 import java.util.*;
 
+import com.entityassist.services.entities.IRootEntity;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.EventsService;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
@@ -13,6 +14,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.event
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.rest.events.*;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.*;
 import com.guicedee.activitymaster.fsdm.client.services.rest.RelationshipUpdateEntry;
 
@@ -138,7 +140,7 @@ public class EventRestService {
         // Step 1: Find the event in its own session (just to validate it exists)
         return SessionUtils.<UUID>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
             Mutiny.Session session = tuple.getItem1();
-            return eventService.find(session, eventId).map(event -> event.getId());
+            return eventService.find(session, eventId).map(IRootEntity::getId);
         }).map(foundId -> {
             // Step 2: Fire-and-forget relationship persistence in parallel
             persistUpdateRelationshipsAsync(enterpriseName, requestingSystemName, foundId, dto);
@@ -528,7 +530,7 @@ public class EventRestService {
                         }
                     }
                     chain = chainDeleteByExpire(chain, dto.parties, s, event, EventXInvolvedParty.class,
-                            EventXInvolvedParty_.eventID, link -> link.getClassificationID(), cls -> cls != null ? cls.getName() : null);
+                            EventXInvolvedParty_.eventID, WarehouseClassificationRelationshipTable::getClassificationID, cls -> cls != null ? cls.getName() : null);
                     return chain;
                 });
             }), label + " parties");
@@ -549,7 +551,7 @@ public class EventRestService {
                         }
                     }
                     chain = chainDeleteByExpire(chain, dto.resources, s, event, EventXResourceItem.class,
-                            EventXResourceItem_.eventID, link -> link.getClassificationID(), cls -> cls != null ? cls.getName() : null);
+                            EventXResourceItem_.eventID, WarehouseClassificationRelationshipTable::getClassificationID, cls -> cls != null ? cls.getName() : null);
                     return chain;
                 });
             }), label + " resources");
@@ -563,7 +565,7 @@ public class EventRestService {
                     chain = chainAddOrUpdate(chain, dto.products, (name, value) ->
                             event.addOrUpdateProduct(s, name, null, null, value, sys, token).replaceWithVoid());
                     chain = chainDeleteByExpire(chain, dto.products, s, event, EventXProduct.class,
-                            EventXProduct_.eventID, link -> link.getClassificationID(), cls -> cls != null ? cls.getName() : null);
+                            EventXProduct_.eventID, WarehouseClassificationRelationshipTable::getClassificationID, cls -> cls != null ? cls.getName() : null);
                     return chain;
                 });
             }), label + " products");
@@ -577,7 +579,7 @@ public class EventRestService {
                     chain = chainAddOrUpdate(chain, dto.rules, (name, value) ->
                             event.addOrUpdateRules(s, name, null, null, value, sys, token).replaceWithVoid());
                     chain = chainDeleteByExpire(chain, dto.rules, s, event, EventXRules.class,
-                            EventXRules_.eventID, link -> link.getClassificationID(), cls -> cls != null ? cls.getName() : null);
+                            EventXRules_.eventID, WarehouseClassificationRelationshipTable::getClassificationID, cls -> cls != null ? cls.getName() : null);
                     return chain;
                 });
             }), label + " rules");
@@ -591,7 +593,7 @@ public class EventRestService {
                     chain = chainAddOrUpdate(chain, dto.arrangements, (name, value) ->
                             event.addOrUpdateArrangement(s, name, null, null, value, sys, token).replaceWithVoid());
                     chain = chainDeleteByExpire(chain, dto.arrangements, s, event, EventXArrangement.class,
-                            EventXArrangement_.eventID, link -> link.getClassificationID(), cls -> cls != null ? cls.getName() : null);
+                            EventXArrangement_.eventID, WarehouseClassificationRelationshipTable::getClassificationID, cls -> cls != null ? cls.getName() : null);
                     return chain;
                 });
             }), label + " arrangements");

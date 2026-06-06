@@ -183,7 +183,6 @@ public class PasswordsService implements IPasswordsService<PasswordsService> {
                 });
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public Uni<List<IInvolvedParty<?, ?>>> getAllUsers(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
         log.debug("Getting all users for system: {}", system.getName());

@@ -43,7 +43,7 @@ public class ClassificationsDataConceptService
                             .inActiveRange()
                             .inDateRange()
                             .get()
-                            .map(result -> result.getId());
+                            .map(com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept::getId);
                 });
     }
 
@@ -104,7 +104,7 @@ public class ClassificationsDataConceptService
                 .inDateRange()
                 .withName(name)
                 .get()
-                .map(r -> r.getId())
+                .map(com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept::getId)
                 .flatMap(id -> getConceptById(session, id));
     }
 

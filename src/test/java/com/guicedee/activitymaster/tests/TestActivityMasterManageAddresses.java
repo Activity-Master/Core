@@ -206,7 +206,7 @@ public class TestActivityMasterManageAddresses {
                     .invoke(list -> Assertions.assertEquals(1, list.size(), "There should be exactly one active event address relation"))
                     .replaceWith(evt))
                 .chain(evt -> ((IEvent<?, ?>) evt).findAddress(session, relClassy, relValue, sys, true, true)
-                    .invoke(found -> Assertions.assertNotNull(found))
+                    .invoke(Assertions::assertNotNull)
                     .replaceWithVoid());
           });
     })).await().atMost(Duration.ofMinutes(2));

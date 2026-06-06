@@ -74,7 +74,7 @@ public class EnterpriseService
                 .recoverWithUni(u -> {
                     return session
                             .persist(enterprise)
-                            .chain(() -> session.flush())
+                            .chain(session::flush)
                             .replaceWith(Uni
                                     .createFrom()
                                     .item(enterprise));
@@ -83,7 +83,6 @@ public class EnterpriseService
 
     @Override
     public Uni<Integer> loadUpdates(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
-        @SuppressWarnings({"unchecked"})
         ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
 
         return getUpdates(session, enterprise)
@@ -214,7 +213,6 @@ public class EnterpriseService
 
     //@Transactional()
     Uni<Void> performUpdate(Mutiny.Session session, ISystemUpdate o, IEnterprise<?, ?> enterprise) {
-        @SuppressWarnings({"unchecked"})
         ISystemsService<?> systemsService = com.guicedee.client.IGuiceContext.get(ISystemsService.class);
         return systemsService
                 .getActivityMaster(session, enterprise)
@@ -712,7 +710,7 @@ public class EnterpriseService
                                 .onFailure()
                                 .invoke(e -> log.error("❌ Failed to create defaults for: " + systemName, e));
                     })
-                    .chain(() -> session.flush())
+                    .chain(session::flush)
                     .replaceWithVoid();
         }
 

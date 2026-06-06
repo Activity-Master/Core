@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.fsdm.rest.resourceitem;
 
 import java.util.*;
 
+import com.entityassist.services.entities.IRootEntity;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.ResourceItemService;
 import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
@@ -248,7 +249,7 @@ public class ResourceItemRestService
         return SessionUtils.<UUID>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
             Mutiny.Session session = tuple.getItem1();
             return resourceItemService.findByUUID(session, resourceItemId)
-                    .map(resourceItem -> resourceItem.getId());
+                    .map(IRootEntity::getId);
         }).map(foundId -> {
             // Step 2: Fire-and-forget relationship persistence — each gets its own session
             // and re-finds the entity by ID

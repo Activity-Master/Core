@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.fsdm.rest.product;
 
 import java.util.*;
 
+import com.entityassist.services.entities.IRootEntity;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.ProductService;
 import com.guicedee.activitymaster.fsdm.client.services.IProductService;
@@ -12,6 +13,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.rest.RelationshipUpdateEntry;
 import com.guicedee.activitymaster.fsdm.client.services.rest.products.*;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.fsdm.db.entities.product.*;
 
 import io.smallrye.mutiny.Uni;
@@ -136,7 +138,7 @@ public class ProductRestService {
         // Step 1: Find the product in its own session (just to validate it exists)
         return SessionUtils.<UUID>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
             Mutiny.Session session = tuple.getItem1();
-            return productService.find(session, productId).map(product -> product.getId());
+            return productService.find(session, productId).map(IRootEntity::getId);
         }).map(foundId -> {
             // Step 2: Fire-and-forget relationship persistence in parallel
             persistUpdateRelationshipsAsync(enterpriseName, requestingSystemName, foundId, dto);
@@ -312,7 +314,7 @@ public class ProductRestService {
                         }
                     }
                     chain = chainDeleteByExpire(chain, dto.resources, s, (Product) product, ProductXResourceItem.class,
-                            ProductXResourceItem_.productID, link -> link.getClassificationID(), cls -> cls != null ? cls.getName() : null);
+                            ProductXResourceItem_.productID, WarehouseClassificationRelationshipTable::getClassificationID, cls -> cls != null ? cls.getName() : null);
                     return chain;
                 });
             }), label + " resources");

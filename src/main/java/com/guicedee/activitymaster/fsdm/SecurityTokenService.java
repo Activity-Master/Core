@@ -58,7 +58,6 @@ public class SecurityTokenService
      * preferred path after bulk imports (e.g. geography loads).
      */
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public Uni<Void> applyDefaultSecurityToTable(Mutiny.Session session, IWarehouseCoreTable<?, ?, ?, ?> table,
                                                  ISystems<?, ?> system, UUID... identityToken) {
         log.debug("🔐 Applying batched/stateless default security for table: {}", table.getClass().getSimpleName());

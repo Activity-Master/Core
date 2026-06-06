@@ -92,7 +92,7 @@ public class TestContainsHierarchyAcrossDomains extends TestDatabaseSetup {
                 .invoke(children -> assertTrue(children.stream().anyMatch(rv -> child.equals(rv.getSecondary()))))
                 .chain(v -> ((IArrangement<?, ?>) parent).archiveChild(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseTable<?, ?, ? extends java.io.Serializable, ?>) child, null, hierarchyValue, sys))
                 .chain(v -> ((IArrangement<?, ?>) child).findParent(session, hierarchyValue, null, sys))
-                .invoke(afterArchive -> assertNull(afterArchive))
+                .invoke(Assertions::assertNull)
                 .replaceWith(Uni.createFrom().voidItem());
           });
     })).await().atMost(Duration.ofMinutes(2));
@@ -127,7 +127,7 @@ public class TestContainsHierarchyAcrossDomains extends TestDatabaseSetup {
                 .invoke(children -> assertTrue(children.stream().anyMatch(rv -> child.equals(rv.getSecondary()))))
                 .chain(v -> ((IEvent<?, ?>) parent).archiveChild(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseTable<?, ?, ? extends java.io.Serializable, ?>) child, null, hierarchyValue, sys))
                 .chain(v -> ((IEvent<?, ?>) child).findParent(session, hierarchyValue, null, sys))
-                .invoke(afterArchive -> assertNull(afterArchive))
+                .invoke(Assertions::assertNull)
                 .replaceWith(Uni.createFrom().voidItem());
           });
     })).await().atMost(Duration.ofMinutes(2));
@@ -161,7 +161,7 @@ public class TestContainsHierarchyAcrossDomains extends TestDatabaseSetup {
                 .invoke(children -> assertTrue(children.stream().anyMatch(rv -> child.equals(rv.getSecondary()))))
                 .chain(v -> ((IRules<?, ?>) parent).archiveChild(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseTable<?, ?, ? extends java.io.Serializable, ?>) child, null, hierarchyValue, sys))
                 .chain(v -> ((IRules<?, ?>) child).findParent(session, hierarchyValue, null, sys))
-                .invoke(afterArchive -> assertNull(afterArchive))
+                .invoke(Assertions::assertNull)
                 .replaceWith(Uni.createFrom().voidItem());
           });
     })).await().atMost(Duration.ofMinutes(2));
@@ -196,7 +196,7 @@ public class TestContainsHierarchyAcrossDomains extends TestDatabaseSetup {
                 .invoke(children -> assertTrue(children.stream().anyMatch(rv -> child.equals(rv.getSecondary()))))
                 .chain(v -> ((IResourceItem<?, ?>) parent).archiveChild(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseTable<?, ?, ? extends java.io.Serializable, ?>) child, null, hierarchyValue, sys))
                 .chain(v -> ((IResourceItem<?, ?>) child).findParent(session, hierarchyValue, null, sys))
-                .invoke(afterArchive -> assertNull(afterArchive))
+                .invoke(Assertions::assertNull)
                 .replaceWith(Uni.createFrom().voidItem());
           });
     })).await().atMost(Duration.ofMinutes(2));

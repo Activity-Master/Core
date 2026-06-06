@@ -46,7 +46,6 @@ public class AddressBaseSetup implements ISystemUpdate
 			});
 	}
 
-	@SuppressWarnings("Duplicates")
 	private Uni<Void> createDefaultTelephones(Mutiny.Session session, IEnterprise<?,?> enterprise, ISystems<?,?> activityMasterSystem)
 	{
 		log.info("Creating telephone address classifications");
@@ -104,7 +103,6 @@ public class AddressBaseSetup implements ISystemUpdate
 			});
 	}
 
-	@SuppressWarnings("Duplicates")
 	private Uni<Void> createDefaultInternetAddresses(Mutiny.Session session, IEnterprise<?,?> enterprise, ISystems<?,?> activityMasterSystem)
 	{
 		log.info("Creating internet address classifications");
@@ -215,7 +213,6 @@ public class AddressBaseSetup implements ISystemUpdate
 			.replaceWithVoid();
 	}
 
-	@SuppressWarnings("Duplicates")
 	private Uni<Void> createDefaultPhysicalAddresses(Mutiny.Session session, IEnterprise<?,?> enterprise, ISystems<?,?> activityMasterSystem)
 	{
 		log.info("Creating physical address classifications");

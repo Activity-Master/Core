@@ -183,7 +183,6 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
     @Override
     public Uni<Long> countDefaultSecurity(Mutiny.Session session) {
         S stAdmin = get(findPersistentSecurityClass());
-        @SuppressWarnings("rawtypes")
         QueryBuilderSecurities<?, ?, ?> securities = stAdmin.builder(session);
         return securities.findLinkedSecurityTokens(this)
                 .inDateRange()
@@ -208,7 +207,6 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                         return Uni.createFrom().item(java.util.Collections.<UUID>emptySet());
                     }
                     S stAdmin = get(findPersistentSecurityClass());
-                    @SuppressWarnings("rawtypes")
                     QueryBuilderSecurities<?, ?, ?> securities = stAdmin.builder(session);
                     // Load all in-date-range security rows for this entity type, then keep only the rows
                     // whose token is in the applicable set and that grant read — exactly the
@@ -265,7 +263,6 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                         return Uni.createFrom().item(false);
                     }
                     S stAdmin = get(findPersistentSecurityClass());
-                    @SuppressWarnings("rawtypes")
                     QueryBuilderSecurities<?, ?, ?> securities = stAdmin.builder(session);
                     return securities.findLinkedSecurityTokens(this)
                             .inDateRange()
@@ -288,7 +285,6 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
         log.trace("🔄 Updating security for table with system: {}", system.getName());
 
         S stAdmin = get(findPersistentSecurityClass());
-        @SuppressWarnings("rawtypes")
         QueryBuilderSecurities<?, ?, ?> securities = stAdmin.builder(session);
 
         return securities.findLinkedSecurityTokens(this)
@@ -334,7 +330,6 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
         S stAdmin = get(findPersistentSecurityClass());
         return securityTokenService().getAdministratorsFolder(session, system, identity)
                 .chain(administrators -> {
-                    @SuppressWarnings("rawtypes")
                     QueryBuilderSecurities<?, ?, ?> securities = stAdmin.builder(session);
                     return securities.findLinkedSecurityToken((SecurityToken) administrators, this)
                             .inDateRange()
@@ -374,7 +369,6 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
         return (Uni) get(SecurityTokenService.class)
                 .getEveryoneGroup(session, system, identity)
                 .chain(everyoneGroup -> {
-                    @SuppressWarnings("rawtypes")
                     QueryBuilderSecurities<?, ?, ?> securities = stAdmin.builder(session);
 
                     return securities.findLinkedSecurityToken((SecurityToken) everyoneGroup, this)

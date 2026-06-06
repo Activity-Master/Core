@@ -36,6 +36,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.secur
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.SystemsClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.UserGroupSecurityTokenClassifications;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
@@ -144,7 +145,7 @@ public class SystemsService
                             .get()
                             .onFailure()
                             .invoke(error -> log.error("Error finding system by identity classification: {}", error.getMessage(), error))
-                            .map(system -> system.getSystemID());
+                            .map(WarehouseSCDTable::getSystemID);
                 });
     }
 

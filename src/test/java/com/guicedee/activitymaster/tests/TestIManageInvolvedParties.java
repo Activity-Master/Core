@@ -107,7 +107,7 @@ public class TestIManageInvolvedParties {
               .chain(evt -> ((IEvent<?, ?>) evt).findInvolvedParty(session,
                   com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification.name(),
                   "IP-REL-1", sys, true, true)
-                  .invoke(found -> Assertions.assertNotNull(found))
+                  .invoke(Assertions::assertNotNull)
                   .replaceWith(Uni.createFrom().voidItem()))
           );
     })).await().atMost(Duration.ofMinutes(2));

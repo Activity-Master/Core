@@ -60,7 +60,6 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.a
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.address.AddressTelephoneClassifications.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.address.AddressWebClassifications.*;
 
-@SuppressWarnings("Duplicates")
 @Log4j2
 @Singleton
 public class AddressService

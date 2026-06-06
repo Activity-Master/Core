@@ -136,8 +136,7 @@ public abstract class QueryBuilderSCDEntity<J extends QueryBuilderSCDEntity<J, E
     {
       where(getAttribute(EFFECTIVE_FROM_DATE_COLUMN_NAME), Operand.GreaterThanEqualTo, IQueryBuilderSCD.convertToUTCDateTime(fromDate));
     }
-    //noinspection ReplaceNullCheck
-    if (toDate != null)
+      if (toDate != null)
     {
       where(getAttribute(EFFECTIVE_TO_DATE_COLUMN_NAME), Operand.LessThanEqualTo, IQueryBuilderSCD.convertToUTCDateTime(toDate));
     }
