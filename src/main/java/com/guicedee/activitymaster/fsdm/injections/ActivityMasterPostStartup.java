@@ -23,7 +23,7 @@ public class ActivityMasterPostStartup implements IGuicePostStartup<ActivityMast
     @Override
     public List<Uni<Boolean>> postLoad() {
         return List.of(Uni.createFrom().item(() -> {
-                    log.info("Configuration Jackson JSON for types in FSDM");
+                    log.trace("Configuration Jackson JSON for types in FSDM");
                     com.guicedee.client.IGuiceContext.get(DefaultObjectMapper)
                             .registerModule(new SimpleModule("ActivityMasterJsonModule", Version.unknownVersion())
                                     .addDeserializer(IEnterprise.class, new EnterpriseDeserializer())

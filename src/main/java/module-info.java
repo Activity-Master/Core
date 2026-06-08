@@ -34,6 +34,9 @@ module com.guicedee.activitymaster.fsdm {
     requires transitive io.vertx.core;
     requires transitive org.hibernate.reactive;
 
+    // Vert.x auth model used by the ActivityMaster auth bridge (no MicroProfile dependency)
+    requires transitive io.vertx.auth.common;
+
     requires transitive com.ongres.scram.client;
 
     requires com.google.common;
@@ -42,6 +45,7 @@ module com.guicedee.activitymaster.fsdm {
 
     requires jakarta.activation;
     requires jakarta.validation;
+    requires jakarta.annotation;
 
     requires java.naming;
 
@@ -118,6 +122,10 @@ module com.guicedee.activitymaster.fsdm {
     exports com.guicedee.activitymaster.fsdm;
     exports com.guicedee.activitymaster.fsdm.services;
 
+    // ActivityMaster-native Vert.x auth bridge
+    exports com.guicedee.activitymaster.fsdm.auth;
+    opens com.guicedee.activitymaster.fsdm.auth to com.google.guice;
+
     // Internal password hashing utilities — exported only to the test module so the lifecycle
     // tests can seed legacy-format credentials and exercise the migration path.
     exports com.guicedee.activitymaster.fsdm.api to activity.master.test;
@@ -136,6 +144,7 @@ module com.guicedee.activitymaster.fsdm {
     opens com.guicedee.activitymaster.fsdm.rest.party to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
     opens com.guicedee.activitymaster.fsdm.rest.classification to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
     opens com.guicedee.activitymaster.fsdm.rest.rules to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
+    opens com.guicedee.activitymaster.fsdm.rest.security to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
 
 
 
@@ -263,6 +272,7 @@ module com.guicedee.activitymaster.fsdm {
     exports com.guicedee.activitymaster.fsdm.rest.product;
     exports com.guicedee.activitymaster.fsdm.rest.classification;
     exports com.guicedee.activitymaster.fsdm.rest.rules;
+    exports com.guicedee.activitymaster.fsdm.rest.security;
 
     // App-level @OpenAPIDefinition holder — scanned for the global API document
     exports com.guicedee.activitymaster.fsdm.rest;

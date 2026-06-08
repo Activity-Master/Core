@@ -33,6 +33,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.api.PasswordEncoder;
 import com.guicedee.activitymaster.fsdm.api.Passwords;
+import com.guicedee.activitymaster.fsdm.auth.ActivityMasterAuthBridge;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedParty;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
@@ -64,6 +65,9 @@ public class PasswordsService implements IPasswordsService<PasswordsService> {
 
     @Inject
     private IInvolvedPartyService<?> involvedPartyService;
+
+    @Inject
+    private ActivityMasterAuthBridge authBridge;
 
     /**
      * Modern, self-describing password hasher (PBKDF2-HMAC-SHA256, OWASP work factor). New and
@@ -110,10 +114,11 @@ public class PasswordsService implements IPasswordsService<PasswordsService> {
                 .map(party -> (IInvolvedParty<?, ?>) party);
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public Uni<IInvolvedParty<?, ?>> findByUsernameAndPassword(Mutiny.Session session, String username, String password, ISystems<?, ?> system, boolean throwForNoUser, UUID... identityToken) {
         log.debug("Finding involved party by username and password: {}", username);
-        return doesUsernameExist(session, username, system, identityToken)
+        return (Uni)doesUsernameExist(session, username, system, identityToken)
                 .chain(exists -> {
                     if (!exists) {
                         if (throwForNoUser) {
@@ -180,7 +185,13 @@ public class PasswordsService implements IPasswordsService<PasswordsService> {
                                                     });
                                         });
                             });
-                });
+                })
+                // On a successful authentication, establish the Vert.x auth context (caller details +
+                // roles from the ActivityMaster security model) for this call. This serves internal calls
+                // and ActivityMaster REST resources, which execute inside the same call scope.
+                .call(found -> found == null
+                        ? Uni.createFrom().voidItem()
+                        : authBridge.login(session, found, username, system, identityToken).replaceWithVoid());
     }
 
     @Override
@@ -191,13 +202,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService> {
                 .getAll()
                 .onFailure()
                 .invoke(error -> log.error("Error getting all users: {}", error.getMessage(), error))
-                .map(list -> {
-                    List<IInvolvedParty<?, ?>> result = new ArrayList<>();
-                    for (Object item : list) {
-                        result.add((IInvolvedParty<?, ?>) item);
-                    }
-                    return result;
-                });
+                .map(list -> (List<IInvolvedParty<?, ?>>) new ArrayList<IInvolvedParty<?, ?>>(list));
     }
 
     @SuppressWarnings("unchecked")
