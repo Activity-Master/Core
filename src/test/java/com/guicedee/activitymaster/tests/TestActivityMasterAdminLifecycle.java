@@ -64,7 +64,11 @@ public class TestActivityMasterAdminLifecycle {
 
     private static final String ADMIN_USER = "admin";
     private static final String ADMIN_PASSWORD = "!@adminadmin";
-    private static final int SECURITY_ROWS_PER_RECORD = 7;
+    // Secure-by-default (post-install, security flag ENABLED) per-row matrix for a single-entity create with
+    // no explicit scope token: Administrators=CRUD plus Systems/Applications/Plugins=create/update/read, and
+    // NO Everyone/Everywhere/Guests grants (→ not world-readable). Records created in these admin-lifecycle
+    // flows run with security enabled, so they carry the restricted matrix rather than the public 7-row one.
+    private static final int RESTRICTED_SECURITY_ROWS_PER_RECORD = 4;
 
     protected Mutiny.SessionFactory sessionFactory;
 
@@ -206,8 +210,8 @@ public class TestActivityMasterAdminLifecycle {
                                 .chain(record -> {
                                     IWarehouseCoreTable<?, ?, ?, ?> rec = (IWarehouseCoreTable<?, ?, ?, ?>) record;
                                     return rec.countDefaultSecurity(session)
-                                            .invoke(count -> assertEquals((long) SECURITY_ROWS_PER_RECORD, count,
-                                                    "The created record must carry the canonical default security"))
+                                            .invoke(count -> assertEquals((long) RESTRICTED_SECURITY_ROWS_PER_RECORD, count,
+                                                    "The created record must carry the secure-by-default (restricted) security matrix"))
                                             .chain(() -> loginAndResolveAdminIdentity(session, ent, sys))
                                             .chain(adminIdentity -> rec.canRead(session, sys, adminIdentity)
                                                     .chain(adminRead -> rec.canWrite(session, sys, adminIdentity)
@@ -258,8 +262,8 @@ public class TestActivityMasterAdminLifecycle {
                     }))
             ).await().atMost(Duration.ofMinutes(2));
 
-            assertEquals((long) SECURITY_ROWS_PER_RECORD, (long) (Long) result[0],
-                    "Adding a classification as admin must secure the join row with the canonical default security");
+            assertEquals((long) RESTRICTED_SECURITY_ROWS_PER_RECORD, (long) (Long) result[0],
+                    "Adding a classification as admin must secure the join row with the secure-by-default (restricted) matrix");
             assertTrue((Boolean) result[1], "The admin identity must be able to READ the secured join row");
             assertTrue((Boolean) result[2], "The admin identity must be able to WRITE the secured join row");
             assertEquals(1L, (long) (Long) result[3],

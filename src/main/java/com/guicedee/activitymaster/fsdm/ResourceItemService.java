@@ -81,8 +81,6 @@ import static jakarta.persistence.criteria.JoinType.INNER;
 @Singleton
 public class ResourceItemService
         implements IResourceItemService<ResourceItemService> {
-    // Local cache: key = enterpriseId + '|' + systemId + '|' + resourceItemTypeName → ResourceItemType UUID
-    private final java.util.Map<String, java.util.UUID> resourceItemTypeKeyToId = new java.util.concurrent.ConcurrentHashMap<>();
 
     // UUID-based lookup to leverage Hibernate 2nd-level cache
     public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItemType<?, ?>> getResourceItemTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id) {

@@ -55,8 +55,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestActivityMasterRelationshipSecurity {
 
-    /** Canonical number of default-security rows created per secured row (group/folder fan-out). */
-    private static final int SECURITY_ROWS_PER_RECORD = 7;
+    /**
+     * Secure-by-default (security flag ENABLED post-install) per-row matrix for a runtime single-create
+     * with no explicit scope token: Administrators=CRUD plus Systems/Applications/Plugins=create/update/read,
+     * NO Everyone/Everywhere/Guests (→ not world-readable) = 4 rows. These link rows are created at runtime
+     * after {@code startNewEnterprise}, i.e. under secure-by-default, so they carry the restricted matrix —
+     * not the public 7-row matrix written by the install/batch path.
+     */
+    private static final int RESTRICTED_SECURITY_ROWS_PER_RECORD = 4;
 
     protected Mutiny.SessionFactory sessionFactory;
 
@@ -141,8 +147,8 @@ public class TestActivityMasterRelationshipSecurity {
 
         Long count = sessionFactory.withTransaction(link::countDefaultSecurity
         ).await().atMost(Duration.ofMinutes(1));
-        assertEquals((long) SECURITY_ROWS_PER_RECORD, count,
-                what + " link must carry exactly " + SECURITY_ROWS_PER_RECORD + " default-security rows");
+        assertEquals((long) RESTRICTED_SECURITY_ROWS_PER_RECORD, count,
+                what + " link must carry exactly " + RESTRICTED_SECURITY_ROWS_PER_RECORD + " secure-by-default (restricted) security rows");
 
         Boolean canRead = sessionFactory.withTransaction(session ->
                 link.canRead(session, ctx.system, ctx.systemToken)
