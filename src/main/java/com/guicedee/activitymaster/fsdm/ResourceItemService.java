@@ -19,13 +19,21 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ResourceItemException;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
+import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
+import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemData;
+import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemDataValue;
+import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemType;
+import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemType_;
+import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemXClassification;
+import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemXClassification_;
+import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemXResourceItemType;
+import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemXResourceItemType_;
+import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem_;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemXClassificationQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemXResourceItemTypeQueryBuilder;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
-import jakarta.persistence.LockModeType;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -78,6 +86,7 @@ public class ResourceItemService
 
     // UUID-based lookup to leverage Hibernate 2nd-level cache
     public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItemType<?, ?>> getResourceItemTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id) {
+        //noinspection unchecked,rawtypes
         return (io.smallrye.mutiny.Uni) session.find(com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemType.class, id);
     }
 
@@ -700,6 +709,7 @@ public class ResourceItemService
     public Uni<IResourceItem<?, ?>> findByUUID(Mutiny.Session session, UUID uuid) {
         log.trace("Finding resource by UUID: {}", uuid);
         ResourceItem res = new ResourceItem();
+        //noinspection unchecked,rawtypes
         return (Uni) res
                 .builder(session)
                 .where(ResourceItem_.id, Equals, uuid)
@@ -716,6 +726,7 @@ public class ResourceItemService
                                                                  UUID... identityToken) {
         log.trace("Finding resource by original source unique ID: {}", originalSourceUniqueID);
         ResourceItem res = new ResourceItem();
+        //noinspection unchecked,rawtypes
         return (Uni) res
                 .builder(session)
                 .where(ResourceItem_.originalSourceSystemUniqueID, Equals, originalSourceUniqueID)
@@ -729,6 +740,7 @@ public class ResourceItemService
     public Uni<IResourceItemType<?, ?>> findResourceItemType(Mutiny.Session session, String type, ISystems<?, ?> system, UUID... identityToken) {
         log.trace("Finding resource item type by name (ID-first): {}", type);
         // Resolve ResourceItemType UUID by name using cached native resolver, then load entity by UUID
+        //noinspection unchecked,rawtypes
         return (io.smallrye.mutiny.Uni) resolveResourceItemTypeIdByName(session, system.getEnterpriseID(), type)
                 .flatMap(id -> getResourceItemTypeById(session, id))
                 .map(result -> (IResourceItemType<?, ?>) result)
@@ -782,6 +794,7 @@ public class ResourceItemService
 
                     aqb.join(ResourceItem_.types, qb, jakarta.persistence.criteria.JoinType.INNER, joinExpression);
 
+                    //noinspection unchecked
                     return (Uni<List<IResourceItem<?, ?>>>) (Uni<?>) aqb
                             .getAll()
                             .onFailure()
@@ -789,39 +802,5 @@ public class ResourceItemService
                 });
     }
 
-    /**
-     * A utility method to help with testing the reactive behavior of this service.
-     * This method creates a resource item, then finds it by UUID, and returns the result.
-     * It demonstrates proper reactive composition using the chain pattern.
-     *
-     * @param session
-     * @param identityResourceType  The resource type identity
-     * @param resourceItemDataValue The resource item data value
-     * @param system                The system
-     * @param identityToken         The identity token
-     * @return A Uni containing the found resource item
-     */
-    @Override
-    public Uni<IResourceItem<?, ?>> createAndFind(Mutiny.Session session, String identityResourceType, String resourceItemDataValue,
-                                                  ISystems<?, ?> system, UUID... identityToken) {
-        log.trace("Creating and finding resource item - type: {}, value: {}", identityResourceType, resourceItemDataValue);
-
-        // Generate a UUID for the new resource item
-        UUID key = UUID.randomUUID();
-
-        // Step 1: Create the resource item
-        return create(session, identityResourceType, key, resourceItemDataValue, system, identityToken)
-                // Step 2: Find the resource item by UUID
-                .chain(resourceItem -> {
-                    log.trace("Resource item created, now finding by UUID: {}", key);
-                    return findByUUID(session, key);
-                })
-                // Step 3: Handle errors
-                .onFailure()
-                .recoverWithItem(cause -> {
-                    log.error("Error in createAndFind operation", cause);
-                    return null;
-                });
-    }
 }
 
