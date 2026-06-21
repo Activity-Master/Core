@@ -39,6 +39,9 @@ public class ProductRestService {
     @Inject
     private IResourceItemService<?> resourceItemService;
 
+    @Inject
+    private com.guicedee.activitymaster.fsdm.rest.EventActionSupport eventActionSupport;
+
     // ──────────────────────────────────────────────────────────────────────────
     // Find
     // ──────────────────────────────────────────────────────────────────────────
@@ -90,7 +93,7 @@ public class ProductRestService {
     @POST
     @Path("{requestingSystemName}/create")
     @Operation(summary = "Create a product",
-            description = "Creates a product using the first entry in 'types' as the primary product type, then persists all supplied relationships asynchronously (fire-and-forget). The response echoes the submitted DTO immediately.")
+            description = "Creates a product using the first entry in 'types' as the primary product type, then persists all supplied relationships asynchronously (fire-and-forget). The response echoes the submitted DTO immediately. Supply an optional 'event' block to associate this create with an event (records the action + a change summary).")
     @ApiResponse(responseCode = "200", description = "Product created; relationships persist asynchronously")
     @ApiResponse(responseCode = "500", description = "Creation failure")
     public Uni<ProductDTO> create(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
@@ -111,6 +114,8 @@ public class ProductRestService {
                                 if (hasAnyRelationship(dto)) {
                                     persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, productId, dto);
                                 }
+                                // Optionally associate this create with an event (fire-and-forget)
+                                eventActionSupport.recordProductAction(enterpriseName, requestingSystemName, dto.event, true, productId);
                                 // Build response immediately from the DTO input — no DB round-trip needed
                                 return buildCreateResponseFromDto((Product) product, dto);
                             });
@@ -128,7 +133,7 @@ public class ProductRestService {
     @PUT
     @Path("{requestingSystemName}/update")
     @Operation(summary = "Update a product",
-            description = "Applies addOrUpdate (upsert by name) and delete (expire by name) operations to each relationship category. Relationship persistence is fire-and-forget; the response echoes the intended addOrUpdate state.")
+            description = "Applies addOrUpdate (upsert by name) and delete (expire by name) operations to each relationship category. Relationship persistence is fire-and-forget; the response echoes the intended addOrUpdate state. Supply an optional 'event' block to associate this update with an event (records the action + a change summary).")
     @ApiResponse(responseCode = "200", description = "Update accepted; relationships persist asynchronously")
     @ApiResponse(responseCode = "500", description = "Update failure")
     public Uni<ProductDTO> update(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
@@ -142,6 +147,9 @@ public class ProductRestService {
         }).map(foundId -> {
             // Step 2: Fire-and-forget relationship persistence in parallel
             persistUpdateRelationshipsAsync(enterpriseName, requestingSystemName, foundId, dto);
+
+            // Optionally associate this update with an event (fire-and-forget)
+            eventActionSupport.recordProductAction(enterpriseName, requestingSystemName, dto.event, false, foundId);
 
             // Step 3: Build response immediately from the DTO input — no DB round-trip needed
             return buildUpdateResponseFromDto(productId, dto);

@@ -350,53 +350,59 @@ public class SecurityTokenService
         // (always involved parties), Plugins only Plugin-typed; conversely System/Application/Plugin
         // tokens may only be parented under their matching folder (or the enterprise root during build).
         // Generic groups/folders may add further groups and users, but never into the type folders.
-        try {
-            enforceMembershipPolicy(enterprise, parent, child, classification);
-        } catch (SecurityAccessException policyViolation) {
-            log.warn("⛔ Rejected security-token link parent '{}' -> child '{}': {}",
-                    parent.getName(), child.getName(), policyViolation.getMessage());
-            return Uni.createFrom().failure(policyViolation);
-        }
+        //
+        // The enterprise name is resolved reactively first: child.getEnterprise() may be an uninitialized
+        // bytecode-lazy association under the reactive session, and accessing it synchronously inside the
+        // policy check throws HR000085 (reactive sessions do not support transparent lazy fetching).
+        return resolveEnterpriseName(session, enterprise).chain(enterpriseName -> {
+            try {
+                enforceMembershipPolicy(enterpriseName, parent, child, classification);
+            } catch (SecurityAccessException policyViolation) {
+                log.warn("⛔ Rejected security-token link parent '{}' -> child '{}': {}",
+                        parent.getName(), child.getName(), policyViolation.getMessage());
+                return Uni.createFrom().<Void>failure(policyViolation);
+            }
 
-        return root.builder(session)
-                .withEnterprise(enterprise)
-                .findLink((SecurityToken) parent, (SecurityToken) child, null)
-                .withClassification(classification)
-                .inActiveRange()
-                .inDateRange()
-                .get()
-                .onFailure(NoResultException.class)
-                .recoverWithUni(() -> {
-                    log.debug("🆕 Creating new security token link: parent '{}' -> child '{}'", parent.getName(), child.getName());
-                    // No existing link found, create a new one
-                    root.setParentSecurityTokenID((SecurityToken) parent);
-                    root.setChildSecurityTokenID((SecurityToken) child);
-                    root.setClassificationID(classification);
-                    root.setSystemID(((SecurityToken) parent).getSystemID());
-                    root.setOriginalSourceSystemID(((SecurityToken) parent).getSystemID());
-                    root.setValue(child.getSecurityToken());
-                    root.setEnterpriseID(enterprise);
+            return root.builder(session)
+                    .withEnterprise(enterprise)
+                    .findLink((SecurityToken) parent, (SecurityToken) child, null)
+                    .withClassification(classification)
+                    .inActiveRange()
+                    .inDateRange()
+                    .get()
+                    .onFailure(NoResultException.class)
+                    .recoverWithUni(() -> {
+                        log.debug("🆕 Creating new security token link: parent '{}' -> child '{}'", parent.getName(), child.getName());
+                        // No existing link found, create a new one
+                        root.setParentSecurityTokenID((SecurityToken) parent);
+                        root.setChildSecurityTokenID((SecurityToken) child);
+                        root.setClassificationID(classification);
+                        root.setSystemID(((SecurityToken) parent).getSystemID());
+                        root.setOriginalSourceSystemID(((SecurityToken) parent).getSystemID());
+                        root.setValue(child.getSecurityToken());
+                        root.setEnterpriseID(enterprise);
 
-                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-                    return acService.getActiveFlag(session, enterprise)
-                            .chain(activeFlag -> {
-                                root.setActiveFlagID(activeFlag);
-                                return session.persist(root)
-                                        .replaceWith(Uni.createFrom()
-                                                .item(root))
-                                        .invoke(v -> {
-                                            updateSecurityHierarchy(child.getId());
-                                        });
-                            });
-                })
-                .onItem()
-                .invoke(existingLink -> {
-                    if (existingLink != null) {
-                        log.debug("✅ Found existing security token link: parent '{}' -> child '{}'", parent.getName(), child.getName());
-                    }
-                })
-                .chain(existingLink -> Uni.createFrom()
-                        .voidItem());
+                        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                        return acService.getActiveFlag(session, enterprise)
+                                .chain(activeFlag -> {
+                                    root.setActiveFlagID(activeFlag);
+                                    return session.persist(root)
+                                            .replaceWith(Uni.createFrom()
+                                                    .item(root))
+                                            .invoke(v -> {
+                                                updateSecurityHierarchy(child.getId());
+                                            });
+                                });
+                    })
+                    .onItem()
+                    .invoke(existingLink -> {
+                        if (existingLink != null) {
+                            log.debug("✅ Found existing security token link: parent '{}' -> child '{}'", parent.getName(), child.getName());
+                        }
+                    })
+                    .chain(existingLink -> Uni.createFrom()
+                            .voidItem());
+        });
     }
 
     private void updateSecurityHierarchy(UUID securityTokenID) {
@@ -412,44 +418,61 @@ public class SecurityTokenService
                 oldParent != null ? oldParent.getName() : "<all parents>", newParent.getName());
 
         // Enforce the canonical membership policy on the destination BEFORE mutating anything, so an
-        // illegal move fails without having closed any existing edge.
-        try {
-            enforceMembershipPolicy(enterprise, newParent, child, classification);
-        } catch (SecurityAccessException policyViolation) {
-            log.warn("⛔ Rejected security-token move of '{}' to '{}': {}",
-                    child.getName(), newParent.getName(), policyViolation.getMessage());
-            return Uni.createFrom().failure(policyViolation);
-        }
+        // illegal move fails without having closed any existing edge. The enterprise name is resolved
+        // reactively first (see link()) to avoid HR000085 on a lazy enterprise association.
+        return resolveEnterpriseName(session, enterprise).chain(enterpriseName -> {
+            try {
+                enforceMembershipPolicy(enterpriseName, newParent, child, classification);
+            } catch (SecurityAccessException policyViolation) {
+                log.warn("⛔ Rejected security-token move of '{}' to '{}': {}",
+                        child.getName(), newParent.getName(), policyViolation.getMessage());
+                return Uni.createFrom().<Void>failure(policyViolation);
+            }
 
-        // Find the child's current, in-range parent edges (optionally narrowed to a single oldParent).
-        SecurityTokenXSecurityToken edge = new SecurityTokenXSecurityToken();
-        return edge.builder(session)
-                .withEnterprise(enterprise)
-                .findLink(oldParent == null ? null : (SecurityToken) oldParent, (SecurityToken) child, null)
-                .inActiveRange()
-                .inDateRange()
-                .getAll()
-                .chain(edges -> {
-                    java.time.OffsetDateTime now = com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD
-                            .convertToUTCDateTime(com.entityassist.RootEntity.getNow());
-                    Uni<Void> chain = Uni.createFrom().voidItem();
-                    for (Object next : edges) {
-                        SecurityTokenXSecurityToken existing = (SecurityTokenXSecurityToken) next;
-                        // Skip an edge that already points at the new parent (idempotent move/no-op).
-                        SecurityToken existingParent = existing.getParentSecurityTokenID();
-                        if (existingParent != null && newParent.getId() != null
-                                && newParent.getId().equals(existingParent.getId())) {
-                            continue;
+            // Find the child's current, in-range parent edges (optionally narrowed to a single oldParent).
+            SecurityTokenXSecurityToken edge = new SecurityTokenXSecurityToken();
+            return edge.builder(session)
+                    .withEnterprise(enterprise)
+                    .findLink(oldParent == null ? null : (SecurityToken) oldParent, (SecurityToken) child, null)
+                    .inActiveRange()
+                    .inDateRange()
+                    .getAll()
+                    .chain(edges -> {
+                        java.time.OffsetDateTime now = com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD
+                                .convertToUTCDateTime(com.entityassist.RootEntity.getNow());
+                        // Collect the edges that must be closed (skip any that already point at the new parent —
+                        // an idempotent move/no-op).
+                        java.util.List<UUID> toClose = new java.util.ArrayList<>();
+                        for (Object next : edges) {
+                            SecurityTokenXSecurityToken existing = (SecurityTokenXSecurityToken) next;
+                            SecurityToken existingParent = existing.getParentSecurityTokenID();
+                            if (existingParent != null && newParent.getId() != null
+                                    && newParent.getId().equals(existingParent.getId())) {
+                                continue;
+                            }
+                            toClose.add(existing.getId());
                         }
-                        chain = chain.chain(() -> {
-                            existing.setEffectiveToDate(now);
-                            return session.merge(existing).replaceWithVoid();
-                        });
-                    }
-                    return chain;
-                })
-                // Create (or reuse) the new parent edge.
-                .chain(() -> link(session, newParent, child, classification, identifyingToken));
+                        if (toClose.isEmpty()) {
+                            return Uni.createFrom().voidItem();
+                        }
+                        // Close the edges with a direct bulk mutation rather than mutate-and-merge. EffectiveToDate
+                        // is a @Basic(fetch=LAZY) column; under a reactive session Hibernate's merge-driven dirty
+                        // tracking does not reliably emit the UPDATE for a lazy basic attribute, which would leave
+                        // the old parent edge open (EffectiveToDate still EndOfTime) in the DB even though it was
+                        // "closed" in the session — so the moved child would surface under both the old and new
+                        // parent. A bulk HQL update writes straight to the DB, guaranteeing the closure is durable
+                        // before the new edge is created and before getApplicableSecurityTokenIds reads it back.
+                        return session.createMutationQuery(
+                                        "update SecurityTokenXSecurityToken e set e.effectiveToDate = :now, " +
+                                                "e.warehouseLastUpdatedTimestamp = :now where e.id in (:ids)")
+                                .setParameter("now", now)
+                                .setParameter("ids", toClose)
+                                .executeUpdate()
+                                .replaceWithVoid();
+                    })
+                    // Create (or reuse) the new parent edge.
+                    .chain(() -> link(session, newParent, child, classification, identifyingToken));
+        });
     }
 
     /**
@@ -473,7 +496,7 @@ public class SecurityTokenService
      *
      * @throws SecurityAccessException when the link would violate the policy.
      */
-    private void enforceMembershipPolicy(IEnterprise<?, ?> enterprise, ISecurityToken<?, ?> parent,
+    private void enforceMembershipPolicy(String enterpriseName, ISecurityToken<?, ?> parent,
                                          ISecurityToken<?, ?> child, IClassification<?, ?> classification) {
         if (parent == null || classification == null) {
             return;
@@ -484,8 +507,7 @@ public class SecurityTokenService
         }
         String parentName = parent.getName();
 
-        boolean parentIsRoot = enterprise != null && enterprise.getName() != null
-                && enterprise.getName().equals(parentName);
+        boolean parentIsRoot = enterpriseName != null && enterpriseName.equals(parentName);
         boolean parentIsSystemsFolder = UserGroupSecurityTokenClassifications.System.toString().equals(parentName);
         boolean parentIsApplicationsFolder = UserGroupSecurityTokenClassifications.Applications.toString().equals(parentName);
         boolean parentIsPluginsFolder = UserGroupSecurityTokenClassifications.Plugins.toString().equals(parentName);
@@ -521,6 +543,30 @@ public class SecurityTokenService
                         "The Plugins folder only accepts Plugin-typed tokens");
             }
         }
+    }
+
+    /**
+     * Reactively resolves an enterprise's name without tripping HR000085.
+     * <p>
+     * The enterprise reference handed to {@link #link}/{@link #moveToken} (via {@code child.getEnterprise()})
+     * can be an uninitialized bytecode-lazy association under the reactive session. Reading any of its
+     * attributes synchronously throws {@link org.hibernate.LazyInitializationException} (HR000085). The
+     * id is always available on the (enhanced) proxy without a DB hit, so the enterprise is reloaded by id
+     * with {@link Mutiny.Session#find(Class, Object)} — which fully hydrates the {@code EAGER} name column —
+     * and the name read off the now-managed instance. {@code find} is used in preference to
+     * {@code session.fetch(...)} because the latter does not reliably initialise a bytecode
+     * <em>EnhancementAsProxy</em> entity (only classic {@code HibernateProxy}/collection associations).
+     *
+     * @param session    the active reactive session
+     * @param enterprise the (possibly lazy) enterprise reference
+     * @return a Uni emitting the enterprise name, or {@code null} when no enterprise is supplied
+     */
+    private Uni<String> resolveEnterpriseName(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+        if (enterprise == null) {
+            return Uni.createFrom().nullItem();
+        }
+        return session.find(com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise.class, enterprise.getId())
+                .map(found -> found == null ? null : found.getName());
     }
 
     @Override

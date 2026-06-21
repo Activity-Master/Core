@@ -42,6 +42,9 @@ public class ResourceItemRestService
     @Inject
     private IResourceItemService<ResourceItemService> resourceItemService;
 
+    @Inject
+    private com.guicedee.activitymaster.fsdm.rest.EventActionSupport eventActionSupport;
+
     // ──────────────────────────────────────────────────────────────────────────
     // Find
     // ──────────────────────────────────────────────────────────────────────────
@@ -181,7 +184,7 @@ public class ResourceItemRestService
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Create a resource item",
-            description = "Creates a resource item (optionally with inline binary data), then persists supplied relationships asynchronously. The response echoes the submitted DTO immediately.")
+            description = "Creates a resource item (optionally with inline binary data), then persists supplied relationships asynchronously. The response echoes the submitted DTO immediately. Supply an optional 'event' block to associate this create with an event (records the action + a change summary).")
     @ApiResponse(responseCode = "200", description = "Resource item created; relationships persist asynchronously")
     @ApiResponse(responseCode = "500", description = "Creation failure")
     public Uni<ResourceItemDTO> create(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
@@ -220,6 +223,9 @@ public class ResourceItemRestService
                     persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, resourceItemId, dto);
                 }
 
+                // Optionally associate this create with an event (fire-and-forget)
+                eventActionSupport.recordResourceItemAction(enterpriseName, requestingSystemName, dto.event, true, resourceItemId);
+
                 return buildCreateResponseFromDto(resourceItem, dto);
             });
         })
@@ -238,7 +244,7 @@ public class ResourceItemRestService
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Update a resource item",
-            description = "Applies addOrUpdate (upsert by name) and delete (expire by name) operations to classifications, types and child links. Persistence is fire-and-forget; the response echoes the intended addOrUpdate state.")
+            description = "Applies addOrUpdate (upsert by name) and delete (expire by name) operations to classifications, types and child links. Persistence is fire-and-forget; the response echoes the intended addOrUpdate state. Supply an optional 'event' block to associate this update with an event (records the action + a change summary).")
     @ApiResponse(responseCode = "200", description = "Update accepted; relationships persist asynchronously")
     @ApiResponse(responseCode = "500", description = "Update failure")
     public Uni<ResourceItemDTO> update(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
@@ -254,6 +260,9 @@ public class ResourceItemRestService
             // Step 2: Fire-and-forget relationship persistence — each gets its own session
             // and re-finds the entity by ID
             persistUpdateRelationshipsAsync(enterpriseName, requestingSystemName, foundId, dto);
+
+            // Optionally associate this update with an event (fire-and-forget)
+            eventActionSupport.recordResourceItemAction(enterpriseName, requestingSystemName, dto.event, false, foundId);
 
             // Step 3: Build response immediately from the DTO input
             return buildUpdateResponseFromDto(resourceItemId, dto);

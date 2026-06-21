@@ -24,11 +24,11 @@ public class ActivityMasterDestinationDBModule
 	protected @NotNull ConnectionBaseInfo getConnectionBaseInfo(PersistenceUnitDescriptor persistenceUnit, Properties properties)
 	{
 		PostgresConnectionBaseInfo connectionInfo = new PostgresConnectionBaseInfo();
-		connectionInfo.setServerName(Environment.getProperty("FSDM_DBSERVER_2","localhost"));
-		connectionInfo.setPort(Environment.getProperty("FSDM_DBPORT_2","5432"));
-		connectionInfo.setDatabaseName(Environment.getProperty("FSDM_DBNAME_2","fsdm"));
-		connectionInfo.setUsername(Environment.getProperty("FSDM_USER_2","fsdm"));
-		connectionInfo.setPassword(Environment.getProperty("PG_PASSWORD_2","nopassword"));
+		connectionInfo.setServerName(Environment.getSystemPropertyOrEnvironment("FSDM_DBSERVER_2","localhost"));
+		connectionInfo.setPort(Environment.getSystemPropertyOrEnvironment("FSDM_DBPORT_2","5432"));
+		connectionInfo.setDatabaseName(Environment.getSystemPropertyOrEnvironment("FSDM_DBNAME_2","fsdm"));
+		connectionInfo.setUsername(Environment.getSystemPropertyOrEnvironment("FSDM_USER_2","fsdm"));
+		connectionInfo.setPassword(Environment.getSystemPropertyOrEnvironment("PG_PASSWORD_2","nopassword"));
 		connectionInfo.setDefaultConnection(true);
 		connectionInfo.setReactive(true);
 		return connectionInfo;

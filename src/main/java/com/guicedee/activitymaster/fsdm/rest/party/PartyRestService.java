@@ -44,6 +44,9 @@ public class PartyRestService {
     @Inject
     private IClassificationService<?> classificationService;
 
+    @Inject
+    private com.guicedee.activitymaster.fsdm.rest.EventActionSupport eventActionSupport;
+
     // ──────────────────────────────────────────────────────────────────────────
     // Find
     // ──────────────────────────────────────────────────────────────────────────
@@ -222,7 +225,7 @@ public class PartyRestService {
     @POST
     @Path("{requestingSystemName}/create")
     @Operation(summary = "Create a party",
-            description = "Creates an involved party (organic person or organisation) with an optional seed identification, then persists supplied relationships asynchronously. The response echoes the submitted DTO immediately.")
+            description = "Creates an involved party (organic person or organisation) with an optional seed identification, then persists supplied relationships asynchronously. The response echoes the submitted DTO immediately. Supply an optional 'event' block to associate this create with an event (records the action + a change summary).")
     @ApiResponse(responseCode = "200", description = "Party created; relationships persist asynchronously")
     @ApiResponse(responseCode = "500", description = "Creation failure")
     public Uni<PartyDTO> create(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
@@ -242,6 +245,9 @@ public class PartyRestService {
                             persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, partyId, dto);
                         }
 
+                        // Optionally associate this create with an event (fire-and-forget)
+                        eventActionSupport.recordPartyAction(enterpriseName, requestingSystemName, dto.event, true, partyId);
+
                         return buildCreateResponseFromDto((InvolvedParty) party, dto);
                     });
         }).onFailure().invoke(e ->
@@ -257,7 +263,7 @@ public class PartyRestService {
     @PUT
     @Path("{requestingSystemName}/update")
     @Operation(summary = "Update a party",
-            description = "Applies addOrUpdate (upsert by name) and delete (expire by name) operations to each relationship category. Relationship persistence is fire-and-forget; the response echoes the intended addOrUpdate state.")
+            description = "Applies addOrUpdate (upsert by name) and delete (expire by name) operations to each relationship category. Relationship persistence is fire-and-forget; the response echoes the intended addOrUpdate state. Supply an optional 'event' block to associate this update with an event (records the action + a change summary).")
     @ApiResponse(responseCode = "200", description = "Update accepted; relationships persist asynchronously")
     @ApiResponse(responseCode = "500", description = "Update failure")
     public Uni<PartyDTO> update(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
@@ -271,6 +277,9 @@ public class PartyRestService {
         }).map(foundId -> {
             // Step 2: Fire-and-forget relationship persistence
             persistUpdateRelationshipsAsync(enterpriseName, requestingSystemName, foundId, dto);
+
+            // Optionally associate this update with an event (fire-and-forget)
+            eventActionSupport.recordPartyAction(enterpriseName, requestingSystemName, dto.event, false, foundId);
 
             // Step 3: Build response immediately from the DTO input
             return buildUpdateResponseFromDto(partyId, dto);

@@ -57,7 +57,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
                 @Tag(name = "Classification Data Concepts", description = "Classification data concept (bucket/scheme) lifecycle — create, find and update concepts, their values and attached resources."),
                 @Tag(name = "Rules", description = "Business rule lifecycle — create, find and update rules, their classifications, products, rule types and composition hierarchy."),
                 @Tag(name = "Rule Types", description = "Rule type lifecycle — create, find and update rule types, their classifications and supporting resources."),
-                @Tag(name = "Geography", description = "On-demand GeoNames geographic data — countries, provinces, districts, postal codes, timezones and languages.")
+                @Tag(name = "Geography", description = "On-demand GeoNames geographic data — countries, provinces, districts, postal codes, timezones and languages."),
+                @Tag(name = "Cerial Master", description = "Serial (COM) port registry — find, list, create and update the COM port connections stored within ActivityMaster.")
         }
 )
 public final class ActivityMasterOpenApiConfiguration

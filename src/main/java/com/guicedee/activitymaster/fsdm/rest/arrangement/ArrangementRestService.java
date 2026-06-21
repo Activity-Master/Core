@@ -49,6 +49,9 @@ public class ArrangementRestService {
     @Inject
     private IInvolvedPartyService<?> involvedPartyService;
 
+    @Inject
+    private com.guicedee.activitymaster.fsdm.rest.EventActionSupport eventActionSupport;
+
     @POST
     @Path("{requestingSystemName}/find")
     @Operation(summary = "Find an arrangement",
@@ -420,7 +423,7 @@ public class ArrangementRestService {
     @POST
     @Path("{requestingSystemName}/create")
     @Operation(summary = "Create an arrangement",
-            description = "Creates an arrangement with its primary type/classification, then persists supplied relationships asynchronously. The response echoes the submitted DTO immediately.")
+            description = "Creates an arrangement with its primary type/classification, then persists supplied relationships asynchronously. The response echoes the submitted DTO immediately. Supply an optional 'event' block to associate this create with an event (records the action + a change summary).")
     @ApiResponse(responseCode = "200", description = "Arrangement created; relationships persist asynchronously")
     @ApiResponse(responseCode = "500", description = "Creation failure")
     public Uni<ArrangementDTO> create(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
@@ -445,6 +448,9 @@ public class ArrangementRestService {
                         if (hasRelationships) {
                             persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, arrangementId, dto);
                         }
+
+                        // Optionally associate this create with an event (fire-and-forget)
+                        eventActionSupport.recordArrangementAction(enterpriseName, requestingSystemName, dto.event, true, arrangementId);
 
                         return buildCreateResponseFromDto((Arrangement) arrangement, dto);
                     });
@@ -778,7 +784,7 @@ public class ArrangementRestService {
     @PUT
     @Path("{requestingSystemName}/update")
     @Operation(summary = "Update an arrangement",
-            description = "Applies addOrUpdate (upsert by name) and delete (expire by name) operations to each relationship category. Child arrangement keys are UUID strings. Persistence is fire-and-forget; the response echoes the intended addOrUpdate state.")
+            description = "Applies addOrUpdate (upsert by name) and delete (expire by name) operations to each relationship category. Child arrangement keys are UUID strings. Persistence is fire-and-forget; the response echoes the intended addOrUpdate state. Supply an optional 'event' block to associate this update with an event (records the action + a change summary).")
     @ApiResponse(responseCode = "200", description = "Update accepted; relationships persist asynchronously")
     @ApiResponse(responseCode = "500", description = "Update failure")
     public Uni<ArrangementDTO> update(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
@@ -794,6 +800,9 @@ public class ArrangementRestService {
         }).map(foundId -> {
             // Step 2: Fire-and-forget relationship persistence
             persistUpdateRelationshipsAsync(enterpriseName, requestingSystemName, foundId, dto);
+
+            // Optionally associate this update with an event (fire-and-forget)
+            eventActionSupport.recordArrangementAction(enterpriseName, requestingSystemName, dto.event, false, foundId);
 
             // Step 3: Build response immediately from the DTO input
             return buildUpdateResponseFromDto(arrangementId, dto);

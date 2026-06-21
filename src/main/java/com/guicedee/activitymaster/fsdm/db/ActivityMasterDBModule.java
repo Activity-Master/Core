@@ -31,11 +31,11 @@ public class ActivityMasterDBModule
 	protected @NotNull ConnectionBaseInfo getConnectionBaseInfo(PersistenceUnitDescriptor persistenceUnit, Properties properties)
 	{
 		 PostgresConnectionBaseInfo connectionInfo = new PostgresConnectionBaseInfo();
-        connectionInfo.setServerName(Environment.getProperty("FSDM_DBSERVER","localhost"));
-        connectionInfo.setPort(Environment.getProperty("FSDM_DBPORT","5432"));
-        connectionInfo.setDatabaseName(Environment.getProperty("FSDM_DBNAME","fsdm"));
-        connectionInfo.setUsername(Environment.getProperty("FSDM_USER","fsdm"));
-        connectionInfo.setPassword(Environment.getProperty("FSDM_PASSWORD","fsdm"));
+        connectionInfo.setServerName(Environment.getSystemPropertyOrEnvironment("FSDM_DBSERVER","localhost"));
+        connectionInfo.setPort(Environment.getSystemPropertyOrEnvironment("FSDM_DBPORT","5432"));
+        connectionInfo.setDatabaseName(Environment.getSystemPropertyOrEnvironment("FSDM_DBNAME","fsdm"));
+        connectionInfo.setUsername(Environment.getSystemPropertyOrEnvironment("FSDM_USER","fsdm"));
+        connectionInfo.setPassword(Environment.getSystemPropertyOrEnvironment("FSDM_PASSWORD","fsdm"));
         connectionInfo.setDefaultConnection(true);
         connectionInfo.setReactive(true);
 		connectionInfo.setMinPoolSize(50);
@@ -43,11 +43,11 @@ public class ActivityMasterDBModule
 		connectionInfo.setMaxIdleTime(30000);
 
 		PgConnectOptions connectOptions = new PgConnectOptions()
-				.setPort(Integer.parseInt(Environment.getProperty("FSDM_DBPORT","5432")))
-				.setHost(Environment.getProperty("FSDM_DBSERVER","localhost"))
-				.setDatabase(Environment.getProperty("FSDM_DBNAME","fsdm"))
-				.setUser(Environment.getProperty("FSDM_USER","fsdm"))
-				.setPassword(Environment.getProperty("FSDM_PASSWORD","fsdm"))
+				.setPort(Integer.parseInt(Environment.getSystemPropertyOrEnvironment("FSDM_DBPORT","5432")))
+				.setHost(Environment.getSystemPropertyOrEnvironment("FSDM_DBSERVER","localhost"))
+				.setDatabase(Environment.getSystemPropertyOrEnvironment("FSDM_DBNAME","fsdm"))
+				.setUser(Environment.getSystemPropertyOrEnvironment("FSDM_USER","fsdm"))
+				.setPassword(Environment.getSystemPropertyOrEnvironment("FSDM_PASSWORD","fsdm"))
 				.setPipeliningLimit(16);
 
 		PoolOptions poolOptions = new PoolOptions()
