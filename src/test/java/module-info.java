@@ -1,4 +1,5 @@
 import com.guicedee.activitymaster.PostgreSQLTestDBModule;
+import com.guicedee.activitymaster.MongoTestDBModule;
 import com.guicedee.client.services.lifecycle.IGuiceModule;
 
 open module activity.master.test {
@@ -20,12 +21,14 @@ open module activity.master.test {
 
     requires org.testcontainers;
     requires io.vertx.sql.client.pg;
+    requires io.vertx.mongo.client;
+    requires io.vertx.core;
     requires com.guicedee.activitymaster.fsdm;
 
     requires com.graphqljava;
 
     uses com.guicedee.vertx.graphql.services.IGraphQLSchemaProvider;
 
-    provides IGuiceModule with PostgreSQLTestDBModule;
+    provides IGuiceModule with PostgreSQLTestDBModule, MongoTestDBModule;
 
 }

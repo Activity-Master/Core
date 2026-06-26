@@ -153,7 +153,22 @@ public class ResourceItem
   @Override
   public Uni<byte[]> getData(Mutiny.Session session, UUID... identityToken)
   {
-    ResourceItemDataValue rid = new ResourceItemDataValue();
+    // When this resource item's payload lives in MongoDB (JSON type), read it from there; otherwise
+    // (or when no document is present) fall back to the relational ResourceItemDataValue.
+    com.guicedee.activitymaster.fsdm.ResourceItemJsonStore jsonStore =
+            IGuiceContext.get(com.guicedee.activitymaster.fsdm.ResourceItemJsonStore.class);
+    if (jsonStore.isEnabled())
+    {
+      return jsonStore.fetch(getId())
+              .chain(jsonBytes -> jsonBytes != null
+                      ? Uni.createFrom().item(jsonBytes)
+                      : relationalGetData(session));
+    }
+    return relationalGetData(session);
+  }
+
+  private Uni<byte[]> relationalGetData(Mutiny.Session session)
+  {
     return session.find(ResourceItemDataValue.class, getId())
             .onFailure()
             .call(err->{
@@ -307,5 +322,50 @@ public class ResourceItem
     rix.setResourceItemTypeID((ResourceItemType) secondary);
     rix.setClassificationID(classificationValue);
     rix.setValue(value);
+  }
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // Fluent JSON document API — store fields/children of a JSON resource item in MongoDB
+  // ───────────────────────────────────────────────────────────────────────────
+
+  private com.guicedee.activitymaster.fsdm.ResourceItemJsonStore jsonStore()
+  {
+    return IGuiceContext.get(com.guicedee.activitymaster.fsdm.ResourceItemJsonStore.class);
+  }
+
+  @Override
+  public Uni<Void> storeField(String fieldPath, Object value)
+  {
+    return jsonStore().setField(getId(), fieldPath, value);
+  }
+
+  @Override
+  public Uni<Void> storeFields(java.util.Map<String, ?> fields)
+  {
+    return jsonStore().setFields(getId(), fields);
+  }
+
+  @Override
+  public Uni<Void> removeField(String fieldPath)
+  {
+    return jsonStore().unsetField(getId(), fieldPath);
+  }
+
+  @Override
+  public Uni<Void> addJsonChild(String arrayPath, Object child)
+  {
+    return jsonStore().pushChild(getId(), arrayPath, child);
+  }
+
+  @Override
+  public Uni<Void> removeJsonChild(String arrayPath, Object match)
+  {
+    return jsonStore().pullChild(getId(), arrayPath, match);
+  }
+
+  @Override
+  public Uni<io.vertx.core.json.JsonObject> getJson()
+  {
+    return jsonStore().fetchJson(getId());
   }
 }

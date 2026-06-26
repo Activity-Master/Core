@@ -1,7 +1,7 @@
 package com.guicedee.activitymaster.fsdm.injections;
 
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import tools.jackson.core.Version;
+import tools.jackson.databind.module.SimpleModule;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.*;
@@ -24,7 +24,7 @@ public class ActivityMasterPostStartup implements IGuicePostStartup<ActivityMast
     public List<Uni<Boolean>> postLoad() {
         return List.of(Uni.createFrom().item(() -> {
                     log.trace("Configuration Jackson JSON for types in FSDM");
-                    com.guicedee.client.IGuiceContext.get(DefaultObjectMapper)
+                    com.guicedee.modules.services.jsonrepresentation.IJsonRepresentation
                             .registerModule(new SimpleModule("ActivityMasterJsonModule", Version.unknownVersion())
                                     .addDeserializer(IEnterprise.class, new EnterpriseDeserializer())
                                     .addDeserializer(IInvolvedPartyType.class, new InvolvedPartyTypeDeserializer())

@@ -19,6 +19,11 @@
     <version>3.0.0-SNAPSHOT</version>
 
     <dependencies>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-sql-client</artifactId>
+        </dependency>
+
 
         <dependency>
             <groupId>io.vertx</groupId>
@@ -116,6 +121,13 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
+        </dependency>
+
+        <!-- MongoDB document store for JSON resource-item payloads -->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-mongo-client</artifactId>
+            <version>${vertx.version}</version>
         </dependency>
 
         <dependency>

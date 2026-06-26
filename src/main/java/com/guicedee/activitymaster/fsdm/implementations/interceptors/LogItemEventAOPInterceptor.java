@@ -1,6 +1,6 @@
 package com.guicedee.activitymaster.fsdm.implementations.interceptors;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
@@ -193,7 +193,7 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 					                   .writerWithDefaultPrettyPrinter()
 					                   .writeValueAsBytes(key));
 				}
-				catch (JsonProcessingException e)
+				catch (JacksonException e)
 				{
 					log.log(Level.SEVERE, "Unable to decode LogEventItem to JSON", e);
 					return Uni.createFrom().failure(e);

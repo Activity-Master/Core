@@ -91,6 +91,9 @@ public class ResourceItemService
     @Inject
     private IClassificationService<?> classificationService;
 
+    @Inject
+    private ResourceItemJsonStore jsonStore;
+
     /**
      * Gets a new ResourceItem instance.
      * This is a lightweight operation that doesn't require a transaction.
@@ -340,12 +343,14 @@ public class ResourceItemService
                                             rid.setSystemID(system);
                                             rid.setEnterpriseID(enterprise);
 
+                                            // When the type is a JSON type and MongoDB is configured, the payload is
+                                            // stored as a document in MongoDB; the relational value row is kept (empty)
+                                            // so the FSDM security/SCD structure stays intact.
+                                            boolean jsonRoute = jsonStore.shouldStoreJson(identityResourceType, data);
+
                                             ResourceItemDataValue dataValue = new ResourceItemDataValue();
                                             dataValue.setId(persisted.getId());
-                                            dataValue.setData(data);
-                                            if (data == null) {
-                                                dataValue.setData(new byte[0]);
-                                            }
+                                            dataValue.setData(jsonRoute || data == null ? new byte[0] : data);
                                             rid.setDataValue(dataValue);
 
                                             // Persist the resource item data
@@ -367,6 +372,12 @@ public class ResourceItemService
                                                         log.trace("Adding resource item type: {}", identityResourceType);
                                                         return addResourceItemTypeRelationshipInternal(session, persisted, identityResourceType, resourceItemDataValue, system, enterprise, scopeToken, identityToken);
                                                     })
+                                                    .call(() ->
+                                                            // Step 4: Store the JSON payload in MongoDB when this is a JSON type
+                                                            // (routed to the collection configured for the type)
+                                                            jsonRoute
+                                                                    ? jsonStore.store(identityResourceType, persisted.getId(), data)
+                                                                    : Uni.createFrom().voidItem())
                                                     .replaceWith(persisted);
                                         });
                             })
@@ -509,6 +520,15 @@ public class ResourceItemService
 
     @Override
     public Uni<Void> updateResourceData(Mutiny.Session session, byte[] data, UUID resourceItemId, String systemName) {
+        // Route JSON-typed payloads to MongoDB (when configured); everything else stays relational.
+        // Empty payloads (e.g. the self-healing call from ResourceItem.getData) always go relational so the
+        // missing ResourceItemData/ResourceItemDataValue rows get created.
+        if (data != null && data.length > 0 && jsonStore.isEnabled()) {
+            return jsonStore.isJsonResource(session, resourceItemId)
+                    .chain(isJson -> isJson
+                            ? jsonStore.storeForResource(session, resourceItemId, data)
+                            : tryUpdate(session, resourceItemId, data, systemName).replaceWithVoid());
+        }
         return tryUpdate(session, resourceItemId, data, systemName)
                 .replaceWithVoid();
     }
@@ -793,11 +813,65 @@ public class ResourceItemService
                     aqb.join(ResourceItem_.types, qb, jakarta.persistence.criteria.JoinType.INNER, joinExpression);
 
                     //noinspection unchecked
+                    //noinspection unchecked
                     return (Uni<List<IResourceItem<?, ?>>>) (Uni<?>) aqb
                             .getAll()
                             .onFailure()
                             .invoke(e -> log.error("Error finding resources by type: {} and value: {}", type, value, e));
                 });
+    }
+
+    @Override
+    public Uni<List<io.vertx.core.json.JsonObject>> findJsonResourceData(io.vertx.core.json.JsonObject query) {
+        log.trace("Finding JSON resource item data with criteria: {}", query);
+        return jsonStore.find(query);
+    }
+
+    @Override
+    public Uni<io.vertx.core.json.JsonObject> getJsonResourceData(UUID resourceItemId) {
+        log.trace("Getting JSON resource item data for: {}", resourceItemId);
+        return jsonStore.fetch(resourceItemId)
+                .map(bytes -> {
+                    if (bytes == null || bytes.length == 0) {
+                        return null;
+                    }
+                    String json = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
+                    try {
+                        return new io.vertx.core.json.JsonObject(json);
+                    } catch (Exception notAnObject) {
+                        return new io.vertx.core.json.JsonObject().put("payload", json);
+                    }
+                });
+    }
+
+    @Override
+    public Uni<List<io.vertx.core.json.JsonObject>> findJsonResourceData(String collection, io.vertx.core.json.JsonObject query) {
+        log.trace("Finding JSON resource item data in collection '{}' with criteria: {}", collection, query);
+        return jsonStore.find(collection, query);
+    }
+
+    @Override
+    public Uni<Void> updateJsonResourceField(UUID resourceItemId, String fieldPath, Object value) {
+        log.trace("Setting JSON field '{}' on resource item: {}", fieldPath, resourceItemId);
+        return jsonStore.setField(resourceItemId, fieldPath, value);
+    }
+
+    @Override
+    public Uni<Void> removeJsonResourceField(UUID resourceItemId, String fieldPath) {
+        log.trace("Removing JSON field '{}' on resource item: {}", fieldPath, resourceItemId);
+        return jsonStore.unsetField(resourceItemId, fieldPath);
+    }
+
+    @Override
+    public Uni<Void> addJsonResourceChild(UUID resourceItemId, String arrayPath, io.vertx.core.json.JsonObject child) {
+        log.trace("Appending JSON child to '{}' on resource item: {}", arrayPath, resourceItemId);
+        return jsonStore.pushChild(resourceItemId, arrayPath, child);
+    }
+
+    @Override
+    public Uni<Void> removeJsonResourceChild(UUID resourceItemId, String arrayPath, Object match) {
+        log.trace("Removing JSON children from '{}' on resource item: {}", arrayPath, resourceItemId);
+        return jsonStore.pullChild(resourceItemId, arrayPath, match);
     }
 
 }

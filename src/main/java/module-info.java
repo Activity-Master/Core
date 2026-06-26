@@ -2,6 +2,7 @@ import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemInstall;
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemUpdate;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IMasterSystem;
 import com.guicedee.activitymaster.fsdm.db.ActivityMasterDBModule;
+import com.guicedee.activitymaster.fsdm.db.ActivityMasterMongoModule;
 import com.guicedee.activitymaster.fsdm.implementations.*;
 import com.guicedee.activitymaster.fsdm.injections.*;
 import com.guicedee.activitymaster.fsdm.systems.*;
@@ -21,10 +22,13 @@ module com.guicedee.activitymaster.fsdm {
     requires transitive com.guicedee.openapi;
 
 
-    requires transitive com.fasterxml.jackson.databind;
+    requires transitive tools.jackson.databind;
 
     requires transitive io.vertx.sql.client.pg;
     requires transitive com.guicedee.guicedinjection;
+
+    // MongoDB document store for JSON resource-item payloads (ResourceItemJsonStore / ActivityMasterMongoModule)
+    requires io.vertx.mongo.client;
 
     requires com.guicedee.jsonrepresentation;
     requires com.guicedee.xmlrepresentation;
@@ -70,6 +74,7 @@ module com.guicedee.activitymaster.fsdm {
     provides IGuiceModule with
             EventInterceptorsBinder,
             ActivityMasterDBModule,
+            ActivityMasterMongoModule,
             ActivityMasterBinder,
             EnterpriseBinder,
             ClassificationConceptsBinder,
@@ -134,124 +139,124 @@ module com.guicedee.activitymaster.fsdm {
     exports com.guicedee.activitymaster.fsdm.db.entities.time;
 
 
-    opens com.guicedee.activitymaster.fsdm to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy;
 
-    //opens com.guicedee.activitymaster.fsdm.rest to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
+    //opens com.guicedee.activitymaster.fsdm.rest to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy,com.guicedee.rest;
 
-    opens com.guicedee.activitymaster.fsdm.rest.arrangement to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
-    opens com.guicedee.activitymaster.fsdm.rest.resourceitem to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
-    opens com.guicedee.activitymaster.fsdm.rest.event to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
-    opens com.guicedee.activitymaster.fsdm.rest.party to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
-    opens com.guicedee.activitymaster.fsdm.rest.classification to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
-    opens com.guicedee.activitymaster.fsdm.rest.rules to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
-    opens com.guicedee.activitymaster.fsdm.rest.security to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy,com.guicedee.rest;
-
-
+    opens com.guicedee.activitymaster.fsdm.rest.arrangement to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy,com.guicedee.rest;
+    opens com.guicedee.activitymaster.fsdm.rest.resourceitem to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy,com.guicedee.rest;
+    opens com.guicedee.activitymaster.fsdm.rest.event to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy,com.guicedee.rest;
+    opens com.guicedee.activitymaster.fsdm.rest.party to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy,com.guicedee.rest;
+    opens com.guicedee.activitymaster.fsdm.rest.classification to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy,com.guicedee.rest;
+    opens com.guicedee.activitymaster.fsdm.rest.rules to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy,com.guicedee.rest;
+    opens com.guicedee.activitymaster.fsdm.rest.security to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy,com.guicedee.rest;
 
 
-    opens com.guicedee.activitymaster.fsdm.implementations to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geography;
-    opens com.guicedee.activitymaster.fsdm.implementations.interceptors to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind;
-    opens com.guicedee.activitymaster.fsdm.db to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
-    opens com.guicedee.activitymaster.fsdm.db.abstraction to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+
+
+    opens com.guicedee.activitymaster.fsdm.implementations to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, com.guicedee.activitymaster.geography;
+    opens com.guicedee.activitymaster.fsdm.implementations.interceptors to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind;
+    opens com.guicedee.activitymaster.fsdm.db to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.abstraction to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
     exports com.guicedee.activitymaster.fsdm.db.abstraction.builders;
-    opens com.guicedee.activitymaster.fsdm.db.abstraction.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.abstraction.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
     exports com.guicedee.activitymaster.fsdm.graphql;
 
 
-    opens com.guicedee.activitymaster.fsdm.db.entities.enterprise to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geography, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.enterprise to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, com.guicedee.activitymaster.geography, net.bytebuddy;
 
     exports com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders;
-    opens com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geography, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, com.guicedee.activitymaster.geography, net.bytebuddy;
 
 
     exports com.guicedee.activitymaster.fsdm.db.entities.systems.builders;
-    opens com.guicedee.activitymaster.fsdm.db.entities.systems.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geography, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.systems.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, com.guicedee.activitymaster.geography, net.bytebuddy;
 
 
-    opens com.guicedee.activitymaster.fsdm.db.entities.activeflag to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.activeflag to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
     exports com.guicedee.activitymaster.fsdm.db.entities.activeflag.builders;
-    opens com.guicedee.activitymaster.fsdm.db.entities.activeflag.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.activeflag.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
-    opens com.guicedee.activitymaster.fsdm.db.entities.address to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.address to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
 
     exports com.guicedee.activitymaster.fsdm.db.entities.address.builders;
-    opens com.guicedee.activitymaster.fsdm.db.entities.address.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.address.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
-    opens com.guicedee.activitymaster.fsdm.db.entities.arrangement to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.arrangement to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
 
     exports com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders;
-    opens com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
-    opens com.guicedee.activitymaster.fsdm.db.entities.classifications to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geography, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.classifications to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, com.guicedee.activitymaster.geography, net.bytebuddy;
 
     exports com.guicedee.activitymaster.fsdm.db.entities.classifications.builders;
-    opens com.guicedee.activitymaster.fsdm.db.entities.classifications.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geography, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.classifications.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, com.guicedee.activitymaster.geography, net.bytebuddy;
 
-    opens com.guicedee.activitymaster.fsdm.db.entities.events to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.events to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
     exports com.guicedee.activitymaster.fsdm.db.entities.events.builders;
-    opens com.guicedee.activitymaster.fsdm.db.entities.events.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.events.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
     exports com.guicedee.activitymaster.fsdm.db.entities.geography;
-    opens com.guicedee.activitymaster.fsdm.db.entities.geography to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geograph, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.geography to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, com.guicedee.activitymaster.geograph, net.bytebuddy;
 
 
     exports com.guicedee.activitymaster.fsdm.db.entities.geography.builders;
-    opens com.guicedee.activitymaster.fsdm.db.entities.geography.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geography, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.geography.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, com.guicedee.activitymaster.geography, net.bytebuddy;
 
 
-    opens com.guicedee.activitymaster.fsdm.db.entities.involvedparty to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.involvedparty to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
     exports com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders;
-    opens com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
 
-    opens com.guicedee.activitymaster.fsdm.db.entities.product to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.product to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
 
     exports com.guicedee.activitymaster.fsdm.db.entities.product.builders;
-    opens com.guicedee.activitymaster.fsdm.db.entities.product.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.product.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
-    opens com.guicedee.activitymaster.fsdm.db.entities.rules to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.rules to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
     exports com.guicedee.activitymaster.fsdm.db.entities.rules.builders;
-    opens com.guicedee.activitymaster.fsdm.db.entities.rules.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.rules.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
 
-    opens com.guicedee.activitymaster.fsdm.db.entities.resourceitem to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.resourceitem to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
     exports com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders;
-    opens com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
-    opens com.guicedee.activitymaster.fsdm.db.entities.security to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.security to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
     exports com.guicedee.activitymaster.fsdm.db.entities.security to activity.master.test;
 
 
     exports com.guicedee.activitymaster.fsdm.db.entities.security.builders;
-    opens com.guicedee.activitymaster.fsdm.db.entities.security.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.security.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
-    opens com.guicedee.activitymaster.fsdm.db.entities.systems to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geography, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.systems to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, com.guicedee.activitymaster.geography, net.bytebuddy;
 
-    opens com.guicedee.activitymaster.fsdm.db.entities.time to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.time to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
     exports com.guicedee.activitymaster.fsdm.db.entities.time.builders;
-    opens com.guicedee.activitymaster.fsdm.db.entities.time.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.db.entities.time.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
 
 
     exports com.guicedee.activitymaster.fsdm.injections;
-    opens com.guicedee.activitymaster.fsdm.injections to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy;
-    opens com.guicedee.activitymaster.fsdm.injections.updates to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.injections to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.injections.updates to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy;
 
-    opens com.guicedee.activitymaster.fsdm.services to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.services to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy;
 
-    opens com.guicedee.activitymaster.fsdm.services.system to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.services.system to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy;
 
 
     exports com.guicedee.activitymaster.fsdm.systems;
-    opens com.guicedee.activitymaster.fsdm.systems to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.fasterxml.jackson.databind, net.bytebuddy;
+    opens com.guicedee.activitymaster.fsdm.systems to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy;
 
     exports com.guicedee.activitymaster.fsdm.db.entities.systems to com.guicedee.activitymaster.geography;
     exports com.guicedee.activitymaster.fsdm.db.entities.enterprise to com.guicedee.activitymaster.geography;
@@ -259,7 +264,7 @@ module com.guicedee.activitymaster.fsdm {
 
     //exports com.guicedee.activitymaster.fsdm.db.entities.geography to com.guicedee.activitymaster.geography;
     exports com.guicedee.activitymaster.fsdm.db.entities.rules to com.guicedee.activitymaster.geography;
-    exports com.guicedee.activitymaster.fsdm.db.entities.resourceitem to com.guicedee.activitymaster.geography;
+    exports com.guicedee.activitymaster.fsdm.db.entities.resourceitem to com.guicedee.activitymaster.geography, activity.master.test;
     exports com.guicedee.activitymaster.fsdm.implementations to com.guicedee.activitymaster.geography;
 
     exports com.guicedee.activitymaster.fsdm.db;
@@ -276,5 +281,5 @@ module com.guicedee.activitymaster.fsdm {
 
     // App-level @OpenAPIDefinition holder — scanned for the global API document
     exports com.guicedee.activitymaster.fsdm.rest;
-    opens com.guicedee.activitymaster.fsdm.rest to com.google.guice, com.fasterxml.jackson.databind, com.guicedee.rest;
+    opens com.guicedee.activitymaster.fsdm.rest to com.google.guice, tools.jackson.databind, com.guicedee.rest;
 }
