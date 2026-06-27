@@ -282,4 +282,12 @@ public class Systems
                 .setSystemID(this);
         return io.smallrye.mutiny.Uni.createFrom().voidItem();
     }
+
+    @Override
+    public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.StatelessSession session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    {
+        ((SystemsXClassification) linkTable)
+                .setSystemID(this);
+        return io.smallrye.mutiny.Uni.createFrom().voidItem();
+    }
 }

@@ -91,6 +91,79 @@ public class InvolvedPartySystem
                });
   }
 
+  /**
+   * Stateless end-to-end variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — provisions the
+   * 15 identification types, 12 name types, and 7 involved-party types entirely on a
+   * {@link Mutiny.StatelessSession}, via the stateless prepped {@code IInvolvedPartyService} create methods
+   * (each a find-or-create + stateless default security). Idempotent.
+   */
+  @Override
+  public Uni<Void> createDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
+  {
+    logProgress("Involved Party System", "Starting Checks for Required Values (stateless)");
+    log.info("🚀 (stateless) Creating involved party defaults for enterprise: '{}'", enterprise.getName());
+
+    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+               .chain(system -> createIdentificationTypesStateless(session, system)
+                   .chain(v -> createNameTypesStateless(session, system))
+                   .chain(v -> createTypesStateless(session, system)))
+               .invoke(() -> log.info("🎉 (stateless) Completed involved party defaults"))
+               .onFailure().invoke(error -> log.error("❌ (stateless) Failed involved party defaults: {}", error.getMessage(), error))
+               .replaceWithVoid();
+  }
+
+  private Uni<Void> createIdentificationTypesStateless(Mutiny.StatelessSession session, ISystems<?, ?> system)
+  {
+    return service.createIdentificationType(session, system, IdentificationTypes.IdentificationTypeDriversLicense, "Describes an Individuals Drivers Licence Number")
+               .flatMap(v -> service.createIdentificationType(session, system, IdentificationTypes.IdentificationTypePassportNumber, "Describes an Individuals Passport Number"))
+               .flatMap(v -> service.createIdentificationType(session, system, IdentificationTypes.IdentificationTypeTaxNumber, "Tax ID Number"))
+               .flatMap(v -> service.createIdentificationType(session, system, IdentificationTypes.IdentificationTypeVATNumber, "Describes an Organisation's VAT Registration number."))
+               .flatMap(v -> service.createIdentificationType(session, system, IdentificationTypes.IdentificationTypeRegistrationNumber, "Describes an Organisation's Registration number."))
+               .flatMap(v -> service.createIdentificationType(session, system, IdentificationTypes.IdentificationTypeIdentityNumber, "An Individual Green-Bard Coded ID Document Number"))
+               .flatMap(v -> service.createIdentificationType(session, system, IdentificationTypes.IdentificationTypeEmailAddress, "An individuals email address"))
+               .flatMap(v -> service.createIdentificationType(session, system, IdentificationTypes.IdentificationTypeCellPhoneNumber, "An individuals cell phone number"))
+               .flatMap(v -> service.createIdentificationType(session, system, IdentificationTypes.IdentificationTypeSocialSecurityNumber, "An individuals social security number"))
+               .flatMap(v -> service.createIdentificationType(session, system, IdentificationTypes.IdentificationTypeUserName, "An individuals username"))
+               .flatMap(v -> service.createIdentificationType(session, system, IdentificationTypes.IdentificationTypeUUID, "A given unique system identifier"))
+               .flatMap(v -> service.createIdentificationType(session, system, IdentificationTypes.IdentificationTypeSessionID, "A Given JavascriptSession ID"))
+               .flatMap(v -> service.createIdentificationType(session, system, IdentificationTypes.IdentificationTypeSystemID, "A unique system identifier granted to each each system on registration"))
+               .flatMap(v -> service.createIdentificationType(session, system, IdentificationTypes.IdentificationTypeEnterpriseCreatorRole, "An identifier marking the involved party as the creator of the enterprise"))
+               .flatMap(v -> service.createIdentificationType(session, system, IdentificationTypes.IdentificationTypeUnassigned, "This involved party is unassigned and should be classified"))
+               .invoke(() -> logProgress("Involved Party System", "Loaded Identification Types (stateless)", 16))
+               .replaceWithVoid();
+  }
+
+  private Uni<Void> createNameTypesStateless(Mutiny.StatelessSession session, ISystems<?, ?> system)
+  {
+    return service.createNameType(session, NameTypes.FirstNameType, "The first name of an individual or entity", system)
+               .flatMap(v -> service.createNameType(session, NameTypes.FullNameType, "The full name of an individual or entity", system))
+               .flatMap(v -> service.createNameType(session, NameTypes.PreferredNameType, "An Alias for the Involved Party", system))
+               .flatMap(v -> service.createNameType(session, NameTypes.BirthNameType, "A Given Birth/Maiden Name for an Individual", system))
+               .flatMap(v -> service.createNameType(session, NameTypes.LegalNameType, "The Legal Name associated with an Involved Party", system))
+               .flatMap(v -> service.createNameType(session, NameTypes.CommonNameType, "The Common Name associated with an Individual", system))
+               .flatMap(v -> service.createNameType(session, NameTypes.SalutationType, "The Salutation Associated with an Individual", system))
+               .flatMap(v -> service.createNameType(session, NameTypes.MiddleNameType, "The Middle Name of an Individual", system))
+               .flatMap(v -> service.createNameType(session, NameTypes.InitialsType, "The initials of an Individual", system))
+               .flatMap(v -> service.createNameType(session, NameTypes.SurnameType, "The last name of an Individual", system))
+               .flatMap(v -> service.createNameType(session, NameTypes.QualificationType, "The Qualification of an Individual", system))
+               .flatMap(v -> service.createNameType(session, NameTypes.SuffixType, "The Suffix on an Individual's Name - e.g. \"Jnr, Snr\"", system))
+               .invoke(() -> logProgress("Involved Party System", "Loaded Name Types (stateless)", 12))
+               .replaceWithVoid();
+  }
+
+  private Uni<Void> createTypesStateless(Mutiny.StatelessSession session, ISystems<?, ?> system)
+  {
+    return service.createType(session, system, IPTypes.TypeIndividual, "Defines any involved party as a physical person")
+               .flatMap(v -> service.createType(session, system, IPTypes.TypeOrganisation, "Defines any involved party as an organisation"))
+               .flatMap(v -> service.createType(session, system, IPTypes.TypeSystem, "Defines any involved party as a physical system"))
+               .flatMap(v -> service.createType(session, system, IPTypes.TypeDevice, "Defines any involved party as a physical system"))
+               .flatMap(v -> service.createType(session, system, IPTypes.TypeApplication, "Defines any involved party as an application"))
+               .flatMap(v -> service.createType(session, system, IPTypes.TypeAbstraction, "Represents an abstract entity such as Time"))
+               .flatMap(v -> service.createType(session, system, IPTypes.TypeUnknown, "The type of Involved Party is unknown."))
+               .invoke(() -> logProgress("Involved Party System", "Loaded Types (stateless)", 6))
+               .replaceWithVoid();
+  }
+
   private Uni<Void> createIdentificationTypes(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {
     log.debug("📋 Creating identification types for enterprise: '{}'", enterprise.getName());

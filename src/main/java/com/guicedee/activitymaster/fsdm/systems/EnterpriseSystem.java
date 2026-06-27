@@ -102,6 +102,14 @@ public class EnterpriseSystem
                .replaceWithVoid();
   }
 
+  /** Stateless variant — the Enterprise System has no default data to provision. */
+  @Override
+  public Uni<Void> createDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
+  {
+    log.debug("✅ (stateless) No specific defaults needed for Enterprise System");
+    return Uni.createFrom().voidItem();
+  }
+
   @Override
   public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {

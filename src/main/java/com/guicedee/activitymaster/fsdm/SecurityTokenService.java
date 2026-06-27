@@ -12,6 +12,8 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.UserGroupSecurityTokenClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.SecurityAccessException;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.security.*;
@@ -409,6 +411,190 @@ public class SecurityTokenService
         //TODO hierarchy updates? i wonder
     }
 
+    // ============================================================================================
+    // Stateless security-bootstrap write primitives. Existence is checked with a scalar getCount();
+    // missing rows are written with session.insert. Prepped reference reads (scalar projection) keep
+    // the @Cacheable entities off the stateless entity-load path.
+    // ============================================================================================
+
+    private Uni<ISecurityToken<?, ?>> findTokenByNameStateless(Mutiny.StatelessSession session, String name, IEnterprise<?, ?> enterprise) {
+        return new SecurityToken().builder(session)
+                .withName(name)
+                .inActiveRange()
+                .inDateRange()
+                .withEnterprise(enterprise)
+                .selectColumn(SecurityToken_.id)
+                .selectColumn(SecurityToken_.securityToken)
+                .selectColumn(SecurityToken_.name)
+                .selectColumn(SecurityToken_.description)
+                .get(Object[].class)
+                .map(row -> {
+                    SecurityToken prepped = new SecurityToken((UUID) row[0], (String) row[1], (String) row[2], (String) row[3], null);
+                    prepped.setEnterpriseID(enterprise);
+                    prepped.setSystemID(null);
+                    prepped.setFake(false);
+                    return (ISecurityToken<?, ?>) prepped;
+                });
+    }
+
+    @Override
+    public Uni<Void> grantAccessToToken(Mutiny.StatelessSession session, ISecurityToken<?, ?> fromToken, ISecurityToken<?, ?> toToken,
+                                        boolean create, boolean update, boolean delete, boolean read, ISystems<?, ?> system) {
+        SecurityTokensSecurityToken sta = new SecurityTokensSecurityToken();
+        var enterprise = system.getEnterprise();
+        return sta.builder(session)
+                .withEnterprise(enterprise)
+                .inActiveRange()
+                .inDateRange()
+                .findBySecurityToken((SecurityToken) fromToken, (SecurityToken) toToken)
+                .getCount()
+                .chain(count -> {
+                    if (count != null && count > 0) {
+                        return Uni.createFrom().voidItem();
+                    }
+                    sta.setSystemID(system);
+                    sta.setOriginalSourceSystemID(system);
+                    sta.setEnterpriseID(enterprise);
+                    sta.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
+                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                    return acService.getActiveFlag(session, enterprise)
+                            .chain(activeFlag -> {
+                                sta.setActiveFlagID(activeFlag);
+                                sta.setSecurityTokenID(fromToken);
+                                sta.setBase((SecurityToken) toToken);
+                                sta.setCreateAllowed(create);
+                                sta.setUpdateAllowed(update);
+                                sta.setDeleteAllowed(delete);
+                                sta.setReadAllowed(read);
+                                return session.insert(sta).replaceWithVoid();
+                            });
+                });
+    }
+
+    @Override
+    public Uni<Void> link(Mutiny.StatelessSession session, ISecurityToken<?, ?> parent, ISecurityToken<?, ?> child, IClassification<?, ?> classification, String... identifyingToken) {
+        SecurityTokenXSecurityToken root = new SecurityTokenXSecurityToken();
+        var enterprise = child.getEnterprise();
+        // The enterprise name is available synchronously on the prepped/created token (its enterprise is
+        // wired at create-time), so no managed lazy resolution is needed for the membership policy.
+        String enterpriseName = enterprise == null ? null : enterprise.getName();
+        try {
+            enforceMembershipPolicy(enterpriseName, parent, child, classification);
+        } catch (SecurityAccessException policyViolation) {
+            log.warn("⛔ (stateless) Rejected security-token link parent '{}' -> child '{}': {}",
+                    parent.getName(), child.getName(), policyViolation.getMessage());
+            return Uni.createFrom().<Void>failure(policyViolation);
+        }
+        return root.builder(session)
+                .withEnterprise(enterprise)
+                .findLink((SecurityToken) parent, (SecurityToken) child, null)
+                .withClassification(classification)
+                .inActiveRange()
+                .inDateRange()
+                .getCount()
+                .chain(count -> {
+                    if (count != null && count > 0) {
+                        return Uni.createFrom().voidItem();
+                    }
+                    root.setParentSecurityTokenID((SecurityToken) parent);
+                    root.setChildSecurityTokenID((SecurityToken) child);
+                    root.setClassificationID(classification);
+                    root.setSystemID(((SecurityToken) parent).getSystemID());
+                    root.setOriginalSourceSystemID(((SecurityToken) parent).getSystemID());
+                    root.setValue(child.getSecurityToken());
+                    root.setEnterpriseID(enterprise);
+                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                    return acService.getActiveFlag(session, enterprise)
+                            .chain(activeFlag -> {
+                                root.setActiveFlagID(activeFlag);
+                                return session.insert(root).replaceWithVoid();
+                            });
+                });
+    }
+
+    @Override
+    public Uni<ISecurityToken<?, ?>> create(Mutiny.StatelessSession session, String classificationValue, String name, String description, ISystems<?, ?> system) {
+        return create(session, classificationValue, name, description, system, null);
+    }
+
+    @Override
+    public Uni<ISecurityToken<?, ?>> create(Mutiny.StatelessSession session, String classificationValue, String name, String description, ISystems<?, ?> system, ISecurityToken<?, ?> parent, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        return classificationService.find(session, classificationValue, system, identityToken)
+                .chain(classification -> findTokenByNameStateless(session, name, enterprise)
+                        .onFailure()
+                        .recoverWithUni(err -> {
+                            SecurityToken st = new SecurityToken();
+                            st.setName(name);
+                            st.setDescription(description);
+                            st.setSecurityToken(UUID.randomUUID().toString());
+                            st.setEnterpriseID(enterprise);
+                            st.setSystemID(((Classification) classification).getSystemID());
+                            st.setOriginalSourceSystemID(((Classification) classification).getSystemID());
+                            st.setSecurityTokenClassificationID((Classification) classification);
+                            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                            return acService.getActiveFlag(session, enterprise)
+                                    .chain(activeFlag -> {
+                                        st.setActiveFlagID(activeFlag);
+                                        return st.builder(session).persist(st)
+                                                .chain(persisted -> resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                                        .chain(tokens -> st.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
+                                                        .onFailure().recoverWithItem(0L)
+                                                        .replaceWith((ISecurityToken<?, ?>) st));
+                                    });
+                        })
+                        .chain(securityToken -> {
+                            if (parent == null) {
+                                return Uni.createFrom().item(securityToken);
+                            }
+                            return link(session, parent, securityToken, classification).replaceWith(securityToken);
+                        }));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<Void> applyDefaultSecurityToTable(Mutiny.StatelessSession session, IWarehouseCoreTable<?, ?, ?, ?> table, ISystems<?, ?> system, UUID... identityToken) {
+        IEnterprise<?, ?> enterprise = system.getEnterprise();
+        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+        WarehouseCoreTable<?, ?, ?, ?> proto = (WarehouseCoreTable<?, ?, ?, ?>) table;
+        return resolveDefaultGroupFolderTokens(session, system, identityToken)
+                .chain(tokens -> acService.getActiveFlag(session, enterprise, identityToken)
+                        .chain(activeFlag -> proto.allInDateRowIds(session)
+                                .chain(ids -> {
+                                    if (ids == null || ids.isEmpty()) {
+                                        return Uni.createFrom().voidItem();
+                                    }
+                                    Uni<Void> chain = Uni.createFrom().voidItem();
+                                    for (Object idObj : ids) {
+                                        final UUID rid = (UUID) idObj;
+                                        chain = chain.chain(() -> {
+                                            WarehouseCoreTable lean = newLeanEntity(table, rid);
+                                            return lean.countDefaultSecurity(session)
+                                                    .chain(cntObj -> {
+                                                        Long cnt = (Long) cntObj;
+                                                        return (cnt != null && cnt > 0L)
+                                                                ? Uni.createFrom().voidItem()
+                                                                : ((IWarehouseCoreTable) lean)
+                                                                .createDefaultSecurity(session, system, enterprise, activeFlag, tokens)
+                                                                .replaceWithVoid();
+                                                    });
+                                        });
+                                    }
+                                    return chain;
+                                })));
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static WarehouseCoreTable newLeanEntity(IWarehouseCoreTable<?, ?, ?, ?> proto, UUID id) {
+        try {
+            WarehouseCoreTable lean = (WarehouseCoreTable) proto.getClass().getDeclaredConstructor().newInstance();
+            ((WarehouseBaseTable) lean).setId(id);
+            return lean;
+        } catch (ReflectiveOperationException ex) {
+            throw new RuntimeException("Cannot instantiate lean entity for " + proto.getClass().getSimpleName(), ex);
+        }
+    }
+
     //@Transactional()
     @Override
     public Uni<Void> moveToken(Mutiny.Session session, ISecurityToken<?, ?> oldParent, ISecurityToken<?, ?> newParent,
@@ -711,6 +897,77 @@ public class SecurityTokenService
                 .get()
                 .onItem()
                 .transform(token -> token);
+    }
+
+    // =============================================================================================
+    // Stateless "fetch ids/scalars + prep" folder/group resolvers. Same filters as the managed
+    // getters above (findFolder + withName + enterprise + ranges), but project the token's OWN scalar
+    // columns (id, securityToken, name, description) and build a DETACHED SecurityToken from its 5-arg
+    // constructor — a scalar multiselect, never an entity result — wiring the enterprise reference from
+    // system.getEnterprise(). These return the pre-resolved tokens consumed by the stateless default-
+    // security insert API, so the canonical grant matrix can be resolved + written on one stateless unit.
+    // =============================================================================================
+
+    private Uni<ISecurityToken<?, ?>> findFolderTokenStateless(Mutiny.StatelessSession session, String folderType,
+                                                               String name, ISystems<?, ?> system, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        return new SecurityToken().builder(session)
+                .findFolder(folderType, system, identityToken)
+                .withName(name)
+                .inActiveRange()
+                .inDateRange()
+                .withEnterprise(enterprise)
+                .selectColumn(SecurityToken_.id)
+                .selectColumn(SecurityToken_.securityToken)
+                .selectColumn(SecurityToken_.name)
+                .selectColumn(SecurityToken_.description)
+                .get(Object[].class)
+                .map(row -> {
+                    SecurityToken prepped = new SecurityToken(
+                            (UUID) row[0],
+                            (String) row[1],
+                            (String) row[2],
+                            (String) row[3],
+                            null);
+                    prepped.setEnterpriseID(enterprise);
+                    prepped.setFake(false);
+                    return (ISecurityToken<?, ?>) prepped;
+                });
+    }
+
+    @Override
+    public Uni<ISecurityToken<?, ?>> getEveryoneGroup(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
+        return findFolderTokenStateless(session, UserGroup.toString(), Everyone.toString(), system, identityToken);
+    }
+
+    @Override
+    public Uni<ISecurityToken<?, ?>> getEverywhereGroup(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
+        return findFolderTokenStateless(session, UserGroup.toString(), Everywhere.toString(), system, identityToken);
+    }
+
+    @Override
+    public Uni<ISecurityToken<?, ?>> getGuestsFolder(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
+        return findFolderTokenStateless(session, UserGroup.toString(), Guests.toString(), system, identityToken);
+    }
+
+    @Override
+    public Uni<ISecurityToken<?, ?>> getAdministratorsFolder(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
+        return findFolderTokenStateless(session, UserGroup.toString(), Administrators.toString(), system, identityToken);
+    }
+
+    @Override
+    public Uni<ISecurityToken<?, ?>> getSystemsFolder(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
+        return findFolderTokenStateless(session, UserGroupSecurityTokenClassifications.System.toString(), System.toString(), system, identityToken);
+    }
+
+    @Override
+    public Uni<ISecurityToken<?, ?>> getPluginsFolder(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
+        return findFolderTokenStateless(session, Plugin.toString(), Plugins.toString(), system, identityToken);
+    }
+
+    @Override
+    public Uni<ISecurityToken<?, ?>> getApplicationsFolder(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
+        return findFolderTokenStateless(session, Application.toString(), Applications.toString(), system, identityToken);
     }
 
     @Override

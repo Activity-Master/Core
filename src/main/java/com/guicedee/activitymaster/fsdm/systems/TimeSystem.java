@@ -121,6 +121,14 @@ public class TimeSystem extends MasterDefaultSystem<TimeSystem>
                .voidItem();
   }
 
+  /** Stateless variant — the Time System loads its dimension data via {@code loadTimeRange}, not {@code createDefaults}. */
+  @Override
+  public Uni<Void> createDefaults(Mutiny.StatelessSession session, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?> enterprise)
+  {
+    log.info("(stateless) Creating TimeSystem defaults (no-op)");
+    return Uni.createFrom().voidItem();
+  }
+
   @Override
   public String getSystemName()
   {

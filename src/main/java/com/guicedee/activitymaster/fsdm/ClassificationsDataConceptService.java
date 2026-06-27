@@ -9,6 +9,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
+import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept_;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.NoResultException;
 import lombok.extern.log4j.Log4j2;
@@ -101,10 +102,66 @@ public class ClassificationsDataConceptService
         return (Uni) session.find(ClassificationDataConcept.class, id);
     }
 
+    /**
+     * Stateless "fetch ids/scalars + prep" variant of {@link #find(Mutiny.Session, String, ISystems, UUID...)}.
+     * {@code ClassificationDataConcept} is {@code @Cacheable} with no eager {@code @ManyToOne}, so projecting
+     * its own scalars ({@code id, name, description}) and building a detached instance is stateless-safe.
+     */
+    public Uni<IClassificationDataConcept<?, ?>> find(Mutiny.StatelessSession session, String name, ISystems<?, ?> system, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        return new ClassificationDataConcept().builder(session)
+                .withEnterprise(enterprise)
+                .inActiveRange()
+                .inDateRange()
+                .withName(name)
+                .selectColumn(ClassificationDataConcept_.id)
+                .selectColumn(ClassificationDataConcept_.name)
+                .selectColumn(ClassificationDataConcept_.description)
+                .get(Object[].class)
+                .map(row -> {
+                    ClassificationDataConcept prepped = new ClassificationDataConcept(
+                            (UUID) row[0], (String) row[1], (String) row[2], null);
+                    prepped.setEnterpriseID(enterprise);
+                    prepped.setFake(false);
+                    return prepped;
+                });
+    }
+
     @Override
     //@CacheResult(cacheName = "NoDataConcept")
     public Uni<IClassificationDataConcept<?, ?>> getNoConcept(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
         return find(session, NoClassificationDataConceptName, system, identityToken);
+    }
+
+    /**
+     * Stateless find-or-create of a {@code ClassificationDataConcept} — prepped existence check, else a
+     * lean insert + the stateless default-security matrix, all on the {@link Mutiny.StatelessSession}.
+     */
+    public Uni<IClassificationDataConcept<?, ?>> createDataConcept(Mutiny.StatelessSession session,
+                                                                   EnterpriseClassificationDataConcepts name,
+                                                                   String description, ISystems<?, ?> system, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        return find(session, name.classificationValue(), system, identityToken)
+                .onFailure()
+                .recoverWithUni(err -> {
+                    ClassificationDataConcept newConcept = new ClassificationDataConcept();
+                    newConcept.setDescription(description);
+                    newConcept.setName(name.classificationValue());
+                    newConcept.setSystemID(system);
+                    newConcept.setOriginalSourceSystemID(system.getId());
+                    newConcept.setEnterpriseID(enterprise);
+                    com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService<?> sts =
+                            com.guicedee.client.IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.class);
+                    return activeFlagService.getActiveFlag(session, enterprise, identityToken)
+                            .chain(activeFlag -> {
+                                newConcept.setActiveFlagID(activeFlag);
+                                return newConcept.builder(session).persist(newConcept)
+                                        .chain(persisted -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                                .chain(tokens -> newConcept.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
+                                                .onFailure().recoverWithItem(0L)
+                                                .replaceWith((IClassificationDataConcept<?, ?>) newConcept));
+                            });
+                });
     }
 
     @Override

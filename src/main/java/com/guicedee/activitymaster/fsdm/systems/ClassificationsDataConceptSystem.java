@@ -99,6 +99,30 @@ public class ClassificationsDataConceptSystem
                 });
     }
 
+    /**
+     * Stateless variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — provisions every
+     * {@link EnterpriseClassificationDataConcepts} value as a data concept on a {@link Mutiny.StatelessSession}
+     * via the stateless find-or-create (each value is, by definition, a data-concept designation). Idempotent.
+     */
+    @Override
+    public Uni<Void> createDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
+        logProgress("Classification Data Concept System", "Checking/Creating Base Concepts (stateless)");
+        log.info("🚀 (stateless) Creating classification data concepts for enterprise: '{}'", enterprise.getName());
+
+        return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+                .chain(system -> {
+                    Uni<Void> chain = Uni.createFrom().voidItem();
+                    for (EnterpriseClassificationDataConcepts concept : EnterpriseClassificationDataConcepts.values()) {
+                        final EnterpriseClassificationDataConcepts ct = concept;
+                        chain = chain.chain(() -> service.createDataConcept(session, ct, ct.classificationValue(), system).replaceWithVoid());
+                    }
+                    return chain;
+                })
+                .invoke(() -> log.info("🎉 (stateless) Completed creation of all classification data concepts"))
+                .onFailure().invoke(error -> log.error("❌ (stateless) Failed to create data concepts: {}", error.getMessage(), error))
+                .replaceWithVoid();
+    }
+
     @Override
     public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
         log.info("🚀 Starting reactive postStartup for Classification Data Concept System");

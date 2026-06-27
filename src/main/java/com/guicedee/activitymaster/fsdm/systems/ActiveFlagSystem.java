@@ -123,6 +123,30 @@ public class ActiveFlagSystem
                .replaceWithVoid();
   }
 
+  /**
+   * Stateless variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — creates every
+   * {@link ActiveFlag} reference row on a {@link Mutiny.StatelessSession} via the stateless find-or-create.
+   */
+  @Override
+  public Uni<Void> createDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
+  {
+    logProgress("Active Flag Service", "Loading Active Flags (stateless)");
+    log.info("🚀 (stateless) Creating active flags for enterprise: '{}'", enterprise.getName());
+
+    Uni<Void> chain = Uni.createFrom().voidItem();
+    for (ActiveFlag activeFlag : ActiveFlag.values())
+    {
+      final ActiveFlag ct = activeFlag;
+      chain = chain.chain(() -> ((ActiveFlagService) activeFlagService)
+                 .create(session, enterprise, ct.name(), ct.getDescription())
+                 .replaceWithVoid());
+    }
+    return chain
+               .invoke(() -> log.info("🎉 (stateless) Successfully created all active flags"))
+               .onFailure().invoke(error -> log.error("❌ (stateless) Error creating active flags: {}", error.getMessage(), error))
+               .replaceWithVoid();
+  }
+
   @Override
   public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {

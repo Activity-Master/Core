@@ -37,9 +37,11 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.classifications.SystemsClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.UserGroupSecurityTokenClassifications;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseRelationshipTable_;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
+import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems_;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsXClassification;
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.client.IGuiceContext;
@@ -92,6 +94,16 @@ public class SystemsService
         return findSystem(session, requestingSystem, ActivityMasterSystemName, identityToken);
     }
 
+    @Override
+    public Uni<UUID> getActivityMasterId(Mutiny.StatelessSession session, IEnterprise<?, ?> requestingSystem, UUID... identityToken) {
+        return findSystemId(session, requestingSystem, ActivityMasterSystemName, identityToken);
+    }
+
+    @Override
+    public Uni<ISystems<?, ?>> getActivityMaster(Mutiny.StatelessSession session, IEnterprise<?, ?> requestingSystem, UUID... identityToken) {
+        return findSystem(session, requestingSystem, ActivityMasterSystemName, identityToken);
+    }
+
     //@Transactional()
     @Override
     public Uni<Boolean> doesSystemExist(Mutiny.Session session, IEnterprise<?, ?> enterprise, String systemName, UUID... identityToken) {
@@ -109,6 +121,26 @@ public class SystemsService
                 });
     }
 
+    @Override
+    public Uni<Boolean> doesSystemExist(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, String systemName, UUID... identityToken) {
+        // Stateless: count only — never hydrate the Systems entity. Systems has EAGER @ManyToOne
+        // associations (enterprise, activeFlag); hydrating it through a stateless criteria query
+        // underflows Hibernate Reactive's LoadContexts stack ("Illegal pop()"). A scalar COUNT avoids
+        // entity result processing entirely.
+        return new Systems().builder(session)
+                .withName(systemName)
+                .withEnterprise(enterprise)
+                .inDateRange()
+                .inActiveRange()
+                .getCount()
+                .map(count -> count != null && count > 0L)
+                .onFailure()
+                .recoverWithUni(t -> {
+                    log.warn("System {} stateless existence check failed: {}", systemName, t.getMessage());
+                    return Uni.createFrom().item(false);
+                });
+    }
+
     //@Transactional()
     //@CacheResult(cacheName = "FindSystemEnterpriseLevel")
     @Override
@@ -119,6 +151,57 @@ public class SystemsService
                 .inDateRange()
                 .inActiveRange()
                 .get();
+    }
+
+    @Override
+    public Uni<UUID> findSystemId(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, String systemName, UUID... identityToken) {
+        // Stateless-safe resolution: project ONLY the PK (a scalar) — never hydrate the Systems entity.
+        // Systems is @Cacheable with EAGER @ManyToOne associations (enterprise, activeFlag); on a
+        // stateless session BOTH entity-load paths fail — a criteria query underflows the LoadContexts
+        // stack ("Illegal pop()"), and session.get(...) trips the L2-cache assembler (it tries to set a
+        // reactive CompletableFuture association into the field). Callers that need a managed Systems
+        // entity must use a Mutiny.Session; stateless callers resolve the id and use it for tokens/FKs.
+        return new Systems().builder(session)
+                .withName(systemName)
+                .withEnterprise(enterprise)
+                .inDateRange()
+                .inActiveRange()
+                .selectColumn(Systems_.id)
+                .get(UUID.class);
+    }
+
+    @Override
+    public Uni<ISystems<?, ?>> findSystem(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, String systemName, UUID... identityToken) {
+        // Stateless "fetch ids/scalars + prep" — the approach that avoids the eager-association trap.
+        // Instead of hydrating the managed Systems entity (which underflows Hibernate Reactive's
+        // LoadContexts on a stateless criteria query, and trips the L2-cache reactive-association
+        // assembler on session.get), we project ONLY the row's OWN scalar columns
+        // (id, name, description, systemHistoryName) — a multiselect of scalars, never an entity result —
+        // and build a fresh DETACHED Systems from its 4-arg constructor. The enterprise reference is
+        // wired from the supplied parameter (already in hand → no extra read); the eager @ManyToOne
+        // associations (enterprise/activeFlag) are intentionally left for the caller to supply where a
+        // managed graph is required. The prepped entity carries exactly the identity + descriptive
+        // columns needed to drive FKs, tokens and logging on the same stateless session.
+        return new Systems().builder(session)
+                .withName(systemName)
+                .withEnterprise(enterprise)
+                .inDateRange()
+                .inActiveRange()
+                .selectColumn(Systems_.id)
+                .selectColumn(Systems_.name)
+                .selectColumn(Systems_.description)
+                .selectColumn(Systems_.systemHistoryName)
+                .get(Object[].class)
+                .map(row -> {
+                    Systems prepped = new Systems(
+                            (UUID) row[0],
+                            (String) row[1],
+                            (String) row[2],
+                            (String) row[3]);
+                    prepped.setEnterpriseID(enterprise);
+                    prepped.setFake(false);
+                    return (ISystems<?, ?>) prepped;
+                });
     }
 
     // UUID-based lookup to leverage L2 cache (@Cacheable on entity + L2 cache enabled)
@@ -152,8 +235,8 @@ public class SystemsService
     @Override
     //@Transactional()
     public Uni<String> registerNewSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> newSystem) {
-        log.info("🚀 Registering new system: '{}' for enterprise: '{}'", newSystem.getName(), enterprise.getName());
-        log.debug("📋 Starting registration with session: {}", session.hashCode());
+        log.info(" Registering new system: '{}' for enterprise: '{}'", newSystem.getName(), enterprise.getName());
+        log.debug(" Starting registration with session: {}", session.hashCode());
 
         // Get the activity master system first, then get the token sequentially
         return getISystem(session, ActivityMasterSystemName, enterprise)
@@ -175,7 +258,7 @@ public class SystemsService
                 .chain(pair -> {
                     ISystems<?, ?> activityMasterSystem = pair.getKey();
                     UUID activityMasterSystemUUID = pair.getValue();
-                    log.debug("📋 Finding classification with session: {}", session.hashCode());
+                    log.debug(" Finding classification with session: {}", session.hashCode());
 
                     // Use the reactive classification service
                     return classificationService.find(
@@ -190,7 +273,7 @@ public class SystemsService
                             .invoke(error -> log.error("❌ Failed to find classification with session {}: {}",
                                     session.hashCode(), error.getMessage(), error))
                             .chain(classification -> {
-                                log.debug("📋 Creating security token for new system with session: {}", session.hashCode());
+                                log.debug(" Creating security token for new system with session: {}", session.hashCode());
                                 // Now that we have the classification, chain the reactive operations
                                 return securityTokenService.create(
                                                 session, UserGroupSecurityTokenClassifications.System.toString(),
@@ -204,7 +287,7 @@ public class SystemsService
                                         .invoke(error -> log.error("❌ Failed to create security token for new system with session {}: {}",
                                                 session.hashCode(), error.getMessage(), error))
                                         .chain(newSystemsSecurityToken -> {
-                                            log.debug("📋 Creating second security token with session: {}", session.hashCode());
+                                            log.debug(" Creating second security token with session: {}", session.hashCode());
                                             // Create second security token (reactive)
                                             return securityTokenService.create(
                                                             session, UserGroupSecurityTokenClassifications.System.toString(),
@@ -218,7 +301,7 @@ public class SystemsService
                                                     .invoke(error -> log.error("❌ Failed to create second security token with session {}: {}",
                                                             session.hashCode(), error.getMessage(), error))
                                                     .chain(systemsToken -> {
-                                                        log.debug("📋 Linking tokens with session: {}", session.hashCode());
+                                                        log.debug(" Linking tokens with session: {}", session.hashCode());
                                                         // Link tokens (reactive)
                                                         return securityTokenService.link(
                                                                         session, systemsToken,
@@ -231,7 +314,7 @@ public class SystemsService
                                                                 .invoke(error -> log.error("❌ Failed to link tokens with session {}: {}",
                                                                         session.hashCode(), error.getMessage(), error))
                                                                 .chain(v -> {
-                                                                    log.debug("📋 Adding classification to new system with session: {}", session.hashCode());
+                                                                    log.debug(" Adding classification to new system with session: {}", session.hashCode());
                                                                     // Add classification to new system - include in chain
                                                                     return newSystem.addOrReuseClassification(
                                                                                     session, SystemsClassifications.SystemIdentity,
@@ -246,7 +329,7 @@ public class SystemsService
                                                                                     session.hashCode(), error.getMessage(), error))
                                                                             // Get security identity token
                                                                             .chain(result -> {
-                                                                                log.debug("📋 Getting security identity token with session: {}", session.hashCode());
+                                                                                log.debug(" Getting security identity token with session: {}", session.hashCode());
                                                                                 return getSecurityIdentityToken(session, newSystem, activityMasterSystemUUID)
                                                                                         .onItem()
                                                                                         .invoke(uuid -> log.debug("✅ Got security identity token: '{}' with session: {}",
@@ -255,7 +338,7 @@ public class SystemsService
                                                                                         .invoke(error -> log.error("❌ Failed to get security identity token with session {}: {}",
                                                                                                 session.hashCode(), error.getMessage(), error))
                                                                                         .chain(newSystemUUID -> {
-                                                                                            log.debug("📋 Creating default security for tokens sequentially with session: {}", session.hashCode());
+                                                                                            log.debug(" Creating default security for tokens sequentially with session: {}", session.hashCode());
 
                                                                                             // Create default security sequentially (first token)
                                                                                             return ((SecurityToken) newSystemsSecurityToken).createDefaultSecurity(
@@ -270,7 +353,7 @@ public class SystemsService
                                                                                                             session.hashCode(), error.getMessage(), error))
                                                                                                     // Then create default security for second token
                                                                                                     .chain(firstSecurityComplete -> {
-                                                                                                        log.debug("📋 Creating default security for second token with session: {}", session.hashCode());
+                                                                                                        log.debug(" Creating default security for second token with session: {}", session.hashCode());
                                                                                                         return ((SecurityToken) systemsToken).createDefaultSecurity(
                                                                                                                         session,
                                                                                                                         activityMasterSystem,
@@ -284,7 +367,7 @@ public class SystemsService
                                                                                                     })
                                                                                                     // Then create involved party
                                                                                                     .chain(secondSecurityComplete -> {
-                                                                                                        log.debug("📋 Creating involved party for new system with session: {}", session.hashCode());
+                                                                                                        log.debug(" Creating involved party for new system with session: {}", session.hashCode());
                                                                                                         // Create involved party and wait for it to complete
                                                                                                         SystemsSystem systemsSystem = IGuiceContext.get(SystemsSystem.class);
                                                                                                         return systemsSystem.createInvolvedPartyForNewSystem(session, newSystem)
@@ -295,7 +378,7 @@ public class SystemsService
                                                                                                                         session.hashCode(), error.getMessage(), error))
                                                                                                                 // Finally return the system UUID as a string
                                                                                                                 .chain(ip -> {
-                                                                                                                    log.info("🎉 Successfully registered new system: '{}' with UUID: '{}'", newSystem.getName(), newSystemUUID);
+                                                                                                                    log.info(" Successfully registered new system: '{}' with UUID: '{}'", newSystem.getName(), newSystemUUID);
                                                                                                                     return Uni.createFrom().item(newSystemUUID.toString());
                                                                                                                 });
                                                                                                     });
@@ -354,6 +437,32 @@ public class SystemsService
                 });
     }
 
+    @Override
+    public Uni<ISystems<?, ?>> create(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, String systemName, String systemDesc, UUID... identityToken) {
+        return create(session, enterprise, systemName, systemDesc, systemName, identityToken);
+    }
+
+    @Override
+    public Uni<ISystems<?, ?>> create(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, String systemName, String systemDesc, String historyName, UUID... identityToken) {
+        // Stateless find-or-create: prepped existence check, else a lean insert of the Systems row.
+        return findSystem(session, enterprise, systemName, identityToken)
+                .onFailure()
+                .recoverWithUni(err -> {
+                    Systems newSystem = new Systems();
+                    newSystem.setName(systemName);
+                    newSystem.setDescription(systemDesc);
+                    newSystem.setSystemHistoryName(historyName);
+                    newSystem.setEnterpriseID(enterprise);
+                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                    return acService.getActiveFlag(session, enterprise, identityToken)
+                            .chain(activeFlag -> {
+                                newSystem.setActiveFlagID(activeFlag);
+                                return newSystem.builder(session).persist(newSystem)
+                                        .replaceWith((ISystems<?, ?>) newSystem);
+                            });
+                });
+    }
+
     //@Transactional()
     //@CacheResult(cacheName = "SystemGetSecurityToken")
     public Uni<ISecurityToken<?, ?>> getSecurityToken(Mutiny.Session session, String uuidIdentity, ISystems<?, ?> system, UUID... identityToken) {
@@ -375,6 +484,23 @@ public class SystemsService
     public Uni<UUID> getSecurityIdentityToken(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
         return system.findClassification(session, SystemIdentity, system, identityToken)
                 .map(IRelationshipValue::getValueAsUUID);
+    }
+
+    @Override
+    public Uni<UUID> getSecurityIdentityToken(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
+        // Stateless: project the SystemIdentity link row's scalar Value column (the token UUID string) —
+        // never hydrate the @Cacheable SystemsXClassification link entity. Composes on the prepped
+        // stateless classification + system; security filters (canRead) are omitted because the install
+        // runs security-disabled and this only reads the stored identity value.
+        var enterprise = system.getEnterprise();
+        return classificationService.find(session, SystemIdentity.toString(), system, identityToken)
+                .chain(identityClassification -> new SystemsXClassification().builder(session)
+                        .findLink((Systems) system, (Classification) identityClassification, null)
+                        .inDateRange()
+                        .withEnterprise(enterprise)
+                        .selectColumn(WarehouseRelationshipTable_.value)
+                        .get(String.class)
+                        .map(UUID::fromString));
     }
 }
 

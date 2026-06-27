@@ -342,6 +342,31 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                 .getCount();
     }
 
+    /**
+     * Stateless variant of {@link #countDefaultSecurity(Mutiny.Session)} — a scalar COUNT of this row's
+     * in-date-range security links (no entity hydration), safe on a {@link Mutiny.StatelessSession}.
+     */
+    public Uni<Long> countDefaultSecurity(Mutiny.StatelessSession session) {
+        S stAdmin = get(findPersistentSecurityClass());
+        QueryBuilderSecurities<?, ?, ?> securities = stAdmin.builder(session);
+        return securities.findLinkedSecurityTokens(this)
+                .inDateRange()
+                .getCount();
+    }
+
+    /**
+     * Projects the ids of all in-date-range rows of this entity's table as a scalar list — no entity
+     * hydration, so it is safe to read an entire {@code @Cacheable} + eager-FK table on a
+     * {@link Mutiny.StatelessSession}. Used by the stateless apply-default-security pass.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<java.util.List<I>> allInDateRowIds(Mutiny.StatelessSession session) {
+        Q b = builder(session);
+        b.inDateRange();
+        b.selectColumn((jakarta.persistence.metamodel.Attribute) b.getAttribute("id"));
+        return (Uni) b.getAll(UUID.class);
+    }
+
     @Override
     public Uni<Boolean> canRead(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
         return hasGrant(session, system, row -> row.isReadAllowed(), identityToken);

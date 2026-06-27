@@ -11,6 +11,8 @@ import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
+import java.util.UUID;
+
 import static com.guicedee.activitymaster.fsdm.client.services.IEventService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.ISystemsService.ActivityMasterSystemName;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
@@ -177,6 +179,39 @@ public class EventsSystem
                .onFailure()
                .invoke(error ->
                            log.error("❌ Failed to create event defaults: {}", error.getMessage(), error))
+               .replaceWithVoid();
+  }
+
+  /**
+   * Stateless end-to-end variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — provisions the
+   * LogItemTypes / EventStatus concept classifications, every {@code LogItemTypes} value under LogItemTypes,
+   * and the LogItem resource-item type, entirely on a {@link Mutiny.StatelessSession}.
+   */
+  @Override
+  public Uni<Void> createDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
+  {
+    logProgress("Loading Events", "Events creating default types (stateless)");
+    log.info("🚀 (stateless) Creating event defaults for enterprise: '{}'", enterprise.getName());
+
+    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+               .chain(activityMasterSystem -> getSystemToken(session, enterprise)
+                   .chain(systemToken -> {
+                     UUID[] tokens = systemToken == null ? new UUID[0] : new UUID[]{systemToken};
+                     return classificationServiceProvider.create(session, "LogItemTypes", "The log item event registered types", Classification, activityMasterSystem, tokens)
+                                .chain(v -> classificationServiceProvider.create(session, "EventStatus", "The status of the event", EventXClassification, activityMasterSystem, tokens))
+                                .chain(v -> {
+                                  Uni<Void> chain = Uni.createFrom().voidItem();
+                                  for (com.guicedee.activitymaster.fsdm.client.services.annotations.LogItemTypes value : com.guicedee.activitymaster.fsdm.client.services.annotations.LogItemTypes.values())
+                                  {
+                                    final com.guicedee.activitymaster.fsdm.client.services.annotations.LogItemTypes ct = value;
+                                    chain = chain.chain(() -> classificationServiceProvider.create(session, ct, activityMasterSystem, "LogItemTypes", tokens).replaceWithVoid());
+                                  }
+                                  return chain;
+                                })
+                                .chain(v -> resourceItemServiceProvider.createType(session, "LogItem", "An attached log item", activityMasterSystem, tokens).replaceWithVoid());
+                   }))
+               .invoke(() -> log.info("✅ (stateless) Successfully created all event defaults"))
+               .onFailure().invoke(error -> log.error("❌ (stateless) Failed to create event defaults: {}", error.getMessage(), error))
                .replaceWithVoid();
   }
 

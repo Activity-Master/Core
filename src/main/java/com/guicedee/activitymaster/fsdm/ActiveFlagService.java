@@ -34,6 +34,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activ
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.cache.NameIdCache;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
+import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag_;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.NoResultException;
@@ -112,6 +113,49 @@ public class ActiveFlagService
                     return af.builder(session)
                             .persist(af).replaceWith(Uni.createFrom().item(af))
                             .call(persisted -> securityFn.apply(af));
+                });
+    }
+
+    /**
+     * Stateless find-or-create of an ActiveFlag reference row (no security is stamped — ActiveFlags are
+     * enterprise-global reference data). Existence is checked with a scalar {@code getCount()}; an existing
+     * flag is returned prepped (scalar projection), otherwise a new row is inserted on the
+     * {@link Mutiny.StatelessSession}.
+     */
+    public Uni<IActiveFlag<?, ?>> create(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, String name, String description, UUID... identifyingToken) {
+        return new ActiveFlag().builder(session)
+                .withName(name)
+                .inDateRange()
+                .withEnterprise(enterprise)
+                .getCount()
+                .chain(count -> {
+                    if (count != null && count > 0) {
+                        return new ActiveFlag().builder(session)
+                                .withName(name)
+                                .inDateRange()
+                                .withEnterprise(enterprise)
+                                .selectColumn(ActiveFlag_.id)
+                                .selectColumn(ActiveFlag_.name)
+                                .selectColumn(ActiveFlag_.description)
+                                .selectColumn(ActiveFlag_.allowAccess)
+                                .get(Object[].class)
+                                .map(row -> {
+                                    boolean allow = row[3] instanceof Boolean b ? b
+                                            : row[3] instanceof Number n ? n.intValue() != 0
+                                            : Boolean.parseBoolean(String.valueOf(row[3]));
+                                    ActiveFlag prepped = new ActiveFlag((UUID) row[0], (String) row[1], allow);
+                                    prepped.setDescription((String) row[2]);
+                                    prepped.setEnterpriseID(enterprise);
+                                    prepped.setFake(false);
+                                    return (IActiveFlag<?, ?>) prepped;
+                                });
+                    }
+                    ActiveFlag af = new ActiveFlag();
+                    af.setName(name);
+                    af.setDescription(description);
+                    af.setAllowAccess(true);
+                    af.setEnterpriseID((Enterprise) enterprise);
+                    return af.builder(session).persist(af).replaceWith((IActiveFlag<?, ?>) af);
                 });
     }
 
@@ -204,6 +248,32 @@ public class ActiveFlagService
     //@CacheResult(cacheName = "GetActiveFlag")
     public Uni<IActiveFlag<?, ?>> getActiveFlag(Mutiny.Session session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
         return findFlagByName(session, com.entityassist.enumerations.ActiveFlag.Active, enterprise, identifyingToken);
+    }
+
+    @Override
+    public Uni<IActiveFlag<?, ?>> getActiveFlag(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+        // Stateless "fetch ids/scalars + prep": ActiveFlag is @Cacheable but its @ManyToOne is LAZY, so only
+        // scalar columns are eager. Project the flag's own scalars (id, name, description, allowAccess) and
+        // build a fresh DETACHED ActiveFlag, wiring the enterprise reference from the supplied parameter.
+        return new ActiveFlag().builder(session)
+                .withName(getNamesForFlags(Set.of(com.entityassist.enumerations.ActiveFlag.Active)))
+                .inDateRange()
+                .withEnterprise(enterprise)
+                .selectColumn(ActiveFlag_.id)
+                .selectColumn(ActiveFlag_.name)
+                .selectColumn(ActiveFlag_.description)
+                .selectColumn(ActiveFlag_.allowAccess)
+                .get(Object[].class)
+                .map(row -> {
+                    boolean allow = row[3] instanceof Boolean b ? b
+                            : row[3] instanceof Number n ? n.intValue() != 0
+                            : Boolean.parseBoolean(String.valueOf(row[3]));
+                    ActiveFlag prepped = new ActiveFlag((UUID) row[0], (String) row[1], allow);
+                    prepped.setDescription((String) row[2]);
+                    prepped.setEnterpriseID(enterprise);
+                    prepped.setFake(false);
+                    return (IActiveFlag<?, ?>) prepped;
+                });
     }
 
     @Override

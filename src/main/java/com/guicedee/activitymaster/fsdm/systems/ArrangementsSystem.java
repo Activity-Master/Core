@@ -68,6 +68,14 @@ public class ArrangementsSystem
                .replaceWithVoid();
   }
 
+  /** Stateless variant — the Arrangements System has no default data to provision. */
+  @Override
+  public Uni<Void> createDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
+  {
+    log.debug("✅ (stateless) No specific defaults needed for Arrangements System");
+    return Uni.createFrom().voidItem();
+  }
+
   @Override
   public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {

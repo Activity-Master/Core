@@ -82,6 +82,14 @@ public class ResourceItemSystem
                .replaceWithVoid();
   }
 
+  /** Stateless variant — the Resource Item System has no default data to provision. */
+  @Override
+  public Uni<Void> createDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
+  {
+    log.debug("✅ (stateless) No specific defaults needed for Resource Item System");
+    return Uni.createFrom().voidItem();
+  }
+
   @Override
   public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {

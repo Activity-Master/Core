@@ -159,7 +159,14 @@ public class Enterprise
 		x.setEnterpriseID(this);
 		return io.smallrye.mutiny.Uni.createFrom().voidItem();
 	}
-	
+
+	@Override
+	public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.StatelessSession session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+	{
+		((EnterpriseXClassification) linkTable).setEnterpriseID(this);
+		return io.smallrye.mutiny.Uni.createFrom().voidItem();
+	}
+
 	@Override
 	public @NotNull boolean isFake()
 	{

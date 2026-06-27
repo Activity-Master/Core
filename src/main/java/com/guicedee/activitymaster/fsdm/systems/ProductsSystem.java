@@ -11,6 +11,8 @@ import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
+import java.util.UUID;
+
 import static com.guicedee.activitymaster.fsdm.client.services.IProductService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.ISystemsService.ActivityMasterSystemName;
 
@@ -160,6 +162,35 @@ public class ProductsSystem
                .invoke(error ->
                            log.error("❌ Failed to create product defaults: {}", error.getMessage(), error))
                .replaceWithVoid();
+  }
+
+  /**
+   * Stateless end-to-end variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — provisions the
+   * full Products classification hierarchy (Products → ProductGroup → ProductTypeName / ProductPremiumType
+   * / ProductBaseCost) entirely on a {@link Mutiny.StatelessSession}, using the prepped system resolution,
+   * the stateless system-identity token, and the parent-aware stateless {@code IClassificationService.create}
+   * (which performs the lean insert, stateless default-security, and the stateless hierarchy {@code addChild}).
+   */
+  @Override
+  public Uni<Void> createDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
+  {
+    logProgress("Products System", "Starting Products Checks (stateless)");
+    log.info("🚀 Creating product defaults on a stateless session for enterprise: '{}'", enterprise.getName());
+
+    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+               .chain(activityMasterSystem -> getSystemToken(session, enterprise)
+                   .chain(systemToken -> {
+                     UUID[] tokens = systemToken == null ? new UUID[0] : new UUID[]{systemToken};
+                     return service.create(session, ProductClassifications.Products, activityMasterSystem, tokens)
+                                .chain(base -> service.create(session, ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products, tokens))
+                                .chain(group -> service.create(session, ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup, tokens))
+                                .chain(typeName -> service.create(session, ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup, tokens))
+                                .chain(premium -> service.create(session, ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup, tokens))
+                                .invoke(v -> logProgress("Products System", "Loaded Product Classifications (stateless)...", 4))
+                                .replaceWithVoid();
+                   }))
+               .onItem().invoke(() -> log.info("✅ (stateless) Successfully created all product defaults"))
+               .onFailure().invoke(error -> log.error("❌ (stateless) Failed to create product defaults: {}", error.getMessage(), error));
   }
 
   @Override

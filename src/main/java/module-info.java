@@ -258,7 +258,7 @@ module com.guicedee.activitymaster.fsdm {
     exports com.guicedee.activitymaster.fsdm.systems;
     opens com.guicedee.activitymaster.fsdm.systems to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy;
 
-    exports com.guicedee.activitymaster.fsdm.db.entities.systems to com.guicedee.activitymaster.geography;
+    exports com.guicedee.activitymaster.fsdm.db.entities.systems to com.guicedee.activitymaster.geography, activity.master.test;
     exports com.guicedee.activitymaster.fsdm.db.entities.enterprise to com.guicedee.activitymaster.geography;
     exports com.guicedee.activitymaster.fsdm.db.entities.classifications to com.guicedee.activitymaster.geography, activity.master.test;
 

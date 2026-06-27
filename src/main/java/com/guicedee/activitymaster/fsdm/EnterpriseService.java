@@ -5,6 +5,7 @@ import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
 import com.guicedee.activitymaster.fsdm.client.services.IPasswordsService;
 import com.guicedee.activitymaster.fsdm.client.services.IRelationshipValue;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
+import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
@@ -79,6 +80,29 @@ public class EnterpriseService
                                     .createFrom()
                                     .item(enterprise));
                 });
+    }
+
+    /**
+     * Find-or-create the lean enterprise record on a {@link Mutiny.StatelessSession}.
+     * <p>
+     * A stateless session has no persistence context, so the insert is a pure JDBC write
+     * (batchable, no dirty-checking). Idempotent: an existing in-date-range enterprise with the
+     * same name is returned instead of inserting a duplicate.
+     */
+    @Override
+    public Uni<IEnterprise<?, ?>> create(Mutiny.StatelessSession session, @NotNull String name, @NotNull String description) {
+        Enterprise enterprise = new Enterprise();
+        enterprise.setName(name);
+        enterprise.setDescription(description);
+        //noinspection unchecked
+        return (Uni) enterprise
+                .builder(session)
+                .withName(name)
+                .get()
+                .onFailure(NoResultException.class)
+                .recoverWithUni(u -> enterprise
+                        .persist(session)
+                        .replaceWith(enterprise));
     }
 
     @Override
@@ -213,6 +237,7 @@ public class EnterpriseService
 
     //@Transactional()
     Uni<Void> performUpdate(Mutiny.Session session, ISystemUpdate o, IEnterprise<?, ?> enterprise) {
+        //todo this must use stateless sessions to perform, and the clients must adapt
         ISystemsService<?> systemsService = com.guicedee.client.IGuiceContext.get(ISystemsService.class);
         return systemsService
                 .getActivityMaster(session, enterprise)
@@ -236,6 +261,7 @@ public class EnterpriseService
                 .invoke(err -> {
                     log.fatal("Unable to perform update - " + o.getClass().getSimpleName(), err);
                 });
+
     }
 
     @Override
@@ -360,12 +386,12 @@ public class EnterpriseService
     @Override
     //@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
     public Uni<IEnterprise<?, ?>> getEnterprise(Mutiny.Session session, String name) {
-        log.trace("📦 Session & transaction started for enterprise lookup: {}", name);
+        log.trace(" Session & transaction started for enterprise lookup: {}", name);
 
         // Try fast-path: resolve by cached UUID so the entity load can leverage 2nd level cache
         UUID cachedId = enterpriseNameToId.get(name);
         if (cachedId != null) {
-            log.trace("🔁 Name->UUID cache hit for '{}': {} — loading by UUID", name, cachedId);
+            log.trace(" Name->UUID cache hit for '{}': {} — loading by UUID", name, cachedId);
             return (Uni) getEnterprise(session, cachedId);
         }
         // Cold path: query by name, then remember the UUID for next calls
@@ -384,7 +410,7 @@ public class EnterpriseService
 
     @Override
     public Uni<IEnterprise<?, ?>> getEnterprise(Mutiny.StatelessSession session, String name) {
-        log.trace("📦 Session & transaction started for enterprise lookup: {}", name);
+        log.trace(" Session & transaction started for enterprise lookup: {}", name);
         // Cold path: query by name, then remember the UUID for next calls
         return (Uni)new Enterprise()
                 .builder(session)
@@ -403,9 +429,38 @@ public class EnterpriseService
     }
 
     @Override
+    public Uni<IEnterprise<?, ?>> getEnterprise(Mutiny.StatelessSession session, UUID uuid) {
+        //noinspection unchecked
+        return (Uni) session.get(Enterprise.class, uuid);
+    }
+
+    @Override
     public Uni<IEnterprise<?, ?>> startNewEnterprise(Mutiny.Session session, String enterpriseName,
                                                      @NotNull String adminUserName, @NotNull String adminPassword) {
         return startNewEnterprise(session, enterpriseName, adminUserName, adminPassword, null);
+    }
+
+    @Override
+    public Uni<IEnterprise<?, ?>> startNewEnterprise(Mutiny.StatelessSession session, String enterpriseName,
+                                                     @NotNull String adminUserName, @NotNull String adminPassword) {
+        return startNewEnterprise(session, enterpriseName, adminUserName, adminPassword, null);
+    }
+
+    @Override
+    public Uni<IEnterprise<?, ?>> startNewEnterprise(Mutiny.StatelessSession session, String enterpriseName,
+                                                     @NotNull String adminUserName, @NotNull String adminPassword, UUID uuidIdentifier) {
+        // Phase 1 (bridge): the deep system install needs a managed persistence context, so the whole
+        // lifecycle is orchestrated on internally-managed stateful sessions. The stateful flow already
+        // creates the enterprise idempotently (find-or-create by name).
+        //
+        // We deliberately do NOT pre-seed the record on the caller's stateless session here: that write
+        // would only commit when the caller's stateless transaction closes — i.e. AFTER this bridged
+        // stateful transaction has already run — so the stateful create could not see it and would
+        // insert a duplicate row. Genuine stateless seeding within the same unit of work is Phase 2.
+        //
+        // This method is a top-level entry point and must not be nested inside another open transaction.
+        return SessionUtils.withSessionTx(sessionFactory, statefulSession ->
+                startNewEnterprise(statefulSession, enterpriseName, adminUserName, adminPassword, uuidIdentifier));
     }
 
     @Override
@@ -483,7 +538,7 @@ public class EnterpriseService
             callScoper.enter();
         }
         try {
-            // 🔓 Disable security before starting
+            //  Disable security before starting
             IGuiceContext
                     .get(ActivityMasterConfiguration.class)
                     .setSecurityEnabled(false);
@@ -521,6 +576,14 @@ public class EnterpriseService
                 callScoper.exit();
             }
         }
+    }
+
+    @Override
+    public Uni<IEnterprise<?, ?>> createNewEnterprise(Mutiny.StatelessSession session, @NotNull IEnterprise<?, ?> enterprise) {
+        // createNewEnterprise self-manages its own sessions/transactions internally for every phase
+        // (create / createBase / createBaseSystems / installSystems each run in their own managed
+        // transaction), so the lifecycle is identical regardless of the caller's session kind.
+        return createNewEnterprise((Mutiny.Session) null, enterprise);
     }
 
     //@Transactional()
@@ -572,17 +635,17 @@ public class EnterpriseService
         logProgress("Installing Systems", "Starting installation process with " + allFilteredSystems.size() + " systems");
 
         // Step 1: Install systems up to but not including EventsSystem
-        log.debug("🔄 Step 1: Installing systems up to but not including EventsSystem");
+        log.debug(" Step 1: Installing systems up to but not including EventsSystem");
         Uni<Void> step1 = installSystemsSequentially(session, filteredBeforeEvents, enterprise, false);
 
         // Step 2: Register all systems up to EventsSystem
         return step1.chain(() -> {
-                    log.debug("🔄 Step 2: Registering all systems up to EventsSystem");
+                    log.debug(" Step 2: Registering all systems up to EventsSystem");
                     return registerSystemsSequentially(session, filteredUpToEvents, enterprise);
                 })
                 // Step 3: Rerun installSystems for all available systems
                 .chain(() -> {
-                    log.debug("🔄 Step 3: Installing all available systems");
+                    log.debug(" Step 3: Installing all available systems");
                     return installSystemsSequentially(session, allFilteredSystems, enterprise, false);
                 })
                 .invoke(v -> log.info("✅ Completed all installation steps for systems"));
@@ -638,7 +701,7 @@ public class EnterpriseService
                 .getClass()
                 .getSimpleName();
         logProgress("Running System", className);
-        log.debug("🚀 Starting single system install: " + className);
+        log.debug(" Starting single system install: " + className);
 
         return performSystemInstall(session, enterprise, system, registerSystem)
                 .invoke(() -> log.debug("✅ System install completed: " + className))
@@ -659,7 +722,7 @@ public class EnterpriseService
         // Get all system installation listeners
         @SuppressWarnings({"rawtypes", "unchecked"})
         Set<IOnSystemInstall> listeners = IGuiceContext.loaderToSet(ServiceLoader.load(IOnSystemInstall.class));
-        log.debug("🔧 Notifying " + listeners.size() + " install listeners for system: " + systemName);
+        log.debug(" Notifying " + listeners.size() + " install listeners for system: " + systemName);
 
         // Process start listeners sequentially
         List<IOnSystemInstall> listenersList = new ArrayList<>(listeners);
@@ -673,7 +736,7 @@ public class EnterpriseService
             startListenersChain = startListenersChain.chain(() -> {
                 try {
                     currentListener.onSystemInstallStart(systemName);
-                    log.trace("🟢 Start: " + currentListener
+                    log.trace(" Start: " + currentListener
                             .getClass()
                             .getSimpleName());
                 } catch (Exception e) {
@@ -691,7 +754,7 @@ public class EnterpriseService
 
         // If registerSystem is true, skip createDefaults and only call registerSystem
         if (false) {
-            log.debug("🔄 Only registering system (skipping createDefaults): " + systemName);
+            log.debug(" Only registering system (skipping createDefaults): " + systemName);
             installChain = installChain.chain(() -> {
                 return registeredSystem
                         .registerSystem(session, enterprise)
@@ -727,7 +790,7 @@ public class EnterpriseService
                         endListenersChain = endListenersChain.chain(() -> {
                             try {
                                 currentListener.onSystemInstallEnd(systemName);
-                                log.trace("🟢 End: " + currentListener
+                                log.trace(" End: " + currentListener
                                         .getClass()
                                         .getSimpleName());
                             } catch (Exception e) {
@@ -763,7 +826,7 @@ public class EnterpriseService
                         .equals(SystemsSystem.class))
                 .toList();
 
-        log.debug("📋 Processing {} base systems sequentially", filtered.size());
+        log.debug(" Processing {} base systems sequentially", filtered.size());
 
         // If no systems to process, return immediately
         if (filtered.isEmpty()) {
@@ -782,7 +845,7 @@ public class EnterpriseService
         for (IMasterSystem<?> system : filtered) {
             final IMasterSystem<?> currentSystem = system; // Create final reference for lambda
             systemsChain = systemsChain.chain(() -> {
-                log.debug("🔄 Installing base system: {}", currentSystem.getSystemName());
+                log.debug(" Installing base system: {}", currentSystem.getSystemName());
                 return performSystemInstall(session, enterprise, currentSystem, false);
             });
         }
@@ -801,7 +864,7 @@ public class EnterpriseService
                 .takeWhile(system -> !SystemsSystem.class.isAssignableFrom(system.getClass()))
                 .toList();
 
-        log.debug("📋 Processing {} core systems sequentially", filtered.size());
+        log.debug(" Processing {} core systems sequentially", filtered.size());
 
         // If no systems to process, return immediately
         if (filtered.isEmpty()) {
@@ -820,7 +883,7 @@ public class EnterpriseService
         for (IMasterSystem<?> system : filtered) {
             final IMasterSystem<?> currentSystem = system; // Create final reference for lambda
             systemsChain = systemsChain.chain(() -> {
-                log.debug("🔄 Installing core system: {}", currentSystem.getSystemName());
+                log.debug(" Installing core system: {}", currentSystem.getSystemName());
                 return performSystemInstall(session, enterprise, currentSystem, false);
             });
         }

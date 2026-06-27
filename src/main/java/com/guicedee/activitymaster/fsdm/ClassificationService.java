@@ -33,9 +33,11 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
+import com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
+import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification_;
@@ -359,5 +361,149 @@ public class ClassificationService
                 .onFailure()
                 .invoke(error ->
                         log.error("❌ Error finding identity type classification: {}", error.getMessage(), error));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Stateless "fetch ids/scalars + prep" resolvers. Classification is @Cacheable with an eager
+    // @ManyToOne concept, so the managed entity cannot be hydrated on a Mutiny.StatelessSession.
+    // These project the row's OWN scalar columns (id, name, description, classificationSequenceNumber)
+    // — a scalar multiselect, never an entity result — and build a fresh DETACHED Classification from
+    // its 4-arg constructor, wiring the enterprise reference from system.getEnterprise() (already in
+    // hand). The eager concept association is intentionally left null.
+    // ---------------------------------------------------------------------------------------------
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Uni<IClassification<?, ?>> find(Mutiny.StatelessSession session, String name, ISystems<?, ?> system, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        return new Classification()
+                .builder(session)
+                .withEnterprise(enterprise)
+                .withName(name)
+                .inActiveRange()
+                .inDateRange()
+                .selectColumn(Classification_.id)
+                .selectColumn(Classification_.name)
+                .selectColumn(Classification_.description)
+                .selectColumn(Classification_.classificationSequenceNumber)
+                .get(Object[].class)
+                .map(row -> {
+                    Classification prepped = new Classification(
+                            (UUID) row[0],
+                            (String) row[1],
+                            (String) row[2],
+                            ((Number) row[3]).intValue());
+                    prepped.setEnterpriseID(enterprise);
+                    prepped.setFake(false);
+                    return (IClassification<?, ?>) prepped;
+                });
+    }
+
+    @Override
+    public Uni<IClassification<?, ?>> getHierarchyType(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
+        return find(session, HierarchyTypeClassification.toString(), system, identityToken);
+    }
+
+    @Override
+    public Uni<IClassification<?, ?>> getNoClassification(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
+        return find(session, NoClassification.toString(), system, identityToken);
+    }
+
+    @Override
+    public Uni<IClassification<?, ?>> getIdentityType(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
+        return find(session, Identity.name(), system, identityToken);
+    }
+
+    /**
+     * Stateless, end-to-end classification create — the write counterpart that lets a system's
+     * {@code createDefaults} run entirely on a {@link Mutiny.StatelessSession}. Idempotent: returns the
+     * existing (prepped) classification if present; otherwise inserts a new row and provisions its default
+     * security, all on the supplied stateless session. It composes the stateless building blocks:
+     * <ul>
+     *   <li>prepped {@link #find(Mutiny.StatelessSession, String, ISystems, UUID...)} existence check;</li>
+     *   <li>prepped data-concept + active-flag FK references (no eager-association hydration);</li>
+     *   <li>a stateless {@code insert} of the lean classification row;</li>
+     *   <li>the stateless default-security matrix via
+     *       {@link ISecurityTokenService#resolveDefaultGroupFolderTokens(Mutiny.StatelessSession, ISystems, UUID...)}
+     *       + {@code createDefaultSecurity(Mutiny.StatelessSession, …)}.</li>
+     * </ul>
+     */
+    @Override
+    public Uni<IClassification<?, ?>> create(Mutiny.StatelessSession session, String name, String description,
+                                             ISystems<?, ?> system, UUID... identityToken) {
+        return create(session, name, description, (EnterpriseClassificationDataConcepts) null, system, (IClassification<?, ?>) null, identityToken);
+    }
+
+    @Override
+    public Uni<IClassification<?, ?>> create(Mutiny.StatelessSession session, String name, String description,
+                                             ISystems<?, ?> system, IClassification<?, ?> parent, UUID... identityToken) {
+        return create(session, name, description, (EnterpriseClassificationDataConcepts) null, system, parent, identityToken);
+    }
+
+    @Override
+    public Uni<IClassification<?, ?>> create(Mutiny.StatelessSession session, String name, String description,
+                                             EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system, UUID... identityToken) {
+        return create(session, name, description, concept, system, (IClassification<?, ?>) null, identityToken);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Uni<IClassification<?, ?>> create(Mutiny.StatelessSession session, String name, String description,
+                                             EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system,
+                                             IClassification<?, ?> parent, UUID... identityToken) {
+        return create(session, name, description, concept, system, (Integer) null, parent, identityToken);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Uni<IClassification<?, ?>> create(Mutiny.StatelessSession session, String name, String description,
+                                             EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system,
+                                             Integer sequenceNumber, IClassification<?, ?> parent, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        // Resolve the data-concept name to project/prep: the supplied concept, or the default "NoClassification".
+        String conceptName = concept != null ? concept.classificationValue() : "NoClassification";
+        return find(session, name, system, identityToken)
+                .onFailure()
+                .recoverWithUni(err -> {
+                    Classification rootCl = new Classification();
+                    rootCl.setName(name);
+                    rootCl.setDescription(description);
+                    rootCl.setClassificationSequenceNumber(sequenceNumber == null ? 1 : sequenceNumber);
+                    rootCl.setSystemID(system);
+                    rootCl.setOriginalSourceSystemID(system.getId());
+                    rootCl.setOriginalSourceSystemUniqueID(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+                    rootCl.setEnterpriseID(enterprise);
+
+                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                    ISecurityTokenService<?> sts = IGuiceContext.get(ISecurityTokenService.class);
+
+                    return dataConceptService.find(session, conceptName, system, identityToken)
+                            .chain(dc -> {
+                                if (dc instanceof ClassificationDataConcept cdc) {
+                                    rootCl.setConcept(cdc);
+                                }
+                                return acService.getActiveFlag(session, enterprise, identityToken);
+                            })
+                            .chain(activeFlag -> {
+                                rootCl.setActiveFlagID((ActiveFlag) activeFlag);
+                                return rootCl.builder(session)
+                                        .persist(rootCl)
+                                        .chain(persisted -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                                .chain(tokens -> rootCl.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
+                                                .onFailure()
+                                                .recoverWithItem(0L)
+                                                .replaceWith((IClassification<?, ?>) rootCl));
+                            });
+                })
+                // Link to the parent hierarchy (idempotent) when a parent is supplied — stateless addChild.
+                .chain(cl -> {
+                    if (parent == null) {
+                        return Uni.createFrom().item(cl);
+                    }
+                    IClassification<Classification, ClassificationQueryBuilder> pp =
+                            (IClassification<Classification, ClassificationQueryBuilder>) parent;
+                    return pp.addChild(session, (Classification) cl, NoClassification.toString(), null, system, identityToken)
+                            .replaceWith(cl);
+                });
     }
 }

@@ -35,12 +35,14 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedPartyIdentificationType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedPartyNameType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedPartyType;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseCoreTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.InvolvedPartyException;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.*;
+import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.InvolvedPartyIdentificationTypeQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
@@ -329,6 +331,224 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                                             .item((IInvolvedPartyType<?, ?>) persisted));
                                         });
                             });
+                });
+    }
+
+    // ============================================================================================
+    // Stateless "fetch ids/scalars + prep" finders + end-to-end creates for the InvolvedParty *Type
+    // reference entities. All three are @Cacheable with no eager @ManyToOne, so a scalar projection of
+    // (id, name, description) + a detached prep is stateless-safe; the creates then do a stateless insert
+    // + the stateless default-security matrix. Mirrors the managed find-or-create methods above.
+    // ============================================================================================
+
+    public Uni<IInvolvedPartyIdentificationType<?, ?>> findInvolvedPartyIdentificationType(Mutiny.StatelessSession session, String idType, ISystems<?, ?> system, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        return new InvolvedPartyIdentificationType().builder(session)
+                .withName(idType)
+                .inActiveRange()
+                .inDateRange()
+                .withEnterprise(enterprise)
+                .selectColumn(InvolvedPartyIdentificationType_.id)
+                .selectColumn(InvolvedPartyIdentificationType_.name)
+                .selectColumn(InvolvedPartyIdentificationType_.description)
+                .get(Object[].class)
+                .map(row -> {
+                    InvolvedPartyIdentificationType prepped = new InvolvedPartyIdentificationType((UUID) row[0], (String) row[1], (String) row[2]);
+                    prepped.setEnterpriseID(enterprise);
+                    prepped.setFake(false);
+                    return (IInvolvedPartyIdentificationType<?, ?>) prepped;
+                });
+    }
+
+    public Uni<IInvolvedPartyNameType<?, ?>> findInvolvedPartyNameType(Mutiny.StatelessSession session, String nameType, ISystems<?, ?> system, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        return new InvolvedPartyNameType().builder(session)
+                .withName(nameType)
+                .inActiveRange()
+                .inDateRange()
+                .withEnterprise(enterprise)
+                .selectColumn(InvolvedPartyNameType_.id)
+                .selectColumn(InvolvedPartyNameType_.name)
+                .selectColumn(InvolvedPartyNameType_.description)
+                .get(Object[].class)
+                .map(row -> {
+                    InvolvedPartyNameType prepped = new InvolvedPartyNameType((UUID) row[0], (String) row[1], (String) row[2]);
+                    prepped.setEnterpriseID(enterprise);
+                    prepped.setFake(false);
+                    return (IInvolvedPartyNameType<?, ?>) prepped;
+                });
+    }
+
+    public Uni<IInvolvedPartyType<?, ?>> findType(Mutiny.StatelessSession session, String nameType, ISystems<?, ?> system, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        return new InvolvedPartyType().builder(session)
+                .withName(nameType)
+                .inActiveRange()
+                .inDateRange()
+                .withEnterprise(enterprise)
+                .selectColumn(InvolvedPartyType_.id)
+                .selectColumn(InvolvedPartyType_.name)
+                .selectColumn(InvolvedPartyType_.description)
+                .get(Object[].class)
+                .map(row -> {
+                    InvolvedPartyType prepped = new InvolvedPartyType((UUID) row[0], (String) row[1], (String) row[2]);
+                    prepped.setEnterpriseID(enterprise);
+                    prepped.setFake(false);
+                    return (IInvolvedPartyType<?, ?>) prepped;
+                });
+    }
+
+    @Override
+    public Uni<IInvolvedPartyIdentificationType<?, ?>> createIdentificationType(Mutiny.StatelessSession session, ISystems<?, ?> system, String name, String description, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        return findInvolvedPartyIdentificationType(session, name, system, identityToken)
+                .onFailure()
+                .recoverWithUni(err -> {
+                    InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
+                    xr.setName(name);
+                    xr.setDescription(description);
+                    xr.setSystemID(system);
+                    xr.setOriginalSourceSystemID(system.getId());
+                    xr.setEnterpriseID(enterprise);
+                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                    ISecurityTokenService<?> sts = IGuiceContext.get(ISecurityTokenService.class);
+                    return acService.getActiveFlag(session, enterprise, identityToken)
+                            .chain(activeFlag -> {
+                                xr.setActiveFlagID(activeFlag);
+                                return xr.builder(session).persist(xr)
+                                        .chain(persisted -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                                .chain(tokens -> xr.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
+                                                .onFailure().recoverWithItem(0L)
+                                                .replaceWith((IInvolvedPartyIdentificationType<?, ?>) xr));
+                            });
+                });
+    }
+
+    @Override
+    public Uni<IInvolvedPartyNameType<?, ?>> createNameType(Mutiny.StatelessSession session, String name, String description, ISystems<?, ?> system, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        return findInvolvedPartyNameType(session, name, system, identityToken)
+                .onFailure()
+                .recoverWithUni(err -> {
+                    InvolvedPartyNameType xr = new InvolvedPartyNameType();
+                    xr.setName(name);
+                    xr.setDescription(description);
+                    xr.setSystemID(system);
+                    xr.setOriginalSourceSystemID(system.getId());
+                    xr.setEnterpriseID(enterprise);
+                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                    ISecurityTokenService<?> sts = IGuiceContext.get(ISecurityTokenService.class);
+                    return acService.getActiveFlag(session, enterprise, identityToken)
+                            .chain(activeFlag -> {
+                                xr.setActiveFlagID(activeFlag);
+                                return xr.builder(session).persist(xr)
+                                        .chain(persisted -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                                .chain(tokens -> xr.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
+                                                .onFailure().recoverWithItem(0L)
+                                                .replaceWith((IInvolvedPartyNameType<?, ?>) xr));
+                            });
+                });
+    }
+
+    @Override
+    public Uni<IInvolvedPartyType<?, ?>> createType(Mutiny.StatelessSession session, ISystems<?, ?> system, String name, String description, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        return findType(session, name, system, identityToken)
+                .onFailure()
+                .recoverWithUni(err -> {
+                    InvolvedPartyType xr = new InvolvedPartyType();
+                    xr.setName(name);
+                    xr.setDescription(description);
+                    xr.setSystemID(system);
+                    xr.setOriginalSourceSystemID(system.getId());
+                    xr.setEnterpriseID(enterprise);
+                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                    ISecurityTokenService<?> sts = IGuiceContext.get(ISecurityTokenService.class);
+                    return acService.getActiveFlag(session, enterprise, identityToken)
+                            .chain(activeFlag -> {
+                                xr.setActiveFlagID(activeFlag);
+                                return xr.builder(session).persist(xr)
+                                        .chain(persisted -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                                .chain(tokens -> xr.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
+                                                .onFailure().recoverWithItem(0L)
+                                                .replaceWith((IInvolvedPartyType<?, ?>) xr));
+                            });
+                });
+    }
+
+    // ============================================================================================
+    // Stateless involved-party create (world-readable default security), mirroring the managed
+    // create(Mutiny.Session, system, key, idTypes, isOrganic, …). Uses session.insert + the stateless
+    // resolveDefaultGroupFolderTokens/createDefaultSecurity path and the stateless addOrReuse* mixins.
+    // The enterprise/system references are taken from the (prepped) system parameter — no managed fetch.
+    // ============================================================================================
+
+    @Override
+    public Uni<IInvolvedParty<?, ?>> create(Mutiny.StatelessSession session, ISystems<?, ?> system, Pair<String, String> idTypes, boolean isOrganic, UUID... identityToken) {
+        return create(session, system, null, idTypes, isOrganic, identityToken);
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IInvolvedParty<?, ?>> create(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID key, Pair<String, String> idTypes, boolean isOrganic, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        final InvolvedParty ip = new InvolvedParty();
+        ip.setEnterpriseID(enterprise);
+        final UUID finalKey = (key == null) ? UUID.randomUUID() : key;
+        ip.setId(finalKey);
+        ip.setSystemID(system);
+        ip.setOriginalSourceSystemID(system.getId());
+
+        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+        ISecurityTokenService<?> sts = IGuiceContext.get(ISecurityTokenService.class);
+        return acService.getActiveFlag(session, enterprise, identityToken)
+                .chain(activeFlag -> {
+                    ip.setActiveFlagID(activeFlag);
+                    return session.insert(ip)
+                            .chain(() -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                    .chain(tokens -> ip.createDefaultSecurity(session, system, enterprise, activeFlag, tokens, identityToken))
+                                    .onFailure().recoverWithItem(0L)
+                                    .replaceWithVoid())
+                            .chain(() -> findInvolvedPartyIdentificationType(session, idTypes.getKey(), system, identityToken)
+                                    .chain(ipIdType -> ip.addOrReuseInvolvedPartyIdentificationType(session, NoClassification.toString(),
+                                            ipIdType, idTypes.getValue(), system, identityToken)))
+                            .chain(() -> setupInvolvedPartyOrganicStatusStateless(session, isOrganic, ip, system, identityToken))
+                            .replaceWith((IInvolvedParty<?, ?>) ip);
+                });
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Uni<Void> setupInvolvedPartyOrganicStatusStateless(Mutiny.StatelessSession session, boolean isOrganic, InvolvedParty ip, ISystems<?, ?> system, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+        ISecurityTokenService<?> sts = IGuiceContext.get(ISecurityTokenService.class);
+        return acService.getActiveFlag(session, enterprise, identityToken)
+                .chain(activeFlag -> {
+                    final IWarehouseCoreTable<?, ?, ?, ?> record;
+                    if (isOrganic) {
+                        InvolvedPartyOrganic ipo = new InvolvedPartyOrganic();
+                        ipo.setInvolvedParty(ip);
+                        ipo.setId(ip.getId());
+                        ipo.setEnterpriseID(enterprise);
+                        ipo.setSystemID(system);
+                        ipo.setOriginalSourceSystemID(system.getId());
+                        ipo.setActiveFlagID(activeFlag);
+                        record = ipo;
+                    } else {
+                        InvolvedPartyNonOrganic ipo = new InvolvedPartyNonOrganic();
+                        ipo.setInvolvedParty(ip);
+                        ipo.setId(ip.getId());
+                        ipo.setEnterpriseID(enterprise);
+                        ipo.setSystemID(system);
+                        ipo.setOriginalSourceSystemID(system.getId());
+                        ipo.setActiveFlagID(activeFlag);
+                        record = ipo;
+                    }
+                    return session.insert(record)
+                            .chain(() -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                    .chain(tokens -> ((IWarehouseCoreTable) record).createDefaultSecurity(session, system, enterprise, activeFlag, tokens, identityToken))
+                                    .onFailure().recoverWithItem(0L)
+                                    .replaceWithVoid());
                 });
     }
 

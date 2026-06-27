@@ -131,6 +131,22 @@ public class SystemsSystem
                 .replaceWithVoid();
     }
 
+    /**
+     * Stateless variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — creates the Enterprise,
+     * Active Flag and Activity Master {@code Systems} rows on a {@link Mutiny.StatelessSession} via the
+     * stateless find-or-create. Idempotent (existing systems are returned, not duplicated).
+     */
+    @Override
+    public Uni<Void> createDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
+        log.info("🚀 (stateless) Registering default systems for enterprise: '{}'", enterprise.getName());
+        return systemsService.create(session, enterprise, EnterpriseSystemName, "The system for handling enterprises")
+                .flatMap(entSystem -> systemsService.create(session, enterprise, ActivateFlagSystemName, "The system for the active flag management"))
+                .flatMap(flagSystem -> systemsService.create(session, enterprise, ActivityMasterSystemName,
+                        "The Core Enterprise Activity Monitoring Application", "Activity Master"))
+                .invoke(() -> log.info("🎉 (stateless) Successfully registered all systems for enterprise: '{}'", enterprise.getName()))
+                .replaceWithVoid();
+    }
+
 
     @Override
     public int totalTasks() {

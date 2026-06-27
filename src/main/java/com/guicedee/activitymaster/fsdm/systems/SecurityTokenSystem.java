@@ -121,6 +121,31 @@ public class SecurityTokenSystem
                 .replaceWithVoid();
     }
 
+    /**
+     * Stateless variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — <strong>bridges</strong>
+     * to the proven stateful security bootstrap on an internally-managed transaction.
+     * <p>
+     * Unlike the domain/infrastructure systems (which were converted to genuinely stateless
+     * {@code createDefaults}), the Security Token System fundamentally requires a managed persistence
+     * context and therefore cannot run on a pure {@link Mutiny.StatelessSession}:
+     * <ul>
+     *   <li>its apply-defaults phases read <em>every row</em> of ~30 {@code @Cacheable} + eager-FK tables
+     *       (ActiveFlag, Systems, Classification, InvolvedParty*, Arrangement*, …) — a stateless session
+     *       cannot hydrate those entities;</li>
+     *   <li>the token-hierarchy <em>membership policy</em> resolves the (bytecode-lazy) enterprise
+     *       association, which needs a managed session;</li>
+     *   <li>it bootstraps the very root/group/folder tokens + access-grant matrix that the stateless
+     *       default-security primitives <em>consume</em> (inherent bootstrap circularity).</li>
+     * </ul>
+     * The bridge mirrors the stateless entry points: do the managed-entity work on a managed session.
+     * Must be invoked as a top-level call (not nested inside another open transaction).
+     */
+    @Override
+    public Uni<Void> createDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
+        log.info("🔐 (stateless→bridge) Security Token System requires a managed context; bridging to the stateful bootstrap for enterprise: '{}'", enterprise.getName());
+        return sessionFactory.withTransaction(statefulSession -> createDefaults(statefulSession, enterprise));
+    }
+
     private Uni<Void> createSecurityDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
         log.info("🔐 Creating security defaults for enterprise: '{}' with session: {}",
                 enterprise.getName(), session.hashCode());

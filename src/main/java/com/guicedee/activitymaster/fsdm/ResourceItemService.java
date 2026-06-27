@@ -143,6 +143,61 @@ public class ResourceItemService
     }
 
     /**
+     * Stateless end-to-end variant of {@link #createType(Mutiny.Session, String, String, ISystems, UUID...)}.
+     * Existence is checked with a scalar {@code getCount()}; a missing type is inserted (id assigned up
+     * front) and secured via the stateless default-security matrix; an existing type is returned as a
+     * prepped detached {@code ResourceItemType} (scalar projection — no eager-association hydration).
+     */
+    @Override
+    public Uni<IResourceItemType<?, ?>> createType(Mutiny.StatelessSession session, String value, String description, ISystems<?, ?> system, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        return new ResourceItemType().builder(session)
+                .withName(value)
+                .inActiveRange()
+                .inDateRange()
+                .withEnterprise(enterprise)
+                .getCount()
+                .chain(count -> {
+                    if (count != null && count > 0) {
+                        return new ResourceItemType().builder(session)
+                                .withName(value)
+                                .inActiveRange()
+                                .inDateRange()
+                                .withEnterprise(enterprise)
+                                .selectColumn(ResourceItemType_.id)
+                                .selectColumn(ResourceItemType_.name)
+                                .selectColumn(ResourceItemType_.description)
+                                .get(Object[].class)
+                                .map(row -> {
+                                    ResourceItemType prepped = new ResourceItemType((UUID) row[0], (String) row[1], (String) row[2]);
+                                    prepped.setEnterpriseID(enterprise);
+                                    prepped.setFake(false);
+                                    return (IResourceItemType<?, ?>) prepped;
+                                });
+                    }
+                    ResourceItemType xr = new ResourceItemType();
+                    xr.setId(UUID.randomUUID());
+                    xr.setName(value);
+                    xr.setDescription(value);
+                    xr.setOriginalSourceSystemID(system.getId());
+                    xr.setSystemID(system);
+                    xr.setEnterpriseID(enterprise);
+                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                    com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService<?> sts =
+                            IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.class);
+                    return acService.getActiveFlag(session, enterprise, identityToken)
+                            .chain(activeFlag -> {
+                                xr.setActiveFlagID(activeFlag);
+                                return xr.builder(session).persist(xr)
+                                        .chain(persisted -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                                .chain(tokens -> xr.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
+                                                .onFailure().recoverWithItem(0L)
+                                                .replaceWith((IResourceItemType<?, ?>) xr));
+                            });
+                });
+    }
+
+    /**
      * Opt-in <strong>scope-restricted</strong> resource-item-type create. Same as
      * {@link #createType(Mutiny.Session, String, UUID, String, ISystems, UUID...)} but secured with the restricted
      * matrix plus a <em>read</em> grant for {@code scopeToken}.

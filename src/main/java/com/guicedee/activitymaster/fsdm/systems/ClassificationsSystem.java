@@ -65,6 +65,38 @@ public class ClassificationsSystem
                 .replaceWithVoid();
     }
 
+    /**
+     * Stateless end-to-end variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — provisions the
+     * foundational classification set (enterprise root, hierarchy type, NoClassification, default, Security
+     * + SystemIdentity / SecurityPassword(/Salt), and the enterprise classifications) entirely on a
+     * {@link Mutiny.StatelessSession} using the concept-/parent-aware stateless {@code IClassificationService.create}.
+     */
+    @Override
+    public Uni<Void> createDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
+        logProgress("Classifications System", "Starting Classifications Creation (stateless)");
+        log.info("🚀 (stateless) Creating classifications for enterprise: '{}'", enterprise.getName());
+        final String entName = enterprise.getName();
+
+        return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+                .chain(system -> service.create(session, entName, entName,
+                                EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, system)
+                        .invoke(v -> logProgress("Classifications System", "Loaded Default Classifications...", 1))
+                        .chain(v -> service.create(session, DefaultClassifications.HierarchyTypeClassification, system))
+                        .chain(v -> service.create(session, DefaultClassifications.NoClassification, system, entName))
+                        .chain(v -> service.create(session, DefaultClassifications.DefaultClassification, system, entName))
+                        .chain(v -> service.create(session, DefaultClassifications.Security, system, entName))
+                        .invoke(v -> logProgress("Classifications System", "Loading Security Classifications...", 1))
+                        .chain(v -> service.create(session, SystemsClassifications.SystemIdentity, system, DefaultClassifications.Security))
+                        .chain(v -> service.create(session, InvolvedPartyClassifications.SecurityPassword, system, DefaultClassifications.Security))
+                        .chain(v -> service.create(session, InvolvedPartyClassifications.SecurityPasswordSalt, system, DefaultClassifications.Security))
+                        .chain(v -> service.create(session, EnterpriseClassifications.LastUpdateDate, system, entName))
+                        .chain(v -> service.create(session, EnterpriseClassifications.UpdateClass, system, entName))
+                        .chain(v -> service.create(session, EnterpriseClassifications.EnterpriseIdentity, system, entName)))
+                .invoke(() -> log.info("🎉 (stateless) All classifications created for enterprise: '{}'", enterprise.getName()))
+                .onFailure().invoke(error -> log.error("❌ (stateless) Failed to create classifications: {}", error.getMessage(), error))
+                .replaceWithVoid();
+    }
+
 
     private Uni<Void> createEnterpriseRootClassification(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
         log.info("🚀 Creating enterprise root classification for enterprise: '{}' with session: {}",
