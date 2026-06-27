@@ -27,9 +27,10 @@ import lombok.extern.log4j.Log4j2;
  * </ul>
  */
 @Log4j2
-public class ActivityMasterMongoModule extends MongoModule<ActivityMasterMongoModule>
-{
-    /** Logical connection name (Guice {@code @Named} qualifier) for the ActivityMaster MongoClient. */
+public class ActivityMasterMongoModule<J extends ActivityMasterMongoModule<J>> extends MongoModule<J> {
+    /**
+     * Logical connection name (Guice {@code @Named} qualifier) for the ActivityMaster MongoClient.
+     */
     public static final String CONNECTION_NAME = "activityMaster";
 
     /**
@@ -38,16 +39,13 @@ public class ActivityMasterMongoModule extends MongoModule<ActivityMasterMongoMo
      *
      * @return {@code true} when a MongoDB connection should be created
      */
-    public static boolean isMongoConfigured()
-    {
+    public static boolean isMongoConfigured() {
         String enabled = Environment.getProperty("MONGO_ENABLED", "");
-        if ("true".equalsIgnoreCase(enabled))
-        {
+        if ("true".equalsIgnoreCase(enabled)) {
             return true;
         }
         String url = Environment.getProperty("MONGO_URL", "");
-        if (url != null && !url.isBlank())
-        {
+        if (url != null && !url.isBlank()) {
             return true;
         }
         String host = Environment.getProperty("MONGO_HOST", "");
@@ -55,50 +53,39 @@ public class ActivityMasterMongoModule extends MongoModule<ActivityMasterMongoMo
     }
 
     @Override
-    public boolean enabled()
-    {
+    public boolean enabled() {
         return isMongoConfigured();
     }
 
     @Override
-    protected MongoConnectionInfo getMongoConnectionInfo()
-    {
+    protected MongoConnectionInfo getMongoConnectionInfo() {
         MongoConnectionInfo info = new MongoConnectionInfo()
                 .setName(CONNECTION_NAME)
                 .setDatabaseName(Environment.getProperty("MONGO_DATABASE", "activitymaster"))
                 .setDefaultConnection(false);
 
         String url = Environment.getProperty("MONGO_URL", "");
-        if (url != null && !url.isBlank())
-        {
+        if (url != null && !url.isBlank()) {
             info.setConnectionString(url);
-        }
-        else
-        {
+        } else {
             info.setHost(Environment.getProperty("MONGO_HOST", "127.0.0.1"));
             String port = Environment.getProperty("MONGO_PORT", "27017");
-            try
-            {
+            try {
                 info.setPort(Integer.parseInt(port.trim()));
-            }
-            catch (NumberFormatException badPort)
-            {
+            } catch (NumberFormatException badPort) {
                 log.warn("Invalid MONGO_PORT '{}' — defaulting to 27017", port);
                 info.setPort(27017);
             }
             String user = Environment.getProperty("MONGO_USERNAME", "");
-            if (user != null && !user.isBlank())
-            {
+            if (user != null && !user.isBlank()) {
                 info.setUsername(user);
             }
             String pass = Environment.getProperty("MONGO_PASSWORD", "");
-            if (pass != null && !pass.isBlank())
-            {
+            if (pass != null && !pass.isBlank()) {
                 info.setPassword(pass);
             }
             String authSource = Environment.getProperty("MONGO_AUTH_SOURCE", "");
-            if (authSource != null && !authSource.isBlank())
-            {
+            if (authSource != null && !authSource.isBlank()) {
                 info.setAuthSource(authSource);
             }
         }
@@ -106,8 +93,7 @@ public class ActivityMasterMongoModule extends MongoModule<ActivityMasterMongoMo
     }
 
     @Override
-    public Integer sortOrder()
-    {
+    public Integer sortOrder() {
         return 25;
     }
 }
