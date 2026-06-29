@@ -67,7 +67,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static com.entityassist.enumerations.Operand.*;
@@ -83,6 +85,10 @@ public class ArrangementsService
         implements IArrangementsService<ArrangementsService> {
     // Local cache: key = enterpriseId + '|' + systemId + '|' + arrangementTypeName → ArrangementType UUID
     private final java.util.Map<String, java.util.UUID> arrangementTypeKeyToId = new java.util.concurrent.ConcurrentHashMap<>();
+
+    // Stateless detached-prepped reference-type cache (arrangement type), keyed by enterpriseId → name.
+    // Safe: detached scalar projection, stable install-time reference types; only cached on a real hit.
+    private static final java.util.Map<UUID, java.util.Map<String, IArrangementType<?, ?>>> STATELESS_ARRANGEMENT_TYPE_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
 
     // UUID-based lookup to leverage Hibernate 2nd-level cache
     public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangementType<?, ?>> getArrangementTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id) {
@@ -235,9 +241,70 @@ public class ArrangementsService
 
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public Uni<IArrangementType<?, ?>> findArrangementType(Mutiny.StatelessSession session, String type, ISystems<?, ?> system, UUID... identityToken) {
+    public Uni<IArrangementType<?, ?>> createArrangementType(Mutiny.StatelessSession session, String type, ISystems<?, ?> system, UUID... identityToken) {
         var enterprise = system.getEnterprise();
         return new ArrangementType().builder(session)
+                .withName(type)
+                .inActiveRange()
+                .inDateRange()
+                .withEnterprise(enterprise)
+                .getCount()
+                .chain(count -> {
+                    if (count != null && count > 0) {
+                        return createArrangementTypeStatelessLookup(session, type, enterprise);
+                    }
+                    ArrangementType xr = new ArrangementType();
+                    xr.setId(UUID.randomUUID());
+                    xr.setName(type);
+                    xr.setDescription(type);
+                    xr.setSystemID(system);
+                    xr.setOriginalSourceSystemID(system.getId());
+                    xr.setEnterpriseID(enterprise);
+                    com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService<?> sts =
+                            com.guicedee.client.IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.class);
+                    return activeFlagService.getActiveFlag(session, enterprise, identityToken)
+                            .chain(activeFlag -> {
+                                xr.setActiveFlagID(activeFlag);
+                                return xr.builder(session).persist(xr)
+                                        .chain(p -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                                .chain(tokens -> xr.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
+                                                .onFailure().recoverWithItem(0L)
+                                                .replaceWith((IArrangementType<?, ?>) xr));
+                            });
+                });
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Uni<IArrangementType<?, ?>> createArrangementTypeStatelessLookup(Mutiny.StatelessSession session, String type,
+                                                                            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?> enterprise) {
+        return new ArrangementType().builder(session)
+                .withName(type)
+                .inActiveRange()
+                .inDateRange()
+                .withEnterprise(enterprise)
+                .selectColumn(com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementType_.id)
+                .selectColumn(com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementType_.name)
+                .selectColumn(com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementType_.description)
+                .get(Object[].class)
+                .map(row -> {
+                    ArrangementType prepped = new ArrangementType((UUID) row[0], (String) row[1], (String) row[2]);
+                    prepped.setEnterpriseID(enterprise);
+                    prepped.setFake(false);
+                    return (IArrangementType<?, ?>) prepped;
+                });
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IArrangementType<?, ?>> findArrangementType(Mutiny.StatelessSession session, String type, ISystems<?, ?> system, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        UUID enterpriseId = enterprise.getId();
+        Map<String, IArrangementType<?, ?>> byName = STATELESS_ARRANGEMENT_TYPE_CACHE.computeIfAbsent(enterpriseId, k -> new ConcurrentHashMap<>());
+        IArrangementType<?, ?> hit = byName.get(type);
+        if (hit != null) {
+            return Uni.createFrom().item((IArrangementType<?, ?>) hit);
+        }
+        Uni<IArrangementType<?, ?>> resolved = new ArrangementType().builder(session)
                 .withName(type)
                 .inActiveRange()
                 .inDateRange()
@@ -253,6 +320,7 @@ public class ArrangementsService
                     prepped.setFake(false);
                     return (IArrangementType<?, ?>) prepped;
                 });
+        return resolved.onItem().invoke(t -> { if (t != null && t.getId() != null) byName.put(type, t); });
     }
 
     @Override

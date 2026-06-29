@@ -26,6 +26,10 @@ public class ClassificationsDataConceptService
         implements IClassificationDataConceptService<ClassificationsDataConceptService> {
     // Using shared NameIdCache via IClassificationDataConceptService.resolveCdcIdByName; no separate local cache needed
 
+    // Stateless detached-prepped reference cache (data concept), keyed by enterpriseId → name.
+    // Safe: detached scalar projection, stable install-time concepts; only cached on a real hit.
+    private static final java.util.Map<UUID, java.util.Map<String, IClassificationDataConcept<?, ?>>> STATELESS_CONCEPT_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
+
     @Inject
     private ActiveFlagService activeFlagService;
 
@@ -109,7 +113,13 @@ public class ClassificationsDataConceptService
      */
     public Uni<IClassificationDataConcept<?, ?>> find(Mutiny.StatelessSession session, String name, ISystems<?, ?> system, UUID... identityToken) {
         var enterprise = system.getEnterprise();
-        return new ClassificationDataConcept().builder(session)
+        UUID enterpriseId = enterprise.getId();
+        java.util.Map<String, IClassificationDataConcept<?, ?>> byName = STATELESS_CONCEPT_CACHE.computeIfAbsent(enterpriseId, k -> new java.util.concurrent.ConcurrentHashMap<>());
+        IClassificationDataConcept<?, ?> hit = byName.get(name);
+        if (hit != null) {
+            return Uni.createFrom().item((IClassificationDataConcept<?, ?>) hit);
+        }
+        Uni<IClassificationDataConcept<?, ?>> resolved = new ClassificationDataConcept().builder(session)
                 .withEnterprise(enterprise)
                 .inActiveRange()
                 .inDateRange()
@@ -123,8 +133,9 @@ public class ClassificationsDataConceptService
                             (UUID) row[0], (String) row[1], (String) row[2], null);
                     prepped.setEnterpriseID(enterprise);
                     prepped.setFake(false);
-                    return prepped;
+                    return (IClassificationDataConcept<?, ?>) prepped;
                 });
+        return resolved.onItem().invoke(t -> { if (t != null && t.getId() != null) byName.put(name, t); });
     }
 
     @Override

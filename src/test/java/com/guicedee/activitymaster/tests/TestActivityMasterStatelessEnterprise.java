@@ -891,6 +891,58 @@ public class TestActivityMasterStatelessEnterprise {
         assertEquals(0L, counts[0], "Stateless updateClassification must retire the old value-A active link");
         assertEquals(1L, counts[1], "Stateless updateClassification must insert a fresh value-B active link");
     }
+
+    /**
+     * Stateless entry-point parity: {@link com.guicedee.activitymaster.fsdm.client.services.SessionUtils#withActivityMasterStateless}
+     * resolves the enterprise, system and the system's <em>own</em> identity token onto a single
+     * {@link Mutiny.StatelessSession} unit of work — matching the stateful {@code withActivityMaster}
+     * baseline. The supplied tuple must carry the same enterprise/system ids and a non-null token.
+     */
+    @Test
+    @Order(26)
+    public void withActivityMasterStateless_resolvesScopedContext() {
+        Object[] resolved = com.guicedee.activitymaster.fsdm.client.services.SessionUtils.<Object[]>withActivityMasterStateless(
+                TestEnterprise.name(), ISystemsService.ActivityMasterSystemName, tuple -> {
+                    Mutiny.StatelessSession session = tuple.getItem1();
+                    IEnterprise<?, ?> ent = tuple.getItem2();
+                    ISystems<?, ?> sys = tuple.getItem3();
+                    UUID[] tokens = tuple.getItem4();
+                    assertNotNull(session, "Stateless withActivityMaster must supply a stateless session");
+                    return Uni.createFrom().item(new Object[]{ent.getId(), sys.getId(),
+                            tokens != null && tokens.length > 0 ? tokens[0] : null});
+                }).await().atMost(Duration.ofMinutes(1));
+
+        assertEquals(enterpriseId, resolved[0], "Stateless withActivityMaster must resolve the same enterprise id");
+        assertEquals(activityMasterSystemId, resolved[1], "Stateless withActivityMaster must resolve the Activity Master system id");
+        assertNotNull(resolved[2], "Stateless withActivityMaster must supply the system's own identity token");
+    }
+
+    /**
+     * Stateless write through {@link com.guicedee.activitymaster.fsdm.client.services.SessionUtils#withSystemAndTokenStateless}:
+     * create a fresh classification entirely inside the stateless scope and assert it is then findable —
+     * proving the managed transaction commits writes on the supplied stateless session.
+     */
+    @Test
+    @Order(27)
+    public void withSystemAndTokenStateless_persistsWrite() {
+        IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
+        final String name = "SlWAM_" + Long.toHexString(System.nanoTime());
+
+        UUID created = com.guicedee.activitymaster.fsdm.client.services.SessionUtils.<UUID>withSystemAndTokenStateless(
+                TestEnterprise.name(), ISystemsService.ActivityMasterSystemName, tuple ->
+                        cs.create(tuple.getItem1(), name, "stateless WAM classification", tuple.getItem3())
+                                .map(c -> (UUID) c.getId())
+        ).await().atMost(Duration.ofMinutes(2));
+
+        assertNotNull(created, "Stateless withSystemAndToken create must assign an id");
+
+        UUID foundId = com.guicedee.activitymaster.fsdm.client.services.SessionUtils.<UUID>withSystemAndTokenStateless(
+                TestEnterprise.name(), ISystemsService.ActivityMasterSystemName, tuple ->
+                        cs.find(tuple.getItem1(), name, tuple.getItem3()).map(c -> (UUID) c.getId())
+        ).await().atMost(Duration.ofMinutes(1));
+
+        assertEquals(created, foundId, "Stateless withSystemAndToken write must commit and be findable");
+    }
 }
 
 

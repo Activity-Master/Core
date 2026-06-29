@@ -81,9 +81,9 @@ public class AddressService
 	{
 		return create(session, addressClassification, null, system, value, identifyingToken);
 	}
-	//@Transactional()
+	
 	@Override
-	////@Transactional()
+	
 	public Uni<IAddress<?, ?>> create(Mutiny.Session session, String addressClassification, UUID key, ISystems<?, ?> system, String value, UUID... identifyingToken)
 	{
 		// Public create — world-readable (public/default security matrix).
@@ -302,7 +302,6 @@ public class AddressService
 	}
 
 	/** Inserts a metadata sub-address (no default security, mirroring the managed web-detail persists). */
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	private Uni<Void> insertSubAddressStateless(Mutiny.StatelessSession session, String classificationName, String value, ISystems<?, ?> system,
 	                                            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?> enterprise, UUID... identityToken)
 	{
@@ -321,7 +320,6 @@ public class AddressService
 						}));
 	}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	private Uni<IAddress<?, ?>> createWithSecurityStateless(Mutiny.StatelessSession session, String addressClassification, UUID key, ISystems<?, ?> system, String value,
 	                                                        boolean scopeRestricted,
 	                                                        com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
@@ -377,9 +375,9 @@ public class AddressService
 						}));
 	}
 
-	//@Transactional()
+	
 	@Override
-	////@Transactional()
+	
 	public Uni<IAddress<?, ?>> addOrFindIPAddress(Mutiny.Session session, String ipAddress, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		if (!ipAddressPattern.matcher(ipAddress)
@@ -441,9 +439,9 @@ public class AddressService
 			                    });
 			        });
 	}
-	//@Transactional()
+	
 	@Override
-	////@Transactional()
+	
 	public Uni<IAddress<?, ?>> addOrFindHostName(Mutiny.Session session, String hostName, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		var enterprise = system.getEnterprise();
@@ -499,9 +497,9 @@ public class AddressService
 			                    });
 			        });
 	}
-	//@Transactional()
+	
 	@Override
-	////@Transactional()
+	
 	public Uni<IAddress<?, ?>> addOrFindWebAddress(Mutiny.Session session, String webAddress, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		var enterprise = system.getEnterprise();
@@ -640,9 +638,9 @@ public class AddressService
 			                    });
 			        });
 	}
-	//@Transactional()
+	
 	@Override
-	////@Transactional()
+	
 	public Uni<IAddress<?, ?>> addOrFindPhoneContact(Mutiny.Session session, String phoneNumber, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		PhoneNumberDTO phoneNumberDTO = new PhoneNumberDTO(phoneNumber);
@@ -730,9 +728,9 @@ public class AddressService
 			            });
 			    });
 	}
-	//@Transactional()
+	
 	@Override
-	////@Transactional()
+	
 	public Uni<IAddress<?, ?>> addOrFindEmailContact(Mutiny.Session session, String emailAddressString, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		String host, user, domain;
@@ -783,7 +781,7 @@ public class AddressService
 			                                        .chain(emailAddressHost -> {
 			                                            return emailAddy.addOrReuseClassification(
 			                                                    session,
-			                                                    ((Classification) emailAddressHost).toString(),
+			                                                    emailAddressHost.getName(),
 			                                                    host,
 			                                                    system,
 			                                                    identityToken);
@@ -828,7 +826,7 @@ public class AddressService
 			            });
 			    });
 	}
-	//@Transactional()
+	
 	@Override
 	public Uni<IRelationshipValue<?, IAddress<?, ?>, ?>> findCellPhoneContact(Mutiny.Session session, IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
@@ -840,9 +838,9 @@ public class AddressService
 					   .map(result->result);
 	}
 
-	//@Transactional()
+
 	@Override
-	////@Transactional()
+	
 	public Uni<IAddress<?, ?>> addOrFindStreetAddress(Mutiny.Session session, String number, String street, String streetType, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		var enterprise = system.getEnterprise();
@@ -929,9 +927,9 @@ public class AddressService
 			            });
 			    });
 	}
-	//@Transactional()
+	
 	@Override
-	////@Transactional()
+	
 	public Uni<IAddress<?, ?>> addOrFindPostalAddress(Mutiny.Session session, String boxIdentifier, String boxNumber, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		var enterprise = system.getEnterprise();

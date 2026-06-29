@@ -79,7 +79,7 @@ public class TimeService<J extends TimeService<J>>
 		return dateTime.toInstant()
 		               .get(ChronoField.MINUTE_OF_HOUR);
 	}
-	//@Transactional()
+	
 	//@CacheResult(cacheName = "TimeDayParts")
 	public Uni<DayParts> getDayPart(Mutiny.StatelessSession session, int hour, int minute)
 	{

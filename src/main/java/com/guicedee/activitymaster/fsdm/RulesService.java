@@ -31,6 +31,10 @@ public class RulesService
 {
 	private final java.util.Map<String, java.util.UUID> rulesTypeKeyToId = new java.util.concurrent.ConcurrentHashMap<>();
 
+	// Stateless detached-prepped reference-type cache (rules type), keyed by enterpriseId → name.
+	// Safe: detached scalar projection, stable install-time reference types; only cached on a real hit.
+	private static final java.util.Map<UUID, java.util.Map<String, IRulesType<?, ?>>> STATELESS_RULES_TYPE_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
+
 	// UUID-based lookup to leverage Hibernate 2nd-level cache
 	public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRulesType<?, ?>> getRulesTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id) {
 		return (io.smallrye.mutiny.Uni) session.find(com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType.class, id);
@@ -289,7 +293,13 @@ public class RulesService
 	public Uni<IRulesType<?, ?>> findRulesTypes(Mutiny.StatelessSession session, String rulesType, ISystems<?, ?> system, UUID... identityToken)
 	{
 		var enterprise = system.getEnterprise();
-		return new RulesType().builder(session)
+		UUID enterpriseId = enterprise.getId();
+		java.util.Map<String, IRulesType<?, ?>> byName = STATELESS_RULES_TYPE_CACHE.computeIfAbsent(enterpriseId, k -> new java.util.concurrent.ConcurrentHashMap<>());
+		IRulesType<?, ?> cachedHit = byName.get(rulesType);
+		if (cachedHit != null) {
+			return Uni.createFrom().item((IRulesType<?, ?>) cachedHit);
+		}
+		Uni<IRulesType<?, ?>> resolved = new RulesType().builder(session)
 				.withName(rulesType)
 				.withEnterprise(enterprise)
 				.inActiveRange()
@@ -304,6 +314,7 @@ public class RulesService
 					prepped.setFake(false);
 					return (IRulesType<?, ?>) prepped;
 				});
+		return resolved.onItem().invoke(t -> { if (t != null && t.getId() != null) byName.put(rulesType, t); });
 	}
 
 	@Override

@@ -43,6 +43,10 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.D
 public class EventsService
         implements IEventService<EventsService>
 {
+    // Stateless detached-prepped reference-type cache (event type), keyed by enterpriseId → name.
+    // Safe: detached scalar projection, stable install-time reference types; only cached on a real hit.
+    private static final Map<UUID, Map<String, IEventType<?, ?>>> STATELESS_EVENT_TYPE_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
+
     @Inject
     private IClassificationService<?> classificationService;
 
@@ -190,11 +194,16 @@ public class EventsService
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public Uni<IEventType<?, ?>> findEventType(Mutiny.StatelessSession session, String eventType, ISystems<?, ?> system, UUID... identityToken)
     {
         var enterprise = system.getEnterprise();
-        return new EventType().builder(session)
+        UUID enterpriseId = enterprise.getId();
+        Map<String, IEventType<?, ?>> byName = STATELESS_EVENT_TYPE_CACHE.computeIfAbsent(enterpriseId, k -> new java.util.concurrent.ConcurrentHashMap<>());
+        IEventType<?, ?> hit = byName.get(eventType);
+        if (hit != null) {
+            return Uni.createFrom().item((IEventType<?, ?>) hit);
+        }
+        Uni<IEventType<?, ?>> resolved = new EventType().builder(session)
                        .withName(eventType)
                        .withEnterprise(enterprise)
                        .inActiveRange()
@@ -210,6 +219,7 @@ public class EventsService
                            prepped.setFake(false);
                            return (IEventType<?, ?>) prepped;
                        });
+        return resolved.onItem().invoke(t -> { if (t != null && t.getId() != null) byName.put(eventType, t); });
     }
 
     // --- Cross-domain searchable queries (EventX<DomainType>) ---

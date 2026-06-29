@@ -58,7 +58,9 @@ import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.entityassist.enumerations.Operand.Equals;
 import static com.entityassist.enumerations.OrderByType.DESC;
@@ -88,6 +90,14 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     private final com.guicedee.activitymaster.fsdm.util.BoundedLruCache<String, java.util.UUID> involvedPartyTypeKeyToId = new com.guicedee.activitymaster.fsdm.util.BoundedLruCache<>(TYPE_MAX);
     private final com.guicedee.activitymaster.fsdm.util.BoundedLruCache<String, java.util.UUID> involvedPartyNameTypeKeyToId = new com.guicedee.activitymaster.fsdm.util.BoundedLruCache<>(NAME_TYPE_MAX);
     private final com.guicedee.activitymaster.fsdm.util.BoundedLruCache<String, java.util.UUID> involvedPartyIdentificationTypeKeyToId = new com.guicedee.activitymaster.fsdm.util.BoundedLruCache<>(IDENT_TYPE_MAX);
+
+    // Stateless detached-prepped reference-type caches (party type / name type / identification type),
+    // keyed by enterpriseId then name. Safe because the stateless finds return fresh DETACHED entities
+    // (scalar projection, no persistence context) and these install-time reference types are stable for
+    // the JVM lifetime. Only cached on a real hit; mutable user rows are not cached.
+    private static final Map<UUID, Map<String, IInvolvedPartyType<?, ?>>> STATELESS_TYPE_CACHE = new ConcurrentHashMap<>();
+    private static final Map<UUID, Map<String, IInvolvedPartyNameType<?, ?>>> STATELESS_NAME_TYPE_CACHE = new ConcurrentHashMap<>();
+    private static final Map<UUID, Map<String, IInvolvedPartyIdentificationType<?, ?>>> STATELESS_IDENT_TYPE_CACHE = new ConcurrentHashMap<>();
 
     // --- Cache configuration helpers & static log ---
     private static long mbToBytes(long mb) {
@@ -343,7 +353,13 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
 
     public Uni<IInvolvedPartyIdentificationType<?, ?>> findInvolvedPartyIdentificationType(Mutiny.StatelessSession session, String idType, ISystems<?, ?> system, UUID... identityToken) {
         var enterprise = system.getEnterprise();
-        return new InvolvedPartyIdentificationType().builder(session)
+        UUID enterpriseId = enterprise.getId();
+        Map<String, IInvolvedPartyIdentificationType<?, ?>> byName = STATELESS_IDENT_TYPE_CACHE.computeIfAbsent(enterpriseId, k -> new ConcurrentHashMap<>());
+        IInvolvedPartyIdentificationType<?, ?> hit = byName.get(idType);
+        if (hit != null) {
+            return Uni.createFrom().item((IInvolvedPartyIdentificationType<?, ?>) hit);
+        }
+        Uni<IInvolvedPartyIdentificationType<?, ?>> resolved = new InvolvedPartyIdentificationType().builder(session)
                 .withName(idType)
                 .inActiveRange()
                 .inDateRange()
@@ -358,11 +374,18 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                     prepped.setFake(false);
                     return (IInvolvedPartyIdentificationType<?, ?>) prepped;
                 });
+        return resolved.onItem().invoke(t -> { if (t != null && t.getId() != null) byName.put(idType, t); });
     }
 
     public Uni<IInvolvedPartyNameType<?, ?>> findInvolvedPartyNameType(Mutiny.StatelessSession session, String nameType, ISystems<?, ?> system, UUID... identityToken) {
         var enterprise = system.getEnterprise();
-        return new InvolvedPartyNameType().builder(session)
+        UUID enterpriseId = enterprise.getId();
+        Map<String, IInvolvedPartyNameType<?, ?>> byName = STATELESS_NAME_TYPE_CACHE.computeIfAbsent(enterpriseId, k -> new ConcurrentHashMap<>());
+        IInvolvedPartyNameType<?, ?> hit = byName.get(nameType);
+        if (hit != null) {
+            return Uni.createFrom().item((IInvolvedPartyNameType<?, ?>) hit);
+        }
+        Uni<IInvolvedPartyNameType<?, ?>> resolved = new InvolvedPartyNameType().builder(session)
                 .withName(nameType)
                 .inActiveRange()
                 .inDateRange()
@@ -377,11 +400,18 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                     prepped.setFake(false);
                     return (IInvolvedPartyNameType<?, ?>) prepped;
                 });
+        return resolved.onItem().invoke(t -> { if (t != null && t.getId() != null) byName.put(nameType, t); });
     }
 
     public Uni<IInvolvedPartyType<?, ?>> findType(Mutiny.StatelessSession session, String nameType, ISystems<?, ?> system, UUID... identityToken) {
         var enterprise = system.getEnterprise();
-        return new InvolvedPartyType().builder(session)
+        UUID enterpriseId = enterprise.getId();
+        Map<String, IInvolvedPartyType<?, ?>> byName = STATELESS_TYPE_CACHE.computeIfAbsent(enterpriseId, k -> new ConcurrentHashMap<>());
+        IInvolvedPartyType<?, ?> hit = byName.get(nameType);
+        if (hit != null) {
+            return Uni.createFrom().item((IInvolvedPartyType<?, ?>) hit);
+        }
+        Uni<IInvolvedPartyType<?, ?>> resolved = new InvolvedPartyType().builder(session)
                 .withName(nameType)
                 .inActiveRange()
                 .inDateRange()
@@ -396,6 +426,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                     prepped.setFake(false);
                     return (IInvolvedPartyType<?, ?>) prepped;
                 });
+        return resolved.onItem().invoke(t -> { if (t != null && t.getId() != null) byName.put(nameType, t); });
     }
 
     @Override

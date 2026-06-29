@@ -62,7 +62,7 @@ public class EnterpriseService
         return new Enterprise();
     }
 
-    //@Transactional()
+    
     public Uni<Enterprise> create(Mutiny.Session session, @NotNull String name, @NotNull String description) {
         Enterprise enterprise = new Enterprise();
         enterprise.setName(name);
@@ -235,7 +235,7 @@ public class EnterpriseService
                 system);
     }
 
-    //@Transactional()
+    
     Uni<Void> performUpdate(Mutiny.Session session, ISystemUpdate o, IEnterprise<?, ?> enterprise) {
         //todo this must use stateless sessions to perform, and the clients must adapt
         ISystemsService<?> systemsService = com.guicedee.client.IGuiceContext.get(ISystemsService.class);
@@ -359,7 +359,7 @@ public class EnterpriseService
         return applicableUpdates;
     }
 
-    //@Transactional()
+    
     @SuppressWarnings("unchecked")
     @Override
     //@CacheResult(cacheName = "FindEnterpriseWithClassifications")
@@ -381,7 +381,7 @@ public class EnterpriseService
 
     }
 
-    //@Transactional()
+    
     @SuppressWarnings("unchecked")
     @Override
     //@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
@@ -420,7 +420,7 @@ public class EnterpriseService
                 .get();
     }
 
-    //@Transactional()
+    
     @Override
     //@CacheResult(cacheName = "GetEnterpriseByEnterpriseByUUID")
     public Uni<IEnterprise<?, ?>> getEnterprise(Mutiny.Session session, UUID uuid) {
@@ -823,7 +823,7 @@ public class EnterpriseService
                 .invoke(err -> log.error("❌ (stateless) Exception during install for: " + system.getSystemName(), err));
     }
 
-    //@Transactional()
+    
     @Override
     public Uni<IEnterprise<?, ?>> isEnterpriseReady(Mutiny.Session session) {
         return getEnterprise(session, applicationEnterpriseName);

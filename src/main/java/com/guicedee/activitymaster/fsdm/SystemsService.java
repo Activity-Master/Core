@@ -104,7 +104,7 @@ public class SystemsService
         return findSystem(session, requestingSystem, ActivityMasterSystemName, identityToken);
     }
 
-    //@Transactional()
+    
     @Override
     public Uni<Boolean> doesSystemExist(Mutiny.Session session, IEnterprise<?, ?> enterprise, String systemName, UUID... identityToken) {
         return new Systems().builder(session)
@@ -141,7 +141,7 @@ public class SystemsService
                 });
     }
 
-    //@Transactional()
+    
     //@CacheResult(cacheName = "FindSystemEnterpriseLevel")
     @Override
     public Uni<ISystems<?, ?>> findSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise, String systemName, UUID... identityToken) {
@@ -210,7 +210,7 @@ public class SystemsService
         return (Uni) session.find(Systems.class, id);
     }
 
-    //@Transactional()
+    
     //@CacheResult(cacheName = "FindSystemByIdentityClassification")
     @Override
     public Uni<ISystems<?, ?>> findSystem(Mutiny.Session session, ISystems<?, ?> requestingSystem, String parentSystem, UUID... identityToken) {
@@ -233,7 +233,7 @@ public class SystemsService
     }
 
     @Override
-    //@Transactional()
+    
     public Uni<String> registerNewSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> newSystem) {
         log.info(" Registering new system: '{}' for enterprise: '{}'", newSystem.getName(), enterprise.getName());
         log.debug(" Starting registration with session: {}", session.hashCode());
@@ -433,7 +433,7 @@ public class SystemsService
     }
 
     @Override
-    //@Transactional()
+    
     public Uni<ISystems<?, ?>> create(Mutiny.Session session, IEnterprise<?, ?> enterprise, String systemName, String systemDesc, String historyName, UUID... identityToken) {
         Systems newSystem = new Systems();
 
@@ -499,7 +499,7 @@ public class SystemsService
                 });
     }
 
-    //@Transactional()
+    
     //@CacheResult(cacheName = "SystemGetSecurityToken")
     public Uni<ISecurityToken<?, ?>> getSecurityToken(Mutiny.Session session, String uuidIdentity, ISystems<?, ?> system, UUID... identityToken) {
         var enterprise = system.getEnterprise();

@@ -48,6 +48,8 @@ import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.util.UUID;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.HierarchyTypeClassification;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification;
@@ -58,6 +60,16 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.S
 @Singleton
 public class ClassificationService
         implements IClassificationService<ClassificationService> {
+
+    /**
+     * Cache of detached, immutable reference-type classifications (Identity, HierarchyType,
+     * NoClassification) resolved on a stateless session, keyed by systemId then classification name.
+     * Safe because stateless {@code find} returns a fresh DETACHED Classification (scalar projection, no
+     * persistence context) and these bootstrap types never change for the JVM lifetime. Mutable,
+     * user-created classifications are intentionally NOT cached (they can be created/archived/updated at
+     * runtime), so only these stable reference types are cached.
+     */
+    private static final Map<UUID, Map<String, IClassification<?, ?>>> REFERENCE_TYPE_CACHE = new ConcurrentHashMap<>();
 
     @Inject
     private ClassificationsDataConceptService dataConceptService;
@@ -99,7 +111,7 @@ public class ClassificationService
     }
 
     @Override
-    //@Transactional()
+    
     public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
                                              ISystems<?, ?> system,
                                              Integer sequenceNumber, IClassification<?, ?> parent, UUID... identityToken) {
@@ -267,7 +279,7 @@ public class ClassificationService
         return find(session, name, null, system, identityToken);
     }
 
-    //@Transactional()
+    
     //@CacheResult(cacheName = "ClassificationFindWithSimpleStringWithConceptValue")
     @Override
     @SuppressWarnings("unchecked")
@@ -340,7 +352,7 @@ public class ClassificationService
                         log.error("❌ Error finding 'NoClassification': {}", error.getMessage(), error));
     }
 
-    //@Transactional()
+    
     //@CacheResult(cacheName = "IdentityTypeClassification")
     @Override
     public Uni<IClassification<?, ?>> getIdentityType(Mutiny.Session session, ISystems<?, ?> system, UUID...
@@ -401,17 +413,36 @@ public class ClassificationService
 
     @Override
     public Uni<IClassification<?, ?>> getHierarchyType(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
-        return find(session, HierarchyTypeClassification.toString(), system, identityToken);
+        return findReferenceType(session, HierarchyTypeClassification.toString(), system, identityToken);
     }
 
     @Override
     public Uni<IClassification<?, ?>> getNoClassification(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
-        return find(session, NoClassification.toString(), system, identityToken);
+        return findReferenceType(session, NoClassification.toString(), system, identityToken);
     }
 
     @Override
     public Uni<IClassification<?, ?>> getIdentityType(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
-        return find(session, Identity.name(), system, identityToken);
+        return findReferenceType(session, Identity.name(), system, identityToken);
+    }
+
+    /**
+     * Cached stateless resolve for the immutable reference-type classifications. Reuses the detached
+     * prepped {@code find} result keyed by systemId → name; only invoked for stable bootstrap types.
+     */
+    private Uni<IClassification<?, ?>> findReferenceType(Mutiny.StatelessSession session, String name, ISystems<?, ?> system, UUID... identityToken) {
+        UUID systemId = system.getId();
+        Map<String, IClassification<?, ?>> byName = REFERENCE_TYPE_CACHE.computeIfAbsent(systemId, k -> new ConcurrentHashMap<>());
+        IClassification<?, ?> cached = byName.get(name);
+        if (cached != null) {
+            return Uni.createFrom().item(cached);
+        }
+        return find(session, name, system, identityToken)
+                .onItem().invoke(cl -> {
+                    if (cl != null && cl.getId() != null) {
+                        byName.put(name, cl);
+                    }
+                });
     }
 
     /**

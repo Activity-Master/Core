@@ -57,6 +57,10 @@ public class ProductService
     // Local cache: key = enterpriseId + '|' + systemId + '|' + productTypeName → ProductType UUID
     private final java.util.Map<String, java.util.UUID> productTypeKeyToId = new java.util.concurrent.ConcurrentHashMap<>();
 
+    // Stateless detached-prepped reference-type cache (product type), keyed by enterpriseId → name.
+    // Safe: detached scalar projection, stable install-time reference types; only cached on a real hit.
+    private static final Map<UUID, Map<String, IProductType<?, ?>>> STATELESS_PRODUCT_TYPE_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
+
     // UUID-based lookup to leverage Hibernate 2nd-level cache
     public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.products.IProductType<?, ?>> getProductTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id) {
         return (io.smallrye.mutiny.Uni) session.find(com.guicedee.activitymaster.fsdm.db.entities.product.ProductType.class, id);
@@ -70,7 +74,7 @@ public class ProductService
         return new Product();
     }
 
-    //@Transactional()
+    
     @Override
     public Uni<IProduct<?, ?>> find(Mutiny.Session session, UUID id) {
         return (Uni) new Product()
@@ -79,7 +83,7 @@ public class ProductService
                 .get();
     }
 
-    //@Transactional()
+    
     @Override
     public Uni<IProductType<?, ?>> findType(Mutiny.Session session, UUID id) {
         return (Uni) new ProductType()
@@ -334,7 +338,13 @@ public class ProductService
     @Override
     public Uni<IProductType<?, ?>> findProductTypeForProduct(Mutiny.StatelessSession session, String productType, ISystems<?, ?> system, UUID... identityToken) {
         var enterprise = system.getEnterprise();
-        return new ProductType().builder(session)
+        UUID enterpriseId = enterprise.getId();
+        Map<String, IProductType<?, ?>> byName = STATELESS_PRODUCT_TYPE_CACHE.computeIfAbsent(enterpriseId, k -> new java.util.concurrent.ConcurrentHashMap<>());
+        IProductType<?, ?> hit = byName.get(productType);
+        if (hit != null) {
+            return Uni.createFrom().item((IProductType<?, ?>) hit);
+        }
+        Uni<IProductType<?, ?>> resolved = new ProductType().builder(session)
                 .withName(productType)
                 .withEnterprise(enterprise)
                 .inActiveRange()
@@ -349,6 +359,7 @@ public class ProductService
                     prepped.setFake(false);
                     return (IProductType<?, ?>) prepped;
                 });
+        return resolved.onItem().invoke(t -> { if (t != null && t.getId() != null) byName.put(productType, t); });
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

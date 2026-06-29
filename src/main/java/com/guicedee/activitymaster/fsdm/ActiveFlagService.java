@@ -41,11 +41,10 @@ import jakarta.persistence.NoResultException;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
-
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Log4j2
@@ -55,6 +54,10 @@ public class ActiveFlagService
     // Local cache: key = enterpriseId + '|' + flagName, value = ActiveFlag UUID
     private final Map<String, UUID> flagKeyToId = new ConcurrentHashMap<>();
 
+    // Stateless detached-prepped reference cache (Active/Archived/Deleted flags), keyed by enterpriseId →
+    // flag name. Safe: detached scalar projection, immutable reference flags; only cached on a real hit.
+    private static final Map<UUID, Map<String, IActiveFlag<?, ?>>> STATELESS_FLAG_CACHE = new ConcurrentHashMap<>();
+
     @Override
     public IActiveFlag<?, ?> get() {
         return new ActiveFlag();
@@ -63,39 +66,42 @@ public class ActiveFlagService
     public Uni<UUID> resolveActiveFlagIdByName(Mutiny.Session session, IEnterprise<?, ?> enterpriseId, String flagName) {
         return NameIdCache
                 .getActiveFlagId(session, enterpriseId.getId(), flagName, (sess, name) -> {
-                    return new ActiveFlag()
-                            .builder(session)
-                            .withName(flagName)
-                            .withEnterprise(enterpriseId)
-                            .inActiveRange(enterpriseId)
-                            .get()
-                            .chain(flag -> {
-                                return Uni.createFrom().item(flag.getId());
-                            });
-                });
+                                     return new ActiveFlag()
+                                             .builder(session)
+                                             .withName(flagName)
+                                             .withEnterprise(enterpriseId)
+                                             .inActiveRange(enterpriseId)
+                                             .get()
+                                             .chain(flag -> {
+                                                 return Uni.createFrom().item(flag.getId());
+                                             });
+                                 }
+                );
     }
 
     @Override
     public Uni<UUID> resolveActiveFlagIdByName(Mutiny.StatelessSession session, IEnterprise<?, ?> enterpriseId, String flagName) {
         return NameIdCache
                 .getActiveFlagId(session, enterpriseId.getId(), flagName, (sess, name) -> {
-                    return new ActiveFlag()
-                            .builder(sess)
-                            .withName(flagName)
-                            .withEnterprise(enterpriseId)
-                            .inActiveRange(enterpriseId)
-                            .get()
-                            .chain(flag -> {
-                                return Uni.createFrom().item(flag.getId());
-                            });
-                });
+                                     return new ActiveFlag()
+                                             .builder(sess)
+                                             .withName(flagName)
+                                             .withEnterprise(enterpriseId)
+                                             .inActiveRange(enterpriseId)
+                                             .get()
+                                             .chain(flag -> {
+                                                 return Uni.createFrom().item(flag.getId());
+                                             });
+                                 }
+                );
     }
 
-    //@Transactional()
+
     public Uni<IActiveFlag<?, ?>> create(Mutiny.Session session, IEnterprise<?, ?> enterprise, String name, String description, UUID... identifyingToken) {
         // Public create — ActiveFlags are enterprise reference data; no per-record security is stamped (unchanged).
         return createWithSecurity(session, enterprise, name, description,
-                af -> Uni.createFrom().nullItem(), identifyingToken);
+                                  af -> Uni.createFrom().nullItem(), identifyingToken
+        );
     }
 
     /**
@@ -112,13 +118,20 @@ public class ActiveFlagService
     public Uni<IActiveFlag<?, ?>> createScopeRestricted(Mutiny.Session session, IEnterprise<?, ?> enterprise, String name, String description,
                                                         com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems<?, ?> system,
                                                         com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
-                                                        UUID... identifyingToken) {
-        return createWithSecurity(session, enterprise, name, description,
-                af -> af.createScopeRestrictedSecurity(session, system, scopeToken, identifyingToken), identifyingToken);
+                                                        UUID... identifyingToken
+    ) {
+        return createWithSecurity(session,
+                                  enterprise,
+                                  name,
+                                  description,
+                                  af -> af.createScopeRestrictedSecurity(session, system, scopeToken, identifyingToken),
+                                  identifyingToken
+        );
     }
 
     private Uni<IActiveFlag<?, ?>> createWithSecurity(Mutiny.Session session, IEnterprise<?, ?> enterprise, String name, String description,
-                                                      java.util.function.Function<ActiveFlag, Uni<?>> securityFn, UUID... identifyingToken) {
+                                                      java.util.function.Function<ActiveFlag, Uni<?>> securityFn, UUID... identifyingToken
+    ) {
         return findFlagByName(session, name, enterprise, identifyingToken)
                 .onFailure(NoResultException.class).recoverWithUni(() -> {
                     ActiveFlag af = new ActiveFlag();
@@ -158,7 +171,7 @@ public class ActiveFlagService
                                 .map(row -> {
                                     boolean allow = row[3] instanceof Boolean b ? b
                                             : row[3] instanceof Number n ? n.intValue() != 0
-                                            : Boolean.parseBoolean(String.valueOf(row[3]));
+                                              : Boolean.parseBoolean(String.valueOf(row[3]));
                                     ActiveFlag prepped = new ActiveFlag((UUID) row[0], (String) row[1], allow);
                                     prepped.setDescription((String) row[2]);
                                     prepped.setEnterpriseID(enterprise);
@@ -176,13 +189,12 @@ public class ActiveFlagService
     }
 
 
-    //@Transactional()
     @Override
     public Uni<IActiveFlag<?, ?>> findFlagByName(Mutiny.Session session, com.entityassist.enumerations.ActiveFlag flag, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
         return findFlagByName(session, flag.name(), enterprise, identifyingToken);
     }
 
-    //@Transactional()
+
     //@CacheResult(cacheName = "FindActiveByName")
     @Override
     public Uni<IActiveFlag<?, ?>> findFlagByName(Mutiny.Session session, String flag, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
@@ -214,14 +226,18 @@ public class ActiveFlagService
         return (Uni) session.find(ActiveFlag.class, id);
     }
 
-    //@Transactional()
+
     @Override
     //@CacheResult(cacheName = "FindActiveFlagRange")
     public Uni<List<IActiveFlag<?, ?>>> findActiveRange(Mutiny.Session session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return (Uni) find(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getActiveRangeAndUp()), enterprise, identifyingToken);
+        return (Uni) find(session,
+                          getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getActiveRangeAndUp()),
+                          enterprise,
+                          identifyingToken
+        );
     }
 
-    //@Transactional()
+
     Uni<List<ActiveFlag>> find(Mutiny.Session session, String[] name, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
         return new ActiveFlag().builder(session)
                 .withName(name)
@@ -239,25 +255,41 @@ public class ActiveFlagService
     @Override
     //@CacheResult(cacheName = "GetVisibleRange")
     public Uni<List<IActiveFlag<?, ?>>> getVisibleRange(Mutiny.Session session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return (Uni) find(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getVisibleRangeAndUp()), enterprise, identifyingToken);
+        return (Uni) find(session,
+                          getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getVisibleRangeAndUp()),
+                          enterprise,
+                          identifyingToken
+        );
     }
 
     @Override
     //@CacheResult
     public Uni<List<IActiveFlag<?, ?>>> getRemovedRange(Mutiny.Session session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return (Uni) find(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getRemovedRange()), enterprise, identifyingToken);
+        return (Uni) find(session,
+                          getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getRemovedRange()),
+                          enterprise,
+                          identifyingToken
+        );
     }
 
     @Override
     //@CacheResult(cacheName = "GetArchivedRange")
     public Uni<List<IActiveFlag<?, ?>>> getArchiveRange(Mutiny.Session session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return (Uni) find(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getArchivedRange()), enterprise, identifyingToken);
+        return (Uni) find(session,
+                          getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getArchivedRange()),
+                          enterprise,
+                          identifyingToken
+        );
     }
 
     @Override
     //@CacheResult(cacheName = "GetHighlightedRange")
     public Uni<List<IActiveFlag<?, ?>>> getHighlightedRange(Mutiny.Session session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return (Uni) find(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getHighlightedRange()), enterprise, identifyingToken);
+        return (Uni) find(session,
+                          getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getHighlightedRange()),
+                          enterprise,
+                          identifyingToken
+        );
     }
 
     @Override
@@ -274,9 +306,20 @@ public class ActiveFlagService
         return findFlagByNameStateless(session, com.entityassist.enumerations.ActiveFlag.Active, enterprise);
     }
 
-    /** Shared stateless scalar-projection + prep for the named flags (Active / Archived / Deleted). */
+    /**
+     * Shared stateless scalar-projection + prep for the named flags (Active / Archived / Deleted).
+     */
     private Uni<IActiveFlag<?, ?>> findFlagByNameStateless(Mutiny.StatelessSession session, com.entityassist.enumerations.ActiveFlag flag, IEnterprise<?, ?> enterprise) {
-        return new ActiveFlag().builder(session)
+        UUID enterpriseId = enterprise.getId();
+        String flagName = flag.name();
+        Map<String, IActiveFlag<?, ?>> byName = STATELESS_FLAG_CACHE.computeIfAbsent(enterpriseId,
+                                                                                     k -> new ConcurrentHashMap<>()
+        );
+        IActiveFlag<?, ?> hit = byName.get(flagName);
+        if (hit != null) {
+            return Uni.createFrom().item((IActiveFlag<?, ?>) hit);
+        }
+        Uni<IActiveFlag<?, ?>> resolved = new ActiveFlag().builder(session)
                 .withName(getNamesForFlags(Set.of(flag)))
                 .inDateRange()
                 .withEnterprise(enterprise)
@@ -288,13 +331,16 @@ public class ActiveFlagService
                 .map(row -> {
                     boolean allow = row[3] instanceof Boolean b ? b
                             : row[3] instanceof Number n ? n.intValue() != 0
-                            : Boolean.parseBoolean(String.valueOf(row[3]));
+                              : Boolean.parseBoolean(String.valueOf(row[3]));
                     ActiveFlag prepped = new ActiveFlag((UUID) row[0], (String) row[1], allow);
                     prepped.setDescription((String) row[2]);
                     prepped.setEnterpriseID(enterprise);
                     prepped.setFake(false);
                     return (IActiveFlag<?, ?>) prepped;
                 });
+        return resolved.onItem().invoke(t -> {
+            if (t != null && t.getId() != null) byName.put(flagName, t);
+        });
     }
 
     @Override

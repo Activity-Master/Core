@@ -82,6 +82,10 @@ import static jakarta.persistence.criteria.JoinType.INNER;
 public class ResourceItemService
         implements IResourceItemService<ResourceItemService> {
 
+    // Stateless detached-prepped reference-type cache (resource item type), keyed by enterpriseId → name.
+    // Safe: detached scalar projection, stable reference types; only cached on a real hit.
+    private static final java.util.Map<UUID, java.util.Map<String, IResourceItemType<?, ?>>> STATELESS_RESOURCE_ITEM_TYPE_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
+
     // UUID-based lookup to leverage Hibernate 2nd-level cache
     public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItemType<?, ?>> getResourceItemTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id) {
         //noinspection unchecked,rawtypes
@@ -792,6 +796,77 @@ public class ResourceItemService
 
     }
 
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IResourceItem<?, ?>> findByUUID(Mutiny.StatelessSession session, UUID uuid) {
+        ResourceItem res = new ResourceItem();
+        return (Uni) res.builder(session)
+                .where(ResourceItem_.id, Equals, uuid)
+                .inActiveRange()
+                .inDateRange()
+                .get();
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IResourceItem<?, ?>> create(Mutiny.StatelessSession session, String identityResourceType, String resourceItemDataValue, byte[] data,
+                                           ISystems<?, ?> system, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+        com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService<?> sts =
+                IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.class);
+        return acService.getActiveFlag(session, enterprise, identityToken)
+                .chain(activeFlag -> {
+                    ResourceItem xr = new ResourceItem();
+                    xr.setId(UUID.randomUUID());
+                    xr.setOriginalSourceSystemID(system.getId());
+                    xr.setEffectiveFromDate(convertToUTCDateTime(RootEntity.getNow()));
+                    xr.setSystemID(system);
+                    xr.setEnterpriseID(enterprise);
+                    xr.setActiveFlagID(activeFlag);
+                    xr.setResourceItemDataType(resourceItemDataValue);
+                    return xr.builder(session).persist(xr).replaceWith(xr).chain(persisted -> {
+                        ResourceItemData rid = new ResourceItemData();
+                        rid.setResource(persisted);
+                        LocalDateTime now = RootEntity.getNow();
+                        rid.setEffectiveFromDate(convertToUTCDateTime(now));
+                        rid.setWarehouseCreatedTimestamp(convertToUTCDateTime(now));
+                        rid.setEffectiveToDate(EndOfTime.atOffset(ZoneOffset.UTC));
+                        rid.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(now));
+                        rid.setActiveFlagID(activeFlag);
+                        rid.setOriginalSourceSystemID(system.getId());
+                        rid.setSystemID(system);
+                        rid.setEnterpriseID(enterprise);
+                        ResourceItemDataValue dataValue = new ResourceItemDataValue();
+                        dataValue.setId(persisted.getId());
+                        dataValue.setData(data == null ? new byte[0] : data);
+                        rid.setDataValue(dataValue);
+                        return session.insert(rid)
+                                .chain(() -> session.insert(rid.getDataValue()))
+                                .chain(() -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                        .chain(tokens -> persisted.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
+                                        .onFailure().recoverWithItem(0L))
+                                .replaceWith((IResourceItem<?, ?>) persisted);
+                    });
+                });
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<Void> updateResourceData(Mutiny.StatelessSession session, byte[] data, UUID resourceItemId) {
+        // Relational stateless update: resolve the data-value id (HQL select), then native UPDATE.
+        return session.createQuery(
+                        "SELECT dv.id FROM ResourceItemData rd JOIN rd.dataValue dv WHERE rd.id = :id OR rd.resource.id = :id", UUID.class)
+                .setParameter("id", resourceItemId)
+                .getSingleResultOrNull()
+                .onItem().ifNotNull().transformToUni(dataValueId -> session.createNativeQuery(
+                                "UPDATE resource.resourceitemdatavalue v SET resourceitemdatavalue = :val WHERE v.resourceitemdatavalueid = :id")
+                        .setParameter("id", dataValueId)
+                        .setParameter("val", data)
+                        .executeUpdate())
+                .replaceWithVoid();
+    }
+
 
     @Override
     public Uni<IResourceItem<?, ?>> findByOriginalSourceUniqueID(Mutiny.Session session, UUID originalSourceUniqueID,
@@ -825,7 +900,13 @@ public class ResourceItemService
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Uni<IResourceItemType<?, ?>> findResourceItemType(Mutiny.StatelessSession session, String type, ISystems<?, ?> system, UUID... identityToken) {
         var enterprise = system.getEnterprise();
-        return new ResourceItemType().builder(session)
+        UUID enterpriseId = enterprise.getId();
+        java.util.Map<String, IResourceItemType<?, ?>> byName = STATELESS_RESOURCE_ITEM_TYPE_CACHE.computeIfAbsent(enterpriseId, k -> new java.util.concurrent.ConcurrentHashMap<>());
+        IResourceItemType<?, ?> hit = byName.get(type);
+        if (hit != null) {
+            return Uni.createFrom().item((IResourceItemType<?, ?>) hit);
+        }
+        Uni<IResourceItemType<?, ?>> resolved = new ResourceItemType().builder(session)
                 .withName(type)
                 .withEnterprise(enterprise)
                 .inActiveRange()
@@ -840,6 +921,7 @@ public class ResourceItemService
                     prepped.setFake(false);
                     return (IResourceItemType<?, ?>) prepped;
                 });
+        return resolved.onItem().invoke(t -> { if (t != null && t.getId() != null) byName.put(type, t); });
     }
 
     @Override

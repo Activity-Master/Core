@@ -207,6 +207,29 @@ public class PasswordsService implements IPasswordsService<PasswordsService> {
 
     @SuppressWarnings("unchecked")
     @Override
+    public Uni<List<IInvolvedParty<?, ?>>> getAllUsers(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
+        // Stateless: project just the party ids (InvolvedParty is @Cacheable+eager → cannot hydrate the entity)
+        // and prep detached parties wired to the enterprise, enough to drive the relationship reads downstream.
+        var enterprise = system.getEnterprise();
+        return new InvolvedParty().builder(session)
+                .findByIdentificationType(IdentificationTypeUserName, null, system, identityToken)
+                .selectColumn(com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty_.id)
+                .getAll(UUID.class)
+                .map(ids -> {
+                    List<IInvolvedParty<?, ?>> parties = new ArrayList<>();
+                    for (UUID id : ids) {
+                        InvolvedParty ip = new InvolvedParty();
+                        ip.setId(id);
+                        ip.setEnterpriseID(enterprise);
+                        ip.setFake(false);
+                        parties.add(ip);
+                    }
+                    return parties;
+                });
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     public Uni<IInvolvedParty<?, ?>> addUpdateUsernamePassword(Mutiny.Session session, String username, String password, IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, UUID... identityToken) {
         log.debug("Adding/updating username and password for involved party: {}", involvedParty.getId());
 
