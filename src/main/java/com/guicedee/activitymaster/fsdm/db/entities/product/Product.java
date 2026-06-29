@@ -308,6 +308,14 @@ public class Product
     }
 
     @Override
+    public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.StatelessSession session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    {
+        ((ProductXClassification) linkTable)
+                .setProductID(this);
+        return io.smallrye.mutiny.Uni.createFrom().voidItem();
+    }
+
+    @Override
     public void configureProductTypeLinkValue(IWarehouseRelationshipTable linkTable, Product primary, IProductType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?, ?> enterprise)
     {
         ProductXProductType pxt = (ProductXProductType) linkTable;

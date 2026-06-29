@@ -360,6 +360,84 @@ public class SystemsSystem
                 .map(involvedParty -> involvedParty);
     }
 
+    /**
+     * Stateless variant of {@link #createInvolvedPartyForNewSystem(Mutiny.Session, ISystems, UUID...)} — provisions
+     * the system's {@code InvolvedParty} (UUID-identification party + identification/party/name-type links) entirely
+     * on a {@link Mutiny.StatelessSession}. It composes the already-stateless pieces: the prepped
+     * {@code getActivityMaster} / {@code getSecurityIdentityToken} reads, the stateless involved-party {@code create},
+     * the prepped {@code findInvolvedParty*Type} finders and the stateless {@code addOrReuseInvolvedParty*} writers.
+     */
+    public Uni<IInvolvedParty<?, ?>> createInvolvedPartyForNewSystem(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
+        log.info("🚀 (stateless) Creating involved party for system: '{}'", system.getName());
+
+        InvolvedPartyService ipService = com.guicedee.client.IGuiceContext.get(InvolvedPartyService.class);
+
+        return systemsService
+                .getActivityMaster(session, system.getEnterpriseID())
+                .chain(activityMasterSystem -> systemsService
+                        .getSecurityIdentityToken(session, activityMasterSystem)
+                        .chain(activityMasterSystemUUID -> systemsService
+                                .getSecurityIdentityToken(session, system, activityMasterSystemUUID)
+                                .chain(newSystemUUID -> {
+                                    if (newSystemUUID == null) {
+                                        log.error("❌ (stateless) No UUID found for newly created system: '{}'", system.getName());
+                                        return Uni.createFrom()
+                                                .<IInvolvedParty<?, ?>>failure(new ActivityMasterException("No UUID for newly created system"));
+                                    }
+                                    return ipService.create(
+                                                    session,
+                                                    system,
+                                                    Pair.of(IdentificationTypes.IdentificationTypeUUID.toString(), newSystemUUID.toString()),
+                                                    false,
+                                                    activityMasterSystemUUID)
+                                            .chain(involvedParty ->
+                                                    // 1. identification type
+                                                    ipService.findInvolvedPartyIdentificationType(
+                                                                    session,
+                                                                    IdentificationTypes.IdentificationTypeSystemID.toString(),
+                                                                    system,
+                                                                    identityToken)
+                                                            .chain(involvedPartyIdentificationType -> involvedParty.addOrReuseInvolvedPartyIdentificationType(
+                                                                    session,
+                                                                    NoClassification.toString(),
+                                                                    involvedPartyIdentificationType,
+                                                                    system.getId().toString(),
+                                                                    system,
+                                                                    activityMasterSystemUUID))
+                                                            // 2. party type
+                                                            .chain(v -> ipService.findType(
+                                                                    session,
+                                                                    IPTypes.TypeSystem.toString(),
+                                                                    system,
+                                                                    identityToken))
+                                                            .chain(ipType -> involvedParty.addOrReuseInvolvedPartyType(
+                                                                    session,
+                                                                    NoClassification.toString(),
+                                                                    ipType,
+                                                                    newSystemUUID.toString(),
+                                                                    system,
+                                                                    activityMasterSystemUUID))
+                                                            // 3. name type
+                                                            .chain(v -> ipService.findInvolvedPartyNameType(
+                                                                    session,
+                                                                    NameTypes.PreferredNameType.toString(),
+                                                                    system,
+                                                                    identityToken))
+                                                            .chain(nameType -> involvedParty.addOrReuseInvolvedPartyNameType(
+                                                                    session,
+                                                                    NoClassification.toString(),
+                                                                    nameType,
+                                                                    system.getName(),
+                                                                    system,
+                                                                    activityMasterSystemUUID))
+                                                            .invoke(() -> log.info("🎉 (stateless) Successfully created involved party for system: '{}'", system.getName()))
+                                                            .replaceWith((IInvolvedParty<?, ?>) involvedParty));
+                                })))
+                .onFailure()
+                .invoke(error -> log.error("💥 (stateless) Failed to build InvolvedParty for system '{}': {}",
+                        system.getName(), error.getMessage(), error));
+    }
+
     @Override
     public Integer sortOrder() {
         return Integer.MIN_VALUE + 2;

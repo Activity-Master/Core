@@ -285,6 +285,28 @@ public class RulesService
 	}
 
 	@Override
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public Uni<IRulesType<?, ?>> findRulesTypes(Mutiny.StatelessSession session, String rulesType, ISystems<?, ?> system, UUID... identityToken)
+	{
+		var enterprise = system.getEnterprise();
+		return new RulesType().builder(session)
+				.withName(rulesType)
+				.withEnterprise(enterprise)
+				.inActiveRange()
+				.inDateRange()
+				.selectColumn(com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType_.id)
+				.selectColumn(com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType_.name)
+				.selectColumn(com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType_.description)
+				.get(Object[].class)
+				.map(row -> {
+					RulesType prepped = new RulesType((UUID) row[0], (String) row[1], (String) row[2]);
+					prepped.setEnterpriseID(enterprise);
+					prepped.setFake(false);
+					return (IRulesType<?, ?>) prepped;
+				});
+	}
+
+	@Override
 	public Uni<List<IRulesType<?, ?>>> findRulesTypes(Mutiny.Session session, String classifications, String value, ISystems<?, ?> system, UUID... identityToken)
 	{
 		var enterprise = system.getEnterprise();

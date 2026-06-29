@@ -237,7 +237,15 @@ public class Address
 		axg.setAddressID(this);
 		return io.smallrye.mutiny.Uni.createFrom().voidItem();
 	}
-	
+
+	@Override
+	public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.StatelessSession session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+	{
+		AddressXClassification axg = (AddressXClassification) linkTable;
+		axg.setAddressID(this);
+		return io.smallrye.mutiny.Uni.createFrom().voidItem();
+	}
+
 	@Override
 	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Address primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> system)
 	{

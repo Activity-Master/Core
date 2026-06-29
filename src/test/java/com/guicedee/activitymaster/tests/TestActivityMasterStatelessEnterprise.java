@@ -225,10 +225,11 @@ public class TestActivityMasterStatelessEnterprise {
 
     /**
      * End-to-end: drive the <strong>entire</strong> start/create-enterprise sequence from a
-     * {@link Mutiny.StatelessSession} entry point. The stateless overload bridges the managed-entity
-     * install onto internally-managed stateful sessions (required because the install creates/reads
-     * {@code @Cacheable} entities with eager associations, which a stateless session cannot hydrate).
-     * The whole process must complete and resolve the provisioned enterprise (idempotent re-run).
+     * {@link Mutiny.StatelessSession} entry point with <strong>no bridge</strong> to a managed session.
+     * Every phase (seed enterprise, register systems, create defaults, admin user, post-startup) runs on
+     * stateless transactions; per-system {@code createDefaults} prefer the stateless overload (falling back
+     * to the managed path only for any not-yet-converted system). The whole process must complete and
+     * resolve the provisioned enterprise (idempotent re-run).
      */
     @Test
     @Order(7)
@@ -715,15 +716,19 @@ public class TestActivityMasterStatelessEnterprise {
     }
 
     /**
-     * Infrastructure system (bridge): {@link SecurityTokenSystem#createDefaults(Mutiny.StatelessSession,
-     * IEnterprise)} is the security bootstrap and genuinely requires a managed context (it reads ~30
-     * {@code @Cacheable}+eager tables and builds the token hierarchy), so its stateless overload bridges to
-     * the proven stateful bootstrap. Invoked top-level via {@code openStatelessSession()} (not nested in a
-     * transaction); afterwards the canonical Administrators folder token must resolve.
+     * Infrastructure system (genuinely stateless — <strong>no bridge</strong>):
+     * {@link SecurityTokenSystem#createDefaults(Mutiny.StatelessSession, IEnterprise)} provisions the entire
+     * security structure (security classifications, the root + group/folder token hierarchy, the full
+     * access-grant matrix, default security for every bootstrap table, and the ActivityMaster involved party)
+     * directly on the supplied {@link Mutiny.StatelessSession} — it no longer bridges to a managed
+     * {@code Mutiny.Session}. Stateless inserts execute immediately (read-your-writes within the same DB
+     * transaction), so the tokens created earlier in the flow are visible to the later apply-defaults phases.
+     * Invoked top-level via {@code openStatelessSession()} (not nested in a transaction); afterwards the
+     * canonical Administrators folder and Everyone group tokens must resolve.
      */
     @Test
     @Order(22)
-    public void securityTokenSystemCreateDefaults_statelessBridge_completes() {
+    public void securityTokenSystemCreateDefaults_statelessNoBridge_completes() {
         IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
         ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
         ISecurityTokenService<?> sts = IGuiceContext.get(ISecurityTokenService.class);
@@ -735,13 +740,17 @@ public class TestActivityMasterStatelessEnterprise {
                         .eventually(stateless::close))
                 .await().atMost(Duration.ofMinutes(3));
 
-        ISecurityToken<?, ?> admin = sessionFactory.withStatelessTransaction(session ->
+        // The canonical group/folder tokens must resolve after the genuinely-stateless bootstrap.
+        Object[] tokens = sessionFactory.withStatelessTransaction(session ->
                 es.getEnterprise(session, TestEnterprise.name())
                         .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
-                        .chain(sys -> sts.getAdministratorsFolder(session, (ISystems<?, ?>) sys))
+                        .chain(sys -> sts.getAdministratorsFolder(session, (ISystems<?, ?>) sys)
+                                .chain(admin -> sts.getEveryoneGroup(session, (ISystems<?, ?>) sys)
+                                        .map(everyone -> new Object[]{admin, everyone})))
         ).await().atMost(Duration.ofMinutes(1));
 
-        assertNotNull(admin, "Administrators folder token must resolve after stateless-bridge SecurityTokenSystem.createDefaults");
+        assertNotNull(tokens[0], "Administrators folder token must resolve after stateless (no-bridge) SecurityTokenSystem.createDefaults");
+        assertNotNull(tokens[1], "Everyone group token must resolve after stateless (no-bridge) SecurityTokenSystem.createDefaults");
     }
 
     /**
@@ -782,6 +791,105 @@ public class TestActivityMasterStatelessEnterprise {
 
         assertEquals(1L, count,
                 "Stateless addOrReuseClassification must insert exactly one link and be idempotent (no duplicate on re-tag)");
+    }
+
+    /**
+     * Stateless SCD close mutation: tag the Activity Master system with a fresh classification, then
+     * {@link com.guicedee.activitymaster.fsdm.client.services.capabilities.IManageClassifications#archiveClassification(Mutiny.StatelessSession, String, String, ISystems, UUID...)}
+     * it — entirely on a {@link Mutiny.StatelessSession}. The active link must be closed via the bulk
+     * {@code UPDATE} retire (archived flag + effective-to date), so the in-active-range count drops to zero.
+     */
+    @Test
+    @Order(24)
+    public void archiveClassification_stateless_closesActiveLink() {
+        IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
+        ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
+        IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
+
+        final String clsName = "SlArchive_" + Long.toHexString(System.nanoTime());
+
+        // Create the classification + tag the Activity Master system with it.
+        sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> cs.create(session, clsName, clsName, (ISystems<?, ?>) sys)
+                                .chain(cl -> sys.addOrReuseClassification(session, clsName, sys.getId().toString(), (ISystems<?, ?>) sys)))
+        ).await().atMost(Duration.ofMinutes(2));
+
+        Long before = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> sys.numberOfClassifications(session, clsName, sys.getId().toString(), (ISystems<?, ?>) sys))
+        ).await().atMost(Duration.ofMinutes(1));
+        assertEquals(1L, before, "Active tag link must exist before archive");
+
+        // Archive (close) the active link on a stateless session.
+        sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> sys.archiveClassification(session, clsName, sys.getId().toString(), (ISystems<?, ?>) sys))
+        ).await().atMost(Duration.ofMinutes(1));
+
+        Long after = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> sys.numberOfClassifications(session, clsName, sys.getId().toString(), (ISystems<?, ?>) sys))
+        ).await().atMost(Duration.ofMinutes(1));
+
+        assertEquals(0L, after,
+                "Stateless archiveClassification must close the active link (in-active-range count drops to zero)");
+    }
+
+    /**
+     * Stateless SCD update (retire + reinsert): tag the Activity Master system, then
+     * {@link com.guicedee.activitymaster.fsdm.client.services.capabilities.IManageClassifications#updateClassification(Mutiny.StatelessSession, String, String, ISystems, UUID...)}
+     * the link to a new value — entirely on a {@link Mutiny.StatelessSession}. This exercises the stateless
+     * {@code retireActiveRow} (full-row {@code session.update}) + reinsert path: the old value's active link
+     * must be retired (count 1→0) and a fresh active link inserted for the new value (count 0→1).
+     */
+    @Test
+    @Order(25)
+    public void updateClassification_stateless_retiresAndReinserts() {
+        IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
+        ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
+        IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
+
+        final String clsName = "SlUpdate_" + Long.toHexString(System.nanoTime());
+        final String valA = "valA_" + Long.toHexString(System.nanoTime());
+        final String valB = "valB_" + Long.toHexString(System.nanoTime());
+
+        // Create the classification + tag the system with value A.
+        sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> cs.create(session, clsName, clsName, (ISystems<?, ?>) sys)
+                                .chain(cl -> sys.addOrReuseClassification(session, clsName, valA, (ISystems<?, ?>) sys)))
+        ).await().atMost(Duration.ofMinutes(2));
+
+        Long aBefore = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> sys.numberOfClassifications(session, clsName, valA, (ISystems<?, ?>) sys))
+        ).await().atMost(Duration.ofMinutes(1));
+        assertEquals(1L, aBefore, "Value-A link must exist before update");
+
+        // Update the link to value B (retire A, insert B) on a stateless session.
+        sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> sys.updateClassification(session, clsName, valB, (ISystems<?, ?>) sys))
+        ).await().atMost(Duration.ofMinutes(1));
+
+        Object[] counts = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> sys.numberOfClassifications(session, clsName, valA, (ISystems<?, ?>) sys)
+                                .chain(a -> sys.numberOfClassifications(session, clsName, valB, (ISystems<?, ?>) sys)
+                                        .map(b -> new Object[]{a, b})))
+        ).await().atMost(Duration.ofMinutes(1));
+
+        assertEquals(0L, counts[0], "Stateless updateClassification must retire the old value-A active link");
+        assertEquals(1L, counts[1], "Stateless updateClassification must insert a fresh value-B active link");
     }
 }
 

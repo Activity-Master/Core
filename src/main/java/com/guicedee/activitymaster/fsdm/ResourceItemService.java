@@ -822,6 +822,27 @@ public class ResourceItemService
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IResourceItemType<?, ?>> findResourceItemType(Mutiny.StatelessSession session, String type, ISystems<?, ?> system, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        return new ResourceItemType().builder(session)
+                .withName(type)
+                .withEnterprise(enterprise)
+                .inActiveRange()
+                .inDateRange()
+                .selectColumn(com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemType_.id)
+                .selectColumn(com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemType_.name)
+                .selectColumn(com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemType_.description)
+                .get(Object[].class)
+                .map(row -> {
+                    ResourceItemType prepped = new ResourceItemType((UUID) row[0], (String) row[1], (String) row[2]);
+                    prepped.setEnterpriseID(enterprise);
+                    prepped.setFake(false);
+                    return (IResourceItemType<?, ?>) prepped;
+                });
+    }
+
+    @Override
     public Uni<List<IResourceItem<?, ?>>> findByResourceItemType(Mutiny.Session session, String type, ISystems<?, ?> systems, UUID... identityToken) {
         log.trace("Finding resources by type: {}", type);
         return findByResourceItemType(session, type, null, systems, identityToken);

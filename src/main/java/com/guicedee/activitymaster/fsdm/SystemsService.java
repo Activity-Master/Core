@@ -392,6 +392,42 @@ public class SystemsService
     }
 
     @Override
+    public Uni<String> registerNewSystem(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, ISystems<?, ?> newSystem) {
+        log.info("(stateless) Registering new system: '{}' for enterprise: '{}'", newSystem.getName(), enterprise.getName());
+
+        return getActivityMaster(session, enterprise)
+                .chain(activityMasterSystem -> getSecurityIdentityToken(session, activityMasterSystem)
+                        .chain(activityMasterSystemUUID -> classificationService.find(session,
+                                        UserGroupSecurityTokenClassifications.System, activityMasterSystem, activityMasterSystemUUID)
+                                .chain(classification -> securityTokenService.create(session,
+                                                UserGroupSecurityTokenClassifications.System.toString(),
+                                                newSystem.getName(), newSystem.getDescription(), activityMasterSystem)
+                                        .chain(newSystemsSecurityToken -> securityTokenService.create(session,
+                                                        UserGroupSecurityTokenClassifications.System.toString(),
+                                                        UserGroupSecurityTokenClassifications.System.toString(),
+                                                        UserGroupSecurityTokenClassifications.System.classificationDescription(),
+                                                        activityMasterSystem)
+                                                .chain(systemsToken -> securityTokenService.link(session, systemsToken, newSystemsSecurityToken, classification)
+                                                        .chain(v -> newSystem.addOrReuseClassification(session, SystemIdentity,
+                                                                newSystemsSecurityToken.getSecurityToken(), newSystem, activityMasterSystemUUID))
+                                                        .chain(v -> getSecurityIdentityToken(session, newSystem, activityMasterSystemUUID)
+                                                                .chain(newSystemUUID -> securityTokenService
+                                                                        .resolveDefaultGroupFolderTokens(session, activityMasterSystem, activityMasterSystemUUID)
+                                                                        .chain(tokens -> activeFlagService.getActiveFlag(session, enterprise, activityMasterSystemUUID)
+                                                                                .chain(activeFlag -> ((com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseCoreTable<?, ?, ?, ?>) newSystemsSecurityToken)
+                                                                                        .createDefaultSecurity(session, activityMasterSystem, enterprise, activeFlag, tokens, activityMasterSystemUUID)
+                                                                                        .chain(c1 -> ((com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseCoreTable<?, ?, ?, ?>) systemsToken)
+                                                                                                .createDefaultSecurity(session, activityMasterSystem, enterprise, activeFlag, tokens, activityMasterSystemUUID))
+                                                                                        .onFailure().recoverWithItem(0L)))
+                                                                        .chain(v2 -> IGuiceContext.get(SystemsSystem.class)
+                                                                                .createInvolvedPartyForNewSystem(session, newSystem))
+                                                                        .map(ip -> newSystemUUID.toString())))))))
+                )
+                .onFailure()
+                .invoke(error -> log.error("(stateless) Failed to register new system '{}': {}", newSystem.getName(), error.getMessage(), error));
+    }
+
+    @Override
     public Uni<ISystems<?, ?>> create(Mutiny.Session session, IEnterprise<?, ?> enterprise, String systemName, String systemDesc, UUID... identityToken) {
         return create(session, enterprise, systemName, systemDesc, systemName, identityToken);
     }

@@ -196,4 +196,12 @@ public class ProductType
         return io.smallrye.mutiny.Uni.createFrom().voidItem();
     }
 
+    @Override
+    public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.StatelessSession session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    {
+        ProductTypeXClassification pxc = (ProductTypeXClassification) linkTable;
+        pxc.setProductTypeID(this);
+        return io.smallrye.mutiny.Uni.createFrom().voidItem();
+    }
+
 }

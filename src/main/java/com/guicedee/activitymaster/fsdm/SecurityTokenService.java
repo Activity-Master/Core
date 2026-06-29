@@ -499,8 +499,14 @@ public class SecurityTokenService
                     root.setParentSecurityTokenID((SecurityToken) parent);
                     root.setChildSecurityTokenID((SecurityToken) child);
                     root.setClassificationID(classification);
-                    root.setSystemID(((SecurityToken) parent).getSystemID());
-                    root.setOriginalSourceSystemID(((SecurityToken) parent).getSystemID());
+                    // The owning system FK: prefer the parent's, but fall back to the child's because prepped
+                    // folder/group tokens (scalar-projected) carry a null systemID, while the freshly-created
+                    // token in the pair always has it set — avoids a null securitytokenxsecuritytoken.systemid.
+                    ISystems<?, ?> linkSystem = ((SecurityToken) parent).getSystemID() != null
+                            ? ((SecurityToken) parent).getSystemID()
+                            : ((SecurityToken) child).getSystemID();
+                    root.setSystemID(linkSystem);
+                    root.setOriginalSourceSystemID(linkSystem);
                     root.setValue(child.getSecurityToken());
                     root.setEnterpriseID(enterprise);
                     IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
@@ -529,8 +535,11 @@ public class SecurityTokenService
                             st.setDescription(description);
                             st.setSecurityToken(UUID.randomUUID().toString());
                             st.setEnterpriseID(enterprise);
-                            st.setSystemID(((Classification) classification).getSystemID());
-                            st.setOriginalSourceSystemID(((Classification) classification).getSystemID());
+                            // Use the system parameter for the FK: the stateless prepped classification does not
+                            // carry its systemID (the projection omits it), so reading it back would be NULL and
+                            // violate the securitytoken.systemid not-null constraint.
+                            st.setSystemID(system);
+                            st.setOriginalSourceSystemID(system);
                             st.setSecurityTokenClassificationID((Classification) classification);
                             IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
                             return acService.getActiveFlag(session, enterprise)

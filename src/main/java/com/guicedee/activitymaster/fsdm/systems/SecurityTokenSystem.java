@@ -122,28 +122,388 @@ public class SecurityTokenSystem
     }
 
     /**
-     * Stateless variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — <strong>bridges</strong>
-     * to the proven stateful security bootstrap on an internally-managed transaction.
+     * Genuinely stateless variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — provisions the
+     * entire security structure (classifications, token hierarchy, access-grant matrix, default-security
+     * for every bootstrap table and the ActivityMaster involved party) on the supplied
+     * {@link Mutiny.StatelessSession} <strong>without bridging</strong> to a managed session.
      * <p>
-     * Unlike the domain/infrastructure systems (which were converted to genuinely stateless
-     * {@code createDefaults}), the Security Token System fundamentally requires a managed persistence
-     * context and therefore cannot run on a pure {@link Mutiny.StatelessSession}:
-     * <ul>
-     *   <li>its apply-defaults phases read <em>every row</em> of ~30 {@code @Cacheable} + eager-FK tables
-     *       (ActiveFlag, Systems, Classification, InvolvedParty*, Arrangement*, …) — a stateless session
-     *       cannot hydrate those entities;</li>
-     *   <li>the token-hierarchy <em>membership policy</em> resolves the (bytecode-lazy) enterprise
-     *       association, which needs a managed session;</li>
-     *   <li>it bootstraps the very root/group/folder tokens + access-grant matrix that the stateless
-     *       default-security primitives <em>consume</em> (inherent bootstrap circularity).</li>
-     * </ul>
-     * The bridge mirrors the stateless entry points: do the managed-entity work on a managed session.
+     * Running the whole bootstrap inside a single stateless transaction is actually advantageous: stateless
+     * inserts execute immediately (read-your-writes within the same DB transaction), so the group/folder
+     * tokens created earlier in the flow are visible to the later apply-defaults phases. The token create /
+     * grant / link / apply-defaults steps all use the stateless primitives on {@code ISecurityTokenService}
+     * (scalar existence checks + {@code session.insert} + projected row-id security inserts), so the
+     * persistence context never grows and no {@code @Cacheable}+eager entity is hydrated.
+     * <p>
      * Must be invoked as a top-level call (not nested inside another open transaction).
      */
     @Override
     public Uni<Void> createDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
-        log.info("🔐 (stateless→bridge) Security Token System requires a managed context; bridging to the stateful bootstrap for enterprise: '{}'", enterprise.getName());
-        return sessionFactory.withTransaction(statefulSession -> createDefaults(statefulSession, enterprise));
+        logProgress("Security Token Service", "Starting Security Structure Checks/Install (stateless)");
+        log.info("🔐 (stateless) Creating security token defaults for enterprise: '{}'", enterprise.getName());
+
+        // Fresh install run: drop any context cached from a previous enterprise.
+        defaultSecurityContext = null;
+
+        return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+                .onItem()
+                .invoke(activityMasterSystem -> log.debug("(stateless) Found ActivityMaster system: '{}'",
+                        activityMasterSystem.getName()))
+                .onFailure()
+                .invoke(error -> log.error("(stateless) Failed to find ActivityMaster system: {}",
+                        error.getMessage(), error))
+                .chain(activityMasterSystem -> createSecurityDefaults(session, enterprise, activityMasterSystem))
+                .replaceWithVoid();
+    }
+
+    private Uni<Void> createSecurityDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
+        log.info("🔐 (stateless) Creating security defaults for enterprise: '{}'", enterprise.getName());
+
+        return createSecurityClassifications(session, enterprise, system)
+                .chain(v -> createSecurityTokens(session, enterprise, system))
+                .chain(rootToken -> createGroupsAndFolders(session, enterprise, rootToken, system))
+                .chain(v -> applyDefaultsToNewEnterprise(session, enterprise, system))
+                .chain(v -> createActivityMasterInvolvedParty(session, enterprise, system))
+                .chain(v -> applyDefaultsToNewEnterpriseAfterActivityMaster(session, enterprise, system))
+                .onItem()
+                .invoke(() -> log.info("✅ (stateless) Security defaults created successfully for enterprise: '{}'", enterprise.getName()))
+                .onFailure()
+                .invoke(error -> log.error("❌ (stateless) Failed to create security defaults for enterprise '{}': {}",
+                        enterprise.getName(), error.getMessage(), error))
+                .replaceWithVoid();
+    }
+
+    private Uni<Void> createSecurityClassifications(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
+        log.info("🏷️ (stateless) Creating security classifications for enterprise: '{}'", enterprise.getName());
+
+        return classificationService.create(session, enterprise.getName(), enterprise.getName(), system)
+                .chain(entClassification -> classificationService.create(session,
+                                SecurityTokenClassifications.UserGroup.toString(),
+                                SecurityTokenClassifications.UserGroup.toString(),
+                                EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
+                                system, 1, entClassification)
+                        .chain(v -> classificationService.create(session,
+                                SecurityTokenClassifications.User.toString(),
+                                SecurityTokenClassifications.User.toString(),
+                                EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
+                                system, 2))
+                        .chain(v -> classificationService.create(session,
+                                SecurityTokenClassifications.Guests.toString(),
+                                SecurityTokenClassifications.Guests.toString(),
+                                EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
+                                system, 2))
+                        .chain(v -> classificationService.create(session,
+                                SecurityTokenClassifications.Visitors.toString(),
+                                SecurityTokenClassifications.Visitors.toString(),
+                                EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
+                                system, 2))
+                        .chain(v -> classificationService.create(session,
+                                SecurityTokenClassifications.Registered.toString(),
+                                SecurityTokenClassifications.Registered.toString(),
+                                EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
+                                system, 2))
+                        .chain(v -> classificationService.create(session,
+                                SecurityTokenClassifications.Application.toString(),
+                                SecurityTokenClassifications.Application.toString(),
+                                EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
+                                system, 3))
+                        .chain(v -> classificationService.create(session,
+                                UserGroupSecurityTokenClassifications.System.toString(),
+                                UserGroupSecurityTokenClassifications.System.toString(),
+                                EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
+                                system, 4))
+                        .chain(v -> classificationService.create(session,
+                                SecurityTokenClassifications.Plugin.toString(),
+                                SecurityTokenClassifications.Plugin.toString(),
+                                EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
+                                system, 5))
+                        .chain(v -> classificationService.create(session,
+                                SecurityTokenClassifications.Identity.toString(),
+                                "A security token identity",
+                                EnterpriseClassificationDataConcepts.SecurityTokenXClassification,
+                                system, 1, entClassification))
+                        .invoke(() -> {
+                            log.info("✅ (stateless) All security classifications created successfully");
+                            logProgress("Security Token Service", "Security Classifications Installed", 11);
+                        }))
+                .replaceWithVoid();
+    }
+
+    private Uni<ISecurityToken<?, ?>> createSecurityTokens(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
+        log.info("🎫 (stateless) Creating security tokens for enterprise: '{}'", enterprise.getName());
+
+        String description = enterprise.getDescription()
+                .isEmpty()
+                ? "An enterprise-wide project"
+                : enterprise.getDescription();
+
+        return securityTokenService.create(session, enterprise.getName(), enterprise.getName(), description, system)
+                .chain(rootToken -> securityTokenService.grantAccessToToken(session, rootToken, rootToken,
+                                false, false, false, false, system)
+                        .chain(v -> enterprise.addOrUpdateClassification(session,
+                                EnterpriseClassifications.EnterpriseIdentity,
+                                (String) null,
+                                rootToken.getSecurityToken(),
+                                system))
+                        .invoke(() -> {
+                            logProgress("Security Token Service", "Enterprise Security Validated", 3);
+                            log.info("✅ (stateless) Successfully created security tokens for enterprise: '{}'", enterprise.getName());
+                        })
+                        .replaceWith(rootToken));
+    }
+
+    private Uni<Void> createGroupsAndFolders(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, ISecurityToken<?, ?> rootToken, ISystems<?, ?> system) {
+        log.info("👥 (stateless) Creating groups and folders for enterprise: '{}'", enterprise.getName());
+
+        // Create all security tokens sequentially (one operation at a time on a stateless session).
+        return securityTokenService.create(session, SecurityTokenClassifications.UserGroup.toString(),
+                        UserGroupSecurityTokenClassifications.Everyone.toString(),
+                        UserGroupSecurityTokenClassifications.Everyone.classificationDescription(), system)
+                .chain(everyoneToken -> securityTokenService.create(session, SecurityTokenClassifications.UserGroup.toString(),
+                                UserGroupSecurityTokenClassifications.Everywhere.toString(),
+                                UserGroupSecurityTokenClassifications.Everywhere.classificationDescription(), system)
+                        .map(everywhereToken -> new ISecurityToken<?, ?>[]{everyoneToken, everywhereToken}))
+                .chain(t -> securityTokenService.create(session, SecurityTokenClassifications.UserGroup.toString(),
+                                UserGroupSecurityTokenClassifications.Administrators.toString(),
+                                UserGroupSecurityTokenClassifications.Administrators.classificationDescription(), system)
+                        .map(tok -> append(t, tok)))
+                .chain(t -> securityTokenService.create(session, SecurityTokenClassifications.UserGroup.toString(),
+                                SecurityTokenClassifications.Guests.toString(),
+                                SecurityTokenClassifications.Guests.classificationDescription(), system)
+                        .map(tok -> append(t, tok)))
+                .chain(t -> securityTokenService.create(session, SecurityTokenClassifications.UserGroup.toString(),
+                                SecurityTokenClassifications.Visitors.toString(),
+                                SecurityTokenClassifications.Visitors.classificationDescription(), system)
+                        .map(tok -> append(t, tok)))
+                .chain(t -> securityTokenService.create(session, SecurityTokenClassifications.UserGroup.toString(),
+                                SecurityTokenClassifications.Registered.toString(),
+                                SecurityTokenClassifications.Registered.classificationDescription(), system)
+                        .map(tok -> append(t, tok)))
+                .chain(t -> securityTokenService.create(session, SecurityTokenClassifications.Application.toString(),
+                                UserGroupSecurityTokenClassifications.Applications.toString(),
+                                UserGroupSecurityTokenClassifications.Applications.classificationDescription(), system)
+                        .map(tok -> append(t, tok)))
+                .chain(t -> securityTokenService.create(session, UserGroupSecurityTokenClassifications.System.toString(),
+                                UserGroupSecurityTokenClassifications.System.toString(),
+                                UserGroupSecurityTokenClassifications.System.classificationDescription(), system)
+                        .map(tok -> append(t, tok)))
+                .chain(t -> securityTokenService.create(session, SecurityTokenClassifications.Plugin.toString(),
+                                UserGroupSecurityTokenClassifications.Plugins.toString(),
+                                UserGroupSecurityTokenClassifications.Plugins.classificationDescription(), system)
+                        .map(tok -> append(t, tok)))
+                .chain(t -> securityTokenService.create(session, UserGroupSecurityTokenClassifications.System.toString(),
+                                "Activity Master System", "Defines the activity master as a system", system)
+                        .map(tok -> append(t, tok)))
+                .chain(tokens -> {
+                    ISecurityToken<?, ?> everyoneToken = tokens[0];
+                    ISecurityToken<?, ?> everywhereToken = tokens[1];
+                    ISecurityToken<?, ?> administratorsToken = tokens[2];
+                    ISecurityToken<?, ?> usersGuestsToken = tokens[3];
+                    ISecurityToken<?, ?> usersGuestsVisitorsToken = tokens[4];
+                    ISecurityToken<?, ?> usersGuestsRegisteredToken = tokens[5];
+                    ISecurityToken<?, ?> applicationToken = tokens[6];
+                    ISecurityToken<?, ?> systemsToken = tokens[7];
+                    ISecurityToken<?, ?> pluginToken = tokens[8];
+                    ISecurityToken<?, ?> activityMasterToken = tokens[9];
+
+                    logProgress("Security Token Service", "Base Security Tokens", 11);
+
+                    return system.addOrReuseClassification(session, SystemsClassifications.SystemIdentity,
+                                    activityMasterToken.getSecurityToken(), system)
+                            .chain(v -> classificationService.find(session, SecurityTokenClassifications.UserGroup, system)
+                                    .chain(userGroupClass -> classificationService.find(session, SecurityTokenClassifications.Application, system)
+                                            .map(applicationClass -> new IClassification<?, ?>[]{userGroupClass, applicationClass}))
+                                    .chain(classes -> classificationService.find(session, UserGroupSecurityTokenClassifications.System, system)
+                                            .map(systemClass -> new IClassification<?, ?>[]{classes[0], classes[1], systemClass}))
+                                    .chain(classes -> classificationService.find(session, SecurityTokenClassifications.Plugin, system)
+                                            .map(pluginClass -> new IClassification<?, ?>[]{classes[0], classes[1], classes[2], pluginClass}))
+                                    .chain(classes -> {
+                                        IClassification<?, ?> userGroupClass = classes[0];
+                                        IClassification<?, ?> applicationClass = classes[1];
+                                        IClassification<?, ?> systemClass = classes[2];
+                                        IClassification<?, ?> pluginClass = classes[3];
+
+                                        return securityTokenService.link(session, rootToken, everyoneToken, userGroupClass)
+                                                .chain(v1 -> securityTokenService.link(session, rootToken, everywhereToken, userGroupClass))
+                                                .chain(v1 -> securityTokenService.link(session, everyoneToken, administratorsToken, userGroupClass))
+                                                .chain(v1 -> securityTokenService.link(session, everyoneToken, usersGuestsToken, userGroupClass))
+                                                .chain(v1 -> securityTokenService.link(session, usersGuestsToken, usersGuestsRegisteredToken, userGroupClass))
+                                                .chain(v1 -> securityTokenService.link(session, usersGuestsToken, usersGuestsVisitorsToken, userGroupClass))
+                                                .chain(v1 -> securityTokenService.link(session, rootToken, applicationToken, applicationClass))
+                                                .chain(v1 -> securityTokenService.link(session, rootToken, systemsToken, systemClass))
+                                                .chain(v1 -> securityTokenService.link(session, rootToken, pluginToken, pluginClass))
+                                                .chain(v1 -> securityTokenService.link(session, systemsToken, activityMasterToken, systemClass))
+                                                .invoke(() -> {
+                                                    log.info("✅ (stateless) All token links created successfully");
+                                                    logProgress("Security Token Service", "Security Hierarchy Confirmed", 11);
+                                                })
+                                                .chain(v1 -> createAccessGrantsSequentially(session,
+                                                        administratorsToken, everyoneToken, everywhereToken,
+                                                        usersGuestsToken, usersGuestsRegisteredToken, usersGuestsVisitorsToken,
+                                                        applicationToken, systemsToken, pluginToken, rootToken, system)
+                                                        .invoke(() -> {
+                                                            log.info("✅ (stateless) All groups and folders created successfully");
+                                                            logProgress("Security Token Service", "Default Security Confirmed", 37);
+                                                        }));
+                                    }));
+                });
+    }
+
+    /** Appends one element to an {@code ISecurityToken[]} (used to thread tokens through the stateless chain). */
+    private static ISecurityToken<?, ?>[] append(ISecurityToken<?, ?>[] existing, ISecurityToken<?, ?> next) {
+        ISecurityToken<?, ?>[] grown = java.util.Arrays.copyOf(existing, existing.length + 1);
+        grown[existing.length] = next;
+        return grown;
+    }
+
+    private Uni<Void> createAccessGrantsSequentially(Mutiny.StatelessSession session,
+                                                     ISecurityToken<?, ?> administratorsToken, ISecurityToken<?, ?> everyoneToken, ISecurityToken<?, ?> everywhereToken,
+                                                     ISecurityToken<?, ?> usersGuestsToken, ISecurityToken<?, ?> usersGuestsRegisteredToken, ISecurityToken<?, ?> usersGuestsVisitorsToken,
+                                                     ISecurityToken<?, ?> applicationToken, ISecurityToken<?, ?> systemsToken, ISecurityToken<?, ?> pluginToken,
+                                                     ISecurityToken<?, ?> rootToken, ISystems<?, ?> system) {
+        return securityTokenService.grantAccessToToken(session, administratorsToken, rootToken, true, true, true, true, system)
+                .chain(v -> securityTokenService.grantAccessToToken(session, administratorsToken, everyoneToken, true, true, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, administratorsToken, administratorsToken, true, true, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, administratorsToken, applicationToken, true, true, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, administratorsToken, everywhereToken, true, true, true, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, administratorsToken, usersGuestsToken, true, true, true, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, administratorsToken, systemsToken, true, true, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, administratorsToken, pluginToken, true, true, false, true, system))
+
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsToken, rootToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsToken, everyoneToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsToken, administratorsToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsToken, applicationToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsToken, everywhereToken, false, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsToken, usersGuestsToken, false, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsToken, systemsToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsToken, pluginToken, false, false, false, false, system))
+
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsRegisteredToken, rootToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsRegisteredToken, everyoneToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsRegisteredToken, administratorsToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsRegisteredToken, applicationToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsRegisteredToken, everywhereToken, false, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsRegisteredToken, usersGuestsToken, false, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsRegisteredToken, systemsToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsRegisteredToken, pluginToken, false, false, false, false, system))
+
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsVisitorsToken, rootToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsVisitorsToken, everyoneToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsVisitorsToken, administratorsToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsVisitorsToken, applicationToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsVisitorsToken, everywhereToken, false, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsVisitorsToken, usersGuestsToken, false, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsVisitorsToken, systemsToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, usersGuestsVisitorsToken, pluginToken, false, false, false, false, system))
+
+                .chain(v -> securityTokenService.grantAccessToToken(session, everyoneToken, rootToken, false, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everyoneToken, everyoneToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everyoneToken, administratorsToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everyoneToken, applicationToken, false, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everyoneToken, everywhereToken, true, true, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everyoneToken, systemsToken, false, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everyoneToken, pluginToken, false, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everyoneToken, usersGuestsToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everyoneToken, usersGuestsRegisteredToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everyoneToken, usersGuestsVisitorsToken, false, false, false, false, system))
+
+                .chain(v -> securityTokenService.grantAccessToToken(session, everywhereToken, rootToken, false, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everywhereToken, everyoneToken, false, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everywhereToken, administratorsToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everywhereToken, applicationToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everywhereToken, systemsToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everywhereToken, everywhereToken, false, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everywhereToken, pluginToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everywhereToken, usersGuestsToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everywhereToken, usersGuestsRegisteredToken, false, false, false, false, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, everywhereToken, usersGuestsVisitorsToken, false, false, false, false, system))
+
+                .chain(v -> securityTokenService.grantAccessToToken(session, applicationToken, rootToken, false, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, applicationToken, everyoneToken, true, true, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, applicationToken, administratorsToken, true, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, applicationToken, applicationToken, true, true, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, applicationToken, everywhereToken, true, true, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, applicationToken, systemsToken, true, true, true, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, applicationToken, pluginToken, true, true, true, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, applicationToken, usersGuestsToken, true, true, true, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, applicationToken, usersGuestsRegisteredToken, true, true, true, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, applicationToken, usersGuestsVisitorsToken, true, true, true, true, system))
+
+                .chain(v -> securityTokenService.grantAccessToToken(session, systemsToken, rootToken, false, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, systemsToken, everyoneToken, true, true, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, systemsToken, administratorsToken, true, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, systemsToken, applicationToken, true, true, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, systemsToken, everywhereToken, true, true, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, systemsToken, systemsToken, true, true, true, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, systemsToken, pluginToken, true, true, true, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, systemsToken, usersGuestsToken, true, true, true, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, systemsToken, usersGuestsRegisteredToken, true, true, true, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, systemsToken, usersGuestsVisitorsToken, true, true, true, true, system))
+
+                .chain(v -> securityTokenService.grantAccessToToken(session, pluginToken, rootToken, false, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, pluginToken, everyoneToken, true, true, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, pluginToken, administratorsToken, true, false, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, pluginToken, applicationToken, true, true, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, pluginToken, everywhereToken, true, true, false, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, pluginToken, systemsToken, true, true, true, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, pluginToken, pluginToken, true, true, true, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, pluginToken, usersGuestsToken, true, true, true, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, pluginToken, usersGuestsRegisteredToken, true, true, true, true, system))
+                .chain(v -> securityTokenService.grantAccessToToken(session, pluginToken, usersGuestsVisitorsToken, true, true, true, true, system));
+    }
+
+    private Uni<Void> applyDefaultsToNewEnterprise(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
+        log.info("🏢 (stateless) Applying security defaults for enterprise: '{}'", enterprise.getName());
+
+        logProgress("Security Token Service", "Checking Default Security for all enterprise default items");
+        logProgress("Security Token Service", "Starting basic security checks", 1);
+        return securityTokenService.applyDefaultSecurityToTable(session, new ActiveFlag(), system)
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new Systems(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new SystemsXClassification(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new ClassificationDataConcept(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new Classification(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new ClassificationXClassification(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new InvolvedPartyIdentificationType(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new InvolvedPartyNameType(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new InvolvedPartyType(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new InvolvedPartyOrganicType(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new EnterpriseXClassification(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, (WarehouseCoreTable<?, ?, ?, ?>) enterprise, system))
+                .invoke(() -> {
+                    log.info("✅ (stateless) All enterprise security defaults applied successfully");
+                    logProgress("Security Token Service", "Completed Checks", 1);
+                });
+    }
+
+    private Uni<Void> createActivityMasterInvolvedParty(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
+        log.info("👤 (stateless) Creating ActivityMaster involved party for enterprise: '{}'", enterprise.getName());
+
+        return IGuiceContext.get(SystemsSystem.class)
+                .createInvolvedPartyForNewSystem(session, system)
+                .replaceWithVoid();
+    }
+
+    private Uni<Void> applyDefaultsToNewEnterpriseAfterActivityMaster(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
+        log.info("🏢 (stateless) Applying post-ActivityMaster security defaults for enterprise: '{}'", enterprise.getName());
+
+        logProgress("Security Token Service", "Starting Involved Party Relationship checks", 1);
+        return securityTokenService.applyDefaultSecurityToTable(session, new InvolvedParty(), system)
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new InvolvedPartyOrganic(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new InvolvedPartyNonOrganic(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new InvolvedPartyXInvolvedPartyIdentificationType(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new InvolvedPartyXClassification(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new InvolvedPartyXInvolvedPartyNameType(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new InvolvedPartyXInvolvedPartyType(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new EventType(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new ResourceItemType(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new ArrangementType(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new Arrangement(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new ArrangementXArrangementType(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new ArrangementXClassification(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new ArrangementXResourceItem(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new ArrangementXInvolvedParty(), system))
+                .chain(v -> securityTokenService.applyDefaultSecurityToTable(session, new ArrangementXProduct(), system))
+                .invoke(() -> log.info("✅ (stateless) All post-ActivityMaster security defaults applied successfully"));
     }
 
     private Uni<Void> createSecurityDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {

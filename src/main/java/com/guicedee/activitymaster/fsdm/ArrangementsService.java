@@ -234,6 +234,28 @@ public class ArrangementsService
 
 
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IArrangementType<?, ?>> findArrangementType(Mutiny.StatelessSession session, String type, ISystems<?, ?> system, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        return new ArrangementType().builder(session)
+                .withName(type)
+                .inActiveRange()
+                .inDateRange()
+                .withEnterprise(enterprise)
+                .selectColumn(com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementType_.id)
+                .selectColumn(com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementType_.name)
+                .selectColumn(com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementType_.description)
+                .get(Object[].class)
+                .onItem().ifNull().failWith(() -> new ArrangementException("Unable to find arrangement type - " + type))
+                .map(row -> {
+                    ArrangementType prepped = new ArrangementType((UUID) row[0], (String) row[1], (String) row[2]);
+                    prepped.setEnterpriseID(enterprise);
+                    prepped.setFake(false);
+                    return (IArrangementType<?, ?>) prepped;
+                });
+    }
+
+    @Override
     public Uni<IArrangementType<?, ?>> findArrangementType(Mutiny.Session session, String type, ISystems<?, ?> system, UUID... identityToken) {
         log.trace("Finding arrangement type: {}", type);
         var enterprise = system.getEnterprise();

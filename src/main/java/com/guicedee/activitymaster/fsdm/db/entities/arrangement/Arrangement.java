@@ -287,6 +287,13 @@ public class Arrangement
     }
 
     @Override
+    public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.StatelessSession session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    {
+        ((ArrangementXClassification) linkTable).setArrangementID(this);
+        return io.smallrye.mutiny.Uni.createFrom().voidItem();
+    }
+
+    @Override
     public void configureProductAddable(Mutiny.Session session, IWarehouseRelationshipTable linkTable, Arrangement primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
     {
         ArrangementXProduct axa = (ArrangementXProduct) linkTable;

@@ -211,6 +211,14 @@ public class RulesType
     }
 
     @Override
+    public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.StatelessSession session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    {
+        RulesTypeXClassification r = (RulesTypeXClassification) linkTable;
+        r.setRulesTypeID(this);
+        return io.smallrye.mutiny.Uni.createFrom().voidItem();
+    }
+
+    @Override
     public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, RulesType primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
     {
         RulesTypeXResourceItem r = (RulesTypeXResourceItem) linkTable;

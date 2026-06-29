@@ -299,6 +299,13 @@ public class Geography
     }
 
     @Override
+    public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.StatelessSession session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    {
+        ((GeographyXClassification) linkTable).setGeographyID(this);
+        return io.smallrye.mutiny.Uni.createFrom().voidItem();
+    }
+
+    @Override
     public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Geography primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
     {
         GeographyXResourceItem g = (GeographyXResourceItem) linkTable;

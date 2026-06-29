@@ -287,4 +287,20 @@ public class Classification
 					return (Void) null;
 				});
 	}
+
+	@Override
+	public Uni<Void> configureForClassification(Mutiny.StatelessSession session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+	{
+		ClassificationXClassification c = (ClassificationXClassification) linkTable;
+
+		c.setParentClassificationID(this);
+		c.setChildClassificationID((Classification) classificationValue);
+
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		return classificationService.getNoClassification(session, system)
+				.map(noClassification -> {
+					c.setClassificationID(noClassification);
+					return (Void) null;
+				});
+	}
 }

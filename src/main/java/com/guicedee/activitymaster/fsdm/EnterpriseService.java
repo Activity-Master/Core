@@ -449,18 +449,64 @@ public class EnterpriseService
     @Override
     public Uni<IEnterprise<?, ?>> startNewEnterprise(Mutiny.StatelessSession session, String enterpriseName,
                                                      @NotNull String adminUserName, @NotNull String adminPassword, UUID uuidIdentifier) {
-        // Phase 1 (bridge): the deep system install needs a managed persistence context, so the whole
-        // lifecycle is orchestrated on internally-managed stateful sessions. The stateful flow already
-        // creates the enterprise idempotently (find-or-create by name).
-        //
-        // We deliberately do NOT pre-seed the record on the caller's stateless session here: that write
-        // would only commit when the caller's stateless transaction closes — i.e. AFTER this bridged
-        // stateful transaction has already run — so the stateful create could not see it and would
-        // insert a duplicate row. Genuine stateless seeding within the same unit of work is Phase 2.
+        // Genuine stateless entry point — NO bridge to a managed session. Every phase runs in its own
+        // stateless transaction (each commits before the next, so FK references made by later phases see
+        // the earlier committed rows), and within a phase all systems share one stateless session
+        // (stateless inserts execute immediately → read-your-writes). Per-system createDefaults prefer the
+        // stateless overload and fall back to the managed one only for any system not yet converted
+        // (UnsupportedOperationException seam).
         //
         // This method is a top-level entry point and must not be nested inside another open transaction.
-        return SessionUtils.withSessionTx(sessionFactory, statefulSession ->
-                startNewEnterprise(statefulSession, enterpriseName, adminUserName, adminPassword, uuidIdentifier));
+        CallScoper callScoper = IGuiceContext.get(CallScoper.class);
+        boolean startedHere = !callScoper.isStartedScope();
+        if (startedHere) {
+            callScoper.enter();
+        }
+        try {
+            IGuiceContext.get(ActivityMasterConfiguration.class).setSecurityEnabled(false);
+
+            Set<IMasterSystem<?>> allSystems = ActivityMasterConfiguration.get().getAllSystems();
+            int totalTasks = allSystems.stream().mapToInt(IMasterSystem::totalTasks).sum() + 1;
+            logProgress("Create Enterprise", "Creating Enterprise", 0, totalTasks);
+            List<IMasterSystem<?>> orderedSystems = new ArrayList<>(allSystems);
+
+            return sessionFactory.withStatelessTransaction(s -> installEnterprise(s, enterpriseName))
+                    .chain(enterprise -> sessionFactory.withStatelessTransaction(s -> registerSystemsSequentially(s, orderedSystems, enterprise))
+                            // Best-effort pre-pass: the authoritative, correctly-ordered registration happens inside
+                            // createNewEnterprise's installSystems (which starts from SystemsSystem so ActivityMaster
+                            // exists). On a fresh enterprise the core systems here cannot yet resolve ActivityMaster,
+                            // so a failure is tolerated — exactly as the managed flow relies on prior provisioning.
+                            .onFailure().recoverWithItem((Void) null)
+                            .replaceWith(enterprise))
+                    .chain(enterprise -> createNewEnterprise(session, enterprise))
+                    .chain(enterprise -> sessionFactory.withStatelessTransaction(s -> {
+                        ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+                        return systemsService.getActivityMaster(s, enterprise)
+                                .chain(activityMasterSystem -> {
+                                    ISystems<?, ?> system = (ISystems<?, ?>) activityMasterSystem;
+                                    IPasswordsService<?> passwordsService = IGuiceContext.get(IPasswordsService.class);
+                                    return passwordsService.createAdminAndCreatorUserForEnterprise(s, system, adminUserName, adminPassword, uuidIdentifier);
+                                })
+                                .replaceWith(enterprise);
+                    }))
+                    .chain(enterprise -> {
+                        logProgress("Systems", "Running Systems Post Startups", 1);
+                        return sessionFactory.withStatelessTransaction(s -> performPostStartup(s, enterprise))
+                                .replaceWith(enterprise);
+                    });
+        } finally {
+            if (startedHere) {
+                callScoper.exit();
+            }
+        }
+    }
+
+    /** Stateless variant of {@link #installEnterprise(Mutiny.Session, String)}. */
+    private Uni<IEnterprise<?, ?>> installEnterprise(Mutiny.StatelessSession session, String enterpriseName) {
+        com.guicedee.client.IGuiceContext
+                .get(ActivityMasterConfiguration.class)
+                .setApplicationEnterpriseName(enterpriseName);
+        return create(session, enterpriseName, enterpriseName);
     }
 
     @Override
@@ -580,10 +626,201 @@ public class EnterpriseService
 
     @Override
     public Uni<IEnterprise<?, ?>> createNewEnterprise(Mutiny.StatelessSession session, @NotNull IEnterprise<?, ?> enterprise) {
-        // createNewEnterprise self-manages its own sessions/transactions internally for every phase
-        // (create / createBase / createBaseSystems / installSystems each run in their own managed
-        // transaction), so the lifecycle is identical regardless of the caller's session kind.
-        return createNewEnterprise((Mutiny.Session) null, enterprise);
+        // Genuine stateless lifecycle: every phase runs in its own stateless transaction (each commits
+        // before the next), mirroring the managed createNewEnterprise phasing exactly — only the session
+        // kind differs. No bridge to a managed session.
+        CallScoper callScoper = IGuiceContext.get(CallScoper.class);
+        boolean startedHere = !callScoper.isStartedScope();
+        if (startedHere) {
+            callScoper.enter();
+        }
+        try {
+            IGuiceContext.get(ActivityMasterConfiguration.class).setSecurityEnabled(false);
+            Set<IMasterSystem<?>> allSystems = ActivityMasterConfiguration.get().getAllSystems();
+
+            return sessionFactory.withStatelessTransaction(s1 -> create(s1, enterprise.getName(), enterprise.getName()))
+                    .chain(ent -> sessionFactory.withStatelessTransaction(s2 -> createBase(s2, allSystems, ent))
+                            .replaceWith(ent))
+                    .chain(ent -> sessionFactory.withStatelessTransaction(s3 -> createBaseSystems(s3, allSystems, ent))
+                            .replaceWith(ent))
+                    .chain(ent -> sessionFactory.withStatelessTransaction(s4 -> installSystems(s4, allSystems, ent))
+                            .replaceWith(ent))
+                    .invoke(() -> {
+                        setCurrentTask(0);
+                        logProgress("System Configuration", "Done", 1);
+                    })
+                    .onFailure()
+                    .invoke(err -> log.error("❌ Failed during stateless createNewEnterprise()", err))
+                    .map(ent -> (IEnterprise<?, ?>) ent);
+        } finally {
+            if (startedHere) {
+                callScoper.exit();
+            }
+        }
+    }
+
+    // ============================================================================================
+    // Stateless install loop — mirrors the managed install methods but threads a Mutiny.StatelessSession.
+    // ============================================================================================
+
+    private Uni<Void> createBase(Mutiny.StatelessSession session, Set<IMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise) {
+        logProgress("Creating Core", "Initializing Core Systems");
+        List<IMasterSystem<?>> filtered = allSystems.stream()
+                .takeWhile(system -> !SystemsSystem.class.isAssignableFrom(system.getClass()))
+                .toList();
+        if (filtered.isEmpty()) {
+            return Uni.createFrom().voidItem();
+        }
+        Uni<Void> chain = Uni.createFrom().voidItem();
+        for (IMasterSystem<?> system : filtered) {
+            final IMasterSystem<?> current = system;
+            chain = chain.chain(() -> performSystemInstall(session, enterprise, current, false));
+        }
+        return chain.invoke(() -> log.info("✅ (stateless) Core systems installed: {}", filtered.size()));
+    }
+
+    private Uni<Void> createBaseSystems(Mutiny.StatelessSession session, Set<IMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise) {
+        logProgress("Creating Base Systems", "Initializing Base Systems");
+        List<IMasterSystem<?>> filtered = allSystems.stream()
+                .filter(a -> a.getClass().equals(SystemsSystem.class))
+                .toList();
+        if (filtered.isEmpty()) {
+            return Uni.createFrom().voidItem();
+        }
+        Uni<Void> chain = Uni.createFrom().voidItem();
+        for (IMasterSystem<?> system : filtered) {
+            final IMasterSystem<?> current = system;
+            chain = chain.chain(() -> performSystemInstall(session, enterprise, current, false));
+        }
+        return chain.invoke(() -> log.info("✅ (stateless) Base systems installed: {}", filtered.size()));
+    }
+
+    private Uni<Void> installSystems(Mutiny.StatelessSession session, Set<IMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise) {
+        boolean found = true;
+        List<IMasterSystem<?>> filteredBeforeEvents = new ArrayList<>();
+        List<IMasterSystem<?>> filteredUpToEvents = new ArrayList<>();
+        List<IMasterSystem<?>> allFilteredSystems = new ArrayList<>();
+
+        for (IMasterSystem<?> system : allSystems) {
+            if (!found && SystemsSystem.class.isAssignableFrom(system.getClass())) {
+                found = true;
+            }
+            if (found) {
+                allFilteredSystems.add(system);
+                boolean isEventsSystem = EventsSystem.class.isAssignableFrom(system.getClass());
+                filteredUpToEvents.add(system);
+                if (!isEventsSystem) {
+                    filteredBeforeEvents.add(system);
+                } else {
+                    break;
+                }
+            }
+        }
+
+        if (allFilteredSystems.isEmpty()) {
+            log.warn("⚠️ (stateless) No systems found from SystemsSystem onward to install.");
+            return Uni.createFrom().voidItem();
+        }
+
+        logProgress("Installing Systems", "Starting installation process with " + allFilteredSystems.size() + " systems");
+        return installSystemsSequentially(session, filteredBeforeEvents, enterprise, false)
+                .chain(() -> registerSystemsSequentially(session, filteredUpToEvents, enterprise))
+                .chain(() -> installSystemsSequentially(session, allFilteredSystems, enterprise, false))
+                .invoke(v -> log.info("✅ (stateless) Completed all installation steps for systems"));
+    }
+
+    private Uni<Void> installSystemsSequentially(Mutiny.StatelessSession session, List<IMasterSystem<?>> systems, IEnterprise<?, ?> enterprise, boolean registerSystem) {
+        if (systems.isEmpty()) {
+            return Uni.createFrom().voidItem();
+        }
+        Uni<Void> result = installSystem(session, systems.get(0), enterprise, registerSystem);
+        for (int i = 1; i < systems.size(); i++) {
+            final int index = i;
+            result = result.chain(() -> installSystem(session, systems.get(index), enterprise, registerSystem));
+        }
+        return result.invoke(v -> log.info("✅ (stateless) Processed " + systems.size() + " systems"));
+    }
+
+    private Uni<Void> registerSystemsSequentially(Mutiny.StatelessSession session, List<IMasterSystem<?>> systems, IEnterprise<?, ?> enterprise) {
+        if (systems.isEmpty()) {
+            return Uni.createFrom().voidItem();
+        }
+        Uni<Void> result = systems.get(0).registerSystem(session, enterprise).replaceWithVoid();
+        for (int i = 1; i < systems.size(); i++) {
+            final int index = i;
+            var sys = systems.get(index);
+            result = result.chain(() -> sys.registerSystem(session, enterprise).replaceWithVoid());
+        }
+        return result.invoke(v -> log.info("✅ (stateless) Registered " + systems.size() + " systems"));
+    }
+
+    private Uni<Void> installSystem(Mutiny.StatelessSession session, IMasterSystem<?> system, IEnterprise<?, ?> enterprise, boolean registerSystem) {
+        String className = system.getClass().getSimpleName();
+        logProgress("Running System", className);
+        return performSystemInstall(session, enterprise, system, registerSystem)
+                .onFailure()
+                .invoke(err -> log.error("❌ (stateless) System install failed: " + className, err));
+    }
+
+    private Uni<Void> performSystemInstall(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, IMasterSystem<?> system, boolean registerSystem) {
+        String systemName = system.getSystemName();
+        String cleanedName = cleanName(system.getClass().getSimpleName());
+        log.info("➡️ (stateless) Starting install for: " + systemName + " [" + cleanedName + "]");
+
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        Set<IOnSystemInstall> listeners = IGuiceContext.loaderToSet(ServiceLoader.load(IOnSystemInstall.class));
+        List<IOnSystemInstall> listenersList = new ArrayList<>(listeners);
+
+        Uni<Void> startListenersChain = Uni.createFrom().voidItem();
+        for (IOnSystemInstall listener : listenersList) {
+            final IOnSystemInstall currentListener = listener;
+            startListenersChain = startListenersChain.chain(() -> {
+                try {
+                    currentListener.onSystemInstallStart(systemName);
+                } catch (Exception e) {
+                    log.warn("⚠️ Start listener failed: " + currentListener.getClass().getSimpleName(), e);
+                }
+                return Uni.createFrom().voidItem();
+            });
+        }
+
+        // Prefer the stateless createDefaults; fall back to the managed overload only for any system that
+        // has not been converted yet (signalled via UnsupportedOperationException). No session.flush() —
+        // stateless inserts execute immediately.
+        Uni<Void> installChain = startListenersChain
+                .chain(() -> system.createDefaults(session, enterprise)
+                        .onFailure(UnsupportedOperationException.class)
+                        .recoverWithUni(() -> {
+                            log.info("↪️ (stateless) {} has no stateless createDefaults; falling back to the managed path", systemName);
+                            return sessionFactory.withTransaction(s -> system.createDefaults(s, enterprise));
+                        })
+                        .invoke(() -> log.info("✅ (stateless) Defaults created for: " + systemName))
+                        .onFailure()
+                        .invoke(e -> log.error("❌ (stateless) Failed to create defaults for: " + systemName, e)))
+                .replaceWithVoid();
+
+        return installChain
+                .chain(() -> {
+                    Uni<Void> endListenersChain = Uni.createFrom().voidItem();
+                    for (IOnSystemInstall listener : listenersList) {
+                        final IOnSystemInstall currentListener = listener;
+                        endListenersChain = endListenersChain.chain(() -> {
+                            try {
+                                currentListener.onSystemInstallEnd(systemName);
+                            } catch (Exception e) {
+                                log.warn("⚠️ End listener failed: " + currentListener.getClass().getSimpleName(), e);
+                            }
+                            return Uni.createFrom().voidItem();
+                        });
+                    }
+                    return endListenersChain;
+                })
+                .invoke(() -> {
+                    logProgress("Installed System", cleanedName, 1);
+                    log.info("✅ (stateless) Finished install: " + systemName + " [" + cleanedName + "]");
+                })
+                .onFailure()
+                .invoke(err -> log.error("❌ (stateless) Exception during install for: " + system.getSystemName(), err));
     }
 
     //@Transactional()

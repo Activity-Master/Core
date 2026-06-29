@@ -180,6 +180,30 @@ public class ResourceItem
   }
 
   @Override
+  public Uni<byte[]> getData(Mutiny.StatelessSession session, UUID... identityToken)
+  {
+    com.guicedee.activitymaster.fsdm.ResourceItemJsonStore jsonStore =
+            IGuiceContext.get(com.guicedee.activitymaster.fsdm.ResourceItemJsonStore.class);
+    if (jsonStore.isEnabled())
+    {
+      return jsonStore.fetch(getId())
+              .chain(jsonBytes -> jsonBytes != null
+                      ? Uni.createFrom().item(jsonBytes)
+                      : relationalGetData(session));
+    }
+    return relationalGetData(session);
+  }
+
+  private Uni<byte[]> relationalGetData(Mutiny.StatelessSession session)
+  {
+    return session.get(ResourceItemDataValue.class, getId())
+               .onItem()
+               .transform(data -> unzip(data == null ? new byte[]{} : data.getData()))
+               .onFailure()
+               .recoverWithItem(new byte[]{});
+  }
+
+  @Override
   public Uni<String> getFilename(Mutiny.Session session)
   {
     ResourceItemData rid = new ResourceItemData();
@@ -197,7 +221,36 @@ public class ResourceItem
   }
 
   @Override
+  public Uni<String> getFilename(Mutiny.StatelessSession session)
+  {
+    ResourceItemData rid = new ResourceItemData();
+    return rid.builder(session)
+               .inActiveRange()
+               .inDateRange()
+               .where(ResourceItemData_.resource, Equals, this)
+               .get()
+               .onItem()
+               .ifNotNull()
+               .transform(r -> "data/" + r.getId() + ".dat")
+               .onItem()
+               .ifNull()
+               .continueWith(() -> null);
+  }
+
+  @Override
   public Uni<IResourceData<?, ?, ?>> getDataRow(Mutiny.Session session, UUID... identityToken)
+  {
+    ResourceItemData rid = new ResourceItemData();
+    return rid.builder(session)
+               .inActiveRange()
+               .inDateRange()
+               .where(ResourceItemData_.resource, Equals, this)
+               .get()
+               .map(ridd -> ridd);
+  }
+
+  @Override
+  public Uni<IResourceData<?, ?, ?>> getDataRow(Mutiny.StatelessSession session, UUID... identityToken)
   {
     ResourceItemData rid = new ResourceItemData();
     return rid.builder(session)
@@ -308,6 +361,14 @@ public class ResourceItem
 
   @Override
   public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+  {
+    ResourceItemXClassification rxc = (ResourceItemXClassification) linkTable;
+    rxc.setResourceItemID(this);
+    return io.smallrye.mutiny.Uni.createFrom().voidItem();
+  }
+
+  @Override
+  public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.StatelessSession session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
   {
     ResourceItemXClassification rxc = (ResourceItemXClassification) linkTable;
     rxc.setResourceItemID(this);

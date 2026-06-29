@@ -189,6 +189,29 @@ public class EventsService
                        .map(result -> result);
     }
 
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IEventType<?, ?>> findEventType(Mutiny.StatelessSession session, String eventType, ISystems<?, ?> system, UUID... identityToken)
+    {
+        var enterprise = system.getEnterprise();
+        return new EventType().builder(session)
+                       .withName(eventType)
+                       .withEnterprise(enterprise)
+                       .inActiveRange()
+                       .inDateRange()
+                       .selectColumn(com.guicedee.activitymaster.fsdm.db.entities.events.EventType_.id)
+                       .selectColumn(com.guicedee.activitymaster.fsdm.db.entities.events.EventType_.name)
+                       .selectColumn(com.guicedee.activitymaster.fsdm.db.entities.events.EventType_.description)
+                       .get(Object[].class)
+                       .onItem().ifNull().failWith(() -> new EventException("Invalid Event Type - " + eventType))
+                       .map(row -> {
+                           EventType prepped = new EventType((UUID) row[0], (String) row[1], (String) row[2]);
+                           prepped.setEnterpriseID(enterprise);
+                           prepped.setFake(false);
+                           return (IEventType<?, ?>) prepped;
+                       });
+    }
+
     // --- Cross-domain searchable queries (EventX<DomainType>) ---
 
     @Override

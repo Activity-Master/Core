@@ -139,6 +139,15 @@ public class InvolvedParty
     }
 
     @Override
+    public Uni<UUID> getSecurityIdentity(Mutiny.StatelessSession session)
+    {
+        return this.findInvolvedPartyIdentificationType(session, NoClassification, IdentificationTypes.IdentificationTypeUUID, null, getSystemID(), true, true,
+                        get(InvolvedPartySystem.class).getSystemToken(session, getEnterprise()).await().atMost(Duration.ofSeconds(50)))
+                       .map(IRelationshipValue::getValue)
+                       .map(UUID::fromString);
+    }
+
+    @Override
     public void configureSecurityEntity(InvolvedPartySecurityToken securityEntity)
     {
         securityEntity.setBase(this);
@@ -182,6 +191,14 @@ public class InvolvedParty
 
     @Override
     public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    {
+        InvolvedPartyXClassification i = (InvolvedPartyXClassification) linkTable;
+        i.setInvolvedPartyID(this);
+        return io.smallrye.mutiny.Uni.createFrom().voidItem();
+    }
+
+    @Override
+    public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.StatelessSession session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
     {
         InvolvedPartyXClassification i = (InvolvedPartyXClassification) linkTable;
         i.setInvolvedPartyID(this);

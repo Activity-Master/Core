@@ -232,6 +232,23 @@ public class PasswordsService implements IPasswordsService<PasswordsService> {
                 .invoke(error -> log.error("Error adding/updating username and password: {}", error.getMessage(), error));
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public Uni<IInvolvedParty<?, ?>> addUpdateUsernamePassword(Mutiny.StatelessSession session, String username, String password, IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, UUID... identityToken) {
+        log.debug("(stateless) Adding/updating username and password for involved party: {}", involvedParty.getId());
+
+        String encoded = passwordEncoder.encode(password);
+
+        return (Uni) involvedParty.addOrUpdateClassification(session, SecurityPassword, (String) null, encoded, system, identityToken)
+                .chain(() -> involvedPartyService.findInvolvedPartyIdentificationType(
+                        session, IdentificationTypeUserName.toString(), system, identityToken))
+                .chain(identificationType -> involvedParty.addOrUpdateInvolvedPartyIdentificationType(
+                        session, NoClassification.toString(), identificationType, null, username, system, identityToken))
+                .replaceWith((IInvolvedParty<?, ?>) involvedParty)
+                .onFailure()
+                .invoke(error -> log.error("(stateless) Error adding/updating username and password: {}", error.getMessage(), error));
+    }
+
     @Override
     public Uni<Boolean> doesUsernameExist(Mutiny.Session session, String username, ISystems<?, ?> system, UUID... identityToken) {
         log.debug("Checking if username exists: {}", username);
@@ -357,6 +374,91 @@ public class PasswordsService implements IPasswordsService<PasswordsService> {
                                                 });
                                     });
                         }));
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public Uni<IInvolvedParty<?, ?>> createAdminAndCreatorUserForEnterprise(Mutiny.StatelessSession session, ISystems<?, ?> system, String adminUserName,
+                                                                            @NotNull String adminPassword, UUID existingLocalKey) {
+        log.debug("(stateless) Creating admin and creator user for enterprise: {}", system.getEnterpriseID());
+        logProgress("Checking base administrator user", "The default user is being checked for compliance", 1);
+
+        ISystemsService<?> systemsService = get(ISystemsService.class);
+        final com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?> enterprise = system.getEnterprise();
+
+        return (Uni) systemsService.getSecurityIdentityToken(session, system)
+                .chain(identityToken -> get(SecurityTokenService.class).getAdministratorsFolder(session, system)
+                        .chain(administratorsGroup -> new InvolvedParty().builder(session)
+                                // Existence gate via scalar COUNT — never hydrate the @Cacheable+eager InvolvedParty on a stateless session.
+                                .withEnterprise(enterprise)
+                                .findByIdentificationType(IdentificationTypes.IdentificationTypeEnterpriseCreatorRole, adminUserName, system)
+                                .getCount()
+                                .chain(count -> {
+                                    if (count != null && count > 0L) {
+                                        // Idempotent: the creator user already exists — nothing to do.
+                                        return Uni.createFrom().nullItem();
+                                    }
+                                    Pair<String, String> pair = new Pair<>(
+                                            IdentificationTypes.IdentificationTypeEnterpriseCreatorRole.toString(), adminUserName);
+                                    IInvolvedPartyService<?> service = get(IInvolvedPartyService.class);
+                                    return (Uni) service.create(session, system, pair, true)
+                                            .chain(adminUser -> adminUser.addOrReuseInvolvedPartyIdentificationType(
+                                                            session, NoClassification.toString(),
+                                                            IdentificationTypeUserName.toString(),
+                                                            adminUserName, system, identityToken)
+                                                    .replaceWith(adminUser))
+                                            .chain(adminUser -> adminUser.addOrReuseInvolvedPartyType(
+                                                            session, NoClassification.toString(),
+                                                            IPTypes.TypeIndividual.toString(),
+                                                            "Creator Individual", system, identityToken)
+                                                    .replaceWith(adminUser))
+                                            .chain(adminUser -> adminUser.addOrReuseInvolvedPartyNameType(
+                                                            session, NoClassification.toString(),
+                                                            PreferredNameType.toString(),
+                                                            "Enterprise Creator", system, identityToken)
+                                                    .replaceWith(adminUser))
+                                            .chain(adminUser -> adminUser.addOrReuseInvolvedPartyNameType(
+                                                            session, NoClassification.toString(),
+                                                            CommonNameType.toString(),
+                                                            "Enterprise Creator", system, identityToken)
+                                                    .replaceWith(adminUser))
+                                            .chain(adminUser -> adminUser.addOrReuseInvolvedPartyNameType(
+                                                            session, NoClassification.toString(),
+                                                            FullNameType.toString(),
+                                                            "Enterprise Creator", system, identityToken)
+                                                    .replaceWith(adminUser))
+                                            .chain(adminUser -> adminUser.addOrReuseInvolvedPartyNameType(
+                                                            session, NoClassification.toString(),
+                                                            FirstNameType.toString(),
+                                                            "Administrator", system, identityToken)
+                                                    .replaceWith(adminUser))
+                                            .chain(adminUser -> get(SecurityTokenService.class).create(
+                                                            session, SecurityTokenClassifications.Identity.toString(),
+                                                            adminUserName,
+                                                            "The creator of the enterprise",
+                                                            system,
+                                                            (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?>) administratorsGroup,
+                                                            identityToken)
+                                                    .replaceWith(adminUser))
+                                            .chain(adminUser -> adminUser.addOrReuseInvolvedPartyIdentificationType(
+                                                            session, NoClassification.toString(),
+                                                            IdentificationTypeEnterpriseCreatorRole.toString(),
+                                                            adminUserName, system, identityToken)
+                                                    .replaceWith(adminUser))
+                                            .chain(adminUser -> addUpdateUsernamePassword(
+                                                    session, adminUserName, adminPassword, adminUser, system, identityToken))
+                                            // Provision the admin user's default security via the stateless per-row insert.
+                                            .chain(adminUser -> {
+                                                IActiveFlagService<?> afs = get(IActiveFlagService.class);
+                                                return get(SecurityTokenService.class)
+                                                        .resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                                        .chain(tokens -> afs.getActiveFlag(session, enterprise, identityToken)
+                                                                .chain(activeFlag -> ((com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseCoreTable) adminUser)
+                                                                        .createDefaultSecurity(session, system, enterprise, activeFlag, tokens, identityToken)
+                                                                        .onFailure().recoverWithItem(0L)))
+                                                        .replaceWith(adminUser);
+                                            });
+                                })));
     }
 }
 

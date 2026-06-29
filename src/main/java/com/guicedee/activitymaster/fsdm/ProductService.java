@@ -332,6 +332,27 @@ public class ProductService
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
+    public Uni<IProductType<?, ?>> findProductTypeForProduct(Mutiny.StatelessSession session, String productType, ISystems<?, ?> system, UUID... identityToken) {
+        var enterprise = system.getEnterprise();
+        return new ProductType().builder(session)
+                .withName(productType)
+                .withEnterprise(enterprise)
+                .inActiveRange()
+                .inDateRange()
+                .selectColumn(com.guicedee.activitymaster.fsdm.db.entities.product.ProductType_.id)
+                .selectColumn(com.guicedee.activitymaster.fsdm.db.entities.product.ProductType_.name)
+                .selectColumn(com.guicedee.activitymaster.fsdm.db.entities.product.ProductType_.description)
+                .get(Object[].class)
+                .map(row -> {
+                    ProductType prepped = new ProductType((UUID) row[0], (String) row[1], (String) row[2]);
+                    prepped.setEnterpriseID(enterprise);
+                    prepped.setFake(false);
+                    return (IProductType<?, ?>) prepped;
+                });
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
     public Uni<IProduct<?, ?>> findProduct(Mutiny.Session session, String productName, IClassification<?, ?> classification, ISystems<?, ?> system, UUID... identityToken) {
         var enterprise = system.getEnterprise();
         return (Uni) new Product()

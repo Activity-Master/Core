@@ -459,6 +459,75 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                 });
     }
 
+    // ---- Stateless (Mutiny.StatelessSession) twins of the per-row security-read checks. The applicable
+    // token set is resolved via the stateless getApplicableSecurityTokenIds (native SQL — fully
+    // stateless-safe); the security-row scan mirrors the managed logic on the stateless builder. ----
+
+    @Override
+    public Uni<Boolean> canRead(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
+        return hasGrant(session, system, row -> row.isReadAllowed(), identityToken);
+    }
+
+    @Override
+    public Uni<Boolean> canWrite(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
+        return hasGrant(session, system, row -> row.isCreateAllowed() || row.isUpdateAllowed(), identityToken);
+    }
+
+    @Override
+    public Uni<java.util.Set<UUID>> readableIds(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
+        return get(SecurityTokenService.class).getApplicableSecurityTokenIds(session, system, identityToken)
+                .chain(applicable -> {
+                    if (applicable == null || applicable.isEmpty()) {
+                        return Uni.createFrom().item(java.util.Collections.<UUID>emptySet());
+                    }
+                    S stAdmin = get(findPersistentSecurityClass());
+                    QueryBuilderSecurities<?, ?, ?> securities = stAdmin.builder(session);
+                    return securities.inDateRange()
+                            .getAll()
+                            .map(rows -> {
+                                java.util.Set<UUID> ids = new java.util.LinkedHashSet<>();
+                                for (Object o : rows) {
+                                    @SuppressWarnings("unchecked")
+                                    S row = (S) o;
+                                    var token = row.getSecurityTokenID();
+                                    if (token != null && applicable.contains(token.getId()) && row.isReadAllowed()) {
+                                        UUID baseId = extractBaseId(row);
+                                        if (baseId != null) {
+                                            ids.add(baseId);
+                                        }
+                                    }
+                                }
+                                return ids;
+                            });
+                });
+    }
+
+    private Uni<Boolean> hasGrant(Mutiny.StatelessSession session, ISystems<?, ?> system,
+                                  java.util.function.Predicate<S> grant, UUID... identityToken) {
+        return get(SecurityTokenService.class).getApplicableSecurityTokenIds(session, system, identityToken)
+                .chain(applicable -> {
+                    if (applicable == null || applicable.isEmpty()) {
+                        return Uni.createFrom().item(false);
+                    }
+                    S stAdmin = get(findPersistentSecurityClass());
+                    QueryBuilderSecurities<?, ?, ?> securities = stAdmin.builder(session);
+                    return securities.findLinkedSecurityTokens(this)
+                            .inDateRange()
+                            .getAll()
+                            .map(rows -> {
+                                for (Object o : rows) {
+                                    @SuppressWarnings("unchecked")
+                                    S row = (S) o;
+                                    var token = row.getSecurityTokenID();
+                                    if (token != null && applicable.contains(token.getId()) && grant.test(row)) {
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            });
+                });
+    }
+
     public Uni<Void> updateSecurity(Mutiny.Session session, J newCoreTable, Systems system) {
         log.trace("🔄 Updating security for table with system: {}", system.getName());
 

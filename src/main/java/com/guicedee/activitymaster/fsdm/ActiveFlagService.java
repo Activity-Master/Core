@@ -75,6 +75,22 @@ public class ActiveFlagService
                 });
     }
 
+    @Override
+    public Uni<UUID> resolveActiveFlagIdByName(Mutiny.StatelessSession session, IEnterprise<?, ?> enterpriseId, String flagName) {
+        return NameIdCache
+                .getActiveFlagId(session, enterpriseId.getId(), flagName, (sess, name) -> {
+                    return new ActiveFlag()
+                            .builder(sess)
+                            .withName(flagName)
+                            .withEnterprise(enterpriseId)
+                            .inActiveRange(enterpriseId)
+                            .get()
+                            .chain(flag -> {
+                                return Uni.createFrom().item(flag.getId());
+                            });
+                });
+    }
+
     //@Transactional()
     public Uni<IActiveFlag<?, ?>> create(Mutiny.Session session, IEnterprise<?, ?> enterprise, String name, String description, UUID... identifyingToken) {
         // Public create — ActiveFlags are enterprise reference data; no per-record security is stamped (unchanged).
@@ -255,8 +271,13 @@ public class ActiveFlagService
         // Stateless "fetch ids/scalars + prep": ActiveFlag is @Cacheable but its @ManyToOne is LAZY, so only
         // scalar columns are eager. Project the flag's own scalars (id, name, description, allowAccess) and
         // build a fresh DETACHED ActiveFlag, wiring the enterprise reference from the supplied parameter.
+        return findFlagByNameStateless(session, com.entityassist.enumerations.ActiveFlag.Active, enterprise);
+    }
+
+    /** Shared stateless scalar-projection + prep for the named flags (Active / Archived / Deleted). */
+    private Uni<IActiveFlag<?, ?>> findFlagByNameStateless(Mutiny.StatelessSession session, com.entityassist.enumerations.ActiveFlag flag, IEnterprise<?, ?> enterprise) {
         return new ActiveFlag().builder(session)
-                .withName(getNamesForFlags(Set.of(com.entityassist.enumerations.ActiveFlag.Active)))
+                .withName(getNamesForFlags(Set.of(flag)))
                 .inDateRange()
                 .withEnterprise(enterprise)
                 .selectColumn(ActiveFlag_.id)
@@ -283,8 +304,18 @@ public class ActiveFlagService
     }
 
     @Override
+    public Uni<IActiveFlag<?, ?>> getArchivedFlag(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+        return findFlagByNameStateless(session, com.entityassist.enumerations.ActiveFlag.Archived, enterprise);
+    }
+
+    @Override
     //@CacheResult(cacheName = "GetDeletedFlag")
     public Uni<IActiveFlag<?, ?>> getDeletedFlag(Mutiny.Session session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
         return findFlagByName(session, com.entityassist.enumerations.ActiveFlag.Deleted, enterprise, identifyingToken);
+    }
+
+    @Override
+    public Uni<IActiveFlag<?, ?>> getDeletedFlag(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+        return findFlagByNameStateless(session, com.entityassist.enumerations.ActiveFlag.Deleted, enterprise);
     }
 }

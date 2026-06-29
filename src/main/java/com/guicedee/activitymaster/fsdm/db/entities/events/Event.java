@@ -327,6 +327,15 @@ public class Event
     }
 
     @Override
+    public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.StatelessSession session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    {
+        EventXClassification e = (EventXClassification) linkTable;
+        e.setEventID(this);
+        e.setClassificationID(classificationValue);
+        return io.smallrye.mutiny.Uni.createFrom().voidItem();
+    }
+
+    @Override
     public void configureEventTypeLinkValue(IWarehouseRelationshipTable linkTable, Event primary, IEventType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?, ?> enterprise)
     {
         EventXEventType e = (EventXEventType) linkTable;
