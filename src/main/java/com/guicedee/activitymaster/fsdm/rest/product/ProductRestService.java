@@ -57,9 +57,9 @@ public class ProductRestService {
                                 ProductFindDTO findDto) {
         UUID productId = findDto.productId;
         List<ProductDataIncludes> includesList = findDto.includes;
-        return SessionUtils.<ProductDTO>withActivityMaster(enterpriseName, requestingSystemName,
-                (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                    Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<ProductDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
+                (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                    Mutiny.StatelessSession session = tuple.getItem1();
                     return productService.find(session, productId)
                             .chain(product -> {
                                 Product p = (Product) product;
@@ -101,9 +101,9 @@ public class ProductRestService {
                                   ProductCreateDTO dto) {
         // Use the first entry in dto.types as the primary product type during creation
         Map.Entry<String, String> primaryType = dto.types.entrySet().iterator().next();
-        return SessionUtils.<ProductDTO>withActivityMaster(enterpriseName, requestingSystemName,
-                (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                    Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<ProductDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
+                (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                    Mutiny.StatelessSession session = tuple.getItem1();
                     ISystems<?, ?> system = tuple.getItem3();
                     UUID[] token = tuple.getItem4();
                     return productService.createProduct(session, primaryType.getKey(),
@@ -141,8 +141,8 @@ public class ProductRestService {
                                   ProductUpdateDTO dto) {
         UUID productId = dto.productId;
         // Step 1: Find the product in its own session (just to validate it exists)
-        return SessionUtils.<UUID>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<UUID>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             return productService.find(session, productId).map(IRootEntity::getId);
         }).map(foundId -> {
             // Step 2: Fire-and-forget relationship persistence in parallel
@@ -163,7 +163,7 @@ public class ProductRestService {
     // Include fetching — all use session.fetch() for lazy-loaded entities
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Uni<ProductDTO> fetchInclude(Mutiny.Session session, Product product, ProductDTO dto, ProductDataIncludes include) {
+    private Uni<ProductDTO> fetchInclude(Mutiny.StatelessSession session, Product product, ProductDTO dto, ProductDataIncludes include) {
         return switch (include) {
             case Types -> new ProductXProductType().builder(session)
                     .where(ProductXProductType_.productID, Equals, product)
@@ -232,8 +232,8 @@ public class ProductRestService {
         String label = "product " + productId;
 
         if (dto.classifications != null && !dto.classifications.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return productService.find(s, productId).chain(product -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     for (var entry : dto.classifications.entrySet()) {
@@ -245,8 +245,8 @@ public class ProductRestService {
         }
 
         if (dto.types != null && !dto.types.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return productService.find(s, productId).chain(product -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     for (var entry : dto.types.entrySet()) {
@@ -258,8 +258,8 @@ public class ProductRestService {
         }
 
         if (dto.resources != null && !dto.resources.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return productService.find(s, productId).chain(product -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     for (var entry : dto.resources.entrySet()) {
@@ -280,8 +280,8 @@ public class ProductRestService {
         String label = "product " + productId;
 
         if (hasEntries(dto.classifications)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return productService.find(s, productId).chain(product -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.classifications, (name, value) ->
@@ -294,8 +294,8 @@ public class ProductRestService {
         }
 
         if (hasEntries(dto.types)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return productService.find(s, productId).chain(product -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.types, (name, value) ->
@@ -308,8 +308,8 @@ public class ProductRestService {
         }
 
         if (hasEntries(dto.resources)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return productService.find(s, productId).chain(product -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     if (dto.resources.addOrUpdate != null) {
@@ -380,7 +380,7 @@ public class ProductRestService {
     private <L extends WarehouseBaseTable<L, ?, UUID>, R> Uni<Void> chainDeleteByExpire(
             Uni<Void> chain,
             RelationshipUpdateEntry entry,
-            Mutiny.Session session,
+            Mutiny.StatelessSession session,
             Product product,
             Class<L> linkClass,
             jakarta.persistence.metamodel.SingularAttribute productAttr,

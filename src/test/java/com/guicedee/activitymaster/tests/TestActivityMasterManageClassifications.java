@@ -39,24 +39,22 @@ public class TestActivityMasterManageClassifications {
     sessionFactory = IGuiceContext.get(Key.get(Mutiny.SessionFactory.class, Names.named("ActivityMaster-Test")));
     assertNotNull(sessionFactory, "SessionFactory should not be null");
 
-    // Ensure Enterprise and Activity Master system exist for this class context
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
-      IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
-      ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
-      return enterpriseService.getEnterprise(session, TestEnterprise.name())
-          .onFailure().recoverWithUni(t -> {
-            var ent = enterpriseService.get();
-            ent.setName(TestEnterprise.name());
-            ent.setDescription("Enterprise for MC tests");
-            return enterpriseService.createNewEnterprise(session, ent)
-                       .chain(enter-> enterpriseService.startNewEnterprise(session,TestEnterprise.name(),"admin","adminadmin!@"));
-          })
-          .chain(ent -> systemsService.getActivityMaster(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent)
-              .onFailure().recoverWithUni(t -> systemsService.create(session, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?>) ent,
-                  ISystemsService.ActivityMasterSystemName, "Activity Master System"))
-          )
-          .replaceWith(Uni.createFrom().voidItem());
-    })).await().atMost(Duration.ofMinutes(2));
+    // Provision the enterprise on the stateless pipeline (no bridge to a managed session). createNewEnterprise
+    // creates the record + installs/registers every system via the stateless registerSystem path (so
+    // stateless-only systems like TimeSystem work); startNewEnterprise then seeds the admin + post-startups.
+    IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+    sessionFactory.openStatelessSession()
+        .chain(ss -> enterpriseService.getEnterprise(ss, TestEnterprise.name())
+            .onFailure().recoverWithUni(t -> {
+              var ent = enterpriseService.get();
+              ent.setName(TestEnterprise.name());
+              ent.setDescription("Enterprise for MC tests");
+              return enterpriseService.createNewEnterprise(ss, ent);
+            })
+            .chain(ent -> enterpriseService.startNewEnterprise(ss, TestEnterprise.name(), "admin", "adminadmin!@"))
+            .onFailure().recoverWithItem(e -> null)
+            .eventually(ss::close))
+        .await().atMost(Duration.ofMinutes(2));
   }
 
   private Uni<Void> ensureClassification(Mutiny.Session session, ISystems<?, ?> sys, String name) {

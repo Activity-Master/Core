@@ -188,6 +188,44 @@ public class ActiveFlagService
                 });
     }
 
+    /**
+     * Stateless opt-in <strong>scope-restricted</strong> ActiveFlag create — the stateless twin of
+     * {@link #createScopeRestricted(Mutiny.Session, IEnterprise, String, String, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}.
+     * Existence is checked with a scalar {@code getCount()} (an existing flag is returned prepped); a new flag is
+     * inserted and secured with the restricted matrix (no Everyone/Everywhere/Guests; {@code scopeToken}=read).
+     * Each create runs on its own stateless unit, so independent stateless sessions can provision flags in parallel.
+     */
+    @Override
+    public Uni<IActiveFlag<?, ?>> createScopeRestricted(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, String name, String description,
+                                                        com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems<?, ?> system,
+                                                        com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                                        UUID... identifyingToken) {
+        return new ActiveFlag().builder(session)
+                .withName(name)
+                .inDateRange()
+                .withEnterprise(enterprise)
+                .getCount()
+                .chain(count -> {
+                    if (count != null && count > 0) {
+                        return create(session, enterprise, name, description, identifyingToken);
+                    }
+                    ActiveFlag af = new ActiveFlag();
+                    af.setId(UUID.randomUUID());
+                    af.setName(name);
+                    af.setDescription(description);
+                    af.setAllowAccess(true);
+                    af.setEnterpriseID((Enterprise) enterprise);
+                    com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService<?> sts =
+                            com.guicedee.client.IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.class);
+                    return af.builder(session).persist(af)
+                            .chain(persisted -> sts.resolveDefaultGroupFolderTokens(session, system, identifyingToken)
+                                    // The flag secures itself: it is its own ActiveFlag reference for the security rows.
+                                    .chain(tokens -> af.createScopeRestrictedSecurity(session, system, enterprise, af, tokens, scopeToken, identifyingToken))
+                                    .onFailure().recoverWithItem(0L)
+                                    .replaceWith((IActiveFlag<?, ?>) af));
+                });
+    }
+
 
     @Override
     public Uni<IActiveFlag<?, ?>> findFlagByName(Mutiny.Session session, com.entityassist.enumerations.ActiveFlag flag, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
@@ -296,6 +334,64 @@ public class ActiveFlagService
     //@CacheResult(cacheName = "GetActiveFlag")
     public Uni<IActiveFlag<?, ?>> getActiveFlag(Mutiny.Session session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
         return findFlagByName(session, com.entityassist.enumerations.ActiveFlag.Active, enterprise, identifyingToken);
+    }
+
+    // ============================================================================================
+    // Stateless finder twins.
+    // ============================================================================================
+
+    Uni<List<ActiveFlag>> findStateless(Mutiny.StatelessSession session, String[] name, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+        return new ActiveFlag().builder(session)
+                .withName(name)
+                .inDateRange()
+                .withEnterprise(enterprise)
+                .getAll();
+    }
+
+    @Override
+    public Uni<IActiveFlag<?, ?>> findFlagByName(Mutiny.StatelessSession session, com.entityassist.enumerations.ActiveFlag flag, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+        return findFlagByName(session, flag.name(), enterprise, identifyingToken);
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IActiveFlag<?, ?>> findFlagByName(Mutiny.StatelessSession session, String flag, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+        return (Uni) new ActiveFlag().builder(session)
+                .withName(flag)
+                .inDateRange()
+                .withEnterprise(enterprise)
+                .get()
+                .onItem().ifNull().failWith(() -> new NoResultException("ActiveFlag not found: " + flag));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IActiveFlag<?, ?>>> findActiveRange(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+        return (Uni) findStateless(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getActiveRangeAndUp()), enterprise, identifyingToken);
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IActiveFlag<?, ?>>> getVisibleRange(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+        return (Uni) findStateless(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getVisibleRangeAndUp()), enterprise, identifyingToken);
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IActiveFlag<?, ?>>> getRemovedRange(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+        return (Uni) findStateless(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getRemovedRange()), enterprise, identifyingToken);
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IActiveFlag<?, ?>>> getArchiveRange(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+        return (Uni) findStateless(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getArchivedRange()), enterprise, identifyingToken);
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IActiveFlag<?, ?>>> getHighlightedRange(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+        return (Uni) findStateless(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getHighlightedRange()), enterprise, identifyingToken);
     }
 
     @Override

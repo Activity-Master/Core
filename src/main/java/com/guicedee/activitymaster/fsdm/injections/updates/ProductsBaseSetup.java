@@ -51,4 +51,29 @@ public class ProductsBaseSetup implements ISystemUpdate
 					});
 			});
 	}
+
+	/** Stateless twin of {@link #update(Mutiny.Session, IEnterprise)}. */
+	@Override
+	public Uni<Boolean> update(Mutiny.StatelessSession session, IEnterprise<?,?> enterprise)
+	{
+		log.info("Starting sequential creation of product classifications (stateless)");
+
+		ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+
+		return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+			.chain(activityMasterSystem -> {
+				return service.create(session, ProductClassifications.Products, activityMasterSystem)
+					.chain(baseClassification -> {
+						log.info("Creating product classifications sequentially (stateless)");
+
+						return service.create(session, ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products)
+							.chain(() -> service.create(session, ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup))
+							.chain(() -> service.create(session, ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup))
+							.chain(() -> service.create(session, ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup))
+							.onFailure().invoke(error -> log.error("Error creating product classifications (stateless): {}", error.getMessage(), error))
+							.invoke(() -> logProgress("Products System", "Loaded Product Classifications...", 5))
+							.map(result -> true);
+					});
+			});
+	}
 }

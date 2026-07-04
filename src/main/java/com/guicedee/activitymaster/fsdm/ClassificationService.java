@@ -44,6 +44,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.ClassificationQueryBuilder;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
@@ -81,6 +82,12 @@ public class ClassificationService
     @Override
     public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts concept,
                                              ISystems<?, ?> system, Integer sequenceOrder, String parentName, UUID... identityToken) {
+        // No parent supplied → create the classification unparented. (A null/blank parentName must NOT be
+        // looked up — find(session, null, …) matches no row and throws NoResultException; this is exactly
+        // the path ProfileMasterInstall hits when provisioning top-level attribute classifications.)
+        if (parentName == null || parentName.isBlank()) {
+            return create(session, name, description, concept, system, sequenceOrder, (IClassification<?, ?>) null, identityToken);
+        }
         return find(session, parentName, system, identityToken)
                 .chain(classification -> create(session, name, description, concept, system, sequenceOrder, classification, identityToken));
     }
@@ -490,6 +497,35 @@ public class ClassificationService
     public Uni<IClassification<?, ?>> create(Mutiny.StatelessSession session, String name, String description,
                                              EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system,
                                              Integer sequenceNumber, IClassification<?, ?> parent, UUID... identityToken) {
+        return createStatelessInternal(session, name, description, concept, system, sequenceNumber, parent, null, false, identityToken);
+    }
+
+
+    /**
+     * Stateless opt-in <strong>scope-restricted</strong> classification create — the stateless twin of
+     * {@link #createScopeRestricted(Mutiny.Session, String, String, EnterpriseClassificationDataConcepts, ISystems, Integer, IClassification, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}.
+     * Identical to the stateless {@code create} except the row is secured with the <em>restricted</em>
+     * matrix (Administrators=CRUD, Systems/Applications/Plugins=create/update/read, <strong>no</strong>
+     * Everyone/Everywhere/Guests, plus a <em>read</em> grant for {@code scopeToken}). Because each create
+     * runs on its own stateless unit with pre-resolved references, multiple records can be provisioned in
+     * parallel across independent stateless sessions.
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Uni<IClassification<?, ?>> createScopeRestricted(Mutiny.StatelessSession session, String name, String description,
+                                                            EnterpriseClassificationDataConcepts conceptName, ISystems<?, ?> system,
+                                                            Integer sequenceNumber, IClassification<?, ?> parent,
+                                                            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                                            UUID... identityToken) {
+        return createStatelessInternal(session, name, description, conceptName, system, sequenceNumber, parent, scopeToken, true, identityToken);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Uni<IClassification<?, ?>> createStatelessInternal(Mutiny.StatelessSession session, String name, String description,
+                                             EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system,
+                                             Integer sequenceNumber, IClassification<?, ?> parent,
+                                             com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                             boolean restricted, UUID... identityToken) {
         var enterprise = system.getEnterprise();
         // Resolve the data-concept name to project/prep: the supplied concept, or the default "NoClassification".
         String conceptName = concept != null ? concept.classificationValue() : "NoClassification";
@@ -520,7 +556,9 @@ public class ClassificationService
                                 return rootCl.builder(session)
                                         .persist(rootCl)
                                         .chain(persisted -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
-                                                .chain(tokens -> rootCl.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
+                                                .chain(tokens -> restricted
+                                                        ? rootCl.createScopeRestrictedSecurity(session, system, enterprise, activeFlag, tokens, scopeToken, identityToken)
+                                                        : rootCl.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
                                                 .onFailure()
                                                 .recoverWithItem(0L)
                                                 .replaceWith((IClassification<?, ?>) rootCl));

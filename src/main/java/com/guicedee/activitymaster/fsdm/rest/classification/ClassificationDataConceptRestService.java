@@ -62,11 +62,11 @@ public class ClassificationDataConceptRestService {
                                                   ClassificationDataConceptFindDTO findDto) {
         UUID conceptId = findDto.conceptId;
         List<ClassificationDataConceptDataIncludes> includesList = findDto.includes;
-        return SessionUtils.<ClassificationDataConceptDTO>withActivityMaster(enterpriseName, requestingSystemName,
-                (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                    Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<ClassificationDataConceptDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
+                (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                    Mutiny.StatelessSession session = tuple.getItem1();
                     IEnterprise<?, ?> enterprise = tuple.getItem2();
-                    return session.find(ClassificationDataConcept.class, conceptId)
+                    return session.get(ClassificationDataConcept.class, conceptId)
                             .chain(concept -> {
                                 if (concept == null) {
                                     return Uni.createFrom().failure(new NotFoundException("Classification data concept not found: " + conceptId));
@@ -111,9 +111,9 @@ public class ClassificationDataConceptRestService {
         if (concept == null) {
             return Uni.createFrom().failure(new BadRequestException("Unknown classification data concept name: " + dto.name));
         }
-        return SessionUtils.<ClassificationDataConceptDTO>withActivityMaster(enterpriseName, requestingSystemName,
-                (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                    Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<ClassificationDataConceptDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
+                (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                    Mutiny.StatelessSession session = tuple.getItem1();
                     ISystems<?, ?> system = tuple.getItem3();
                     UUID[] token = tuple.getItem4();
                     return dataConceptService.createDataConcept(session, concept, dto.description, system, token)
@@ -145,9 +145,9 @@ public class ClassificationDataConceptRestService {
                                                     @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                                     ClassificationDataConceptUpdateDTO dto) {
         UUID conceptId = dto.conceptId;
-        return SessionUtils.<UUID>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
-            return session.find(ClassificationDataConcept.class, conceptId)
+        return SessionUtils.<UUID>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
+            return session.get(ClassificationDataConcept.class, conceptId)
                     .chain(concept -> {
                         if (concept == null) {
                             return Uni.createFrom().failure(new NotFoundException("Classification data concept not found: " + conceptId));
@@ -173,7 +173,7 @@ public class ClassificationDataConceptRestService {
     // Include fetching
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Uni<ClassificationDataConceptDTO> fetchInclude(Mutiny.Session session, ClassificationDataConcept concept,
+    private Uni<ClassificationDataConceptDTO> fetchInclude(Mutiny.StatelessSession session, ClassificationDataConcept concept,
                                                            ClassificationDataConceptDTO dto,
                                                            ClassificationDataConceptDataIncludes include, IEnterprise<?, ?> enterprise) {
         return switch (include) {
@@ -223,11 +223,11 @@ public class ClassificationDataConceptRestService {
     private void persistResourcesAsync(String enterpriseName, String requestingSystemName,
                                        UUID conceptId, Map<String, String> addOrUpdate, List<String> delete) {
         String label = "classification data concept " + conceptId;
-        SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session s = tuple.getItem1();
+        SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession s = tuple.getItem1();
             ISystems<?, ?> sys = tuple.getItem3();
             UUID[] token = tuple.getItem4();
-            return s.find(ClassificationDataConcept.class, conceptId).chain(concept -> {
+            return s.get(ClassificationDataConcept.class, conceptId).chain(concept -> {
                 if (concept == null) {
                     return Uni.createFrom().voidItem();
                 }

@@ -89,31 +89,22 @@ public class TestActivityMasterAdminLifecycle {
         IGuiceContext.get(ISecurityTokenService.class);
         IGuiceContext.get(IPasswordsService.class);
 
-        // Ensure the enterprise + Activity Master system exist.
-        sessionFactory.withSession(session ->
-                session.withTransaction(tx ->
-                        enterpriseService.getEnterprise(session, TestEnterprise.name())
-                                .onFailure().recoverWithUni(t -> {
-                                    var ent = enterpriseService.get();
-                                    ent.setName(TestEnterprise.name());
-                                    ent.setDescription("Enterprise for Admin Lifecycle Testing");
-                                    return enterpriseService.createNewEnterprise(session, ent);
-                                })
-                                .chain(ent -> systemsService.getActivityMaster(session, (IEnterprise<?, ?>) ent)
-                                        .onFailure().recoverWithUni(t -> systemsService.create(session, (IEnterprise<?, ?>) ent,
-                                                ISystemsService.ActivityMasterSystemName, "Activity Master System")))
-                                .replaceWith(Uni.createFrom().voidItem())
-                )
-        ).await().atMost(Duration.of(2, ChronoUnit.MINUTES));
-
-        // Start the enterprise (idempotent) — seeds the canonical groups/folders AND the admin user/token.
-        sessionFactory.withSession(session ->
-                session.withTransaction(tx ->
-                        enterpriseService.startNewEnterprise(session, TestEnterprise.name(), ADMIN_USER, ADMIN_PASSWORD)
-                                .onFailure().recoverWithItem(e -> null)
-                                .replaceWith(Uni.createFrom().voidItem())
-                )
-        ).await().atMost(Duration.of(2, ChronoUnit.MINUTES));
+        // Provision the enterprise entirely on the stateless pipeline — NO bridge to a managed session.
+        // createNewEnterprise creates the enterprise record AND installs/registers every system (via the
+        // stateless registerSystem path, so stateless-only systems like TimeSystem work); startNewEnterprise
+        // then seeds the admin user/token + post-startups. Idempotent: create only when absent, always start.
+        sessionFactory.openStatelessSession()
+                .chain(ss -> enterpriseService.getEnterprise(ss, TestEnterprise.name())
+                        .onFailure().recoverWithUni(t -> {
+                            var ent = enterpriseService.get();
+                            ent.setName(TestEnterprise.name());
+                            ent.setDescription("Enterprise for Admin Lifecycle Testing");
+                            return enterpriseService.createNewEnterprise(ss, ent);
+                        })
+                        .chain(ent -> enterpriseService.startNewEnterprise(ss, TestEnterprise.name(), ADMIN_USER, ADMIN_PASSWORD))
+                        .onFailure().recoverWithItem(e -> null)
+                        .eventually(ss::close))
+                .await().atMost(Duration.of(2, ChronoUnit.MINUTES));
     }
 
     // ──────────────────────────────────────────────────────────────────────────────────────────────

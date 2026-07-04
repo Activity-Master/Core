@@ -86,6 +86,8 @@ public class ResourceItemService
     // Safe: detached scalar projection, stable reference types; only cached on a real hit.
     private static final java.util.Map<UUID, java.util.Map<String, IResourceItemType<?, ?>>> STATELESS_RESOURCE_ITEM_TYPE_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
 
+    private static final UUID ZERO_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+
     // UUID-based lookup to leverage Hibernate 2nd-level cache
     public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItemType<?, ?>> getResourceItemTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id) {
         //noinspection unchecked,rawtypes
@@ -154,6 +156,30 @@ public class ResourceItemService
      */
     @Override
     public Uni<IResourceItemType<?, ?>> createType(Mutiny.StatelessSession session, String value, String description, ISystems<?, ?> system, UUID... identityToken) {
+        return createTypeStateless(session, value, null, description, system, null, false, identityToken);
+    }
+
+    @Override
+    public Uni<IResourceItemType<?, ?>> createType(Mutiny.StatelessSession session, String value, UUID key, String description, ISystems<?, ?> system, UUID... identityToken) {
+        return createTypeStateless(session, value, key, description, system, null, false, identityToken);
+    }
+
+    /**
+     * Stateless opt-in <strong>scope-restricted</strong> resource-item-type create — the stateless twin of
+     * {@link #createTypeScopeRestricted(Mutiny.Session, String, UUID, String, ISystems, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}.
+     * The new type is secured with the restricted matrix (no Everyone/Everywhere/Guests; {@code scopeToken}=read).
+     * Each create runs on its own stateless unit, so independent stateless sessions can provision types in parallel.
+     */
+    @Override
+    public Uni<IResourceItemType<?, ?>> createTypeScopeRestricted(Mutiny.StatelessSession session, String value, UUID key, String description, ISystems<?, ?> system,
+                                                                  com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                                                  UUID... identityToken) {
+        return createTypeStateless(session, value, key, description, system, scopeToken, true, identityToken);
+    }
+
+    private Uni<IResourceItemType<?, ?>> createTypeStateless(Mutiny.StatelessSession session, String value, UUID key, String description, ISystems<?, ?> system,
+                                                             com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                                             boolean restricted, UUID... identityToken) {
         var enterprise = system.getEnterprise();
         return new ResourceItemType().builder(session)
                 .withName(value)
@@ -180,9 +206,9 @@ public class ResourceItemService
                                 });
                     }
                     ResourceItemType xr = new ResourceItemType();
-                    xr.setId(UUID.randomUUID());
+                    xr.setId(key == null ? UUID.randomUUID() : key);
                     xr.setName(value);
-                    xr.setDescription(value);
+                    xr.setDescription(description);
                     xr.setOriginalSourceSystemID(system.getId());
                     xr.setSystemID(system);
                     xr.setEnterpriseID(enterprise);
@@ -194,12 +220,15 @@ public class ResourceItemService
                                 xr.setActiveFlagID(activeFlag);
                                 return xr.builder(session).persist(xr)
                                         .chain(persisted -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
-                                                .chain(tokens -> xr.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
+                                                .chain(tokens -> restricted
+                                                        ? xr.createScopeRestrictedSecurity(session, system, enterprise, activeFlag, tokens, scopeToken, identityToken)
+                                                        : xr.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
                                                 .onFailure().recoverWithItem(0L)
                                                 .replaceWith((IResourceItemType<?, ?>) xr));
                             });
                 });
     }
+
 
     /**
      * Opt-in <strong>scope-restricted</strong> resource-item-type create. Same as
@@ -781,6 +810,115 @@ public class ResourceItemService
     }
 
 
+    // ============================================================================================
+    // Stateless read twins of findByClassification / findByClassificationAll. The link/type joins and
+    // the lazy resource-item fetch are stateless-safe (Mutiny.StatelessSession supports fetch).
+    // ============================================================================================
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IResourceItem<?, ?>> findByClassification(Mutiny.StatelessSession session, String resourceType,
+                                                         String classification,
+                                                         String value,
+                                                         ISystems<?, ?> systems,
+                                                         UUID... identityToken) {
+        log.trace("Finding resource by classification (stateless) - resourceType: {}, classification: {}, value: {}", resourceType, classification, value);
+        return classificationService
+                .find(session, classification, systems, identityToken)
+                .chain(clazz -> {
+                    if (clazz == null) {
+                        return Uni.createFrom().nullItem();
+                    }
+                    try {
+                        ResourceItemXClassification res = new ResourceItemXClassification();
+                        ResourceItemXClassificationQueryBuilder builder = res.builder(session);
+
+                        builder.where(ResourceItemXClassification_.classificationID, Equals, (Classification) clazz);
+                        if (!Strings.isNullOrEmpty(value)) {
+                            builder.where(ResourceItemXClassification_.value, Equals, value);
+                        }
+
+                        JoinExpression<ResourceItem, ResourceItem, ResourceItemXClassification> resourceJoin = new JoinExpression<>();
+                        ResourceItemQueryBuilder itemQueryBuilder = new ResourceItem().builder(session);
+                        builder.join(ResourceItemXClassification_.resourceItemID, itemQueryBuilder, JoinType.INNER, resourceJoin);
+
+                        ListJoin<ResourceItem, ResourceItemXResourceItemType> resourceItemTypesJoin = resourceJoin
+                                .getGeneratedRoot()
+                                .join(ResourceItem_.types, INNER);
+
+                        Join<ResourceItemXResourceItemType, ResourceItemType> resourceTypesJoin = resourceItemTypesJoin
+                                .join(ResourceItemXResourceItemType_.resourceItemTypeID, INNER);
+
+                        resourceTypesJoin.on(builder
+                                .getCriteriaBuilder()
+                                .equal(resourceTypesJoin.get(ResourceItemType_.name), resourceType));
+
+                        return builder
+                                .get()
+                                .chain(exists -> exists != null ?
+                                        session.fetch(exists.getResourceItemID()) :
+                                        Uni.createFrom()
+                                                .failure(new ResourceItemException("Cannot find resource item for classification: %s".formatted(classification))));
+                    } catch (Exception e) {
+                        log.error("Error finding resource by classification (stateless) - resourceType: {}, classification: {}, value: {}",
+                                resourceType, classification, value, e);
+                        return Uni.createFrom().failure(e);
+                    }
+                });
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IRelationshipValue<IResourceItem<?, ?>, IClassification<?, ?>, ?>>> findByClassificationAll(Mutiny.StatelessSession session, String resourceType,
+                                                                                                                String classification,
+                                                                                                                String value,
+                                                                                                                ISystems<?, ?> systems,
+                                                                                                                UUID... identityToken) {
+        log.trace("Finding all resources by classification (stateless) - resourceType: {}, classification: {}, value: {}", resourceType, classification, value);
+        return classificationService
+                .find(session, classification, systems, identityToken)
+                .chain(clazz -> {
+                    if (clazz == null) {
+                        return Uni.createFrom().item(Collections.<IRelationshipValue<IResourceItem<?, ?>, IClassification<?, ?>, ?>>emptyList());
+                    }
+                    ResourceItemXClassification res = new ResourceItemXClassification();
+                    ResourceItemXClassificationQueryBuilder builder = res.builder(session);
+
+                    builder.where(ResourceItemXClassification_.classificationID, Equals, (Classification) clazz);
+                    if (!Strings.isNullOrEmpty(value)) {
+                        builder.where(ResourceItemXClassification_.value, Equals, value);
+                    }
+
+                    JoinExpression<ResourceItem, ResourceItem, ResourceItemXClassification> resourceJoin = new JoinExpression<>();
+                    ResourceItemQueryBuilder itemQueryBuilder = new ResourceItem().builder(session);
+                    builder.join(ResourceItemXClassification_.resourceItemID, itemQueryBuilder, JoinType.INNER, resourceJoin);
+
+                    ListJoin<ResourceItem, ResourceItemXResourceItemType> resourceItemTypesJoin = resourceJoin
+                            .getGeneratedRoot()
+                            .join(ResourceItem_.types, INNER);
+
+                    Join<ResourceItemXResourceItemType, ResourceItemType> resourceTypesJoin = resourceItemTypesJoin
+                            .join(ResourceItemXResourceItemType_.resourceItemTypeID, INNER);
+
+                    resourceTypesJoin.on(builder
+                            .getCriteriaBuilder()
+                            .equal(resourceTypesJoin.get(ResourceItemType_.name), resourceType));
+
+                    return builder
+                            .getAll()
+                            .map(results -> {
+                                List<IRelationshipValue<IResourceItem<?, ?>, IClassification<?, ?>, ?>> castedResults =
+                                        (List<IRelationshipValue<IResourceItem<?, ?>, IClassification<?, ?>, ?>>) (List<?>) results;
+                                return castedResults;
+                            })
+                            .onFailure()
+                            .invoke(e ->
+                                    log.error("Error finding all resources by classification (stateless) - resourceType: {}, classification: {}, value: {}",
+                                            resourceType, classification, value, e));
+                });
+    }
+
+
     @SuppressWarnings("unchecked")
     @Override
     public Uni<IResourceItem<?, ?>> findByUUID(Mutiny.Session session, UUID uuid) {
@@ -809,46 +947,147 @@ public class ResourceItemService
 
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IResourceItem<?, ?>> create(Mutiny.StatelessSession session, String identityResourceType, String resourceItemDataValue,
+                                           ISystems<?, ?> system, UUID... identityToken) {
+        return createStateless(session, identityResourceType, null, resourceItemDataValue, ZERO_UUID, RootEntity.getNow(), null, system, null, false, identityToken);
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Uni<IResourceItem<?, ?>> create(Mutiny.StatelessSession session, String identityResourceType, String resourceItemDataValue, byte[] data,
                                            ISystems<?, ?> system, UUID... identityToken) {
+        return createStateless(session, identityResourceType, null, resourceItemDataValue, ZERO_UUID, RootEntity.getNow(), data, system, null, false, identityToken);
+    }
+
+    @Override
+    public Uni<IResourceItem<?, ?>> create(Mutiny.StatelessSession session, String identityResourceType, UUID key, String resourceItemDataValue,
+                                           ISystems<?, ?> system, UUID... identityToken) {
+        return createStateless(session, identityResourceType, key, resourceItemDataValue, ZERO_UUID, RootEntity.getNow(), null, system, null, false, identityToken);
+    }
+
+    @Override
+    public Uni<IResourceItem<?, ?>> create(Mutiny.StatelessSession session, String identityResourceType, UUID key, String resourceItemDataValue, byte[] data,
+                                           ISystems<?, ?> system, UUID... identityToken) {
+        return createStateless(session, identityResourceType, key, resourceItemDataValue, ZERO_UUID, RootEntity.getNow(), data, system, null, false, identityToken);
+    }
+
+    @Override
+    public Uni<IResourceItem<?, ?>> create(Mutiny.StatelessSession session, String identityResourceType, String resourceItemDataValue, UUID originalSourceSystemUniqueID,
+                                           LocalDateTime effectiveFromDate, ISystems<?, ?> system, UUID... identityToken) {
+        return createStateless(session, identityResourceType, null, resourceItemDataValue, originalSourceSystemUniqueID, effectiveFromDate, null, system, null, false, identityToken);
+    }
+
+    @Override
+    public Uni<IResourceItem<?, ?>> create(Mutiny.StatelessSession session, String identityResourceType, String resourceItemDataValue, UUID originalSourceSystemUniqueID,
+                                           LocalDateTime effectiveFromDate, byte[] data, ISystems<?, ?> system, UUID... identityToken) {
+        return createStateless(session, identityResourceType, null, resourceItemDataValue, originalSourceSystemUniqueID, effectiveFromDate, data, system, null, false, identityToken);
+    }
+
+    @Override
+    public Uni<IResourceItem<?, ?>> create(Mutiny.StatelessSession session, String identityResourceType, UUID key, String resourceItemDataValue, UUID originalSourceSystemUniqueID,
+                                           LocalDateTime effectiveFromDate, ISystems<?, ?> system, UUID... identityToken) {
+        return createStateless(session, identityResourceType, key, resourceItemDataValue, originalSourceSystemUniqueID, effectiveFromDate, null, system, null, false, identityToken);
+    }
+
+    @Override
+    public Uni<IResourceItem<?, ?>> create(Mutiny.StatelessSession session, String identityResourceType, UUID key, String resourceItemDataValue, UUID originalSourceSystemUniqueID,
+                                           LocalDateTime effectiveFromDate, byte[] data, ISystems<?, ?> system, UUID... identityToken) {
+        return createStateless(session, identityResourceType, key, resourceItemDataValue, originalSourceSystemUniqueID, effectiveFromDate, data, system, null, false, identityToken);
+    }
+
+    /**
+     * Stateless opt-in <strong>scope-restricted</strong> resource-item create — the stateless twin of
+     * {@link #createScopeRestricted(Mutiny.Session, String, UUID, String, UUID, LocalDateTime, byte[], ISystems, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}.
+     * Secures both the resource-item data row <em>and</em> its type relationship with the restricted matrix
+     * (no Everyone/Everywhere/Guests; {@code scopeToken}=read). Each create runs on its own stateless unit,
+     * so independent stateless sessions can provision items in parallel.
+     */
+    @Override
+    public Uni<IResourceItem<?, ?>> createScopeRestricted(Mutiny.StatelessSession session, String identityResourceType, UUID key, String resourceItemDataValue,
+                                           UUID originalSourceSystemUniqueID, LocalDateTime effectiveFromDate, byte[] data,
+                                           ISystems<?, ?> system,
+                                           com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                           UUID... identityToken) {
+        return createStateless(session, identityResourceType, key, resourceItemDataValue, originalSourceSystemUniqueID, effectiveFromDate, data, system, scopeToken, true, identityToken);
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IResourceItem<?, ?>> createScopeRestricted(Mutiny.StatelessSession session, String identityResourceType, String resourceItemDataValue, byte[] data,
+                                           ISystems<?, ?> system,
+                                           com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                           UUID... identityToken) {
+        return createStateless(session, identityResourceType, null, resourceItemDataValue, ZERO_UUID, RootEntity.getNow(), data, system, scopeToken, true, identityToken);
+    }
+
+    /**
+     * Single stateless create implementation mirroring the managed {@code createInternal}: honours
+     * {@code key} (idempotent find-or-insert by id), {@code originalSourceSystemUniqueID} and
+     * {@code effectiveFromDate}; inserts the {@code ResourceItem} + {@code ResourceItemData}(+{@code Value});
+     * provisions default or scope-restricted security; <strong>and links the resource-item-TYPE
+     * relationship</strong> (the step the earlier stateless create omitted, so {@code identityResourceType}
+     * was previously ignored). Relational storage only — the MongoDB JSON route stays on the managed path.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Uni<IResourceItem<?, ?>> createStateless(Mutiny.StatelessSession session, String identityResourceType, UUID key, String resourceItemDataValue,
+                                           UUID originalSourceSystemUniqueID, LocalDateTime effectiveFromDate, byte[] data,
+                                           ISystems<?, ?> system,
+                                           com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                           boolean restricted, UUID... identityToken) {
         var enterprise = system.getEnterprise();
         IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
         com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService<?> sts =
                 IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.class);
-        return acService.getActiveFlag(session, enterprise, identityToken)
-                .chain(activeFlag -> {
-                    ResourceItem xr = new ResourceItem();
-                    xr.setId(UUID.randomUUID());
-                    xr.setOriginalSourceSystemID(system.getId());
-                    xr.setEffectiveFromDate(convertToUTCDateTime(RootEntity.getNow()));
-                    xr.setSystemID(system);
-                    xr.setEnterpriseID(enterprise);
-                    xr.setActiveFlagID(activeFlag);
-                    xr.setResourceItemDataType(resourceItemDataValue);
-                    return xr.builder(session).persist(xr).replaceWith(xr).chain(persisted -> {
-                        ResourceItemData rid = new ResourceItemData();
-                        rid.setResource(persisted);
-                        LocalDateTime now = RootEntity.getNow();
-                        rid.setEffectiveFromDate(convertToUTCDateTime(now));
-                        rid.setWarehouseCreatedTimestamp(convertToUTCDateTime(now));
-                        rid.setEffectiveToDate(EndOfTime.atOffset(ZoneOffset.UTC));
-                        rid.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(now));
-                        rid.setActiveFlagID(activeFlag);
-                        rid.setOriginalSourceSystemID(system.getId());
-                        rid.setSystemID(system);
-                        rid.setEnterpriseID(enterprise);
-                        ResourceItemDataValue dataValue = new ResourceItemDataValue();
-                        dataValue.setId(persisted.getId());
-                        dataValue.setData(data == null ? new byte[0] : data);
-                        rid.setDataValue(dataValue);
-                        return session.insert(rid)
-                                .chain(() -> session.insert(rid.getDataValue()))
-                                .chain(() -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
-                                        .chain(tokens -> persisted.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
-                                        .onFailure().recoverWithItem(0L))
-                                .replaceWith((IResourceItem<?, ?>) persisted);
-                    });
-                });
+        // Idempotency by key (mirrors the managed findByUUID recover). A null key is always a fresh insert.
+        Uni<IResourceItem<?, ?>> lookup = (key == null)
+                ? Uni.createFrom().failure(new NoResultException("no key — create new resource item"))
+                : findByUUID(session, key);
+        return lookup
+                .onFailure(NoResultException.class)
+                .recoverWithUni(e -> acService.getActiveFlag(session, enterprise, identityToken)
+                        .chain(activeFlag -> {
+                            ResourceItem xr = new ResourceItem();
+                            xr.setId(key == null ? UUID.randomUUID() : key);
+                            xr.setOriginalSourceSystemID(system.getId());
+                            xr.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
+                            xr.setEffectiveFromDate(convertToUTCDateTime(effectiveFromDate));
+                            xr.setSystemID(system);
+                            xr.setEnterpriseID(enterprise);
+                            xr.setActiveFlagID(activeFlag);
+                            xr.setResourceItemDataType(resourceItemDataValue);
+                            return xr.builder(session).persist(xr).replaceWith(xr).chain(persisted -> {
+                                ResourceItemData rid = new ResourceItemData();
+                                rid.setResource(persisted);
+                                LocalDateTime now = RootEntity.getNow();
+                                rid.setEffectiveFromDate(convertToUTCDateTime(now));
+                                rid.setWarehouseCreatedTimestamp(convertToUTCDateTime(now));
+                                rid.setEffectiveToDate(EndOfTime.atOffset(ZoneOffset.UTC));
+                                rid.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(now));
+                                rid.setActiveFlagID(activeFlag);
+                                rid.setOriginalSourceSystemID(system.getId());
+                                rid.setSystemID(system);
+                                rid.setEnterpriseID(enterprise);
+                                ResourceItemDataValue dataValue = new ResourceItemDataValue();
+                                dataValue.setId(persisted.getId());
+                                dataValue.setData(data == null ? new byte[0] : data);
+                                rid.setDataValue(dataValue);
+                                return session.insert(rid)
+                                        .chain(() -> session.insert(rid.getDataValue()))
+                                        .chain(() -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                                .chain(tokens -> restricted
+                                                        ? persisted.createScopeRestrictedSecurity(session, system, enterprise, activeFlag, tokens, scopeToken, identityToken)
+                                                        : persisted.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
+                                                .onFailure().recoverWithItem(0L))
+                                        // Link the resource-item-TYPE relationship (the step the prior stateless create omitted).
+                                        .chain(() -> addResourceItemTypeRelationshipStateless(session, persisted, identityResourceType, resourceItemDataValue, system, scopeToken, identityToken))
+                                        .replaceWith((IResourceItem<?, ?>) persisted);
+                            });
+                        }));
+    }
+
+    @Override
+    public Uni<Void> updateResourceData(Mutiny.StatelessSession session, byte[] data, UUID resourceItemId, String systemName) {
+        return updateResourceData(session, data, resourceItemId);
     }
 
     @Override
@@ -977,6 +1216,102 @@ public class ResourceItemService
                             .onFailure()
                             .invoke(e -> log.error("Error finding resources by type: {} and value: {}", type, value, e));
                 });
+    }
+
+    // ============================================================================================
+    // Stateless finder / relationship twins.
+    // ============================================================================================
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IResourceItem<?, ?>> findByOriginalSourceUniqueID(Mutiny.StatelessSession session, UUID originalSourceUniqueID, ISystems<?, ?> systems, UUID... identityToken) {
+        log.trace("Finding resource by original source unique ID (stateless): {}", originalSourceUniqueID);
+        return (Uni) new ResourceItem()
+                .builder(session)
+                .where(ResourceItem_.originalSourceSystemUniqueID, Equals, originalSourceUniqueID)
+                .inActiveRange()
+                .inDateRange()
+                .get();
+    }
+
+    @Override
+    public Uni<List<IResourceItem<?, ?>>> findByResourceItemType(Mutiny.StatelessSession session, String type, ISystems<?, ?> systems, UUID... identityToken) {
+        return findByResourceItemType(session, type, null, systems, identityToken);
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IResourceItem<?, ?>>> findByResourceItemType(Mutiny.StatelessSession session, String type, String value, ISystems<?, ?> systems, UUID... identityToken) {
+        log.trace("Finding resources by type (stateless): {} and value: {}", type, value);
+        var enterprise = systems.getEnterprise();
+        return findResourceItemType(session, type, systems, identityToken)
+                .onFailure(jakarta.persistence.NoResultException.class)
+                .recoverWithItem((com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItemType<?, ?>) null)
+                .chain(resourceItemType -> {
+                    if (resourceItemType == null) {
+                        return Uni.createFrom().item(Collections.<IResourceItem<?, ?>>emptyList());
+                    }
+                    ResourceItemQueryBuilder aqb = new ResourceItem().builder(session);
+                    aqb.withEnterprise(enterprise).inActiveRange().inDateRange();
+                    com.entityassist.querybuilder.builders.JoinExpression<?, ?, ?> joinExpression = new com.entityassist.querybuilder.builders.JoinExpression<>();
+                    ResourceItemXResourceItemTypeQueryBuilder qb = new ResourceItemXResourceItemType().builder(session);
+                    qb.withEnterprise(enterprise).inActiveRange().inDateRange();
+                    if (value != null) { qb.withValue(value); }
+                    qb.where(ResourceItemXResourceItemType_.resourceItemTypeID, Equals, (ResourceItemType) resourceItemType);
+                    aqb.join(ResourceItem_.types, qb, jakarta.persistence.criteria.JoinType.INNER, joinExpression);
+                    return (Uni<List<IResourceItem<?, ?>>>) (Uni<?>) aqb.getAll();
+                });
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<Void> addResourceItemTypeRelationship(Mutiny.StatelessSession session, IResourceItem<?, ?> resourceItem, String typeName, String value, ISystems<?, ?> system, UUID... identityToken) {
+        return addResourceItemTypeRelationshipStateless(session, resourceItem, typeName, value, system, null, identityToken);
+    }
+
+    /**
+     * Stateless resource-item-type relationship insert. When {@code scopeToken} is {@code null} the link gets
+     * the default-security matrix; otherwise it gets the scope-restricted matrix (so a scope-restricted
+     * resource-item create secures both its data row and its type link consistently).
+     */
+    private Uni<Void> addResourceItemTypeRelationshipStateless(Mutiny.StatelessSession session, IResourceItem<?, ?> resourceItem, String typeName, String value, ISystems<?, ?> system,
+                                                               com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken, UUID... identityToken) {
+        log.trace("Adding resource item type relationship (stateless): {} for item: {}", typeName, resourceItem.getId());
+        final var enterprise = system.getEnterprise();
+        com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService<?> sts =
+                IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.class);
+        return findResourceItemType(session, typeName, system, identityToken)
+                .chain(resourceItemType -> classificationService.find(session, DefaultClassifications.NoClassification.toString(), system, identityToken)
+                        .chain(classification -> {
+                            ResourceItemXResourceItemType relationship = new ResourceItemXResourceItemType();
+                            relationship.setResourceItemID((ResourceItem) resourceItem);
+                            relationship.setResourceItemTypeID((ResourceItemType) resourceItemType);
+                            relationship.setClassificationID(classification);
+                            relationship.setValue("");
+                            relationship.setSystemID(system);
+                            relationship.setEnterpriseID(enterprise);
+                            relationship.setOriginalSourceSystemID(system.getId());
+                            IActiveFlagService<?> afs = IGuiceContext.get(IActiveFlagService.class);
+                            return afs.getActiveFlag(session, enterprise, identityToken)
+                                    .chain(activeFlag -> {
+                                        relationship.setActiveFlagID((IActiveFlag<?, ?>) activeFlag);
+                                        LocalDateTime now = RootEntity.getNow();
+                                        relationship.setEffectiveFromDate(convertToUTCDateTime(now));
+                                        relationship.setEffectiveToDate(EndOfTime.atOffset(ZoneOffset.UTC));
+                                        relationship.setWarehouseCreatedTimestamp(convertToUTCDateTime(now));
+                                        relationship.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(now));
+                                        if (relationship.getId() == null) { relationship.setId(UUID.randomUUID()); }
+                                        com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseCoreTable core =
+                                                (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseCoreTable) relationship;
+                                        return session.insert(relationship)
+                                                .chain(() -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                                        .chain(tokens -> scopeToken == null
+                                                                ? core.createDefaultSecurity(session, system, enterprise, activeFlag, tokens, identityToken)
+                                                                : core.createScopeRestrictedSecurity(session, system, enterprise, activeFlag, tokens, scopeToken, identityToken))
+                                                        .onFailure().recoverWithItem(0L)
+                                                        .replaceWithVoid());
+                                    });
+                        }));
     }
 
     @Override

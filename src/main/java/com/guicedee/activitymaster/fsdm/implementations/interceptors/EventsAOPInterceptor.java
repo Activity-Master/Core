@@ -3,8 +3,8 @@ package com.guicedee.activitymaster.fsdm.implementations.interceptors;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
-import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
+import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.Event;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseTable;
@@ -42,8 +42,6 @@ public class EventsAOPInterceptor implements MethodInterceptor
 	@Named(ActivityMasterSystemName)
 	private UUID identityToken;
 
-	@Inject
-	private IEnterpriseService<?> enterpriseService;
 
 	public static IEvent<?, ?> getCurrentEvent() {
 		CallScoper callScoper = IGuiceContext.get(CallScoper.class);
@@ -77,8 +75,7 @@ public class EventsAOPInterceptor implements MethodInterceptor
 			            .injectMembers(this);
 		}
 		ISystems<?, ?> system = systemProvider.get();
-		Mutiny.SessionFactory sessionFactory = get(Mutiny.SessionFactory.class);
-		
+
 		if (system.isFake() || configuration.getApplicationEnterpriseName() == null)
 		{
 			return methodInvocation.proceed();
@@ -91,22 +88,25 @@ public class EventsAOPInterceptor implements MethodInterceptor
 		IEventService<?> eventService = get(IEventService.class);
 		
 		if (methodInvocation.getMethod().getReturnType().isAssignableFrom(Uni.class)) {
-			return sessionFactory.withTransaction(session -> {
-				return setupEvent(session, eventAnnotation, system, enterpriseName, eventService)
+			return SessionUtils.<Object>withActivityMaster(enterpriseName, ActivityMasterSystemName, tuple -> {
+				Mutiny.Session session = tuple.getItem1();
+				ISystems<?, ?> activityMasterSystem = tuple.getItem3();
+				return setupEvent(session, eventAnnotation, system, activityMasterSystem, eventService)
 					.chain(event -> {
 						try {
 							return ((Uni<?>) methodInvocation.proceed())
-								.chain(result -> recordOutcome(session, event, enterpriseName, true).replaceWith(result))
-								.onFailure().call(error -> recordOutcome(session, event, enterpriseName, false));
+								.chain(result -> recordOutcome(session, event, activityMasterSystem, true).replaceWith(result))
+								.onFailure().call(error -> recordOutcome(session, event, activityMasterSystem, false));
 						} catch (Throwable e) {
-							return recordOutcome(session, event, enterpriseName, false)
+							return recordOutcome(session, event, activityMasterSystem, false)
 								.chain(() -> Uni.createFrom().failure(e));
 						}
 					});
 			});
 		} else {
 			// Non-reactive method: fire and forget the event creation and tracking
-			sessionFactory.withTransaction(session -> setupEvent(session, eventAnnotation, system, enterpriseName, eventService))
+			SessionUtils.<IEvent<?, ?>>withActivityMaster(enterpriseName, ActivityMasterSystemName,
+					tuple -> { return setupEvent(tuple.getItem1(), eventAnnotation, system, tuple.getItem3(), eventService); })
 				.subscribe().with(
 					event -> log.info("Event started for non-reactive method: " + eventAnnotation.value()),
 					error -> log.log(Level.SEVERE, "Error starting event for non-reactive method", error)
@@ -116,14 +116,16 @@ public class EventsAOPInterceptor implements MethodInterceptor
 				Object result = methodInvocation.proceed();
 				IEvent<?, ?> event = getCurrentEvent();
 				if (event != null) {
-					sessionFactory.withTransaction(session -> recordOutcome(session, event, enterpriseName, true))
+					SessionUtils.<Void>withActivityMaster(enterpriseName, ActivityMasterSystemName,
+							tuple -> { return recordOutcome(tuple.getItem1(), event, tuple.getItem3(), true); })
 						.subscribe().with(s -> {}, e -> log.log(Level.SEVERE, "Error recording success", e));
 				}
 				return result;
 			} catch (Throwable t) {
 				IEvent<?, ?> event = getCurrentEvent();
 				if (event != null) {
-					sessionFactory.withTransaction(session -> recordOutcome(session, event, enterpriseName, false))
+					SessionUtils.<Void>withActivityMaster(enterpriseName, ActivityMasterSystemName,
+							tuple -> { return recordOutcome(tuple.getItem1(), event, tuple.getItem3(), false); })
 						.subscribe().with(s -> {}, e -> log.log(Level.SEVERE, "Error recording failure", e));
 				}
 				throw t;
@@ -131,7 +133,7 @@ public class EventsAOPInterceptor implements MethodInterceptor
 		}
 	}
 
-	private Uni<IEvent<?, ?>> setupEvent(Mutiny.Session session, Event eventAnnotation, ISystems<?, ?> system, String enterpriseName, IEventService<?> eventService) {
+	private Uni<IEvent<?, ?>> setupEvent(Mutiny.Session session, Event eventAnnotation, ISystems<?, ?> system, ISystems<?, ?> activityMasterSystem, IEventService<?> eventService) {
 		IEvent<?, ?> previousEvent = getCurrentEvent();
 		return eventService.findEventType(session, eventAnnotation.value(), system, identityToken)
 			.onFailure().recoverWithUni(() -> eventService.createEventType(session, eventAnnotation.value(), system, identityToken))
@@ -139,29 +141,16 @@ public class EventsAOPInterceptor implements MethodInterceptor
 			.chain(event -> {
 				setCurrentEvent(event);
 				if (previousEvent != null) {
-					return enterpriseService.getEnterprise(session, enterpriseName)
-						.chain(enterprise -> getISystem(session, ActivityMasterSystemName, enterprise)
-							.chain(activityMasterSystem -> getISystemToken(session, ActivityMasterSystemName, enterprise)
-								.chain(token -> {
-									previousEvent.addChild(session, (IWarehouseTable<?, ?, ?, ?>) event, eventAnnotation.parentHierarchyClassificationName(), null, activityMasterSystem, token);
-									return Uni.createFrom().item(event);
-								})))
-						.onFailure().invoke(error -> log.log(Level.SEVERE, "Error adding child event", error))
-						.replaceWith(Uni.createFrom().item(event));
+					previousEvent.addChild(session, (IWarehouseTable<?, ?, ?, ?>) event, eventAnnotation.parentHierarchyClassificationName(), null, activityMasterSystem, identityToken);
 				}
 				return Uni.createFrom().item(event);
 			});
 	}
 
-	private Uni<Void> recordOutcome(Mutiny.Session session, IEvent<?, ?> event, String enterpriseName, boolean success) {
-		return enterpriseService.getEnterprise(session, enterpriseName)
-			.chain(enterprise -> getISystem(session, ActivityMasterSystemName, enterprise)
-				.chain(activityMasterSystem -> getISystemToken(session, ActivityMasterSystemName, enterprise)
-					.chain(token -> {
-						String status = success ? "Successful" : "Failure";
-						return event.addClassification(session, "EventStatus", status, activityMasterSystem, token)
-							.replaceWith(Uni.createFrom().voidItem());
-					})))
+	private Uni<Void> recordOutcome(Mutiny.Session session, IEvent<?, ?> event, ISystems<?, ?> activityMasterSystem, boolean success) {
+		String status = success ? "Successful" : "Failure";
+		return event.addClassification(session, "EventStatus", status, activityMasterSystem, identityToken)
+			.replaceWith(Uni.createFrom().voidItem())
 			.onFailure().invoke(error -> log.log(Level.SEVERE, "Error recording outcome", error))
 			.replaceWith(Uni.createFrom().voidItem());
 	}

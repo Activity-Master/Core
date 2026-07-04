@@ -77,4 +77,45 @@ public class ClassificationBaseSetup implements ISystemUpdate
 			});
 	}
 
+	/** Stateless twin of {@link #update(Mutiny.Session, IEnterprise)}. */
+	@Override
+	public Uni<Boolean> update(Mutiny.StatelessSession session, IEnterprise<?,?> enterprise)
+	{
+		log.info("Starting sequential creation of classifications (stateless)");
+		log.info("Creating Languages and Hardware classifications sequentially (stateless)");
+
+		ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+
+		return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+			.chain(activityMasterSystem -> {
+				return service.create(session, Languages, activityMasterSystem, DefaultClassifications.DefaultClassification)
+					.chain(baseLanguage -> {
+						log.info("Creating language classifications sequentially (stateless)");
+
+						return service.create(session, InvolvedPartyClassifications.ISO639_1, activityMasterSystem, Languages)
+							.chain(() -> service.create(session, InvolvedPartyClassifications.ISO639_2, activityMasterSystem, Languages))
+							.chain(() -> service.create(session, ISO6392EnglishName, activityMasterSystem, Languages))
+							.chain(() -> service.create(session, ISO6392FrenchName, activityMasterSystem, Languages))
+							.chain(() -> service.create(session, ISO6392GermanName, activityMasterSystem, Languages))
+							.onFailure().invoke(error -> log.error("Error creating language classifications (stateless): {}", error.getMessage(), error))
+							.invoke(() -> logProgress("Classifications System", "Loading Base Languages...", 6));
+					})
+					.chain(() -> service.create(session, Hardware, activityMasterSystem))
+					.chain(baseHardware -> service.create(session, Computer, activityMasterSystem, Hardware))
+					.chain(computerClassification -> {
+						log.info("Creating hardware and computer classifications sequentially (stateless)");
+
+						return service.create(session, Scanner, activityMasterSystem, Hardware)
+							.chain(() -> service.create(session, Printer, activityMasterSystem, Hardware))
+							.chain(() -> service.create(session, Phone, activityMasterSystem, Hardware))
+							.chain(() -> service.create(session, Desktop, activityMasterSystem, Computer))
+							.chain(() -> service.create(session, Laptop, activityMasterSystem, Computer))
+							.onFailure().invoke(error -> log.error("Error creating hardware and computer classifications (stateless): {}", error.getMessage(), error));
+					})
+					.onFailure().invoke(error -> log.error("Error creating classifications (stateless): {}", error.getMessage(), error))
+					.invoke(() -> logProgress("Classifications System", "Loading Default Devices...", 7))
+					.map(result -> true);
+			});
+	}
+
 }

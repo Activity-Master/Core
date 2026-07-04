@@ -125,6 +125,72 @@ public class EventsService
                        });
     }
 
+    // ============================================================================================
+    // Stateless event create (world-readable default security), mirroring the managed
+    // createEvent(Mutiny.Session, …). Uses session.insert + the stateless resolveDefaultGroupFolderTokens/
+    // createDefaultSecurity path and the stateless addEventTypes mixin. The enterprise/system references
+    // are taken from the (prepped) system parameter — no managed fetch.
+    // ============================================================================================
+
+    @Override
+    public Uni<IEvent<?, ?>> createEvent(Mutiny.StatelessSession session, String eventType, ISystems<?, ?> system, UUID... identityToken)
+    {
+        return createEvent(session, eventType, null, system, identityToken);
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IEvent<?, ?>> createEvent(Mutiny.StatelessSession session, String eventType, UUID key, ISystems<?, ?> system, UUID... identityToken)
+    {
+        return createEventStateless(session, eventType, key, system, null, false, identityToken);
+    }
+
+    /**
+     * Stateless opt-in <strong>scope-restricted</strong> event create — the stateless twin of
+     * {@link #createEventScopeRestricted(Mutiny.Session, String, UUID, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, ISystems, UUID...)}.
+     * The event is secured with the restricted matrix (no Everyone/Everywhere/Guests; {@code scopeToken}=read).
+     * Each create runs on its own stateless unit, so independent stateless sessions can provision events in parallel.
+     */
+    @Override
+    public Uni<IEvent<?, ?>> createEventScopeRestricted(Mutiny.StatelessSession session, String eventType, UUID key,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+            ISystems<?, ?> system, UUID... identityToken)
+    {
+        return createEventStateless(session, eventType, key, system, scopeToken, true, identityToken);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Uni<IEvent<?, ?>> createEventStateless(Mutiny.StatelessSession session, String eventType, UUID key, ISystems<?, ?> system,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+            boolean restricted, UUID... identityToken)
+    {
+        var enterprise = system.getEnterprise();
+
+        Event event = new Event();
+        event.setId(key != null ? key : UUID.randomUUID());
+        event.setEnterpriseID(enterprise);
+        event.setSystemID(system);
+        event.setOriginalSourceSystemID(system.getId());
+
+        IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+        com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService<?> sts =
+                IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.class);
+
+        return acService.getActiveFlag(session, enterprise, identityToken)
+                       .chain(activeFlag -> {
+                           event.setActiveFlagID(activeFlag);
+                           return session.insert(event)
+                                          .chain(() -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                                  .chain(tokens -> restricted
+                                                          ? event.createScopeRestrictedSecurity(session, system, enterprise, activeFlag, tokens, scopeToken, identityToken)
+                                                          : event.createDefaultSecurity(session, system, enterprise, activeFlag, tokens, identityToken))
+                                                  .onFailure().recoverWithItem(0L)
+                                                  .replaceWithVoid())
+                                          .chain(() -> event.addEventTypes(session, eventType, "", NoClassification.toString(), system, identityToken))
+                                          .replaceWith((IEvent<?, ?>) event);
+                       });
+    }
+
     @Override
     public Uni<IEventType<?, ?>> createEventType(Mutiny.Session session, String eventType, ISystems<?, ?> system, UUID... identityToken)
     {
@@ -638,6 +704,281 @@ public class EventsService
                             }
                             return out;
                         }));
+    }
+
+    // ============================================================================================
+    // Stateless finder twins (builder reads; event associations resolved via session.fetch).
+    // ============================================================================================
+
+    private <L> Uni<List<IEvent<?, ?>>> fetchEventsStateless(Mutiny.StatelessSession session, List<L> links, java.util.function.Function<L, IEvent<?, ?>> getEvent)
+    {
+        Uni<List<IEvent<?, ?>>> acc = Uni.createFrom().item(new ArrayList<>());
+        for (L l : links)
+        {
+            acc = acc.chain(out -> session.fetch(getEvent.apply(l)).map(e -> { out.add(e); return out; }));
+        }
+        return acc;
+    }
+
+    private Uni<List<java.util.UUID>> childEventIdsStateless(Mutiny.StatelessSession session, IEvent<?, ?> withParent)
+    {
+        return new EventXEvent().builder(session).inActiveRange().inDateRange()
+                .where(EventXEvent_.parentEventID, Equals, (Event) withParent)
+                .getAll()
+                .chain(links -> {
+                    Uni<List<java.util.UUID>> acc = Uni.createFrom().item(new ArrayList<>());
+                    for (EventXEvent l : links)
+                    {
+                        acc = acc.chain(ids -> session.fetch(l.getChildEventID()).map(child -> {
+                            if (child != null && child.getId() != null) { ids.add(child.getId()); }
+                            return ids;
+                        }));
+                    }
+                    return acc;
+                });
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Uni<List<IEvent<?, ?>>> findEventsByClassificationOpStateless(Mutiny.StatelessSession session, String classificationName, IEvent<?, ?> withParent, String value, ISystems<?, ?> systems, com.entityassist.enumerations.Operand op, UUID... identityToken)
+    {
+        var enterprise = systems.getEnterprise();
+        return classificationService.find(session, classificationName, systems, identityToken)
+                .chain(classification -> {
+                    if (classification == null) { return Uni.createFrom().item(Collections.<IEvent<?, ?>>emptyList()); }
+                    EventQueryBuilder eqb = new Event().builder(session);
+                    eqb.withEnterprise(enterprise).inActiveRange().inDateRange();
+                    JoinExpression<Event, Classification, ?> je = new JoinExpression<>();
+                    EventXClassificationQueryBuilder qb = new EventXClassification().builder(session);
+                    qb.withEnterprise(enterprise).withClassification((Classification) classification).withValue(op, value).inActiveRange().inDateRange();
+                    eqb.join(Event_.classifications, qb, JoinType.INNER, je);
+                    if (withParent != null) {
+                        return childEventIdsStateless(session, withParent).chain(ids -> {
+                            if (ids.isEmpty()) { return Uni.createFrom().item(Collections.<IEvent<?, ?>>emptyList()); }
+                            eqb.where(Event_.id, InList, ids);
+                            eqb.orderBy(Event_.effectiveFromDate, OrderByType.DESC);
+                            return eqb.getAll().map(l -> new ArrayList<IEvent<?, ?>>(l));
+                        });
+                    }
+                    eqb.orderBy(Event_.effectiveFromDate, OrderByType.DESC);
+                    return eqb.getAll().map(l -> new ArrayList<IEvent<?, ?>>(l));
+                });
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IEvent<?, ?>> find(Mutiny.StatelessSession session, UUID id)
+    {
+        return (Uni) new Event().builder(session).find(id).get()
+                .onItem().ifNull().failWith(() -> new NoSuchElementException("Event not found with id: " + id));
+    }
+
+    @Override
+    public Uni<List<IEvent<?, ?>>> findEventsByClassification(Mutiny.StatelessSession session, String classificationName, String value, ISystems<?, ?> systems, UUID... identityToken)
+    {
+        return findEventsByClassificationOpStateless(session, classificationName, null, value, systems, Equals, identityToken);
+    }
+
+    @Override
+    public Uni<List<IEvent<?, ?>>> findEventsByClassification(Mutiny.StatelessSession session, String classificationName, IEvent<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
+    {
+        return findEventsByClassificationOpStateless(session, classificationName, withParent, value, systems, Equals, identityToken);
+    }
+
+    @Override
+    public Uni<List<IEvent<?, ?>>> findEventsByClassificationGT(Mutiny.StatelessSession session, String classificationName, IEvent<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
+    {
+        return findEventsByClassificationOpStateless(session, classificationName, withParent, value, systems, GreaterThan, identityToken);
+    }
+
+    @Override
+    public Uni<List<IEvent<?, ?>>> findEventsByClassificationGTE(Mutiny.StatelessSession session, String classificationName, IEvent<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
+    {
+        return findEventsByClassificationOpStateless(session, classificationName, withParent, value, systems, GreaterThanEqualTo, identityToken);
+    }
+
+    @Override
+    public Uni<List<IEvent<?, ?>>> findEventsByClassificationLT(Mutiny.StatelessSession session, String classificationName, IEvent<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
+    {
+        return findEventsByClassificationOpStateless(session, classificationName, withParent, value, systems, LessThan, identityToken);
+    }
+
+    @Override
+    public Uni<List<IEvent<?, ?>>> findEventsByClassificationLTE(Mutiny.StatelessSession session, String classificationName, IEvent<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
+    {
+        return findEventsByClassificationOpStateless(session, classificationName, withParent, value, systems, LessThanEqualTo, identityToken);
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IEvent<?, ?>> findEventByResourceItem(Mutiny.StatelessSession session, IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
+    {
+        final String cn = Strings.isNullOrEmpty(classificationName) ? NoClassification.toString() : classificationName;
+        var enterprise = system.getEnterprise();
+        return (Uni) classificationService.find(session, cn, system, identityToken)
+                .chain(classification -> new EventXResourceItem().builder(session)
+                        .inActiveRange().inDateRange().withEnterprise(enterprise).withClassification(classification).withValue(value)
+                        .where(EventXResourceItem_.resourceItemID, Equals, (ResourceItem) resourceItem)
+                        .orderBy(EventXResourceItem_.effectiveFromDate, OrderByType.DESC)
+                        .get()
+                        .chain(result -> result == null ? Uni.createFrom().nullItem() : session.fetch(result.getEventID())));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IEvent<?, ?>> findEventByArrangement(Mutiny.StatelessSession session, IArrangement<?, ?> arrangement, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
+    {
+        final String cn = Strings.isNullOrEmpty(classificationName) ? NoClassification.toString() : classificationName;
+        var enterprise = system.getEnterprise();
+        return (Uni) classificationService.find(session, cn, system, identityToken)
+                .chain(classification -> new EventXArrangement().builder(session)
+                        .inActiveRange().inDateRange().withEnterprise(enterprise).withClassification(classification).withValue(value)
+                        .where(EventXArrangement_.arrangementID, Equals, (Arrangement) arrangement)
+                        .orderBy(EventXArrangement_.effectiveFromDate, OrderByType.DESC)
+                        .get()
+                        .chain(result -> result == null ? Uni.createFrom().nullItem() : session.fetch(result.getEventID())));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IEvent<?, ?>> findEventByProduct(Mutiny.StatelessSession session, IProduct<?, ?> product, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
+    {
+        final String cn = Strings.isNullOrEmpty(classificationName) ? NoClassification.toString() : classificationName;
+        var enterprise = system.getEnterprise();
+        return (Uni) classificationService.find(session, cn, system, identityToken)
+                .chain(classification -> new EventXProduct().builder(session)
+                        .inActiveRange().inDateRange().withEnterprise(enterprise).withClassification(classification).withValue(value)
+                        .where(EventXProduct_.productID, Equals, (Product) product)
+                        .orderBy(EventXProduct_.effectiveFromDate, OrderByType.DESC)
+                        .get()
+                        .chain(result -> result == null ? Uni.createFrom().nullItem() : session.fetch(result.getEventID())));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IEvent<?, ?>> findEventByInvolvedParty(Mutiny.StatelessSession session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
+    {
+        final String cn = Strings.isNullOrEmpty(classificationName) ? NoClassification.toString() : classificationName;
+        var enterprise = system.getEnterprise();
+        return (Uni) classificationService.find(session, cn, system, identityToken)
+                .chain(classification -> new EventXInvolvedParty().builder(session)
+                        .inActiveRange().inDateRange().withEnterprise(enterprise).withClassification(classification).withValue(value)
+                        .where(EventXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
+                        .orderBy(EventXInvolvedParty_.effectiveFromDate, OrderByType.DESC)
+                        .get()
+                        .chain(result -> result == null ? Uni.createFrom().nullItem() : session.fetch(result.getEventID())));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IEvent<?, ?>>> findEventsByInvolvedParty(Mutiny.StatelessSession session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
+    {
+        final String cn = Strings.isNullOrEmpty(classificationName) ? NoClassification.toString() : classificationName;
+        var enterprise = system.getEnterprise();
+        return classificationService.find(session, cn, system, identityToken)
+                .chain(classification -> new EventXInvolvedParty().builder(session)
+                        .inActiveRange().inDateRange().withEnterprise(enterprise).withClassification(classification).withValue(value)
+                        .where(EventXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
+                        .orderBy(EventXInvolvedParty_.effectiveFromDate, OrderByType.DESC)
+                        .getAll()
+                        .chain(list -> fetchEventsStateless(session, list, EventXInvolvedParty::getEventID)));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IEvent<?, ?>>> findEventsByInvolvedParty(Mutiny.StatelessSession session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, ISystems<?, ?> system, UUID... identityToken)
+    {
+        final String cn = Strings.isNullOrEmpty(classificationName) ? NoClassification.toString() : classificationName;
+        var enterprise = system.getEnterprise();
+        return classificationService.find(session, cn, system, identityToken)
+                .chain(classification -> new EventXInvolvedParty().builder(session)
+                        .inActiveRange().inDateRange(startDate, com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.EndOfTime)
+                        .withEnterprise(enterprise).withClassification(classification).withValue(value)
+                        .where(EventXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
+                        .orderBy(EventXInvolvedParty_.effectiveFromDate, OrderByType.DESC)
+                        .getAll()
+                        .chain(list -> fetchEventsStateless(session, list, EventXInvolvedParty::getEventID)));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IEvent<?, ?>>> findEventsByInvolvedParty(Mutiny.StatelessSession session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, LocalDateTime endDate, ISystems<?, ?> system, UUID... identityToken)
+    {
+        final String cn = Strings.isNullOrEmpty(classificationName) ? NoClassification.toString() : classificationName;
+        var enterprise = system.getEnterprise();
+        return classificationService.find(session, cn, system, identityToken)
+                .chain(classification -> new EventXInvolvedParty().builder(session)
+                        .inActiveRange().inDateRange(startDate, endDate)
+                        .withEnterprise(enterprise).withClassification(classification).withValue(value)
+                        .where(EventXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
+                        .orderBy(EventXInvolvedParty_.effectiveFromDate, OrderByType.DESC)
+                        .getAll()
+                        .chain(list -> fetchEventsStateless(session, list, EventXInvolvedParty::getEventID)));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IEvent<?, ?>>> findEventsByRules(Mutiny.StatelessSession session, IRules<?, ?> rules, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
+    {
+        final String cn = Strings.isNullOrEmpty(classificationName) ? NoClassification.toString() : classificationName;
+        var enterprise = system.getEnterprise();
+        return classificationService.find(session, cn, system, identityToken)
+                .chain(classification -> new EventXRules().builder(session)
+                        .inActiveRange().inDateRange().withEnterprise(enterprise).withClassification(classification).withValue(value)
+                        .where(EventXRules_.rulesID, Equals, (Rules) rules)
+                        .orderBy(EventXRules_.effectiveFromDate, OrderByType.DESC)
+                        .getAll()
+                        .chain(list -> fetchEventsStateless(session, list, EventXRules::getEventID)));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IEvent<?, ?>>> findAll(Mutiny.StatelessSession session, String eventType, ISystems<?, ?> system, UUID... identityToken)
+    {
+        return findEventType(session, eventType, system, identityToken)
+                .chain(type -> new EventXEventType().builder(session)
+                        .inActiveRange().inDateRange()
+                        .findLink(null, (EventType) type, null)
+                        .getAll()
+                        .chain(links -> fetchEventsStateless(session, links, EventXEventType::getEventID)));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IEventType<?, ?>> createEventType(Mutiny.StatelessSession session, String eventType, ISystems<?, ?> system, UUID... identityToken)
+    {
+        var enterprise = system.getEnterprise();
+        return new EventType().builder(session)
+                .withName(eventType)
+                .withEnterprise(enterprise)
+                .inActiveRange()
+                .inDateRange()
+                .getCount()
+                .chain(count -> {
+                    if (count != null && count > 0) {
+                        return findEventType(session, eventType, system, identityToken);
+                    }
+                    EventType etBuilt = new EventType();
+                    etBuilt.setId(UUID.randomUUID());
+                    etBuilt.setName(eventType);
+                    etBuilt.setDescription(eventType);
+                    etBuilt.setSystemID(system);
+                    etBuilt.setEnterpriseID(enterprise);
+                    etBuilt.setOriginalSourceSystemID(system.getId());
+                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                    com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService<?> sts =
+                            IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.class);
+                    return acService.getActiveFlag(session, enterprise, identityToken)
+                            .chain(activeFlag -> {
+                                etBuilt.setActiveFlagID(activeFlag);
+                                com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseCoreTable core =
+                                        (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseCoreTable) etBuilt;
+                                return session.insert(etBuilt)
+                                        .chain(() -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                                .chain(tokens -> core.createDefaultSecurity(session, system, enterprise, activeFlag, tokens, identityToken))
+                                                .onFailure().recoverWithItem(0L))
+                                        .replaceWith((IEventType<?, ?>) etBuilt);
+                            });
+                });
     }
 }
 

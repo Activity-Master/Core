@@ -2,7 +2,7 @@ package com.guicedee.activitymaster.fsdm.implementations.interceptors;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
-import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
+import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.address.IAddress;
@@ -37,8 +37,6 @@ public class AddressEventAOPInterceptor implements MethodInterceptor
 	private ActivityMasterConfiguration configuration;
 	@Inject
 	private IClassificationService<?> classificationService;
-	@Inject
-	private IEnterpriseService<?> enterpriseService;
 
 	@Override
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable
@@ -71,13 +69,13 @@ public class AddressEventAOPInterceptor implements MethodInterceptor
 
 	private Uni<Void> processAddresses(MethodInvocation methodInvocation, IEvent<?, ?> currentEvent)
 	{
-		Mutiny.SessionFactory sessionFactory = get(Mutiny.SessionFactory.class);
 		String enterpriseName = configuration.getApplicationEnterpriseName();
 		AddressEvent addressEvent = methodInvocation.getMethod().getAnnotation(AddressEvent.class);
 		var refObject = getRefObject(methodInvocation);
 
-		return sessionFactory.withTransaction(session -> {
-			return enterpriseService.getEnterprise(session, enterpriseName)
+		return SessionUtils.<Void>withActivityMaster(enterpriseName, ActivityMasterSystemName, tuple -> {
+			Mutiny.Session session = tuple.getItem1();
+			return Uni.createFrom().item((IEnterprise<?, ?>) tuple.getItem2())
 				.chain(enterprise -> {
 					List<Uni<?>> operations = new ArrayList<>();
 					for (Pair<Address, IAddress<?, ?>> pair : refObject)

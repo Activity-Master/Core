@@ -42,4 +42,19 @@ public class UnknownResourceItemTypeSetup implements ISystemUpdate
 				.onFailure()
 				.invoke(error -> log.error("Error creating 'Unknown' resource item type: {}", error.getMessage(), error));
 	}
+
+	/** Stateless twin of {@link #update(Mutiny.Session, IEnterprise)}. */
+	@Override
+	public Uni<Boolean> update(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
+	{
+		log.info("Creating 'Unknown' resource item type (stateless)");
+		logProgress("Resource Items", "Loading Unknown Resource Item Type...", 1);
+
+		return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+				.chain(activityMasterSystem ->
+						resourceItemService.createType(session, ResourceItemTypes.Unknown, activityMasterSystem))
+				.map(result -> true)
+				.onFailure()
+				.invoke(error -> log.error("Error creating 'Unknown' resource item type (stateless): {}", error.getMessage(), error));
+	}
 }

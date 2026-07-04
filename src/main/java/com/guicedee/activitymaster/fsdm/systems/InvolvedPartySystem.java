@@ -107,7 +107,7 @@ public class InvolvedPartySystem
                .chain(system -> createIdentificationTypesStateless(session, system)
                    .chain(v -> createNameTypesStateless(session, system))
                    .chain(v -> createTypesStateless(session, system)))
-               .invoke(() -> log.info("🎉 (stateless) Completed involved party defaults"))
+               .invoke(() -> log.trace("🎉 (stateless) Completed involved party defaults"))
                .onFailure().invoke(error -> log.error("❌ (stateless) Failed involved party defaults: {}", error.getMessage(), error))
                .replaceWithVoid();
   }

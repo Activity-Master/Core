@@ -12,6 +12,8 @@ import com.guicedee.activitymaster.fsdm.client.services.classifications.Enterpri
 import com.guicedee.activitymaster.fsdm.client.services.rest.RelationshipUpdateEntry;
 import com.guicedee.activitymaster.fsdm.client.services.rest.classifications.*;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
+import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification_;
+import com.guicedee.client.IGuiceContext;
 
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple4;
@@ -19,9 +21,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Root;
 import jakarta.ws.rs.*;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
+
+import static com.entityassist.enumerations.Operand.Equals;
 
 /**
  * REST surface for the ActivityMaster {@code Classification} domain — the reusable business values
@@ -53,24 +61,37 @@ public class ClassificationRestService {
                                        ClassificationFindDTO findDto) {
         UUID classificationId = findDto.classificationId;
         List<ClassificationDataIncludes> includesList = findDto.includes;
-        return SessionUtils.<ClassificationDTO>withActivityMaster(enterpriseName, requestingSystemName,
-                (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                    Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<ClassificationDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
+                (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                    Mutiny.StatelessSession session = tuple.getItem1();
+                    IEnterprise<?, ?> enterprise = tuple.getItem2();
                     ISystems<?, ?> system = tuple.getItem3();
                     UUID[] token = tuple.getItem4();
-                    return session.find(Classification.class, classificationId)
-                            .chain(classification -> {
-                                if (classification == null) {
+                    // Prepped scalar projection (NOT session.get / an entity query): Classification is
+                    // @Cacheable with an EAGER 'concept' (itself @Cacheable). On a stateless session loading
+                    // the managed entity trips the reactive L2-cache assembly (CompletableFuture on 'concept')
+                    // and an entity query trips the reactive load-context stack on the EAGER join. A lean
+                    // projection avoids both; 'concept' is not returned on the stateless find.
+                    return new Classification().builder(session)
+                            .where(Classification_.id, Equals, classificationId)
+                            .selectColumn(Classification_.id)
+                            .selectColumn(Classification_.name)
+                            .selectColumn(Classification_.description)
+                            .selectColumn(Classification_.classificationSequenceNumber)
+                            .get(Object[].class)
+                            .onFailure(NoResultException.class).recoverWithNull()
+                            .chain(row -> {
+                                if (row == null) {
                                     return Uni.createFrom().failure(new NotFoundException("Classification not found: " + classificationId));
                                 }
+                                Classification classification = new Classification((UUID) row[0], (String) row[1], (String) row[2], ((Number) row[3]).intValue());
+                                classification.setEnterpriseID(enterprise);
+                                classification.setFake(false);
                                 ClassificationDTO dto = new ClassificationDTO();
                                 dto.classificationId = classificationId;
-                                dto.name = classification.getName();
-                                dto.description = classification.getDescription();
-                                dto.sequenceNumber = classification.getClassificationSequenceNumber();
-                                if (classification.getConcept() != null) {
-                                    dto.concept = classification.getConcept().getName();
-                                }
+                                dto.name = (String) row[1];
+                                dto.description = (String) row[2];
+                                dto.sequenceNumber = ((Number) row[3]).intValue();
 
                                 Uni<ClassificationDTO> chain = Uni.createFrom().item(dto);
                                 if (includesList == null || includesList.isEmpty()) {
@@ -103,9 +124,9 @@ public class ClassificationRestService {
                                          @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                          ClassificationCreateDTO dto) {
         EnterpriseClassificationDataConcepts concept = toConcept(dto.concept);
-        return SessionUtils.<ClassificationDTO>withActivityMaster(enterpriseName, requestingSystemName,
-                (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                    Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<ClassificationDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
+                (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                    Mutiny.StatelessSession session = tuple.getItem1();
                     ISystems<?, ?> system = tuple.getItem3();
                     UUID[] token = tuple.getItem4();
                     int sequence = dto.sequenceNumber == null ? 1 : dto.sequenceNumber;
@@ -114,13 +135,20 @@ public class ClassificationRestService {
                     String parentName = (dto.parentName == null || dto.parentName.isBlank())
                             ? DefaultClassifications.NoClassification.name()
                             : dto.parentName;
-                    return classificationService.create(session, dto.name, dto.description, concept, system, sequence, parentName, token)
-                            .map(classification -> {
-                                UUID classificationId = classification.getId();
-                                if (dto.children != null && !dto.children.isEmpty()) {
-                                    persistChildrenAsync(enterpriseName, requestingSystemName, classificationId, dto.children, null);
-                                }
-                                return buildCreateResponseFromDto((Classification) classification, dto);
+                    // No stateless overload accepts a parent *name*, so resolve (find-or-create) the
+                    // parent classification first, then create the child beneath it via the stateless
+                    // parent-aware overload — all on this same session/transaction.
+                    return classificationService.create(session, parentName, parentName, system, token)
+                            .chain(parent -> classificationService.create(session, dto.name, dto.description, concept, system, sequence, parent, token))
+                            .chain(classification -> {
+                                // Child hierarchy links depend on the just-created owner. They MUST be
+                                // chained inside this same transaction — firing them on a separate session
+                                // races (and can lose to) the create commit, leaving the owner invisible to
+                                // that session's get()/find() so the child writes are silently dropped.
+                                Uni<Void> children = (dto.children != null && !dto.children.isEmpty())
+                                        ? persistChildren(session, system, token, (Classification) classification, dto.children, null)
+                                        : Uni.createFrom().voidItem();
+                                return children.map(ignored -> buildCreateResponseFromDto((Classification) classification, dto));
                             });
                 }
         ).onFailure().invoke(e ->
@@ -143,21 +171,39 @@ public class ClassificationRestService {
                                          @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                          ClassificationUpdateDTO dto) {
         UUID classificationId = dto.classificationId;
-        return SessionUtils.<UUID>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
-            return session.find(Classification.class, classificationId)
-                    .chain(classification -> {
-                        if (classification == null) {
+        return SessionUtils.<UUID>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
+            // A targeted criteria UPDATE (only the changed columns) — NOT a load + session.update.
+            // Classification is @Cacheable with an EAGER 'concept' (itself @Cacheable): loading the managed
+            // entity on a stateless session trips the reactive L2-cache assembly / load-context stack, and a
+            // full-row stateless update would also need the NOT-NULL 'concept' FK. A criteria UPDATE writes
+            // only the set columns and never loads the entity. A lean existence check first yields a clean 404.
+            return new Classification().builder(session)
+                    .where(Classification_.id, Equals, classificationId)
+                    .selectColumn(Classification_.id)
+                    .get(UUID.class)
+                    .onFailure(NoResultException.class).recoverWithNull()
+                    .chain(existingId -> {
+                        if (existingId == null) {
                             return Uni.createFrom().failure(new NotFoundException("Classification not found: " + classificationId));
                         }
-                        // Mutating the managed entity is flushed by the surrounding transaction.
+                        CriteriaBuilder cb = IGuiceContext.get(Mutiny.SessionFactory.class).getCriteriaBuilder();
+                        CriteriaUpdate<Classification> cu = cb.createCriteriaUpdate(Classification.class);
+                        Root<Classification> root = cu.from(Classification.class);
+                        boolean anyChange = false;
                         if (dto.description != null) {
-                            classification.setDescription(dto.description);
+                            cu.set(Classification_.description, dto.description);
+                            anyChange = true;
                         }
                         if (dto.sequenceNumber != null) {
-                            classification.setClassificationSequenceNumber(dto.sequenceNumber);
+                            cu.set(Classification_.classificationSequenceNumber, dto.sequenceNumber);
+                            anyChange = true;
                         }
-                        return Uni.createFrom().item(classification.getId());
+                        if (!anyChange) {
+                            return Uni.createFrom().item(classificationId);
+                        }
+                        cu.where(cb.equal(root.get(Classification_.id), classificationId));
+                        return session.createQuery(cu).executeUpdate().replaceWith(classificationId);
                     });
         }).map(foundId -> {
             if (hasEntries(dto.children)) {
@@ -175,7 +221,7 @@ public class ClassificationRestService {
     // Include fetching
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Uni<ClassificationDTO> fetchInclude(Mutiny.Session session, Classification classification,
+    private Uni<ClassificationDTO> fetchInclude(Mutiny.StatelessSession session, Classification classification,
                                                 ClassificationDTO dto, ClassificationDataIncludes include,
                                                 ISystems<?, ?> system, UUID[] token) {
         return switch (include) {
@@ -202,32 +248,43 @@ public class ClassificationRestService {
     private void persistChildrenAsync(String enterpriseName, String requestingSystemName,
                                       UUID classificationId, Map<String, String> addOrUpdate, List<String> delete) {
         String label = "classification " + classificationId;
-        SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session s = tuple.getItem1();
+        SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession s = tuple.getItem1();
             ISystems<?, ?> sys = tuple.getItem3();
             UUID[] token = tuple.getItem4();
-            return s.find(Classification.class, classificationId).chain(owner -> {
+            return s.get(Classification.class, classificationId).chain(owner -> {
                 if (owner == null) {
                     return Uni.createFrom().voidItem();
                 }
-                Uni<Void> chain = Uni.createFrom().voidItem();
-                if (addOrUpdate != null) {
-                    for (var entry : addOrUpdate.entrySet()) {
-                        chain = chain.chain(() -> classificationService.find(s, entry.getKey(), sys, token)
-                                .chain(child -> owner.addChild(s, (Classification) child, null, entry.getValue(), sys, token))
-                                .replaceWithVoid());
-                    }
-                }
-                if (delete != null) {
-                    for (String childName : delete) {
-                        chain = chain.chain(() -> classificationService.find(s, childName, sys, token)
-                                .chain(child -> owner.archiveChild(s, (Classification) child, null, null, sys, token))
-                                .replaceWithVoid());
-                    }
-                }
-                return chain;
+                return persistChildren(s, sys, token, owner, addOrUpdate, delete);
             });
         }), label + " children");
+    }
+
+    /**
+     * Chains the child hierarchy add/archive operations onto the caller's session, returning a
+     * {@link Uni} that completes when every write has been applied. Shared by the create path (run
+     * in-transaction, since the owner is freshly created) and the update path (an already-committed
+     * owner, dispatched fire-and-forget).
+     */
+    private Uni<Void> persistChildren(Mutiny.StatelessSession s, ISystems<?, ?> sys, UUID[] token,
+                                      Classification owner, Map<String, String> addOrUpdate, List<String> delete) {
+        Uni<Void> chain = Uni.createFrom().voidItem();
+        if (addOrUpdate != null) {
+            for (var entry : addOrUpdate.entrySet()) {
+                chain = chain.chain(() -> classificationService.find(s, entry.getKey(), sys, token)
+                        .chain(child -> owner.addChild(s, (Classification) child, null, entry.getValue(), sys, token))
+                        .replaceWithVoid());
+            }
+        }
+        if (delete != null) {
+            for (String childName : delete) {
+                chain = chain.chain(() -> classificationService.find(s, childName, sys, token)
+                        .chain(child -> owner.archiveChild(s, (Classification) child, null, null, sys, token))
+                        .replaceWithVoid());
+            }
+        }
+        return chain;
     }
 
     // ──────────────────────────────────────────────────────────────────────────

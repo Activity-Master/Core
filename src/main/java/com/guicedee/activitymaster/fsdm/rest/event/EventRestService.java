@@ -59,9 +59,9 @@ public class EventRestService {
                               EventFindDTO findDto) {
         UUID eventId = findDto.eventId;
         List<EventDataIncludes> includesList = findDto.includes;
-        return SessionUtils.<EventDTO>withActivityMaster(enterpriseName, requestingSystemName,
-                (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                    Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<EventDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
+                (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                    Mutiny.StatelessSession session = tuple.getItem1();
                     return eventService.find(session, eventId)
                             .chain(event -> {
                                 EventDTO dto = new EventDTO();
@@ -103,8 +103,8 @@ public class EventRestService {
         // an entity manager (NPE in QueryBuilder.getQuery()).
         //         Use the first entry in dto.types as the primary event type
         Map.Entry<String, String> primaryType = dto.types.entrySet().iterator().next();
-        return SessionUtils.<EventDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<EventDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             ISystems<?, ?> system = tuple.getItem3();
             return eventService.createEvent(session, primaryType.getKey(), system)
                     .map(event -> {
@@ -138,8 +138,8 @@ public class EventRestService {
                                 EventUpdateDTO dto) {
         UUID eventId = dto.eventId;
         // Step 1: Find the event in its own session (just to validate it exists)
-        return SessionUtils.<UUID>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<UUID>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             return eventService.find(session, eventId).map(IRootEntity::getId);
         }).map(foundId -> {
             // Step 2: Fire-and-forget relationship persistence in parallel
@@ -157,7 +157,7 @@ public class EventRestService {
     // Include fetching — all use session.fetch() for lazy-loaded entities
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Uni<EventDTO> fetchInclude(Mutiny.Session session, Event event, EventDTO dto, EventDataIncludes include) {
+    private Uni<EventDTO> fetchInclude(Mutiny.StatelessSession session, Event event, EventDTO dto, EventDataIncludes include) {
         return switch (include) {
             case Types -> new EventXEventType().builder(session)
                     .where(EventXEventType_.eventID, Equals, event)
@@ -329,8 +329,8 @@ public class EventRestService {
         String label = "event " + eventId;
 
         if (dto.classifications != null && !dto.classifications.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1();
                 ISystems<?, ?> sys = tuple.getItem3();
                 UUID[] token = tuple.getItem4();
                 return eventService.find(s, eventId).chain(event -> {
@@ -346,8 +346,8 @@ public class EventRestService {
         }
 
         if (dto.types != null && !dto.types.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1();
                 ISystems<?, ?> sys = tuple.getItem3();
                 UUID[] token = tuple.getItem4();
                 return eventService.find(s, eventId).chain(event -> {
@@ -363,8 +363,8 @@ public class EventRestService {
         }
 
         if (dto.parties != null && !dto.parties.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1();
                 ISystems<?, ?> sys = tuple.getItem3();
                 UUID[] token = tuple.getItem4();
                 return eventService.find(s, eventId).chain(event -> {
@@ -384,8 +384,8 @@ public class EventRestService {
         }
 
         if (dto.resources != null && !dto.resources.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1();
                 ISystems<?, ?> sys = tuple.getItem3();
                 UUID[] token = tuple.getItem4();
                 return eventService.find(s, eventId).chain(event -> {
@@ -405,8 +405,8 @@ public class EventRestService {
         }
 
         if (dto.products != null && !dto.products.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1();
                 ISystems<?, ?> sys = tuple.getItem3();
                 UUID[] token = tuple.getItem4();
                 return eventService.find(s, eventId).chain(event -> {
@@ -422,8 +422,8 @@ public class EventRestService {
         }
 
         if (dto.rules != null && !dto.rules.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1();
                 ISystems<?, ?> sys = tuple.getItem3();
                 UUID[] token = tuple.getItem4();
                 return eventService.find(s, eventId).chain(event -> {
@@ -439,8 +439,8 @@ public class EventRestService {
         }
 
         if (dto.arrangements != null && !dto.arrangements.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1();
                 ISystems<?, ?> sys = tuple.getItem3();
                 UUID[] token = tuple.getItem4();
                 return eventService.find(s, eventId).chain(event -> {
@@ -456,8 +456,8 @@ public class EventRestService {
         }
 
         if (dto.children != null && !dto.children.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1();
                 ISystems<?, ?> sys = tuple.getItem3();
                 UUID[] token = tuple.getItem4();
                 return eventService.find(s, eventId).chain(event -> {
@@ -488,8 +488,8 @@ public class EventRestService {
         String label = "event " + eventId;
 
         if (hasEntries(dto.classifications)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return eventService.find(s, eventId).chain(event -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.classifications, (name, value) ->
@@ -502,8 +502,8 @@ public class EventRestService {
         }
 
         if (hasEntries(dto.types)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return eventService.find(s, eventId).chain(event -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.types, (name, value) ->
@@ -516,8 +516,8 @@ public class EventRestService {
         }
 
         if (hasEntries(dto.parties)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return eventService.find(s, eventId).chain(event -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     if (dto.parties.addOrUpdate != null) {
@@ -537,8 +537,8 @@ public class EventRestService {
         }
 
         if (hasEntries(dto.resources)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return eventService.find(s, eventId).chain(event -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     if (dto.resources.addOrUpdate != null) {
@@ -558,8 +558,8 @@ public class EventRestService {
         }
 
         if (hasEntries(dto.products)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return eventService.find(s, eventId).chain(event -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.products, (name, value) ->
@@ -572,8 +572,8 @@ public class EventRestService {
         }
 
         if (hasEntries(dto.rules)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return eventService.find(s, eventId).chain(event -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.rules, (name, value) ->
@@ -586,8 +586,8 @@ public class EventRestService {
         }
 
         if (hasEntries(dto.arrangements)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return eventService.find(s, eventId).chain(event -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.arrangements, (name, value) ->
@@ -600,8 +600,8 @@ public class EventRestService {
         }
 
         if (hasEntries(dto.children)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return eventService.find(s, eventId).chain(event -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     if (dto.children.addOrUpdate != null) {
@@ -667,8 +667,8 @@ public class EventRestService {
 
     private Uni<EventDTO> buildCreateResponse(String enterpriseName, String requestingSystemName,
                                                Event event, EventCreateDTO dto) {
-        return SessionUtils.<EventDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<EventDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
 
             EventDTO response = new EventDTO();
             response.eventId = event.getId();
@@ -717,7 +717,7 @@ public class EventRestService {
     private <L extends WarehouseBaseTable<L, ?, UUID>, R> Uni<Void> chainDeleteByExpire(
             Uni<Void> chain,
             RelationshipUpdateEntry entry,
-            Mutiny.Session session,
+            Mutiny.StatelessSession session,
             IEvent<?, ?> event,
             Class<L> linkClass,
             jakarta.persistence.metamodel.SingularAttribute eventAttr,
@@ -762,7 +762,7 @@ public class EventRestService {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Uni<Void> chainDeleteChildrenByExpire(Uni<Void> chain, RelationshipUpdateEntry entry,
-                                                   Mutiny.Session session, IEvent<?, ?> event) {
+                                                   Mutiny.StatelessSession session, IEvent<?, ?> event) {
         if (entry == null || entry.delete == null || entry.delete.isEmpty()) return chain;
         Set<String> idsToDelete = new HashSet<>(entry.delete);
         Event ev = (Event) event;

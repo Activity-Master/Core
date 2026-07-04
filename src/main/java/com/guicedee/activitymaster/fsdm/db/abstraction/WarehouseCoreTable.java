@@ -246,19 +246,22 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                 new Grant(SECURITY_PLUGINS, true, true, false, true)
         );
         Uni<Long> chain = Uni.createFrom().item(0L);
+
+        // todo can this be a Multi<> running the creates in parallel for security?
         for (Grant grant : grants) {
             com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> token =
                     groupFolderTokens.get(grant.key());
             if (token == null) {
                 continue;
             }
-            chain = chain.chain(total -> createSecurityGrant(session, system, enterprise, activeFlag, token,
+            chain = chain.invoke(total -> createSecurityGrant(session, system, enterprise, activeFlag, token,
                     grant.create(), grant.update(), grant.delete(), grant.read(), identityToken)
-                    .map(perRow -> total + perRow));
+                    .map(perRow -> total + perRow)
+                    .onItem().invoke(perRow -> log.debug("Created {} default security rows for token {}", perRow, grant.key())));
         }
         // The scope read-grant: the only path by which scoped identities (and their descendants) may read.
         if (scopeToken != null) {
-            chain = chain.chain(total -> createSecurityGrant(session, system, enterprise, activeFlag, scopeToken,
+            chain = chain.invoke(total -> createSecurityGrant(session, system, enterprise, activeFlag, scopeToken,
                     false, false, false, true, identityToken)
                     .map(perRow -> total + perRow));
         }

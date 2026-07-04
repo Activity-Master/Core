@@ -82,9 +82,9 @@ public class SecurityRestService {
     public Uni<List<SecurityTokenDTO>> list(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
                                             @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                             @Parameter(description = "Optional type filter (e.g. UserGroup, User, Identity)") @QueryParam("type") String typeFilter) {
-        return SessionUtils.<List<SecurityTokenDTO>>withActivityMaster(enterpriseName, requestingSystemName,
-                (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                    Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<List<SecurityTokenDTO>>withActivityMasterStateless(enterpriseName, requestingSystemName,
+                (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                    Mutiny.StatelessSession session = tuple.getItem1();
                     IEnterprise<?, ?> enterprise = tuple.getItem2();
                     return new SecurityToken().builder(session)
                             .withEnterprise(enterprise)
@@ -121,8 +121,8 @@ public class SecurityRestService {
                                       SecurityTokenFindDTO findDto) {
         boolean members = includes(findDto.includes, SecurityTokenDataIncludes.Members);
         boolean memberOf = includes(findDto.includes, SecurityTokenDataIncludes.MemberOf);
-        return SessionUtils.<SecurityTokenDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<SecurityTokenDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             IEnterprise<?, ?> enterprise = tuple.getItem2();
             ISystems<?, ?> system = tuple.getItem3();
             UUID[] token = tuple.getItem4();
@@ -140,8 +140,8 @@ public class SecurityRestService {
     public Uni<ApplicableTokensDTO> resolve(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
                                             @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                             SecurityTokenResolveDTO resolveDto) {
-        return SessionUtils.<ApplicableTokensDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<ApplicableTokensDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             ISystems<?, ?> system = tuple.getItem3();
             UUID[] token = tuple.getItem4();
 
@@ -163,7 +163,7 @@ public class SecurityRestService {
                         List<SecurityTokenRef> refs = new ArrayList<>();
                         Uni<Void> chain = Uni.createFrom().voidItem();
                         for (UUID id : ids) {
-                            chain = chain.chain(() -> session.find(SecurityToken.class, id)
+                            chain = chain.chain(() -> session.get(SecurityToken.class, id)
                                     .chain(st -> st == null ? Uni.createFrom().voidItem()
                                             : toRef(session, st).invoke(refs::add).replaceWithVoid()));
                         }
@@ -189,8 +189,8 @@ public class SecurityRestService {
                                         @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                         SecurityTokenCreateDTO dto) {
         String type = (dto.type == null || dto.type.isBlank()) ? DEFAULT_TYPE : dto.type.trim();
-        return SessionUtils.<SecurityTokenDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<SecurityTokenDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             IEnterprise<?, ?> enterprise = tuple.getItem2();
             ISystems<?, ?> system = tuple.getItem3();
             UUID[] token = tuple.getItem4();
@@ -223,8 +223,8 @@ public class SecurityRestService {
     public Uni<SecurityTokenDTO> update(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
                                         @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                         SecurityTokenUpdateDTO dto) {
-        return SessionUtils.<SecurityTokenDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<SecurityTokenDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             IEnterprise<?, ?> enterprise = tuple.getItem2();
             ISystems<?, ?> system = tuple.getItem3();
             UUID[] token = tuple.getItem4();
@@ -239,14 +239,19 @@ public class SecurityRestService {
             return requireManageable(session, system, dto.name, token)
                     .chain(found -> {
                         SecurityToken st = (SecurityToken) found;
+                        boolean changed = false;
                         if (dto.description != null) {
                             st.setDescription(dto.description);
+                            changed = true;
                         }
                         if (dto.newName != null && !dto.newName.isBlank()) {
                             st.setName(dto.newName);
+                            changed = true;
                         }
-                        // The managed entity is flushed by the surrounding transaction.
-                        return toDTO(session, enterprise, found, false, false);
+                        // Stateless sessions carry no persistence context, so there is no dirty checking
+                        // or auto-flush — the mutation must be persisted explicitly.
+                        Uni<Void> persist = changed ? session.update(st) : Uni.createFrom().voidItem();
+                        return persist.chain(v -> toDTO(session, enterprise, found, false, false));
                     });
         }).onFailure().invoke(e -> log.error("Error updating security token '{}' for {}: {}", dto.name, enterpriseName, e.getMessage(), e));
     }
@@ -261,8 +266,8 @@ public class SecurityRestService {
     public Uni<SecurityTokenDTO> delete(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
                                         @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                         SecurityTokenFindDTO dto) {
-        return SessionUtils.<SecurityTokenDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<SecurityTokenDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             IEnterprise<?, ?> enterprise = tuple.getItem2();
             ISystems<?, ?> system = tuple.getItem3();
             UUID[] token = tuple.getItem4();
@@ -275,7 +280,9 @@ public class SecurityRestService {
                     .chain(found -> activeFlagService.getDeletedFlag(session, enterprise, token)
                             .chain(deleted -> {
                                 ((SecurityToken) found).setActiveFlagID((IActiveFlag<?, ?>) deleted);
-                                return toDTO(session, enterprise, found, false, false);
+                                // Stateless: no auto-flush, persist the soft-delete explicitly.
+                                return session.update(found)
+                                        .chain(v -> toDTO(session, enterprise, found, false, false));
                             }));
         }).onFailure().invoke(e -> log.error("Error deleting security token '{}' for {}: {}", dto.name, enterpriseName, e.getMessage(), e));
     }
@@ -293,8 +300,8 @@ public class SecurityRestService {
     public Uni<SecurityTokenDTO> addMember(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
                                            @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                            SecurityTokenMembershipDTO dto) {
-        return SessionUtils.<SecurityTokenDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<SecurityTokenDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             IEnterprise<?, ?> enterprise = tuple.getItem2();
             ISystems<?, ?> system = tuple.getItem3();
             UUID[] token = tuple.getItem4();
@@ -304,8 +311,8 @@ public class SecurityRestService {
             } catch (WebApplicationException reject) {
                 return Uni.createFrom().failure(reject);
             }
-            return requireManageable(session, system, dto.parentName, token)
-                    .chain(parent -> requireManageable(session, system, dto.childName, token)
+            return requireManageableFull(session, enterprise, dto.parentName)
+                    .chain(parent -> requireManageableFull(session, enterprise, dto.childName)
                             .chain(child -> session.fetch(((SecurityToken) child).getSecurityTokenClassificationID())
                                     .chain(type -> securityTokenService.link(session, parent, child, (Classification) type))
                                     .chain(v -> toDTO(session, enterprise, parent, true, false))));
@@ -322,8 +329,8 @@ public class SecurityRestService {
     public Uni<SecurityTokenDTO> removeMember(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
                                               @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                               SecurityTokenMembershipDTO dto) {
-        return SessionUtils.<SecurityTokenDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<SecurityTokenDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             IEnterprise<?, ?> enterprise = tuple.getItem2();
             ISystems<?, ?> system = tuple.getItem3();
             UUID[] token = tuple.getItem4();
@@ -348,7 +355,7 @@ public class SecurityRestService {
                                                     "No active membership of '" + dto.childName + "' under '" + dto.parentName + "'"));
                                         }
                                         ((SecurityTokenXSecurityToken) edge).setEffectiveToDate(now());
-                                        return session.merge(edge).replaceWithVoid();
+                                        return session.update(edge).replaceWithVoid();
                                     })
                                     .chain(v -> toDTO(session, enterprise, parent, true, false))));
         }).onFailure().invoke(e -> log.error("Error removing member '{}' from '{}' for {}: {}", dto.childName, dto.parentName, enterpriseName, e.getMessage(), e));
@@ -363,8 +370,8 @@ public class SecurityRestService {
     public Uni<SecurityTokenDTO> moveMember(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
                                             @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                             SecurityTokenMoveDTO dto) {
-        return SessionUtils.<SecurityTokenDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<SecurityTokenDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             IEnterprise<?, ?> enterprise = tuple.getItem2();
             ISystems<?, ?> system = tuple.getItem3();
             UUID[] token = tuple.getItem4();
@@ -379,9 +386,9 @@ public class SecurityRestService {
             }
             Uni<ISecurityToken<?, ?>> oldParentUni = (dto.oldParentName == null || dto.oldParentName.isBlank())
                     ? Uni.createFrom().<ISecurityToken<?, ?>>nullItem()
-                    : requireManageable(session, system, dto.oldParentName, token);
-            return requireManageable(session, system, dto.newParentName, token)
-                    .chain(newParent -> requireManageable(session, system, dto.childName, token)
+                    : requireManageableFull(session, enterprise, dto.oldParentName);
+            return requireManageableFull(session, enterprise, dto.newParentName)
+                    .chain(newParent -> requireManageableFull(session, enterprise, dto.childName)
                             .chain(child -> oldParentUni.chain(oldParent ->
                                     session.fetch(((SecurityToken) child).getSecurityTokenClassificationID())
                                             .chain(type -> securityTokenService.moveToken(session, oldParent, newParent, child, (Classification) type))
@@ -403,8 +410,8 @@ public class SecurityRestService {
     public Uni<SecurityTokenGrantDTO> grant(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
                                             @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                             SecurityTokenGrantDTO dto) {
-        return SessionUtils.<SecurityTokenGrantDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<SecurityTokenGrantDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             ISystems<?, ?> system = tuple.getItem3();
             UUID[] token = tuple.getItem4();
             try {
@@ -426,13 +433,13 @@ public class SecurityRestService {
     // ──────────────────────────────────────────────────────────────────────────
 
     /** Resolves a token by name, failing with 404 when absent. */
-    private Uni<ISecurityToken<?, ?>> require(Mutiny.Session session, ISystems<?, ?> system, String name, UUID[] token) {
+    private Uni<ISecurityToken<?, ?>> require(Mutiny.StatelessSession session, ISystems<?, ?> system, String name, UUID[] token) {
         return securityTokenService.getSecurityTokenByName(session, name, system, token)
                 .onItem().ifNull().failWith(() -> new NotFoundException("Security token not found: " + name));
     }
 
     /** Resolves a token by name (preferred) or securityToken varchar, failing with 404 when absent. */
-    private Uni<ISecurityToken<?, ?>> resolve(Mutiny.Session session, ISystems<?, ?> system, String name, String securityToken, UUID[] token) {
+    private Uni<ISecurityToken<?, ?>> resolve(Mutiny.StatelessSession session, ISystems<?, ?> system, String name, String securityToken, UUID[] token) {
         if (name != null && !name.isBlank()) {
             return require(session, system, name, token);
         }
@@ -444,8 +451,34 @@ public class SecurityRestService {
     }
 
     /** Resolves a token by name and asserts it is manageable (not a library-owned folder/type). */
-    private Uni<ISecurityToken<?, ?>> requireManageable(Mutiny.Session session, ISystems<?, ?> system, String name, UUID[] token) {
+    private Uni<ISecurityToken<?, ?>> requireManageable(Mutiny.StatelessSession session, ISystems<?, ?> system, String name, UUID[] token) {
         return require(session, system, name, token)
+                .chain(found -> assertTokenManageable(session, found).replaceWith(found));
+    }
+
+    /**
+     * Full-load resolve for <strong>write</strong> paths (membership add/move) — a fresh SELECT via the
+     * query builder rather than the scalar-projected {@link ISecurityTokenService#getSecurityTokenByName}
+     * used for reads. The prepped projection omits the {@code systemID} and classification FKs, but the
+     * {@code SecurityTokenXSecurityToken} membership edge requires a non-null {@code systemid} (and the
+     * child's type classification), so the link/move must operate on fully-hydrated tokens.
+     */
+    private Uni<ISecurityToken<?, ?>> requireManageableFull(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, String name) {
+        return new SecurityToken().builder(session)
+                .withName(name)
+                .withEnterprise(enterprise)
+                .inActiveRange()
+                .inDateRange()
+                .get()
+                .onFailure(NoResultException.class).recoverWithNull()
+                .onItem().ifNull().failWith(() -> new NotFoundException("Security token not found: " + name))
+                .map(found -> {
+                    // The loaded entity's 'enterprise' association is a lazy proxy on a reactive session;
+                    // stamp the already-resolved enterprise so downstream reads (link/move read
+                    // enterprise.getName() for the membership policy) don't trip HR000085.
+                    ((SecurityToken) found).setEnterpriseID(enterprise);
+                    return (ISecurityToken<?, ?>) found;
+                })
                 .chain(found -> assertTokenManageable(session, found).replaceWith(found));
     }
 
@@ -471,7 +504,7 @@ public class SecurityRestService {
     }
 
     /** Reactive guard: a resolved token must be neither a managed folder (by name) nor a managed type. */
-    private Uni<Void> assertTokenManageable(Mutiny.Session session, ISecurityToken<?, ?> tokenEntity) {
+    private Uni<Void> assertTokenManageable(Mutiny.StatelessSession session, ISecurityToken<?, ?> tokenEntity) {
         if (containsIgnoreCase(MANAGED_FOLDERS, tokenEntity.getName())) {
             return Uni.createFrom().failure(new ForbiddenException(
                     "The '" + tokenEntity.getName() + "' folder is library-managed and cannot be changed through the security endpoint."));
@@ -491,7 +524,7 @@ public class SecurityRestService {
     // Mapping
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Uni<SecurityTokenDTO> toDTO(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISecurityToken<?, ?> token,
+    private Uni<SecurityTokenDTO> toDTO(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, ISecurityToken<?, ?> token,
                                         boolean members, boolean memberOf) {
         return toRef(session, token).chain(ref -> {
             SecurityTokenDTO dto = new SecurityTokenDTO();
@@ -513,7 +546,7 @@ public class SecurityRestService {
         });
     }
 
-    private Uni<SecurityTokenRef> toRef(Mutiny.Session session, ISecurityToken<?, ?> token) {
+    private Uni<SecurityTokenRef> toRef(Mutiny.StatelessSession session, ISecurityToken<?, ?> token) {
         SecurityTokenRef ref = new SecurityTokenRef();
         ref.securityTokenId = token.getId();
         ref.securityToken = token.getSecurityToken();
@@ -530,7 +563,7 @@ public class SecurityRestService {
      * Loads the membership edges for a token: when {@code children} is {@code true} the direct members
      * (this token as parent); otherwise the groups/folders it belongs to (this token as child).
      */
-    private Uni<List<SecurityTokenRef>> loadEdges(Mutiny.Session session, IEnterprise<?, ?> enterprise,
+    private Uni<List<SecurityTokenRef>> loadEdges(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise,
                                                   ISecurityToken<?, ?> token, boolean children) {
         SecurityToken self = (SecurityToken) token;
         return new SecurityTokenXSecurityToken().builder(session)

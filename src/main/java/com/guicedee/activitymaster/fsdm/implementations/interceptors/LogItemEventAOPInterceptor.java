@@ -3,7 +3,7 @@ package com.guicedee.activitymaster.fsdm.implementations.interceptors;
 import tools.jackson.core.JacksonException;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
-import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
+import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
 import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.LogItem;
@@ -45,9 +45,6 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 	private IResourceItemService<?> resourceItemService;
 	@Inject
 	private IClassificationService<?> classificationService;
-	@Inject
-	private IEnterpriseService<?> enterpriseService;
-	
 	@Override
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable
 	{
@@ -77,11 +74,11 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 
 	private Uni<Void> processLogItems(MethodInvocation methodInvocation, IEvent<?, ?> currentEvent, Object result)
 	{
-		Mutiny.SessionFactory sessionFactory = get(Mutiny.SessionFactory.class);
 		String enterpriseName = configuration.getApplicationEnterpriseName();
 		
-		return sessionFactory.withTransaction(session -> {
-			return enterpriseService.getEnterprise(session, enterpriseName)
+		return SessionUtils.<Void>withActivityMaster(enterpriseName, ActivityMasterSystemName, tuple -> {
+			Mutiny.Session session = tuple.getItem1();
+			return Uni.createFrom().item((IEnterprise<?, ?>) tuple.getItem2())
 				.chain(enterprise -> {
 					List<Uni<?>> operations = new ArrayList<>();
 					

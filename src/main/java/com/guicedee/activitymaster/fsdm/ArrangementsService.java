@@ -198,6 +198,87 @@ public class ArrangementsService
                 .onItem().invoke(() -> log.debug("Arrangement created successfully - proceeding to add arrangement type"));
     }
 
+    // ============================================================================================
+    // Stateless arrangement create (world-readable default security), mirroring the managed
+    // create(Mutiny.Session, …). Uses session.insert + the stateless resolveDefaultGroupFolderTokens/
+    // createDefaultSecurity path and the stateless addArrangementType mixin. The enterprise/system
+    // references are taken from the (prepped) system parameter — no managed fetch.
+    // ============================================================================================
+
+    @Override
+    public Uni<IArrangement<?, ?>> create(Mutiny.StatelessSession session, UUID key, String type,
+                                          String arrangementTypeClassification,
+                                          String arrangementTypeValue,
+                                          ISystems<?, ?> system,
+                                          UUID... identityToken) {
+        return create(session, type, key, arrangementTypeClassification, arrangementTypeValue, system, identityToken);
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IArrangement<?, ?>> create(Mutiny.StatelessSession session, String type, UUID key,
+                                          String arrangementTypeClassification,
+                                          String arrangementTypeValue,
+                                          ISystems<?, ?> system,
+                                          UUID... identityToken) {
+        return createStateless(session, type, key, arrangementTypeClassification, arrangementTypeValue, system, null, false, identityToken);
+    }
+
+    /**
+     * Stateless opt-in <strong>scope-restricted</strong> arrangement create — the stateless twin of
+     * {@link #createScopeRestricted(Mutiny.Session, String, UUID, String, String, ISystems, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}.
+     * The arrangement is secured with the restricted matrix (no Everyone/Everywhere/Guests; {@code scopeToken}=read).
+     * Each create runs on its own stateless unit, so independent stateless sessions can provision arrangements in parallel.
+     */
+    @Override
+    public Uni<IArrangement<?, ?>> createScopeRestricted(Mutiny.StatelessSession session, String type, UUID key,
+                                          String arrangementTypeClassification,
+                                          String arrangementTypeValue,
+                                          ISystems<?, ?> system,
+                                          com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                          UUID... identityToken) {
+        return createStateless(session, type, key, arrangementTypeClassification, arrangementTypeValue, system, scopeToken, true, identityToken);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Uni<IArrangement<?, ?>> createStateless(Mutiny.StatelessSession session, String type, UUID key,
+                                          String arrangementTypeClassification,
+                                          String arrangementTypeValue,
+                                          ISystems<?, ?> system,
+                                          com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+                                          boolean restricted,
+                                          UUID... identityToken) {
+        log.debug("Creating arrangement (stateless{}) - type: {}, key: {}, classification: {}, value: {}",
+                restricted ? ", scope-restricted" : "", type, key, arrangementTypeClassification, arrangementTypeValue);
+        var enterprise = system.getEnterprise();
+        var finalKey = key != null ? key : UUID.randomUUID();
+
+        Arrangement arrangement = new Arrangement();
+        arrangement.setId(finalKey);
+        arrangement.setSystemID(system);
+        arrangement.setOriginalSourceSystemID(system.getId());
+        arrangement.setEnterpriseID(enterprise);
+
+        com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService<?> sts =
+                com.guicedee.client.IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.class);
+
+        return activeFlagService.getActiveFlag(session, enterprise, identityToken)
+                .chain(activeFlag -> {
+                    arrangement.setActiveFlagID(activeFlag);
+                    return session.insert(arrangement)
+                            .chain(() -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                    .chain(tokens -> restricted
+                                            ? arrangement.createScopeRestrictedSecurity(session, system, enterprise, activeFlag, tokens, scopeToken, identityToken)
+                                            : arrangement.createDefaultSecurity(session, system, enterprise, activeFlag, tokens, identityToken))
+                                    .onFailure().recoverWithItem(0L)
+                                    .replaceWithVoid())
+                            .chain(() -> findArrangementType(session, type, system, identityToken)
+                                    .chain(arrangementType -> arrangement.addArrangementType(session, arrangementType,
+                                            arrangementTypeClassification, arrangementTypeValue, system, identityToken)))
+                            .replaceWith((IArrangement<?, ?>) arrangement);
+                });
+    }
+
     @Override
     public Uni<IArrangementType<?, ?>> createArrangementType(Mutiny.Session session, String type, ISystems<?, ?> system, UUID... identityToken) {
         log.trace("Creating arrangement type: {}", type);
@@ -453,6 +534,45 @@ public class ArrangementsService
                 .onFailure()
                 .invoke(error ->
                         log.error("Error finding arrangements by classification: {}", error.getMessage(), error));
+    }
+
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IArrangement<?, ?>>> findArrangementsByClassification(Mutiny.StatelessSession session, String classificationName, String value, ISystems<?, ?> systems, UUID... identityToken) {
+        log.trace("Finding arrangements by classification (stateless) - name: {}, value: {}", classificationName, value);
+        var enterprise = systems.getEnterprise();
+        return classificationService.find(session, classificationName, systems, identityToken)
+                .chain(classification -> {
+                    if (classification == null) {
+                        return Uni.createFrom().item(Collections.<IArrangement<?, ?>>emptyList());
+                    }
+                    ArrangementQueryBuilder aqb = new Arrangement().builder(session);
+                    aqb.withEnterprise(enterprise)
+                            .inActiveRange()
+                            .inDateRange();
+                    JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
+
+                    ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder(session);
+                    qb.withEnterprise(enterprise)
+                            .withClassification((Classification) classification)
+                            .withValue(value)
+                            .inActiveRange()
+                            .inDateRange();
+
+                    aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
+                    aqb.orderBy(Arrangement_.effectiveFromDate, OrderByType.DESC);
+
+                    return aqb.getAll()
+                            .map(arrangementList -> {
+                                List<IArrangement<?, ?>> result = new ArrayList<>(arrangementList);
+                                log.trace("Found {} arrangements for classification {} (stateless)", result.size(), classificationName);
+                                return result;
+                            });
+                })
+                .onFailure()
+                .invoke(error ->
+                        log.error("Error finding arrangements by classification (stateless): {}", error.getMessage(), error));
     }
 
 
@@ -1207,6 +1327,201 @@ public class ArrangementsService
         Arrangement arr = (Arrangement) arrangement;
         return (Uni) arr.expire(Duration.ZERO);
 
+    }
+
+    // ============================================================================================
+    // Stateless finder twins (builder reads; associations resolved via session.fetch).
+    // ============================================================================================
+
+    private <L, R> Uni<List<R>> fetchAllStateless(Mutiny.StatelessSession session, List<L> links, java.util.function.Function<L, R> getter) {
+        Uni<List<R>> acc = Uni.createFrom().item(new ArrayList<>());
+        for (L l : links) {
+            acc = acc.chain(out -> session.fetch(getter.apply(l)).map(r -> { out.add(r); return out; }));
+        }
+        return acc;
+    }
+
+    @Override
+    public Uni<IArrangementType<?, ?>> find(Mutiny.StatelessSession session, String arrangementType, ISystems<?, ?> system, UUID... identityToken) {
+        return findArrangementType(session, arrangementType, system, identityToken);
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IArrangement<?, ?>> find(Mutiny.StatelessSession session, UUID id, ISystems<?, ?> system, UUID... identityToken) {
+        return (Uni) new Arrangement().builder(session).where(Arrangement_.id, Equals, id).get();
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IArrangement<?, ?>> find(Mutiny.StatelessSession session, UUID id) {
+        return (Uni) new Arrangement().builder(session).where(Arrangement_.id, Equals, id).get();
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IArrangement<?, ?>>> findAll(Mutiny.StatelessSession session, String arrangementType, ISystems<?, ?> system, UUID... identityToken) {
+        return findArrangementType(session, arrangementType, system, identityToken)
+                .chain(type -> new ArrangementXArrangementType().builder(session)
+                        .inActiveRange()
+                        .inDateRange()
+                        .findLink(null, (ArrangementType) type, null)
+                        .getAll()
+                        .chain(links -> (Uni) fetchAllStateless(session, links, ArrangementXArrangementType::getArrangement)));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IArrangement<?, ?>> findArrangementByResourceItem(Mutiny.StatelessSession session, IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken) {
+        final String cn = Strings.isNullOrEmpty(classificationName) ? NoClassification.toString() : classificationName;
+        var enterprise = system.getEnterprise();
+        return (Uni) classificationService.find(session, cn, system, identityToken)
+                .chain(classification -> new ArrangementXResourceItem().builder(session)
+                        .inActiveRange().inDateRange().withEnterprise(enterprise).withClassification(classification).withValue(value)
+                        .where(ArrangementXResourceItem_.resourceItemID, Equals, (ResourceItem) resourceItem)
+                        .orderBy(ArrangementXResourceItem_.effectiveFromDate, DESC)
+                        .get()
+                        .chain(result -> result == null ? Uni.createFrom().nullItem() : session.fetch(result.getArrangementID())));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IArrangement<?, ?>> findArrangementByInvolvedParty(Mutiny.StatelessSession session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken) {
+        final String cn = Strings.isNullOrEmpty(classificationName) ? NoClassification.toString() : classificationName;
+        var enterprise = system.getEnterprise();
+        return (Uni) classificationService.find(session, cn, system, identityToken)
+                .chain(classification -> new ArrangementXInvolvedParty().builder(session)
+                        .inActiveRange().inDateRange().withEnterprise(enterprise).withClassification(classification).withValue(value)
+                        .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
+                        .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
+                        .get()
+                        .chain(result -> result == null ? Uni.createFrom().nullItem() : session.fetch(result.getArrangementID())));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IInvolvedParty<?, ?>>> findArrangementInvolvedParties(Mutiny.StatelessSession session, IArrangement<?, ?> arrangement, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken) {
+        final String cn = Strings.isNullOrEmpty(classificationName) ? NoClassification.toString() : classificationName;
+        var enterprise = system.getEnterprise();
+        return classificationService.find(session, cn, system, identityToken)
+                .chain(classification -> new ArrangementXInvolvedParty().builder(session)
+                        .inActiveRange().inDateRange().withEnterprise(enterprise).withClassification(classification).withValue(value)
+                        .where(ArrangementXInvolvedParty_.arrangementID, Equals, (Arrangement) arrangement)
+                        .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
+                        .getAll()
+                        .chain(links -> (Uni) fetchAllStateless(session, links, ArrangementXInvolvedParty::getInvolvedPartyID)));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IArrangement<?, ?>>> findArrangementsByInvolvedParty(Mutiny.StatelessSession session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken) {
+        final String cn = Strings.isNullOrEmpty(classificationName) ? NoClassification.toString() : classificationName;
+        var enterprise = system.getEnterprise();
+        return classificationService.find(session, cn, system, identityToken)
+                .chain(classification -> new ArrangementXInvolvedParty().builder(session)
+                        .inActiveRange().inDateRange().withEnterprise(enterprise).withClassification(classification).withValue(value)
+                        .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
+                        .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
+                        .getAll()
+                        .chain(links -> (Uni) fetchAllStateless(session, links, ArrangementXInvolvedParty::getArrangementID)));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IArrangement<?, ?>>> findArrangementsByRulesType(Mutiny.StatelessSession session, IRulesType<?, ?> ruleType, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken) {
+        final String cn = Strings.isNullOrEmpty(classificationName) ? NoClassification.toString() : classificationName;
+        var enterprise = system.getEnterprise();
+        return classificationService.find(session, cn, system, identityToken)
+                .chain(classification -> new ArrangementXRulesType().builder(session)
+                        .inActiveRange().inDateRange().withEnterprise(enterprise).withClassification(classification).withValue(value)
+                        .where(ArrangementXRulesType_.rulesTypeID, Equals, (RulesType) ruleType)
+                        .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
+                        .getAll()
+                        .chain(links -> (Uni) fetchAllStateless(session, links, ArrangementXRulesType::getArrangement)));
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationOpStateless(Mutiny.StatelessSession session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, com.entityassist.enumerations.Operand op, UUID... identityToken) {
+        var enterprise = systems.getEnterprise();
+        return classificationService.find(session, arrType, systems, identityToken)
+                .chain(classification -> {
+                    if (classification == null) { return Uni.createFrom().item(Collections.<IArrangement<?, ?>>emptyList()); }
+                    ArrangementQueryBuilder aqb = new Arrangement().builder(session);
+                    aqb.withEnterprise(enterprise).inActiveRange().inDateRange();
+                    JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
+                    ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder(session);
+                    qb.withEnterprise(enterprise).withClassification((Classification) classification).withValue(op, value).inActiveRange().inDateRange();
+                    aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
+                    if (withParent != null) {
+                        JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
+                        ArrangementXArrangementQueryBuilder builder = new ArrangementXArrangement().builder(session)
+                                .inActiveRange().inDateRange()
+                                .where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
+                        aqb.join(Arrangement_.arrangementXArrangementList, builder, JoinType.INNER, joinExpression);
+                    }
+                    aqb.orderBy(Arrangement_.effectiveFromDate, OrderByType.DESC);
+                    return aqb.getAll().map(l -> new ArrayList<IArrangement<?, ?>>(l));
+                });
+    }
+
+    @Override
+    public Uni<List<IArrangement<?, ?>>> findArrangementsByClassification(Mutiny.StatelessSession session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken) {
+        return findArrangementsByClassificationOpStateless(session, arrType, withParent, value, systems, Equals, identityToken);
+    }
+
+    @Override
+    public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationGT(Mutiny.StatelessSession session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken) {
+        return findArrangementsByClassificationOpStateless(session, arrType, withParent, value, systems, GreaterThan, identityToken);
+    }
+
+    @Override
+    public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationGTE(Mutiny.StatelessSession session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken) {
+        return findArrangementsByClassificationOpStateless(session, arrType, withParent, value, systems, GreaterThanEqualTo, identityToken);
+    }
+
+    @Override
+    public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationLT(Mutiny.StatelessSession session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken) {
+        return findArrangementsByClassificationOpStateless(session, arrType, withParent, value, systems, LessThan, identityToken);
+    }
+
+    @Override
+    public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationLTE(Mutiny.StatelessSession session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken) {
+        return findArrangementsByClassificationOpStateless(session, arrType, withParent, value, systems, LessThanEqualTo, identityToken);
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IArrangement<?, ?>>> findArrangementsByInvolvedParty(Mutiny.StatelessSession session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, ISystems<?, ?> system, UUID... identityToken) {
+        final String cn = Strings.isNullOrEmpty(classificationName) ? NoClassification.toString() : classificationName;
+        var enterprise = system.getEnterprise();
+        return classificationService.find(session, cn, system, identityToken)
+                .chain(classification -> new ArrangementXInvolvedParty().builder(session)
+                        .inActiveRange().inDateRange(startDate, EndOfTime).withEnterprise(enterprise).withClassification(classification).withValue(value)
+                        .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
+                        .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
+                        .getAll()
+                        .chain(links -> (Uni) fetchAllStateless(session, links, ArrangementXInvolvedParty::getArrangementID)));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<List<IArrangement<?, ?>>> findArrangementsByInvolvedParty(Mutiny.StatelessSession session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, LocalDateTime endDate, ISystems<?, ?> system, UUID... identityToken) {
+        final String cn = Strings.isNullOrEmpty(classificationName) ? NoClassification.toString() : classificationName;
+        var enterprise = system.getEnterprise();
+        return classificationService.find(session, cn, system, identityToken)
+                .chain(classification -> new ArrangementXInvolvedParty().builder(session)
+                        .inActiveRange().inDateRange(startDate, endDate).withEnterprise(enterprise).withClassification(classification).withValue(value)
+                        .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
+                        .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
+                        .getAll()
+                        .chain(links -> (Uni) fetchAllStateless(session, links, ArrangementXInvolvedParty::getArrangementID)));
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Uni<IArrangement<?, ?>> completeArrangement(Mutiny.StatelessSession session, IArrangement<?, ?> arrangement, ISystems<?, ?> system, UUID... identityToken) {
+        Arrangement arr = (Arrangement) arrangement;
+        return (Uni) arr.expire(session, Duration.ZERO);
     }
 }
 

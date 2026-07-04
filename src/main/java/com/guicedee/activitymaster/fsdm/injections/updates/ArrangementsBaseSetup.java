@@ -94,4 +94,71 @@ public class ArrangementsBaseSetup implements ISystemUpdate
 					});
 			});
 	}
+
+	/** Stateless twin of {@link #update(Mutiny.Session, IEnterprise)}. */
+	@Override
+	public Uni<Boolean> update(Mutiny.StatelessSession session, IEnterprise<?,?> enterprise)
+	{
+		log.info("Starting sequential creation of arrangement classifications (stateless)");
+		logProgress("Arrangements", "Creating Base...");
+
+		ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+
+		return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+			.chain(activityMasterSystem -> {
+				return service.create(session, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements, activityMasterSystem)
+					.chain(baseInvolvedPartyArrangement -> {
+						log.info("📋 Creating involved party arrangement classifications sequentially (stateless)");
+
+						return service.create(session, ArrangementInvolvedPartyClassifications.PurchasedBy, activityMasterSystem, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements)
+							.chain(() -> service.create(session, ArrangementInvolvedPartyClassifications.SoldBy, activityMasterSystem, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements))
+							.chain(() -> service.create(session, ArrangementInvolvedPartyClassifications.OwnedBy, activityMasterSystem, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements))
+							.chain(() -> service.create(session, ArrangementInvolvedPartyClassifications.ManagedBy, activityMasterSystem, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements))
+							.onItem().invoke(() -> {
+								log.info("✅ Successfully created all involved party arrangement classifications (stateless)");
+								logProgress("Arrangements", "Loaded Arrangement InvolvedParty Classifications...", 1);
+							})
+							.onFailure().invoke(error -> log.error("❌ Error creating involved party arrangement classifications (stateless): {}", error.getMessage(), error))
+							.chain(() -> {
+								return service.create(session, ArrangementProductClassifications.ArrangementPurchase, activityMasterSystem)
+									.chain(baseArrangementPurchase -> {
+										log.info("📋 Creating purchase classifications sequentially (stateless)");
+
+										return service.create(session, ArrangementProductClassifications.PurchaseName, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase)
+											.chain(() -> service.create(session, ArrangementProductClassifications.PurchaseInvoiceName, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase))
+											.chain(() -> service.create(session, ArrangementProductClassifications.PurchaseCost, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase))
+											.chain(() -> service.create(session, ArrangementProductClassifications.PurchaseVat, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase))
+											.chain(() -> service.create(session, ArrangementProductClassifications.PurchaseTotalCost, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase))
+											.chain(() -> service.create(session, ArrangementProductClassifications.PurchaseInvoiceDate, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase))
+											.chain(() -> service.create(session, ArrangementProductClassifications.PurchasePaidDate, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase))
+											.chain(() -> service.create(session, ArrangementProductClassifications.PurchasePromotionCode, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase))
+											.chain(() -> service.create(session, ArrangementProductClassifications.PurchaseStatus, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase))
+											.onItem().invoke(() -> {
+												log.info("✅ Successfully created all purchase classifications (stateless)");
+												logProgress("Arrangements", "Loaded Arrangement Product Classifications...", 1);
+											})
+											.onFailure().invoke(error -> log.error("❌ Error creating purchase classifications (stateless): {}", error.getMessage(), error))
+											.chain(() -> {
+												return service.create(session, ArrangementTypeClassifications.ArrangementProductTypes, activityMasterSystem)
+													.chain(baseArrangementProductTypes -> {
+														log.info("📋 Creating product type classifications sequentially (stateless)");
+
+														return service.create(session, ArrangementTypeClassifications.ProductPurchase, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes)
+															.chain(() -> service.create(session, ArrangementTypeClassifications.ProductBid, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes))
+															.chain(() -> service.create(session, ArrangementTypeClassifications.ProductInterest, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes))
+															.chain(() -> service.create(session, ArrangementTypeClassifications.ProductQuote, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes))
+															.chain(() -> service.create(session, ArrangementTypeClassifications.ProductLead, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes))
+															.onItem().invoke(() -> {
+																log.info("✅ Successfully created all product type classifications (stateless)");
+																logProgress("Arrangements", "Loaded Arrangement Type Classifications...", 1);
+															})
+															.onFailure().invoke(error -> log.error("❌ Error creating product type classifications (stateless): {}", error.getMessage(), error))
+															.map(result -> true);
+													});
+											});
+									});
+							});
+					});
+			});
+	}
 }

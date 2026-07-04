@@ -59,9 +59,9 @@ public class RulesTypeRestService {
                                   RulesTypeFindDTO findDto) {
         UUID rulesTypeId = findDto.rulesTypeId;
         List<RulesTypeDataIncludes> includesList = findDto.includes;
-        return SessionUtils.<RulesTypeDTO>withActivityMaster(enterpriseName, requestingSystemName,
-                (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                    Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<RulesTypeDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
+                (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                    Mutiny.StatelessSession session = tuple.getItem1();
                     return rulesService.findType(session, rulesTypeId)
                             .chain(ruleType -> {
                                 if (ruleType == null) {
@@ -104,9 +104,9 @@ public class RulesTypeRestService {
                                     @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                     RulesTypeCreateDTO dto) {
         String description = dto.description != null ? dto.description : dto.name;
-        return SessionUtils.<RulesTypeDTO>withActivityMaster(enterpriseName, requestingSystemName,
-                (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                    Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<RulesTypeDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
+                (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                    Mutiny.StatelessSession session = tuple.getItem1();
                     ISystems<?, ?> system = tuple.getItem3();
                     UUID[] token = tuple.getItem4();
                     return rulesService.createRulesType(session, dto.name, description, system, token)
@@ -138,8 +138,8 @@ public class RulesTypeRestService {
                                     @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                     RulesTypeUpdateDTO dto) {
         UUID rulesTypeId = dto.rulesTypeId;
-        return SessionUtils.<UUID>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<UUID>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             return rulesService.findType(session, rulesTypeId)
                     .chain(ruleType -> {
                         if (ruleType == null) {
@@ -163,7 +163,7 @@ public class RulesTypeRestService {
     // Include fetching
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Uni<RulesTypeDTO> fetchInclude(Mutiny.Session session, RulesType ruleType, RulesTypeDTO dto,
+    private Uni<RulesTypeDTO> fetchInclude(Mutiny.StatelessSession session, RulesType ruleType, RulesTypeDTO dto,
                                            RulesTypeDataIncludes include) {
         return switch (include) {
             case Classifications -> new RulesTypeXClassification().builder(session)
@@ -268,7 +268,7 @@ public class RulesTypeRestService {
         }
     }
 
-    private Uni<Void> expireResourcesByName(Uni<Void> chain, RelationshipUpdateEntry entry, Mutiny.Session s, RulesType ruleType) {
+    private Uni<Void> expireResourcesByName(Uni<Void> chain, RelationshipUpdateEntry entry, Mutiny.StatelessSession s, RulesType ruleType) {
         if (entry.delete == null || entry.delete.isEmpty()) return chain;
         Set<String> namesToDelete = new HashSet<>(entry.delete);
         return chain.chain(() -> new RulesTypeXResourceItem().builder(s)
@@ -294,12 +294,12 @@ public class RulesTypeRestService {
 
     @FunctionalInterface
     private interface RuleTypeWork {
-        Uni<Void> apply(Mutiny.Session session, RulesType ruleType, ISystems<?, ?> system, UUID[] token);
+        Uni<Void> apply(Mutiny.StatelessSession session, RulesType ruleType, ISystems<?, ?> system, UUID[] token);
     }
 
     private void fireRuleType(String enterpriseName, String requestingSystemName, UUID rulesTypeId, String label, RuleTypeWork work) {
-        SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session s = tuple.getItem1();
+        SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession s = tuple.getItem1();
             ISystems<?, ?> sys = tuple.getItem3();
             UUID[] token = tuple.getItem4();
             return rulesService.findType(s, rulesTypeId).chain(rt -> {

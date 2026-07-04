@@ -91,32 +91,21 @@ public class TestActivityMasterSecurityLifecycle {
         IGuiceContext.get(IActiveFlagService.class);
         IGuiceContext.get(ISecurityTokenService.class);
 
-        // Ensure the enterprise + Activity Master system exist for this test class context.
-        sessionFactory.withSession(session ->
-                session.withTransaction(tx ->
-                        enterpriseService.getEnterprise(session, TestEnterprise.name())
-                                .onFailure().recoverWithUni(t -> {
-                                    var ent = enterpriseService.get();
-                                    ent.setName(TestEnterprise.name());
-                                    ent.setDescription("Enterprise Entity for Security Lifecycle Testing");
-                                    return enterpriseService.createNewEnterprise(session, ent);
-                                })
-                                .chain(ent -> systemsService.getActivityMaster(session, (IEnterprise<?, ?>) ent)
-                                        .onFailure().recoverWithUni(t -> systemsService.create(session, (IEnterprise<?, ?>) ent,
-                                                ISystemsService.ActivityMasterSystemName, "Activity Master System"))
-                                )
-                                .replaceWith(Uni.createFrom().voidItem())
-                )
-        ).await().atMost(Duration.of(2, ChronoUnit.MINUTES));
-
-        // Start the enterprise (idempotent) — this is what creates the security groups and folders.
-        sessionFactory.withSession(session ->
-                session.withTransaction(tx ->
-                        enterpriseService.startNewEnterprise(session, TestEnterprise.name(), "admin", "!@adminadmin")
-                                .onFailure().recoverWithItem(e -> null)
-                                .replaceWith(Uni.createFrom().voidItem())
-                )
-        ).await().atMost(Duration.of(2, ChronoUnit.MINUTES));
+        // Provision the enterprise on the stateless pipeline (no bridge). createNewEnterprise creates the
+        // record + installs/registers every system via the stateless registerSystem path; startNewEnterprise
+        // then seeds the canonical security groups/folders + admin. Idempotent: create only when absent.
+        sessionFactory.openStatelessSession()
+                .chain(ss -> enterpriseService.getEnterprise(ss, TestEnterprise.name())
+                        .onFailure().recoverWithUni(t -> {
+                            var ent = enterpriseService.get();
+                            ent.setName(TestEnterprise.name());
+                            ent.setDescription("Enterprise Entity for Security Lifecycle Testing");
+                            return enterpriseService.createNewEnterprise(ss, ent);
+                        })
+                        .chain(ent -> enterpriseService.startNewEnterprise(ss, TestEnterprise.name(), "admin", "!@adminadmin"))
+                        .onFailure().recoverWithItem(e -> null)
+                        .eventually(ss::close))
+                .await().atMost(Duration.of(2, ChronoUnit.MINUTES));
     }
 
     /**

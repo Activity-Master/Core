@@ -160,7 +160,7 @@ public class EventActionSupport {
 
     @FunctionalInterface
     private interface EventLinkOperation {
-        Uni<Void> apply(Mutiny.Session session, IEvent<?, ?> event, String action, String summary,
+        Uni<Void> apply(Mutiny.StatelessSession session, IEvent<?, ?> event, String action, String summary,
                         ISystems<?, ?> system, UUID[] token);
     }
 
@@ -176,8 +176,8 @@ public class EventActionSupport {
         final String summary = request.summary;
 
         SessionUtils.fireAndForget(
-                SessionUtils.<Void>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                    Mutiny.Session s = tuple.getItem1();
+                SessionUtils.<Void>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                    Mutiny.StatelessSession s = tuple.getItem1();
                     ISystems<?, ?> system = tuple.getItem3();
                     UUID[] token = tuple.getItem4();
                     return eventService.find(s, eventId)
@@ -194,7 +194,7 @@ public class EventActionSupport {
      * so this is a no-op when the classification already exists. Failures are swallowed — a missing
      * action verb must never break the primary operation.
      */
-    private Uni<?> ensureActionClassification(Mutiny.Session session, String action,
+    private Uni<?> ensureActionClassification(Mutiny.StatelessSession session, String action,
                                               EnterpriseClassificationDataConcepts concept,
                                               ISystems<?, ?> system, UUID[] token) {
         return classificationService.create(session, action, action, concept, system, token)

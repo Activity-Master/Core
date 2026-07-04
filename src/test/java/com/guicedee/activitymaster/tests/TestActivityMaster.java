@@ -77,22 +77,18 @@ public class TestActivityMaster extends TestDatabaseSetup
     @Order(1)
     public void testEnterpriseInstallation()
     {
-      sessionFactory.withSession(session -> {
-            // Persist the entity
-            return session.withTransaction(tx -> {
-
-                  IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
-                  var enterprise = enterpriseService.get();
-                  enterprise.setName(TestEnterprise.name());
-                  enterprise.setDescription("Enterprise Entity for Testing");
-
-                  return enterpriseService.createNewEnterprise(session, enterprise);
-                })
-                       .chain(result -> {
-                         System.out.println("Enterprise Created - " + result.getName() + " / " + result.getId());
-                         return Uni.createFrom()
-                                    .item(result);
-                       });
+      // Create the enterprise on the stateless pipeline (no bridge to a managed session) — createNewEnterprise
+      // creates the record AND installs/registers every system via the stateless registerSystem path, so
+      // stateless-only systems like TimeSystem register correctly.
+      sessionFactory.openStatelessSession()
+          .chain(ss -> {
+            IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+            var enterprise = enterpriseService.get();
+            enterprise.setName(TestEnterprise.name());
+            enterprise.setDescription("Enterprise Entity for Testing");
+            return enterpriseService.createNewEnterprise(ss, enterprise)
+                       .invoke(result -> System.out.println("Enterprise Created - " + result.getName() + " / " + result.getId()))
+                       .eventually(ss::close);
           })
           .await()
           .atMost(Duration.of(2, ChronoUnit.MINUTES))
@@ -145,14 +141,13 @@ public class TestActivityMaster extends TestDatabaseSetup
       public void testStartNewEnterprise()
       {
         IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
-        var updates = sessionFactory.withTransaction(session -> {
-          return enterpriseService.getEnterprise(session, TestEnterprise.name())
-                     .chain(enterprise -> {
-                       return enterpriseService.startNewEnterprise(session, TestEnterprise.name(), "admin", "!@adminadmin")
-                                  .onFailure()
-                                  .invoke(a -> log.fatal("Cannot load updates", a));
-                     });
-        });
+        var updates = sessionFactory.openStatelessSession().chain(ss ->
+            enterpriseService.getEnterprise(ss, TestEnterprise.name())
+                     .chain(enterprise -> enterpriseService.startNewEnterprise(ss, TestEnterprise.name(), "admin", "!@adminadmin")
+                                .onFailure()
+                                .invoke(a -> log.fatal("Cannot load updates", a)))
+                     .eventually(ss::close)
+        );
         updates.onFailure()
             .invoke(a -> log.fatal("Cannot load updates", a));
         updates.onItem()

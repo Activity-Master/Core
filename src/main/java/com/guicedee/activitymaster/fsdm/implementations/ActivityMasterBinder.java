@@ -10,7 +10,9 @@ import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityM
 import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 import com.guicedee.activitymaster.fsdm.systems.TimeSystem;
 import com.guicedee.client.services.lifecycle.IGuiceModule;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class ActivityMasterBinder
 		extends AbstractModule
 		implements IGuiceModule<ActivityMasterBinder>
@@ -18,6 +20,7 @@ public class ActivityMasterBinder
 	@Override
 	protected void configure()
 	{
+		log.info("🏛️ Using Activity Master Core (FSDM) Module and routes at /rest/{enterprise}/security");
 		bind(ActivityMasterConfiguration.class).toInstance(ActivityMasterConfiguration.get());
 	//	expose(ActivityMasterConfiguration.class);
 		

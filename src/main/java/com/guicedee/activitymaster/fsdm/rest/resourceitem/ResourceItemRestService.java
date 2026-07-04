@@ -62,9 +62,9 @@ public class ResourceItemRestService
                                      ResourceItemFindDTO findDto) {
         UUID resourceItemId = findDto.resourceItemId;
         List<ResourceItemDataIncludes> includesList = findDto.includes;
-        return SessionUtils.<ResourceItemDTO>withActivityMaster(enterpriseName, requestingSystemName,
-            (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<ResourceItemDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
+            (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                Mutiny.StatelessSession session = tuple.getItem1();
                 return resourceItemService.findByUUID(session, resourceItemId)
                     .map(resourceItem -> {
                         ResourceItemDTO dto = new ResourceItemDTO();
@@ -107,9 +107,9 @@ public class ResourceItemRestService
     public Uni<List<ResourceItemDTO>> search(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
                                               @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                               ResourceItemSearchDTO searchDto) {
-        return SessionUtils.<List<ResourceItemDTO>>withActivityMaster(enterpriseName, requestingSystemName,
-            (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<List<ResourceItemDTO>>withActivityMasterStateless(enterpriseName, requestingSystemName,
+            (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                Mutiny.StatelessSession session = tuple.getItem1();
                 ISystems<?, ?> system = tuple.getItem3();
                 UUID[] identityToken = tuple.getItem4();
 
@@ -193,8 +193,8 @@ public class ResourceItemRestService
         // Resolve enterprise/system context and run the create inside the managed session/transaction.
         // The create MUST use the session provided by withActivityMaster — passing null leaves the
         // EntityAssist query builder without an entity manager (NPE in QueryBuilder.getQuery()).
-        return SessionUtils.<ResourceItemDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<ResourceItemDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             ISystems<?, ?> system = tuple.getItem3();
 
             Uni<IResourceItem<?, ?>> createUni;
@@ -252,8 +252,8 @@ public class ResourceItemRestService
                                        ResourceItemUpdateDTO dto) {
         UUID resourceItemId = dto.resourceItemId;
         // Step 1: Find the resource item in its own session (just to validate it exists)
-        return SessionUtils.<UUID>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<UUID>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             return resourceItemService.findByUUID(session, resourceItemId)
                     .map(IRootEntity::getId);
         }).map(foundId -> {
@@ -290,8 +290,8 @@ public class ResourceItemRestService
                                             @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                             ResourceItemUpdateDataDTO dto) {
         UUID resourceItemId = dto.resourceItemId;
-        return SessionUtils.<ResourceItemDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<ResourceItemDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
 
             return resourceItemService.updateResourceData(session, dto.data, resourceItemId, requestingSystemName)
                     .chain(() -> {
@@ -323,9 +323,9 @@ public class ResourceItemRestService
     public Uni<byte[]> getData(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
                                @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                @Parameter(description = "Resource item id") @PathParam("resourceItemId") UUID resourceItemId) {
-        return SessionUtils.<byte[]>withActivityMaster(enterpriseName, requestingSystemName,
-            (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<byte[]>withActivityMasterStateless(enterpriseName, requestingSystemName,
+            (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                Mutiny.StatelessSession session = tuple.getItem1();
                 UUID[] identityToken = tuple.getItem4();
 
                 return resourceItemService.findByUUID(session, resourceItemId)
@@ -343,7 +343,7 @@ public class ResourceItemRestService
     // Include fetching
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Uni<ResourceItemDTO> fetchInclude(Mutiny.Session session, ResourceItem resourceItem, ResourceItemDTO dto, ResourceItemDataIncludes include) {
+    private Uni<ResourceItemDTO> fetchInclude(Mutiny.StatelessSession session, ResourceItem resourceItem, ResourceItemDTO dto, ResourceItemDataIncludes include) {
         return switch (include) {
             case Types -> new ResourceItemXResourceItemType().builder(session)
                     .where(ResourceItemXResourceItemType_.resourceItemID, Equals, resourceItem)
@@ -410,8 +410,8 @@ public class ResourceItemRestService
         String label = "resource item " + resourceItemId;
 
         if (dto.classifications != null && !dto.classifications.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return resourceItemService.findByUUID(s, resourceItemId).chain(resourceItem -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     for (var entry : dto.classifications.entrySet()) {
@@ -423,8 +423,8 @@ public class ResourceItemRestService
         }
 
         if (dto.types != null && !dto.types.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return resourceItemService.findByUUID(s, resourceItemId).chain(resourceItem -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     for (var entry : dto.types.entrySet()) {
@@ -437,8 +437,8 @@ public class ResourceItemRestService
 
         // Children: Key = classification name (mandatory), Value = child resource item UUID
         if (dto.children != null && !dto.children.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return resourceItemService.findByUUID(s, resourceItemId).chain(resourceItem -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     for (var entry : dto.children.entrySet()) {
@@ -459,8 +459,8 @@ public class ResourceItemRestService
         String label = "resource item " + resourceItemId;
 
         if (hasEntries(dto.classifications)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return resourceItemService.findByUUID(s, resourceItemId).chain(resourceItem -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.classifications, (name, value) ->
@@ -473,8 +473,8 @@ public class ResourceItemRestService
         }
 
         if (hasEntries(dto.types)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return resourceItemService.findByUUID(s, resourceItemId).chain(resourceItem -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.types, (name, value) ->
@@ -487,8 +487,8 @@ public class ResourceItemRestService
         }
 
         if (hasEntries(dto.children)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return resourceItemService.findByUUID(s, resourceItemId).chain(resourceItem -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     if (dto.children.addOrUpdate != null) {
@@ -535,8 +535,8 @@ public class ResourceItemRestService
 
     private Uni<ResourceItemDTO> buildCreateResponse(String enterpriseName, String requestingSystemName,
                                                       IResourceItem<?, ?> resourceItem, ResourceItemCreateDTO createDto) {
-        return SessionUtils.<ResourceItemDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<ResourceItemDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             ResourceItem ri = (ResourceItem) resourceItem;
 
             ResourceItemDTO response = new ResourceItemDTO();
@@ -586,7 +586,7 @@ public class ResourceItemRestService
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Uni<Void> chainDeleteByExpire(Uni<Void> chain, RelationshipUpdateEntry entry,
-                                           Mutiny.Session session, IResourceItem<?, ?> resourceItem) {
+                                           Mutiny.StatelessSession session, IResourceItem<?, ?> resourceItem) {
         if (entry == null || entry.delete == null || entry.delete.isEmpty()) return chain;
         Set<String> idsToDelete = new HashSet<>(entry.delete);
         ResourceItem ri = (ResourceItem) resourceItem;

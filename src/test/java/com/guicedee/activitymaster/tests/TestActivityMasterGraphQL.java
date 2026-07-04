@@ -83,25 +83,24 @@ public class TestActivityMasterGraphQL extends TestDatabaseSetup
         populateAllDomains();
     }
 
-    /** Ensures the enterprise and the Activity Master system exist (idempotent). */
+    /** Ensures the enterprise and the Activity Master system exist (idempotent) — stateless pipeline, no bridge. */
     private void ensureEnterpriseAndSystem()
     {
-        sessionFactory.withSession(session -> session.withTransaction(tx -> {
-            IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
-            ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
-            return enterpriseService.getEnterprise(session, ENTERPRISE)
-                    .onFailure().recoverWithUni(t -> {
-                        var ent = enterpriseService.get();
-                        ent.setName(ENTERPRISE);
-                        ent.setDescription("Enterprise for GraphQL tests");
-                        return enterpriseService.createNewEnterprise(session, ent)
-                                .chain(e -> enterpriseService.startNewEnterprise(session, ENTERPRISE, "admin", "adminadmin!@"));
-                    })
-                    .chain(ent -> systemsService.getActivityMaster(session, (IEnterprise<?, ?>) ent)
-                            .onFailure().recoverWithUni(t -> systemsService.create(session, (IEnterprise<?, ?>) ent,
-                                    ISystemsService.ActivityMasterSystemName, "Activity Master System")))
-                    .replaceWith(Uni.createFrom().voidItem());
-        })).await().atMost(Duration.ofMinutes(2));
+        // createNewEnterprise creates the record + installs/registers every system via the stateless
+        // registerSystem path; startNewEnterprise then seeds the admin + post-startups.
+        IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+        sessionFactory.openStatelessSession()
+                .chain(ss -> enterpriseService.getEnterprise(ss, ENTERPRISE)
+                        .onFailure().recoverWithUni(t -> {
+                            var ent = enterpriseService.get();
+                            ent.setName(ENTERPRISE);
+                            ent.setDescription("Enterprise for GraphQL tests");
+                            return enterpriseService.createNewEnterprise(ss, ent);
+                        })
+                        .chain(ent -> enterpriseService.startNewEnterprise(ss, ENTERPRISE, "admin", "adminadmin!@"))
+                        .onFailure().recoverWithItem(e -> null)
+                        .eventually(ss::close))
+                .await().atMost(Duration.ofMinutes(2));
     }
 
     /** Creates at least one record in each of the seven FSDM domains (plus a second arrangement). */

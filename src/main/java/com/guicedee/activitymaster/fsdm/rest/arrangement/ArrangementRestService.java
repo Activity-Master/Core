@@ -63,9 +63,9 @@ public class ArrangementRestService {
                                     ArrangementFindDTO findDto) {
         UUID arrangementId = findDto.arrangementId;
         List<ArrangementDataIncludes> includesList = findDto.includes;
-        return SessionUtils.<ArrangementDTO>withActivityMaster(enterpriseName, requestingSystemName,
-                (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                    Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<ArrangementDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
+                (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                    Mutiny.StatelessSession session = tuple.getItem1();
                     return arrangementsService.find(session, arrangementId, tuple.getItem3(), tuple.getItem4())
                             .chain(arrangement -> {
                                 ArrangementDTO dto = new ArrangementDTO();
@@ -97,7 +97,7 @@ public class ArrangementRestService {
      * Fetches a single include for the given arrangement and populates the DTO.
      * Each include queries its respective relationship table, pivoting the results into a Map.
      */
-    private Uni<ArrangementDTO> fetchInclude(Mutiny.Session session, Arrangement arrangement, ArrangementDTO dto, ArrangementDataIncludes include) {
+    private Uni<ArrangementDTO> fetchInclude(Mutiny.StatelessSession session, Arrangement arrangement, ArrangementDTO dto, ArrangementDataIncludes include) {
         return switch (include) {
             case Types -> new ArrangementXArrangementType().builder(session)
                     .where(ArrangementXArrangementType_.arrangement, Equals, arrangement)
@@ -300,9 +300,9 @@ public class ArrangementRestService {
                                                      @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                                      ArrangementPivotRequest request) {
         UUID arrangementId = request.arrangementId;
-        return SessionUtils.<ArrangementPivotResponse>withActivityMaster(enterpriseName, requestingSystemName,
-                (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                    Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<ArrangementPivotResponse>withActivityMasterStateless(enterpriseName, requestingSystemName,
+                (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                    Mutiny.StatelessSession session = tuple.getItem1();
 
                     List<String> classificationNames = request.classifications != null ? request.classifications : Collections.emptyList();
                     List<String> typeNames = request.types != null ? request.types : Collections.emptyList();
@@ -432,8 +432,8 @@ public class ArrangementRestService {
         // Run the create inside the managed session/transaction. The create MUST use the session
         // provided by withActivityMaster — passing null leaves the EntityAssist query builder without
         // an entity manager (NPE in QueryBuilder.getQuery()).
-        return SessionUtils.<ArrangementDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<ArrangementDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             ISystems<?, ?> system = tuple.getItem3();
             return arrangementsService.create(session, dto.key, dto.type, dto.classification, dto.typeValue, system)
                     .map(arrangement -> {
@@ -469,8 +469,8 @@ public class ArrangementRestService {
         String label = "arrangement " + arrangementId;
 
         if (dto.classifications != null && !dto.classifications.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     for (var entry : dto.classifications.entrySet()) {
@@ -481,8 +481,8 @@ public class ArrangementRestService {
             }), label + " classifications");
         }
         if (dto.parties != null && !dto.parties.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     for (var entry : dto.parties.entrySet()) {
@@ -497,8 +497,8 @@ public class ArrangementRestService {
             }), label + " parties");
         }
         if (dto.resources != null && !dto.resources.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     for (var entry : dto.resources.entrySet()) {
@@ -513,8 +513,8 @@ public class ArrangementRestService {
             }), label + " resources");
         }
         if (dto.rules != null && !dto.rules.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     for (var entry : dto.rules.entrySet()) {
@@ -525,8 +525,8 @@ public class ArrangementRestService {
             }), label + " rules");
         }
         if (dto.products != null && !dto.products.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     for (var entry : dto.products.entrySet()) {
@@ -537,8 +537,8 @@ public class ArrangementRestService {
             }), label + " products");
         }
         if (dto.childArrangements != null && !dto.childArrangements.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     for (var entry : dto.childArrangements.entrySet()) {
@@ -560,8 +560,8 @@ public class ArrangementRestService {
         String label = "arrangement " + arrangementId;
 
         if (hasEntries(dto.classifications)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.classifications, (name, value) ->
@@ -573,8 +573,8 @@ public class ArrangementRestService {
             }), label + " classifications");
         }
         if (hasEntries(dto.types)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.types, (name, value) ->
@@ -587,8 +587,8 @@ public class ArrangementRestService {
             }), label + " types");
         }
         if (hasEntries(dto.parties)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     if (dto.parties.addOrUpdate != null) {
@@ -608,8 +608,8 @@ public class ArrangementRestService {
             }), label + " parties");
         }
         if (hasEntries(dto.resources)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     if (dto.resources.addOrUpdate != null) {
@@ -629,8 +629,8 @@ public class ArrangementRestService {
             }), label + " resources");
         }
         if (hasEntries(dto.rules)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.rules, (name, value) ->
@@ -643,8 +643,8 @@ public class ArrangementRestService {
             }), label + " rules");
         }
         if (hasEntries(dto.products)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.products, (name, value) ->
@@ -657,8 +657,8 @@ public class ArrangementRestService {
             }), label + " products");
         }
         if (hasEntries(dto.ruleTypes)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.ruleTypes, (name, value) ->
@@ -670,8 +670,8 @@ public class ArrangementRestService {
             }), label + " ruleTypes");
         }
         if (hasEntries(dto.childArrangements)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     if (dto.childArrangements.addOrUpdate != null) {
@@ -730,8 +730,8 @@ public class ArrangementRestService {
      */
     private Uni<ArrangementDTO> buildCreateResponse(String enterpriseName, String requestingSystemName,
                                                     Arrangement arrangement, ArrangementCreateDTO dto) {
-        return SessionUtils.<ArrangementDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<ArrangementDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
 
             ArrangementDTO response = new ArrangementDTO();
             response.arrangementId = arrangement.getId();
@@ -792,8 +792,8 @@ public class ArrangementRestService {
                                       ArrangementUpdateDTO dto) {
         UUID arrangementId = dto.arrangementId;
         // Step 1: Find the arrangement in its own session (just to validate it exists)
-        return SessionUtils.<UUID>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<UUID>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             ISystems<?, ?> system = tuple.getItem3();
             UUID[] identityToken = tuple.getItem4();
             return arrangementsService.find(session, arrangementId, system, identityToken).map(IRootEntity::getId);
@@ -853,7 +853,7 @@ public class ArrangementRestService {
     private <L extends WarehouseBaseTable<L, ?, UUID>, R> Uni<Void> chainDeleteByExpire(
             Uni<Void> chain,
             RelationshipUpdateEntry entry,
-            Mutiny.Session session,
+            Mutiny.StatelessSession session,
             IArrangement<?, ?> arrangement,
             Class<L> linkClass,
             jakarta.persistence.metamodel.SingularAttribute arrangementAttr,

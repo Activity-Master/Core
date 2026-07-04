@@ -27,4 +27,13 @@ public class TimeServiceSetup implements ISystemUpdate
 		return Uni.createFrom().item(true);
 	}
 
+	/** Stateless twin of {@link #update(Mutiny.Session, IEnterprise)} — no persistence work to perform. */
+	@Override
+	public Uni<Boolean> update(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
+	{
+		log.info("Starting time service setup (stateless)");
+		logProgress("Time Service", "Loading Time Specifications", 1);
+		return Uni.createFrom().item(true);
+	}
+
 }

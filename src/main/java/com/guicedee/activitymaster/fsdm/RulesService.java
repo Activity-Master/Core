@@ -137,6 +137,32 @@ public class RulesService
 	}
 
 	@Override
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public Uni<IRules<?, ?>> find(Mutiny.StatelessSession session, UUID identity)
+	{
+		return (Uni) new Rules().builder(session).find(identity).get();
+	}
+
+	@Override
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public Uni<IRulesType<?, ?>> findType(Mutiny.StatelessSession session, UUID identity)
+	{
+		return (Uni) new RulesType().builder(session).find(identity).get();
+	}
+
+	@Override
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public Uni<IRules<?, ?>> findRules(Mutiny.StatelessSession session, String name, IEnterprise<?, ?> enterprise, UUID... identityToken)
+	{
+		return (Uni) new Rules().builder(session)
+		                  .withName(name)
+		                  .inActiveRange()
+		                  .inDateRange()
+		                  .withEnterprise(enterprise)
+		                  .get();
+	}
+
+	@Override
 	public Uni<IRules<?, ?>> findRules(Mutiny.Session session, String productName, IClassification<?, ?> classification, IEnterprise<?, ?> enterprise, UUID... identityToken)
 	{
 		return (Uni) new Rules().builder(session)
@@ -402,6 +428,225 @@ public class RulesService
 		                                   .inDateRange()
 		                                   .canRead(system, identityToken)
 		                                   .getAll();
+	}
+
+	// ============================================================================================
+	// Stateless finder twins.
+	// ============================================================================================
+
+	@Override
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public Uni<IRules<?, ?>> findRules(Mutiny.StatelessSession session, String productName, IClassification<?, ?> classification, IEnterprise<?, ?> enterprise, UUID... identityToken)
+	{
+		return (Uni) new Rules().builder(session)
+		                  .withName(productName)
+		                  .withClassification(classification)
+		                  .inActiveRange()
+		                  .inDateRange()
+		                  .withEnterprise(enterprise)
+		                  .get();
+	}
+
+	@Override
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public Uni<List<IRules<?, ?>>> findByRulesTypes(Mutiny.StatelessSession session, IRulesType<?, ?> rulesType, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
+	{
+		var enterprise = system.getEnterprise();
+		return (Uni) new RulesXRulesType().builder(session)
+		                                .withClassification(classificationName, value, system, identityToken)
+		                                .findLink(null, (RulesType) rulesType, value)
+		                                .withEnterprise(enterprise)
+		                                .inActiveRange()
+		                                .inDateRange()
+		                                .canRead(system, identityToken)
+		                                .getAll();
+	}
+
+	@Override
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public Uni<List<IRulesType<?, ?>>> findRuleTypesByRules(Mutiny.StatelessSession session, IRules<?, ?> rulesType, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
+	{
+		var enterprise = system.getEnterprise();
+		return (Uni) new RulesXRulesType().builder(session)
+		                                .withClassification(classificationName, value, system, identityToken)
+		                                .findLink((Rules) rulesType, null, value)
+		                                .withEnterprise(enterprise)
+		                                .inActiveRange()
+		                                .inDateRange()
+		                                .canRead(system, identityToken)
+		                                .getAll();
+	}
+
+	@Override
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public Uni<List<IRelationshipValue<IRules<?, ?>, IRulesType<?, ?>, ?>>> findRuleTypeValuesByRules(Mutiny.StatelessSession session, IRules<?, ?> rulesType, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
+	{
+		var enterprise = system.getEnterprise();
+		return (Uni) new RulesXRulesType().builder(session)
+		                                .withClassification(classificationName, value, system, identityToken)
+		                                .findLink((Rules) rulesType, null, value)
+		                                .withEnterprise(enterprise)
+		                                .inActiveRange()
+		                                .inDateRange()
+		                                .canRead(system, identityToken)
+		                                .getAll();
+	}
+
+	@Override
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public Uni<List<IRules<?, ?>>> findRulesByProduct(Mutiny.StatelessSession session, IProduct<?, ?> product, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
+	{
+		var enterprise = system.getEnterprise();
+		return (Uni) new RulesXProduct().builder(session)
+		                              .withClassification(classificationName, value, system, identityToken)
+		                              .findLink(null, (Product) product, value)
+		                              .withEnterprise(enterprise)
+		                              .inActiveRange()
+		                              .inDateRange()
+		                              .canRead(system, identityToken)
+		                              .getAll();
+	}
+
+	@Override
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public Uni<List<IRelationshipValue<IRules<?, ?>, IResourceItem<?, ?>, ?>>> findRulesByResourceItem(Mutiny.StatelessSession session, IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
+	{
+		var enterprise = system.getEnterprise();
+		return (Uni) new RulesXResourceItem().builder(session)
+		                                   .withClassification(classificationName, system)
+		                                   .findLink(null, (ResourceItem) resourceItem, value)
+		                                   .withEnterprise(enterprise)
+		                                   .inActiveRange()
+		                                   .inDateRange()
+		                                   .canRead(system, identityToken)
+		                                   .getAll();
+	}
+
+	// ============================================================================================
+	// Stateless create twins (Rules + RulesType, public + scope-restricted). Each runs entirely on the
+	// supplied Mutiny.StatelessSession (id assigned up front — stateless insert does not fire
+	// @PrePersist — + stateless security matrix), so independent stateless sessions can provision rules
+	// in parallel.
+	// ============================================================================================
+
+	@Override
+	public Uni<IRules<?, ?>> createRules(Mutiny.StatelessSession session, String rulesType, String name, String description, ISystems<?, ?> system, UUID... identityToken)
+	{
+		return createRulesStateless(session, rulesType, null, name, description, system, null, false, identityToken);
+	}
+
+	@Override
+	public Uni<IRules<?, ?>> createRules(Mutiny.StatelessSession session, String rulesType, UUID key, String name, String description, ISystems<?, ?> system, UUID... identityToken)
+	{
+		return createRulesStateless(session, rulesType, key, name, description, system, null, false, identityToken);
+	}
+
+	/** Stateless scope-restricted rules create — twin of {@link #createRulesScopeRestricted(Mutiny.Session, String, UUID, String, String, ISystems, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}. */
+	@Override
+	public Uni<IRules<?, ?>> createRulesScopeRestricted(Mutiny.StatelessSession session, String rulesType, UUID key, String name, String description, ISystems<?, ?> system,
+														com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+														UUID... identityToken)
+	{
+		return createRulesStateless(session, rulesType, key, name, description, system, scopeToken, true, identityToken);
+	}
+
+	private Uni<IRules<?, ?>> createRulesStateless(Mutiny.StatelessSession session, String rulesType, UUID key, String name, String description, ISystems<?, ?> system,
+												   com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+												   boolean restricted, UUID... identityToken)
+	{
+		var enterprise = system.getEnterprise();
+
+		Rules rules = new Rules();
+		rules.setId(key == null ? UUID.randomUUID() : key);
+		rules.setName(name);
+		rules.setDescription(description);
+		rules.setEnterpriseID(enterprise);
+		rules.setSystemID(system);
+		rules.setOriginalSourceSystemID(system.getId());
+
+		IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+		ISecurityTokenService<?> sts = IGuiceContext.get(ISecurityTokenService.class);
+
+		return acService.getActiveFlag(session, enterprise, identityToken)
+				.chain(activeFlag -> {
+					rules.setActiveFlagID(activeFlag);
+					return rules.builder(session).persist(rules)
+							.chain(persisted -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+									.chain(tokens -> restricted
+											? rules.createScopeRestrictedSecurity(session, system, enterprise, activeFlag, tokens, scopeToken, identityToken)
+											: rules.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
+									.onFailure().recoverWithItem(0L)
+									.replaceWith((IRules<?, ?>) rules));
+				});
+	}
+
+	@Override
+	public Uni<IRulesType<?, ?>> createRulesType(Mutiny.StatelessSession session, String rulesType, ISystems<?, ?> system, UUID... identityToken)
+	{
+		return createRulesTypeStateless(session, rulesType, null, rulesType, system, null, false, identityToken);
+	}
+
+	@Override
+	public Uni<IRulesType<?, ?>> createRulesType(Mutiny.StatelessSession session, String rulesType, String description, ISystems<?, ?> system, UUID... identityToken)
+	{
+		return createRulesTypeStateless(session, rulesType, null, description, system, null, false, identityToken);
+	}
+
+	@Override
+	public Uni<IRulesType<?, ?>> createRulesType(Mutiny.StatelessSession session, String rulesType, UUID key, String description, ISystems<?, ?> system, UUID... identityToken)
+	{
+		return createRulesTypeStateless(session, rulesType, key, description, system, null, false, identityToken);
+	}
+
+	/** Stateless scope-restricted rules-type create — twin of {@link #createRulesTypeScopeRestricted(Mutiny.Session, String, UUID, String, ISystems, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}. */
+	@Override
+	public Uni<IRulesType<?, ?>> createRulesTypeScopeRestricted(Mutiny.StatelessSession session, String rulesType, UUID key, String description, ISystems<?, ?> system,
+															   com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+															   UUID... identityToken)
+	{
+		return createRulesTypeStateless(session, rulesType, key, description, system, scopeToken, true, identityToken);
+	}
+
+	private Uni<IRulesType<?, ?>> createRulesTypeStateless(Mutiny.StatelessSession session, String rulesType, UUID key, String description, ISystems<?, ?> system,
+														   com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+														   boolean restricted, UUID... identityToken)
+	{
+		var enterprise = system.getEnterprise();
+
+		return new RulesType().builder(session)
+				.withName(rulesType)
+				.withEnterprise(enterprise)
+				.inActiveRange()
+				.inDateRange()
+				.getCount()
+				.chain(count -> {
+					if (count != null && count > 0)
+					{
+						// Existing type — return the prepped detached projection.
+						return findRulesTypes(session, rulesType, system, identityToken);
+					}
+					RulesType et = new RulesType();
+					et.setId(key == null ? UUID.randomUUID() : key);
+					et.setName(rulesType);
+					et.setDescription(description);
+					et.setSystemID(system);
+					et.setEnterpriseID(enterprise);
+					et.setOriginalSourceSystemID(system.getId());
+
+					IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+					ISecurityTokenService<?> sts = IGuiceContext.get(ISecurityTokenService.class);
+					return acService.getActiveFlag(session, enterprise, identityToken)
+							.chain(activeFlag -> {
+								et.setActiveFlagID(activeFlag);
+								return et.builder(session).persist(et)
+										.chain(persisted -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+												.chain(tokens -> restricted
+														? et.createScopeRestrictedSecurity(session, system, enterprise, activeFlag, tokens, scopeToken, identityToken)
+														: et.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
+												.onFailure().recoverWithItem(0L)
+												.replaceWith((IRulesType<?, ?>) et));
+							});
+				});
 	}
 }
 

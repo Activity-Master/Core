@@ -8,6 +8,8 @@ import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService;
 import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
+import com.guicedee.activitymaster.fsdm.client.services.IProductService;
+import com.guicedee.activitymaster.fsdm.client.services.IRulesService;
 import com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
@@ -89,45 +91,33 @@ public class TestActivityMasterStatelessEnterprise {
         IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
         ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
 
-        // Ensure the enterprise + Activity Master system exist (proven provisioning sequence).
-        sessionFactory.withSession(session ->
-                session.withTransaction(tx ->
-                        enterpriseService.getEnterprise(session, TestEnterprise.name())
-                                .onFailure().recoverWithUni(t -> {
-                                    var ent = enterpriseService.get();
-                                    ent.setName(TestEnterprise.name());
-                                    ent.setDescription("Enterprise for Stateless Lifecycle Testing");
-                                    return enterpriseService.createNewEnterprise(session, ent);
-                                })
-                                .chain(ent -> systemsService.getActivityMaster(session, (IEnterprise<?, ?>) ent)
-                                        .onFailure().recoverWithUni(t -> systemsService.create(session, (IEnterprise<?, ?>) ent,
-                                                ISystemsService.ActivityMasterSystemName, "Activity Master System")))
-                                .replaceWith(Uni.createFrom().voidItem())
-                )
-        ).await().atMost(Duration.ofMinutes(2));
+        // Provision the enterprise via the genuinely-stateless, no-bridge path — the very path under test.
+        // Canonical sequence: createNewEnterprise (creates the enterprise record + installs/registers EVERY
+        // system) FIRST, then startNewEnterprise (admin user + post-startups). This replaces the previous
+        // managed provisioning: the managed registerSystem pipeline can no longer provision stateless-only
+        // systems (e.g. TimeSystem), so managed createNewEnterprise/startNewEnterprise throw "has no session
+        // registerSystem" on a fresh enterprise. The stateless path is idempotent.
+        var newEnt = enterpriseService.get();
+        newEnt.setName(TestEnterprise.name());
+        newEnt.setDescription("Enterprise for Stateless Lifecycle Testing");
 
-        // Start the enterprise (idempotent) — seeds canonical security groups/folders + default security.
-        sessionFactory.withSession(session ->
-                session.withTransaction(tx ->
-                        enterpriseService.startNewEnterprise(session, TestEnterprise.name(), "admin", "!@adminadmin")
-                                .onFailure().recoverWithItem(e -> null)
-                                .replaceWith(Uni.createFrom().voidItem())
-                )
-        ).await().atMost(Duration.ofMinutes(2));
+        sessionFactory.openStatelessSession()
+                .chain(ss -> enterpriseService.createNewEnterprise(ss, newEnt)
+                        .chain(e -> enterpriseService.startNewEnterprise(ss, TestEnterprise.name(), "admin", "!@adminadmin"))
+                        .eventually(ss::close))
+                .await().atMost(Duration.ofMinutes(5));
 
-        // Capture the stateful baseline (enterprise id + Activity Master system id).
-        Object[] baseline = sessionFactory.withSession(session ->
-                session.withTransaction(tx ->
-                        enterpriseService.getEnterprise(session, TestEnterprise.name())
-                                .chain(ent -> systemsService.getActivityMaster(session, (IEnterprise<?, ?>) ent)
-                                        .map(sys -> new Object[]{ent.getId(), ((ISystems<?, ?>) sys).getId()}))
-                )
+        // Capture the baseline (enterprise id + Activity Master system id) via stateless reads.
+        Object[] baseline = sessionFactory.withStatelessTransaction(session ->
+                enterpriseService.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> systemsService.getActivityMaster(session, (IEnterprise<?, ?>) ent)
+                                .map(sys -> new Object[]{ent.getId(), ((ISystems<?, ?>) sys).getId()}))
         ).await().atMost(Duration.ofMinutes(1));
 
         enterpriseId = (UUID) baseline[0];
         activityMasterSystemId = (UUID) baseline[1];
-        assertNotNull(enterpriseId, "Stateful baseline enterprise id must resolve");
-        assertNotNull(activityMasterSystemId, "Stateful baseline Activity Master system id must resolve");
+        assertNotNull(enterpriseId, "Baseline enterprise id must resolve");
+        assertNotNull(activityMasterSystemId, "Baseline Activity Master system id must resolve");
     }
 
     @Test
@@ -942,6 +932,209 @@ public class TestActivityMasterStatelessEnterprise {
         ).await().atMost(Duration.ofMinutes(1));
 
         assertEquals(created, foundId, "Stateless withSystemAndToken write must commit and be findable");
+    }
+
+    /**
+     * Stateless name→id resolvers: {@link ISystemsService#resolveSystemIdByName(Mutiny.StatelessSession, UUID, String)}
+     * and {@link IClassificationService#resolveClassificationIdByName(Mutiny.StatelessSession, UUID, UUID, UUID, String)}
+     * run their native-SQL lookups on a {@link Mutiny.StatelessSession} and must resolve the same ids as the
+     * managed path / the freshly-created row (sharing the {@code NameIdCache} key space).
+     */
+    @Test
+    @Order(28)
+    public void resolveIdByName_stateless_matchesStateful() {
+        IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
+        ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
+        IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
+
+        // System id by name (stateless native SQL) must equal the stateful baseline.
+        UUID statelessSysId = sessionFactory.withStatelessTransaction(session ->
+                ss.resolveSystemIdByName(session, enterpriseId, ISystemsService.ActivityMasterSystemName)
+        ).await().atMost(Duration.ofMinutes(1));
+        assertEquals(activityMasterSystemId, statelessSysId,
+                "Stateless resolveSystemIdByName must resolve the Activity Master system id");
+
+        // Create a fresh classification, then resolve its id by name on a stateless session.
+        final String clsName = "SlResolve_" + Long.toHexString(System.nanoTime());
+        UUID createdId = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> cs.create(session, clsName, clsName, (ISystems<?, ?>) sys))
+                        .map(c -> (UUID) c.getId())
+        ).await().atMost(Duration.ofMinutes(2));
+
+        UUID resolvedId = sessionFactory.withStatelessTransaction(session ->
+                cs.resolveClassificationIdByName(session, enterpriseId, null, null, clsName)
+        ).await().atMost(Duration.ofMinutes(1));
+
+        assertEquals(createdId, resolvedId,
+                "Stateless resolveClassificationIdByName must resolve the freshly-created classification id");
+    }
+
+    /**
+     * Mandatory stateless entity creates: {@link IProductService#createProductType(Mutiny.StatelessSession,
+     * String, String, ISystems, UUID...)} then {@link IProductService#createProduct(Mutiny.StatelessSession,
+     * String, String, String, String, ISystems, UUID...)} — entirely on a {@link Mutiny.StatelessSession}
+     * (session.insert + the stateless default-security matrix + the stateless product-type link). The product
+     * must persist with an id and be findable afterwards via the stateless prepped read.
+     */
+    @Test
+    @Order(29)
+    public void createProduct_statelessEndToEnd_persistsAndIsFindable() {
+        IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
+        ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
+        IProductService<?> ps = IGuiceContext.get(IProductService.class);
+
+        final String hex = Long.toHexString(System.nanoTime());
+        final String typeName = "SlProdType_" + hex;
+        final String prodName = "SlProd_" + hex;
+
+        UUID productId = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> ps.createProductType(session, typeName, "stateless product type", (ISystems<?, ?>) sys)
+                                .chain(pt -> ps.createProduct(session, typeName, prodName, "stateless product", "CODE-" + hex, (ISystems<?, ?>) sys)))
+                        .map(p -> (UUID) p.getId())
+        ).await().atMost(Duration.ofMinutes(2));
+
+        assertNotNull(productId, "Stateless createProduct must persist a product with an id");
+
+        UUID foundId = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> ps.findProduct(session, prodName, (ISystems<?, ?>) sys))
+                        .map(p -> (UUID) p.getId())
+        ).await().atMost(Duration.ofMinutes(1));
+
+        assertEquals(productId, foundId, "Stateless-created product must be findable with the same id");
+    }
+
+    /**
+     * Mandatory stateless entity creates: {@link IRulesService#createRulesType(Mutiny.StatelessSession, String,
+     * ISystems, UUID...)} then {@link IRulesService#createRules(Mutiny.StatelessSession, String, String, String,
+     * ISystems, UUID...)} — entirely on a {@link Mutiny.StatelessSession}. The rules row must persist with an id
+     * and be findable afterwards via the stateless prepped read.
+     */
+    @Test
+    @Order(30)
+    public void createRules_statelessEndToEnd_persistsAndIsFindable() {
+        IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
+        ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
+        IRulesService<?> rs = IGuiceContext.get(IRulesService.class);
+
+        final String hex = Long.toHexString(System.nanoTime());
+        final String typeName = "SlRuleType_" + hex;
+        final String ruleName = "SlRule_" + hex;
+
+        Object[] result = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> rs.createRulesType(session, typeName, (ISystems<?, ?>) sys)
+                                .chain(rt -> rs.createRules(session, typeName, ruleName, "stateless rule", (ISystems<?, ?>) sys)
+                                        .map(r -> new Object[]{rt.getId(), r.getId()})))
+        ).await().atMost(Duration.ofMinutes(2));
+
+        assertNotNull(result[0], "Stateless createRulesType must persist a rules type with an id");
+        assertNotNull(result[1], "Stateless createRules must persist a rule with an id");
+
+        UUID foundId = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> rs.findRules(session, ruleName, (IEnterprise<?, ?>) ent))
+                        .map(r -> (UUID) r.getId())
+        ).await().atMost(Duration.ofMinutes(1));
+
+        assertEquals(result[1], foundId, "Stateless-created rule must be findable with the same id");
+    }
+
+    /**
+     * Scope-restricted stateless create + <strong>parallelism</strong>: two scope-restricted classifications
+     * are created on <em>two independent</em> {@link Mutiny.StatelessSession} transactions running
+     * concurrently (each opens its own session — never two ops on the same session). Both must persist with
+     * distinct ids and be findable, proving the stateless scope-restricted write path
+     * ({@link IClassificationService#createScopeRestricted(Mutiny.StatelessSession, String, String,
+     * EnterpriseClassificationDataConcepts, ISystems, Integer, IClassification, ISecurityToken, UUID...)})
+     * runs end-to-end and that independent stateless units can run in parallel.
+     */
+    @Test
+    @Order(31)
+    public void createScopeRestricted_stateless_runsInParallel() {
+        IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
+        ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
+        IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
+        ISecurityTokenService<?> sts = IGuiceContext.get(ISecurityTokenService.class);
+
+        final String hex = Long.toHexString(System.nanoTime());
+        final String nameA = "SlScopeA_" + hex;
+        final String nameB = "SlScopeB_" + hex;
+
+        // Each create runs on its OWN stateless transaction (independent sessions) → safe to run in parallel.
+        Uni<UUID> createA = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> sts.getAdministratorsFolder(session, (ISystems<?, ?>) sys)
+                                .chain(scope -> cs.createScopeRestricted(session, nameA, nameA, null, (ISystems<?, ?>) sys, null, null, (ISecurityToken<?, ?>) scope)))
+                        .map(c -> (UUID) c.getId()));
+
+        Uni<UUID> createB = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> sts.getAdministratorsFolder(session, (ISystems<?, ?>) sys)
+                                .chain(scope -> cs.createScopeRestricted(session, nameB, nameB, null, (ISystems<?, ?>) sys, null, null, (ISecurityToken<?, ?>) scope)))
+                        .map(c -> (UUID) c.getId()));
+
+        io.smallrye.mutiny.tuples.Tuple2<UUID, UUID> ids =
+                Uni.combine().all().unis(createA, createB).asTuple()
+                        .await().atMost(Duration.ofMinutes(2));
+
+        assertNotNull(ids.getItem1(), "Parallel scope-restricted classification A must persist with an id");
+        assertNotNull(ids.getItem2(), "Parallel scope-restricted classification B must persist with an id");
+        assertNotEquals(ids.getItem1(), ids.getItem2(), "The two parallel scope-restricted classifications must be distinct rows");
+        Object[] found = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> cs.find(session, nameA, (ISystems<?, ?>) sys)
+                                .chain(a -> cs.find(session, nameB, (ISystems<?, ?>) sys)
+                                        .map(b -> new Object[]{a.getId(), b.getId()})))
+        ).await().atMost(Duration.ofMinutes(1));
+
+        assertNotNull(found[0], "Scope-restricted classification A must be findable after the parallel creates");
+        assertNotNull(found[1], "Scope-restricted classification B must be findable after the parallel creates");
+    }
+
+    /**
+     * Regression for the stateless {@code findType(id)} hang: {@code ProductType} is {@code @Cacheable}, so
+     * hydrating it as a managed entity on a {@link Mutiny.StatelessSession} stalled the reactive pipeline
+     * (the query emitted but the {@code @Cacheable} hydration path never completed). The fix projects the
+     * row's scalar columns and preps a detached instance. This test creates a product type statelessly, then
+     * resolves it by id on a fresh stateless transaction — it must complete (never hang) and return the same
+     * id/name. If the hang regressed, {@code await().atMost(...)} would time out and fail.
+     */
+    @Test
+    @Order(32)
+    public void findType_stateless_byId_completesAndResolvesPreppedType() {
+        IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
+        ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
+        IProductService<?> ps = IGuiceContext.get(IProductService.class);
+
+        final String hex = Long.toHexString(System.nanoTime());
+        final String typeName = "SlFindType_" + hex;
+
+        UUID typeId = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> ps.createProductType(session, typeName, "stateless find type", (ISystems<?, ?>) sys))
+                        .map(pt -> (UUID) pt.getId())
+        ).await().atMost(Duration.ofMinutes(2));
+        assertNotNull(typeId, "Stateless createProductType must return an id");
+
+        // Must complete (previously hung on the @Cacheable ProductType hydrate) and resolve the prepped type.
+        var found = sessionFactory.withStatelessTransaction(session ->
+                ps.findType(session, typeId)
+        ).await().atMost(Duration.ofMinutes(1));
+
+        assertNotNull(found, "findType(StatelessSession, id) must resolve the product type");
+        assertEquals(typeId, found.getId(), "findType must resolve the same product type id");
+        assertEquals(typeName, found.getName(), "findType must resolve the prepped product type name");
     }
 }
 

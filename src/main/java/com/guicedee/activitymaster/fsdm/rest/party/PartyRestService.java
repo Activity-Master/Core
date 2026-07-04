@@ -12,6 +12,9 @@ import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedParty;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.fsdm.client.services.classifications.types.IPTypes;
+import com.guicedee.activitymaster.fsdm.client.services.classifications.types.IdentificationTypes;
+import com.guicedee.activitymaster.fsdm.client.services.classifications.types.NameTypes;
 import com.guicedee.activitymaster.fsdm.client.services.rest.parties.*;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.*;
@@ -62,9 +65,9 @@ public class PartyRestService {
                               PartyFindDTO findDto) {
         UUID partyId = findDto.partyId;
         List<PartyDataIncludes> includesList = findDto.includes;
-        return SessionUtils.<PartyDTO>withActivityMaster(enterpriseName, requestingSystemName,
-                (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                    Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<PartyDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
+                (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                    Mutiny.StatelessSession session = tuple.getItem1();
                     return involvedPartyService.find(session, partyId)
                             .chain(party -> {
                                 PartyDTO dto = new PartyDTO();
@@ -101,9 +104,9 @@ public class PartyRestService {
     public Uni<List<PartyDTO>> searchByClassification(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
                                                        @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                                        PartySearchByClassificationDTO searchDto) {
-        return SessionUtils.<List<PartyDTO>>withActivityMaster(enterpriseName, requestingSystemName,
-                (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                    Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<List<PartyDTO>>withActivityMasterStateless(enterpriseName, requestingSystemName,
+                (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                    Mutiny.StatelessSession session = tuple.getItem1();
                     ISystems<?, ?> system = tuple.getItem3();
                     UUID[] identityToken = tuple.getItem4();
 
@@ -171,9 +174,9 @@ public class PartyRestService {
     public Uni<List<PartyDTO>> searchByIdentification(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
                                                        @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
                                                        PartySearchByIdentificationDTO searchDto) {
-        return SessionUtils.<List<PartyDTO>>withActivityMaster(enterpriseName, requestingSystemName,
-                (Tuple4<Mutiny.Session, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
-                    Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<List<PartyDTO>>withActivityMasterStateless(enterpriseName, requestingSystemName,
+                (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
+                    Mutiny.StatelessSession session = tuple.getItem1();
 
                     return involvedPartyService.findAllByIdentificationType(session,
                                     searchDto.identificationType, searchDto.identificationValue)
@@ -225,8 +228,8 @@ public class PartyRestService {
     @POST
     @Path("{requestingSystemName}/create")
     @Operation(summary = "Create a party",
-            description = "Creates an involved party (organic person or organisation) with an optional seed identification, then persists supplied relationships asynchronously. The response echoes the submitted DTO immediately. Supply an optional 'event' block to associate this create with an event (records the action + a change summary).")
-    @ApiResponse(responseCode = "200", description = "Party created; relationships persist asynchronously")
+            description = "Creates an involved party (organic person or organisation) with an optional seed identification and persists all supplied relationships atomically within the same transaction, so the created party is fully consistent on read-back. Supply an optional 'event' block to associate this create with an event (records the action + a change summary).")
+    @ApiResponse(responseCode = "200", description = "Party created with all relationships committed")
     @ApiResponse(responseCode = "500", description = "Creation failure")
     public Uni<PartyDTO> create(@Parameter(description = "Owning enterprise name") @PathParam("enterprise") String enterpriseName,
                                 @Parameter(description = "Requesting system name (security scope)") @PathParam("requestingSystemName") String requestingSystemName,
@@ -234,21 +237,32 @@ public class PartyRestService {
         // Run the create inside the managed session/transaction. The create MUST use the session
         // provided by withActivityMaster — passing null leaves the EntityAssist query builder without
         // an entity manager (NPE in QueryBuilder.getQuery()).
-        return SessionUtils.<PartyDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        //
+        // Relationship persistence is CHAINED inside this same transaction (never fire-and-forget):
+        // every dependent record (classifications, name types, types, resources, products, rules,
+        // children) commits atomically with the party insert. Firing dependents on a separate session
+        // raced the create commit — a losing race made the fresh party invisible to that session's
+        // find(), so the write threw NoResultException and was silently swallowed by fireAndForget,
+        // leaving parties with e.g. a null name or missing classifications when reloaded.
+        return SessionUtils.<PartyDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             ISystems<?, ?> system = tuple.getItem3();
+            UUID[] token = tuple.getItem4();
             return involvedPartyService.create(session, system, dto.key,
                             new Pair<>(dto.identificationType, dto.identificationValue), dto.organic)
-                    .map(party -> {
+                    .chain(party -> {
                         UUID partyId = party.getId();
-                        if (hasAnyRelationship(dto)) {
-                            persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, partyId, dto);
-                        }
+                        Uni<Void> relationships = hasAnyRelationship(dto)
+                                ? persistCreateRelationships(session, system, token, (InvolvedParty) party, dto)
+                                : Uni.createFrom().voidItem();
+                        return relationships.map(ignored -> {
+                            // Optionally associate this create with an event (fire-and-forget) — the event
+                            // references the now-committed party, so it carries no read-after-write dependency
+                            // on data written in this transaction.
+                            eventActionSupport.recordPartyAction(enterpriseName, requestingSystemName, dto.event, true, partyId);
 
-                        // Optionally associate this create with an event (fire-and-forget)
-                        eventActionSupport.recordPartyAction(enterpriseName, requestingSystemName, dto.event, true, partyId);
-
-                        return buildCreateResponseFromDto((InvolvedParty) party, dto);
+                            return buildCreateResponseFromDto((InvolvedParty) party, dto);
+                        });
                     });
         }).onFailure().invoke(e ->
                 log.error("Error creating party for enterprise {} and system {}: {}",
@@ -271,8 +285,8 @@ public class PartyRestService {
                                 PartyUpdateDTO dto) {
         UUID partyId = dto.partyId;
         // Step 1: Find the party in its own session (just to validate it exists)
-        return SessionUtils.<UUID>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<UUID>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
             return involvedPartyService.find(session, partyId).map(IRootEntity::getId);
         }).map(foundId -> {
             // Step 2: Fire-and-forget relationship persistence
@@ -293,7 +307,7 @@ public class PartyRestService {
     // Include fetching — all use session.fetch() for lazy-loaded entities
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Uni<PartyDTO> fetchInclude(Mutiny.Session session, InvolvedParty party, PartyDTO dto, PartyDataIncludes include) {
+    private Uni<PartyDTO> fetchInclude(Mutiny.StatelessSession session, InvolvedParty party, PartyDTO dto, PartyDataIncludes include) {
         return switch (include) {
             case Types -> new InvolvedPartyXInvolvedPartyType().builder(session)
                     .where(InvolvedPartyXInvolvedPartyType_.involvedPartyID, Equals, party)
@@ -308,8 +322,9 @@ public class PartyRestService {
                                     .chain(classification -> session.fetch(link.getInvolvedPartyTypeID())
                                             .invoke(type -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
-                                                String value = type != null && type.getName() != null ? type.getName() : link.getValue();
-                                                map.put(key, value);
+                                                // The map value is the stored value ({classification -> store value}),
+                                                // symmetric with the create/update write path — not the type label.
+                                                map.put(key, link.getValue());
                                             })).replaceWithVoid());
                         }
                         return fetchChain.replaceWith(() -> { dto.types = map; return dto; });
@@ -346,8 +361,9 @@ public class PartyRestService {
                                     .chain(classification -> session.fetch(link.getInvolvedPartyNameTypeID())
                                             .invoke(nameType -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
-                                                String value = nameType != null && nameType.getName() != null ? nameType.getName() : link.getValue();
-                                                map.put(key, value);
+                                                // The map value is the stored name value ({classification -> store value}),
+                                                // symmetric with the create/update write path — not the name-type label.
+                                                map.put(key, link.getValue());
                                             })).replaceWithVoid());
                         }
                         return fetchChain.replaceWith(() -> { dto.nameTypes = map; return dto; });
@@ -366,8 +382,9 @@ public class PartyRestService {
                                     .chain(classification -> session.fetch(link.getInvolvedPartyIdentificationTypeID())
                                             .invoke(idType -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
-                                                String value = idType != null && idType.getName() != null ? idType.getName() : link.getValue();
-                                                map.put(key, value);
+                                                // The map value is the stored value ({classification -> store value}),
+                                                // symmetric with the create/update write path — not the id-type label.
+                                                map.put(key, link.getValue());
                                             })).replaceWithVoid());
                         }
                         return fetchChain.replaceWith(() -> { dto.identificationTypes = map; return dto; });
@@ -477,102 +494,75 @@ public class PartyRestService {
     // Fire-and-forget relationship persistence
     // ──────────────────────────────────────────────────────────────────────────
 
-    private void persistCreateRelationshipsAsync(String enterpriseName, String requestingSystemName,
-                                                   UUID partyId, PartyCreateDTO dto) {
-        String label = "party " + partyId;
+    // ──────────────────────────────────────────────────────────────────────────
+    // In-transaction relationship persistence (create path)
+    // ──────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Persists all supplied create-time relationships for the freshly created {@code party}
+     * <strong>within the caller's transaction</strong>, chaining each write sequentially on the same
+     * session. This deliberately replaces the previous fire-and-forget approach: the relationships
+     * depend on the just-created party record, so they must not run on a separate session that could
+     * race (and lose to) the create commit. All writes therefore commit atomically with the party.
+     */
+    private Uni<Void> persistCreateRelationships(Mutiny.StatelessSession s, ISystems<?, ?> sys, UUID[] token,
+                                                 InvolvedParty party, PartyCreateDTO dto) {
+        String label = "party " + party.getId();
+        Uni<Void> chain = Uni.createFrom().voidItem();
 
         if (dto.classifications != null && !dto.classifications.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                return involvedPartyService.find(s, partyId).chain(party -> {
-                    Uni<Void> chain = Uni.createFrom().voidItem();
-                    for (var entry : dto.classifications.entrySet()) {
-                        chain = chain.chain(() -> party.addOrUpdateClassification(s, entry.getKey(), entry.getValue(), sys, token).replaceWithVoid());
-                    }
-                    return chain;
-                });
-            }), label + " classifications");
+            for (var entry : dto.classifications.entrySet()) {
+                chain = chain.chain(() -> party.addOrUpdateClassification(s, entry.getKey(), entry.getValue(), sys, token).replaceWithVoid());
+            }
         }
         if (dto.types != null && !dto.types.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                return involvedPartyService.find(s, partyId).chain(party -> {
-                    Uni<Void> chain = Uni.createFrom().voidItem();
-                    for (var entry : dto.types.entrySet()) {
-                        chain = chain.chain(() -> party.addOrUpdateInvolvedPartyType(s, entry.getKey(), (String) null, null, entry.getValue(), sys, token).replaceWithVoid());
-                    }
-                    return chain;
-                });
-            }), label + " types");
+            for (var entry : dto.types.entrySet()) {
+                // The DTO carries {classification -> store value}; the involved-party-type secondary is mandatory
+                // (InvolvedPartyXInvolvedPartyType.involvedPartyTypeID is optional=false), so default it to the
+                // seeded TypeUnknown (see InvolvedPartySystem#createTypesStateless). Passing null previously failed
+                // and was silently swallowed by the fire-and-forget path.
+                chain = chain.chain(() -> party.addOrUpdateInvolvedPartyType(s, entry.getKey(), IPTypes.TypeUnknown.toString(), null, entry.getValue(), sys, token).replaceWithVoid());
+            }
         }
         if (dto.nameTypes != null && !dto.nameTypes.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                return involvedPartyService.find(s, partyId).chain(party -> {
-                    Uni<Void> chain = Uni.createFrom().voidItem();
-                    for (var entry : dto.nameTypes.entrySet()) {
-                        chain = chain.chain(() -> party.addOrUpdateInvolvedPartyNameType(s, entry.getKey(), (String) null, null, entry.getValue(), sys, token).replaceWithVoid());
-                    }
-                    return chain;
-                });
-            }), label + " nameTypes");
+            for (var entry : dto.nameTypes.entrySet()) {
+                // The DTO carries {classification -> store value}; the name-type secondary is mandatory
+                // (InvolvedPartyXInvolvedPartyNameType.involvedPartyNameTypeID is optional=false), so default it
+                // to the seeded FullNameType (see InvolvedPartySystem#createNameTypesStateless). Passing null here
+                // previously failed with NoResultException and was silently swallowed by the fire-and-forget path,
+                // leaving the party with no stored name (the "name is null" symptom).
+                chain = chain.chain(() -> party.addOrUpdateInvolvedPartyNameType(s, entry.getKey(), NameTypes.FullNameType.toString(), null, entry.getValue(), sys, token).replaceWithVoid());
+            }
         }
         if (dto.resources != null && !dto.resources.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                return involvedPartyService.find(s, partyId).chain(party -> {
-                    Uni<Void> chain = Uni.createFrom().voidItem();
-                    for (var entry : dto.resources.entrySet()) {
-                        String classificationName = entry.getKey();
-                        UUID riId = parseUuidOrNull(entry.getValue(), label + " resources");
-                        if (riId == null) continue;
-                        chain = chain.chain(() -> resourceItemService.findByUUID(s, riId)
-                                .chain(ri -> party.addOrUpdateResourceItem(s, classificationName, ri, null, null, sys, token).replaceWithVoid()));
-                    }
-                    return chain;
-                });
-            }), label + " resources");
+            for (var entry : dto.resources.entrySet()) {
+                String classificationName = entry.getKey();
+                UUID riId = parseUuidOrNull(entry.getValue(), label + " resources");
+                if (riId == null) continue;
+                chain = chain.chain(() -> resourceItemService.findByUUID(s, riId)
+                        .chain(ri -> party.addOrUpdateResourceItem(s, classificationName, ri, null, null, sys, token).replaceWithVoid()));
+            }
         }
         if (dto.products != null && !dto.products.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                return involvedPartyService.find(s, partyId).chain(party -> {
-                    Uni<Void> chain = Uni.createFrom().voidItem();
-                    for (var entry : dto.products.entrySet()) {
-                        chain = chain.chain(() -> party.addOrUpdateProduct(s, entry.getKey(), null, null, entry.getValue(), sys, token).replaceWithVoid());
-                    }
-                    return chain;
-                });
-            }), label + " products");
+            for (var entry : dto.products.entrySet()) {
+                chain = chain.chain(() -> party.addOrUpdateProduct(s, entry.getKey(), null, null, entry.getValue(), sys, token).replaceWithVoid());
+            }
         }
         if (dto.rules != null && !dto.rules.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                return involvedPartyService.find(s, partyId).chain(party -> {
-                    Uni<Void> chain = Uni.createFrom().voidItem();
-                    for (var entry : dto.rules.entrySet()) {
-                        chain = chain.chain(() -> party.addOrUpdateRules(s, entry.getKey(), null, null, entry.getValue(), sys, token).replaceWithVoid());
-                    }
-                    return chain;
-                });
-            }), label + " rules");
+            for (var entry : dto.rules.entrySet()) {
+                chain = chain.chain(() -> party.addOrUpdateRules(s, entry.getKey(), null, null, entry.getValue(), sys, token).replaceWithVoid());
+            }
         }
         if (dto.children != null && !dto.children.isEmpty()) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
-                return involvedPartyService.find(s, partyId).chain(party -> {
-                    Uni<Void> chain = Uni.createFrom().voidItem();
-                    for (var entry : dto.children.entrySet()) {
-                        String classificationName = entry.getKey();
-                        UUID childId = parseUuidOrNull(entry.getValue(), label + " children");
-                        if (childId == null) continue;
-                        chain = chain.chain(() -> involvedPartyService.find(s, childId)
-                                .chain(child -> party.addChild(s, (InvolvedParty) child, classificationName, null, sys, token).replaceWithVoid()));
-                    }
-                    return chain;
-                });
-            }), label + " children");
+            for (var entry : dto.children.entrySet()) {
+                String classificationName = entry.getKey();
+                UUID childId = parseUuidOrNull(entry.getValue(), label + " children");
+                if (childId == null) continue;
+                chain = chain.chain(() -> involvedPartyService.find(s, childId)
+                        .chain(child -> party.addChild(s, (InvolvedParty) child, classificationName, null, sys, token).replaceWithVoid()));
+            }
         }
+        return chain;
     }
 
     private void persistUpdateRelationshipsAsync(String enterpriseName, String requestingSystemName,
@@ -580,8 +570,8 @@ public class PartyRestService {
         String label = "party " + partyId;
 
         if (hasEntries(dto.classifications)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return involvedPartyService.find(s, partyId).chain(party -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.classifications, (name, value) -> party.addOrUpdateClassification(s, name, value, sys, token).replaceWithVoid());
@@ -591,11 +581,11 @@ public class PartyRestService {
             }), label + " classifications");
         }
         if (hasEntries(dto.types)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return involvedPartyService.find(s, partyId).chain(party -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
-                    chain = chainAddOrUpdate(chain, dto.types, (name, value) -> party.addOrUpdateInvolvedPartyType(s, name, (String) null, null, value, sys, token).replaceWithVoid());
+                    chain = chainAddOrUpdate(chain, dto.types, (name, value) -> party.addOrUpdateInvolvedPartyType(s, name, IPTypes.TypeUnknown.toString(), null, value, sys, token).replaceWithVoid());
                     chain = chainDeleteByExpire(chain, dto.types, s, party, InvolvedPartyXInvolvedPartyType.class,
                             InvolvedPartyXInvolvedPartyType_.involvedPartyID, InvolvedPartyXInvolvedPartyType::getInvolvedPartyTypeID,
                             type -> type != null && type.getName() != null ? type.getName() : null);
@@ -604,11 +594,11 @@ public class PartyRestService {
             }), label + " types");
         }
         if (hasEntries(dto.nameTypes)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return involvedPartyService.find(s, partyId).chain(party -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
-                    chain = chainAddOrUpdate(chain, dto.nameTypes, (name, value) -> party.addOrUpdateInvolvedPartyNameType(s, name, (String) null, null, value, sys, token).replaceWithVoid());
+                    chain = chainAddOrUpdate(chain, dto.nameTypes, (name, value) -> party.addOrUpdateInvolvedPartyNameType(s, name, NameTypes.FullNameType.toString(), null, value, sys, token).replaceWithVoid());
                     chain = chainDeleteByExpire(chain, dto.nameTypes, s, party, InvolvedPartyXInvolvedPartyNameType.class,
                             InvolvedPartyXInvolvedPartyNameType_.involvedPartyID, InvolvedPartyXInvolvedPartyNameType::getInvolvedPartyNameTypeID,
                             nameType -> nameType != null && nameType.getName() != null ? nameType.getName() : null);
@@ -617,11 +607,11 @@ public class PartyRestService {
             }), label + " nameTypes");
         }
         if (hasEntries(dto.identificationTypes)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return involvedPartyService.find(s, partyId).chain(party -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
-                    chain = chainAddOrUpdate(chain, dto.identificationTypes, (name, value) -> party.addOrUpdateInvolvedPartyIdentificationType(s, name, (String) null, null, value, sys, token).replaceWithVoid());
+                    chain = chainAddOrUpdate(chain, dto.identificationTypes, (name, value) -> party.addOrUpdateInvolvedPartyIdentificationType(s, name, IdentificationTypes.IdentificationTypeUnassigned.toString(), null, value, sys, token).replaceWithVoid());
                     chain = chainDeleteByExpire(chain, dto.identificationTypes, s, party, InvolvedPartyXInvolvedPartyIdentificationType.class,
                             InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyID, InvolvedPartyXInvolvedPartyIdentificationType::getInvolvedPartyIdentificationTypeID,
                             idType -> idType != null && idType.getName() != null ? idType.getName() : null);
@@ -630,8 +620,8 @@ public class PartyRestService {
             }), label + " identificationTypes");
         }
         if (hasEntries(dto.resources)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return involvedPartyService.find(s, partyId).chain(party -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     if (dto.resources.addOrUpdate != null) {
@@ -651,8 +641,8 @@ public class PartyRestService {
             }), label + " resources");
         }
         if (hasEntries(dto.products)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return involvedPartyService.find(s, partyId).chain(party -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.products, (name, value) -> party.addOrUpdateProduct(s, name, null, null, value, sys, token).replaceWithVoid());
@@ -664,8 +654,8 @@ public class PartyRestService {
             }), label + " products");
         }
         if (hasEntries(dto.rules)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return involvedPartyService.find(s, partyId).chain(party -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.rules, (name, value) -> party.addOrUpdateRules(s, name, null, null, value, sys, token).replaceWithVoid());
@@ -677,8 +667,8 @@ public class PartyRestService {
             }), label + " rules");
         }
         if (hasEntries(dto.children)) {
-            SessionUtils.fireAndForget(SessionUtils.withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-                Mutiny.Session s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
+            SessionUtils.fireAndForget(SessionUtils.withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+                Mutiny.StatelessSession s = tuple.getItem1(); ISystems<?, ?> sys = tuple.getItem3(); UUID[] token = tuple.getItem4();
                 return involvedPartyService.find(s, partyId).chain(party -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     if (dto.children.addOrUpdate != null) {
@@ -734,8 +724,8 @@ public class PartyRestService {
 
     private Uni<PartyDTO> buildCreateResponse(String enterpriseName, String requestingSystemName,
                                               InvolvedParty party, PartyCreateDTO dto) {
-        return SessionUtils.<PartyDTO>withActivityMaster(enterpriseName, requestingSystemName, tuple -> {
-            Mutiny.Session session = tuple.getItem1();
+        return SessionUtils.<PartyDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
+            Mutiny.StatelessSession session = tuple.getItem1();
 
             PartyDTO response = new PartyDTO();
             response.partyId = party.getId();
@@ -784,7 +774,7 @@ public class PartyRestService {
     private <L extends WarehouseBaseTable<L, ?, UUID>, R> Uni<Void> chainDeleteByExpire(
             Uni<Void> chain,
             RelationshipUpdateEntry entry,
-            Mutiny.Session session,
+            Mutiny.StatelessSession session,
             IInvolvedParty<?, ?> party,
             Class<L> linkClass,
             jakarta.persistence.metamodel.SingularAttribute partyAttr,
@@ -829,7 +819,7 @@ public class PartyRestService {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Uni<Void> chainDeleteChildrenByExpire(Uni<Void> chain, RelationshipUpdateEntry entry,
-                                                   Mutiny.Session session, IInvolvedParty<?, ?> party) {
+                                                   Mutiny.StatelessSession session, IInvolvedParty<?, ?> party) {
         if (entry == null || entry.delete == null || entry.delete.isEmpty()) return chain;
         Set<String> idsToDelete = new HashSet<>(entry.delete);
         InvolvedParty ip = (InvolvedParty) party;

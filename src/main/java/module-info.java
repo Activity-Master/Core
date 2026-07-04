@@ -110,6 +110,7 @@ module com.guicedee.activitymaster.fsdm {
             EventsSystem,
             ResourceItemSystem,
             ProductsSystem,
+            RulesSystem,
             TimeSystem
             ;
 
