@@ -5,6 +5,7 @@ import java.util.*;
 import com.entityassist.services.entities.IRootEntity;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.EventsService;
+import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
 import com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService;
 import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
@@ -44,6 +45,9 @@ public class EventRestService {
     @Inject
     private IInvolvedPartyService<?> involvedPartyService;
 
+    @Inject
+    private IClassificationService<?> classificationService;
+
     // ──────────────────────────────────────────────────────────────────────────
     // Find
     // ──────────────────────────────────────────────────────────────────────────
@@ -62,6 +66,8 @@ public class EventRestService {
         return SessionUtils.<EventDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
                 (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
                     Mutiny.StatelessSession session = tuple.getItem1();
+                    ISystems<?, ?> system = tuple.getItem3();
+                    UUID[] token = tuple.getItem4();
                     return eventService.find(session, eventId)
                             .chain(event -> {
                                 EventDTO dto = new EventDTO();
@@ -73,7 +79,7 @@ public class EventRestService {
                                     return chain;
                                 }
                                 for (EventDataIncludes include : includesList) {
-                                    chain = chain.chain(d -> fetchInclude(session, ev, d, include));
+                                    chain = chain.chain(d -> fetchInclude(session, ev, d, include, system, token));
                                 }
                                 return chain;
                             })
@@ -106,7 +112,8 @@ public class EventRestService {
         return SessionUtils.<EventDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
             Mutiny.StatelessSession session = tuple.getItem1();
             ISystems<?, ?> system = tuple.getItem3();
-            return eventService.createEvent(session, primaryType.getKey(), system)
+            UUID[] token = tuple.getItem4();
+            return eventService.createEvent(session, primaryType.getKey(), system,token)
                     .map(event -> {
                         UUID eventId = event.getId();
                         // Step 2: Fire-and-forget relationship persistence in parallel
@@ -157,7 +164,8 @@ public class EventRestService {
     // Include fetching — all use session.fetch() for lazy-loaded entities
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Uni<EventDTO> fetchInclude(Mutiny.StatelessSession session, Event event, EventDTO dto, EventDataIncludes include) {
+    private Uni<EventDTO> fetchInclude(Mutiny.StatelessSession session, Event event, EventDTO dto, EventDataIncludes include,
+                                       ISystems<?, ?> system, UUID[] token) {
         return switch (include) {
             case Types -> new EventXEventType().builder(session)
                     .where(EventXEventType_.eventID, Equals, event)
@@ -186,7 +194,7 @@ public class EventRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (EventXClassification link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .invoke(classification -> {
                                         String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
                                         map.put(key, link.getValue());
@@ -204,7 +212,7 @@ public class EventRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (EventXInvolvedParty link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getInvolvedPartyID())
                                             .invoke(ip -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
@@ -224,7 +232,7 @@ public class EventRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (EventXResourceItem link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getResourceItemID())
                                             .invoke(resource -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
@@ -244,7 +252,7 @@ public class EventRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (EventXProduct link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getProductID())
                                             .invoke(product -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
@@ -264,7 +272,7 @@ public class EventRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (EventXRules link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getRulesID())
                                             .invoke(rules -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
@@ -284,7 +292,7 @@ public class EventRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (EventXArrangement link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getArrangementID())
                                             .invoke(arrangement -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
@@ -685,7 +693,7 @@ public class EventRestService {
 
             Uni<EventDTO> fetchChain = Uni.createFrom().item(response);
             for (EventDataIncludes include : includes) {
-                fetchChain = fetchChain.chain(d -> fetchInclude(session, event, d, include));
+                fetchChain = fetchChain.chain(d -> fetchInclude(session, event, d, include, tuple.getItem3(), tuple.getItem4()));
             }
             return fetchChain;
         });

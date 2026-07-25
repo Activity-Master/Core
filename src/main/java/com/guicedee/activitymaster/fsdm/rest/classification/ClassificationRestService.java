@@ -64,34 +64,20 @@ public class ClassificationRestService {
         return SessionUtils.<ClassificationDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
                 (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
                     Mutiny.StatelessSession session = tuple.getItem1();
-                    IEnterprise<?, ?> enterprise = tuple.getItem2();
                     ISystems<?, ?> system = tuple.getItem3();
                     UUID[] token = tuple.getItem4();
-                    // Prepped scalar projection (NOT session.get / an entity query): Classification is
-                    // @Cacheable with an EAGER 'concept' (itself @Cacheable). On a stateless session loading
-                    // the managed entity trips the reactive L2-cache assembly (CompletableFuture on 'concept')
-                    // and an entity query trips the reactive load-context stack on the EAGER join. A lean
-                    // projection avoids both; 'concept' is not returned on the stateless find.
-                    return new Classification().builder(session)
-                            .where(Classification_.id, Equals, classificationId)
-                            .selectColumn(Classification_.id)
-                            .selectColumn(Classification_.name)
-                            .selectColumn(Classification_.description)
-                            .selectColumn(Classification_.classificationSequenceNumber)
-                            .get(Object[].class)
+                    return classificationService.find(session, classificationId, system, token)
                             .onFailure(NoResultException.class).recoverWithNull()
-                            .chain(row -> {
-                                if (row == null) {
+                            .chain(found -> {
+                                if (found == null) {
                                     return Uni.createFrom().failure(new NotFoundException("Classification not found: " + classificationId));
                                 }
-                                Classification classification = new Classification((UUID) row[0], (String) row[1], (String) row[2], ((Number) row[3]).intValue());
-                                classification.setEnterpriseID(enterprise);
-                                classification.setFake(false);
+                                Classification classification = (Classification) found;
                                 ClassificationDTO dto = new ClassificationDTO();
                                 dto.classificationId = classificationId;
-                                dto.name = (String) row[1];
-                                dto.description = (String) row[2];
-                                dto.sequenceNumber = ((Number) row[3]).intValue();
+                                dto.name = classification.getName();
+                                dto.description = classification.getDescription();
+                                dto.sequenceNumber = classification.getClassificationSequenceNumber();
 
                                 Uni<ClassificationDTO> chain = Uni.createFrom().item(dto);
                                 if (includesList == null || includesList.isEmpty()) {
@@ -252,11 +238,11 @@ public class ClassificationRestService {
             Mutiny.StatelessSession s = tuple.getItem1();
             ISystems<?, ?> sys = tuple.getItem3();
             UUID[] token = tuple.getItem4();
-            return s.get(Classification.class, classificationId).chain(owner -> {
+            return classificationService.find(s, classificationId, sys, token).chain(owner -> {
                 if (owner == null) {
                     return Uni.createFrom().voidItem();
                 }
-                return persistChildren(s, sys, token, owner, addOrUpdate, delete);
+                return persistChildren(s, sys, token, (Classification) owner, addOrUpdate, delete);
             });
         }), label + " children");
     }

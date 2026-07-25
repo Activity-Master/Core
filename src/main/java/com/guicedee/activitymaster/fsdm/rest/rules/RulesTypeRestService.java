@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm.rest.rules;
 import java.util.*;
 
 import com.google.inject.Inject;
+import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
 import com.guicedee.activitymaster.fsdm.client.services.IRulesService;
 import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
@@ -44,6 +45,9 @@ public class RulesTypeRestService {
     @Inject
     private IResourceItemService<?> resourceItemService;
 
+    @Inject
+    private IClassificationService<?> classificationService;
+
     // ──────────────────────────────────────────────────────────────────────────
     // Find
     // ──────────────────────────────────────────────────────────────────────────
@@ -62,6 +66,8 @@ public class RulesTypeRestService {
         return SessionUtils.<RulesTypeDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
                 (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
                     Mutiny.StatelessSession session = tuple.getItem1();
+                    ISystems<?, ?> system = tuple.getItem3();
+                    UUID[] token = tuple.getItem4();
                     return rulesService.findType(session, rulesTypeId)
                             .chain(ruleType -> {
                                 if (ruleType == null) {
@@ -78,7 +84,7 @@ public class RulesTypeRestService {
                                     return chain;
                                 }
                                 for (RulesTypeDataIncludes include : includesList) {
-                                    chain = chain.chain(d -> fetchInclude(session, rt, d, include));
+                                    chain = chain.chain(d -> fetchInclude(session, rt, d, include, system, token));
                                 }
                                 return chain;
                             })
@@ -164,7 +170,7 @@ public class RulesTypeRestService {
     // ──────────────────────────────────────────────────────────────────────────
 
     private Uni<RulesTypeDTO> fetchInclude(Mutiny.StatelessSession session, RulesType ruleType, RulesTypeDTO dto,
-                                           RulesTypeDataIncludes include) {
+                                           RulesTypeDataIncludes include, ISystems<?, ?> system, UUID[] token) {
         return switch (include) {
             case Classifications -> new RulesTypeXClassification().builder(session)
                     .where(RulesTypeXClassification_.rulesTypeID, Equals, ruleType)
@@ -175,7 +181,7 @@ public class RulesTypeRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (RulesTypeXClassification link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .invoke(classification -> {
                                         String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
                                         map.put(key, link.getValue());
@@ -193,7 +199,7 @@ public class RulesTypeRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (RulesTypeXResourceItem link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getResourceItemID())
                                             .invoke(resource -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
@@ -262,13 +268,14 @@ public class RulesTypeRestService {
                                 .chain(ri -> rt.addOrUpdateResourceItem(s, classificationName, ri, null, null, sys, token)).replaceWithVoid());
                     }
                 }
-                chain = expireResourcesByName(chain, dto.resources, s, rt);
+                chain = expireResourcesByName(chain, dto.resources, s, rt, sys, token);
                 return chain;
             });
         }
     }
 
-    private Uni<Void> expireResourcesByName(Uni<Void> chain, RelationshipUpdateEntry entry, Mutiny.StatelessSession s, RulesType ruleType) {
+    private Uni<Void> expireResourcesByName(Uni<Void> chain, RelationshipUpdateEntry entry, Mutiny.StatelessSession s, RulesType ruleType,
+                                            ISystems<?, ?> system, UUID[] token) {
         if (entry.delete == null || entry.delete.isEmpty()) return chain;
         Set<String> namesToDelete = new HashSet<>(entry.delete);
         return chain.chain(() -> new RulesTypeXResourceItem().builder(s)
@@ -279,7 +286,7 @@ public class RulesTypeRestService {
                 .chain(list -> {
                     Uni<Void> expireChain = Uni.createFrom().voidItem();
                     for (RulesTypeXResourceItem link : list) {
-                        expireChain = expireChain.chain(() -> s.fetch(link.getClassificationID())
+                        expireChain = expireChain.chain(() -> classificationService.find(s, link.getClassificationID().getId(), system, token)
                                 .chain(classification -> {
                                     String name = classification != null ? classification.getName() : null;
                                     if (name != null && namesToDelete.contains(name)) {

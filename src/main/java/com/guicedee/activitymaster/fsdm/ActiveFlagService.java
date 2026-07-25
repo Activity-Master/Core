@@ -41,6 +41,8 @@ import jakarta.persistence.NoResultException;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,10 +55,6 @@ public class ActiveFlagService
         implements IActiveFlagService<ActiveFlagService> {
     // Local cache: key = enterpriseId + '|' + flagName, value = ActiveFlag UUID
     private final Map<String, UUID> flagKeyToId = new ConcurrentHashMap<>();
-
-    // Stateless detached-prepped reference cache (Active/Archived/Deleted flags), keyed by enterpriseId →
-    // flag name. Safe: detached scalar projection, immutable reference flags; only cached on a real hit.
-    private static final Map<UUID, Map<String, IActiveFlag<?, ?>>> STATELESS_FLAG_CACHE = new ConcurrentHashMap<>();
 
     @Override
     public IActiveFlag<?, ?> get() {
@@ -349,19 +347,16 @@ public class ActiveFlagService
     }
 
     @Override
-    public Uni<IActiveFlag<?, ?>> findFlagByName(Mutiny.StatelessSession session, com.entityassist.enumerations.ActiveFlag flag, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return findFlagByName(session, flag.name(), enterprise, identifyingToken);
+    @CacheResult(cacheName = "ActiveFlagFindByEnumStateless")
+    public Uni<IActiveFlag<?, ?>> findFlagByName(Mutiny.StatelessSession session, @CacheKey com.entityassist.enumerations.ActiveFlag flag, @CacheKey IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+        return findFlagByNameStateless(session, flag.name(), enterprise);
     }
 
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public Uni<IActiveFlag<?, ?>> findFlagByName(Mutiny.StatelessSession session, String flag, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return (Uni) new ActiveFlag().builder(session)
-                .withName(flag)
-                .inDateRange()
-                .withEnterprise(enterprise)
-                .get()
-                .onItem().ifNull().failWith(() -> new NoResultException("ActiveFlag not found: " + flag));
+    @CacheResult(cacheName = "ActiveFlagFindByNameStateless")
+    public Uni<IActiveFlag<?, ?>> findFlagByName(Mutiny.StatelessSession session, @CacheKey String flag, @CacheKey IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+        return findFlagByNameStateless(session, flag, enterprise);
     }
 
     @Override
@@ -395,28 +390,20 @@ public class ActiveFlagService
     }
 
     @Override
-    public Uni<IActiveFlag<?, ?>> getActiveFlag(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+    @CacheResult(cacheName = "ActiveFlagActiveStateless")
+    public Uni<IActiveFlag<?, ?>> getActiveFlag(Mutiny.StatelessSession session, @CacheKey IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
         // Stateless "fetch ids/scalars + prep": ActiveFlag is @Cacheable but its @ManyToOne is LAZY, so only
         // scalar columns are eager. Project the flag's own scalars (id, name, description, allowAccess) and
         // build a fresh DETACHED ActiveFlag, wiring the enterprise reference from the supplied parameter.
-        return findFlagByNameStateless(session, com.entityassist.enumerations.ActiveFlag.Active, enterprise);
+        return findFlagByNameStateless(session, com.entityassist.enumerations.ActiveFlag.Active.name(), enterprise);
     }
 
     /**
      * Shared stateless scalar-projection + prep for the named flags (Active / Archived / Deleted).
      */
-    private Uni<IActiveFlag<?, ?>> findFlagByNameStateless(Mutiny.StatelessSession session, com.entityassist.enumerations.ActiveFlag flag, IEnterprise<?, ?> enterprise) {
-        UUID enterpriseId = enterprise.getId();
-        String flagName = flag.name();
-        Map<String, IActiveFlag<?, ?>> byName = STATELESS_FLAG_CACHE.computeIfAbsent(enterpriseId,
-                                                                                     k -> new ConcurrentHashMap<>()
-        );
-        IActiveFlag<?, ?> hit = byName.get(flagName);
-        if (hit != null) {
-            return Uni.createFrom().item((IActiveFlag<?, ?>) hit);
-        }
-        Uni<IActiveFlag<?, ?>> resolved = new ActiveFlag().builder(session)
-                .withName(getNamesForFlags(Set.of(flag)))
+    private Uni<IActiveFlag<?, ?>> findFlagByNameStateless(Mutiny.StatelessSession session, String flagName, IEnterprise<?, ?> enterprise) {
+        return new ActiveFlag().builder(session)
+                .withName(flagName)
                 .inDateRange()
                 .withEnterprise(enterprise)
                 .selectColumn(ActiveFlag_.id)
@@ -434,9 +421,6 @@ public class ActiveFlagService
                     prepped.setFake(false);
                     return (IActiveFlag<?, ?>) prepped;
                 });
-        return resolved.onItem().invoke(t -> {
-            if (t != null && t.getId() != null) byName.put(flagName, t);
-        });
     }
 
     @Override
@@ -446,8 +430,9 @@ public class ActiveFlagService
     }
 
     @Override
-    public Uni<IActiveFlag<?, ?>> getArchivedFlag(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return findFlagByNameStateless(session, com.entityassist.enumerations.ActiveFlag.Archived, enterprise);
+    @CacheResult(cacheName = "ActiveFlagArchivedStateless")
+    public Uni<IActiveFlag<?, ?>> getArchivedFlag(Mutiny.StatelessSession session, @CacheKey IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+        return findFlagByNameStateless(session, com.entityassist.enumerations.ActiveFlag.Archived.name(), enterprise);
     }
 
     @Override
@@ -457,7 +442,8 @@ public class ActiveFlagService
     }
 
     @Override
-    public Uni<IActiveFlag<?, ?>> getDeletedFlag(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return findFlagByNameStateless(session, com.entityassist.enumerations.ActiveFlag.Deleted, enterprise);
+    @CacheResult(cacheName = "ActiveFlagDeletedStateless")
+    public Uni<IActiveFlag<?, ?>> getDeletedFlag(Mutiny.StatelessSession session, @CacheKey IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+        return findFlagByNameStateless(session, com.entityassist.enumerations.ActiveFlag.Deleted.name(), enterprise);
     }
 }

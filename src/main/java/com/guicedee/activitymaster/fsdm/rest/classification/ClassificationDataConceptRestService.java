@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm.rest.classification;
 import java.util.*;
 
 import com.google.inject.Inject;
+import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConceptService;
 import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
 import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
@@ -47,6 +48,9 @@ public class ClassificationDataConceptRestService {
     @Inject
     private IResourceItemService<?> resourceItemService;
 
+    @Inject
+    private IClassificationService<?> classificationService;
+
     // ──────────────────────────────────────────────────────────────────────────
     // Find
     // ──────────────────────────────────────────────────────────────────────────
@@ -66,6 +70,8 @@ public class ClassificationDataConceptRestService {
                 (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
                     Mutiny.StatelessSession session = tuple.getItem1();
                     IEnterprise<?, ?> enterprise = tuple.getItem2();
+                    ISystems<?, ?> system = tuple.getItem3();
+                    UUID[] token = tuple.getItem4();
                     return session.get(ClassificationDataConcept.class, conceptId)
                             .chain(concept -> {
                                 if (concept == null) {
@@ -81,7 +87,7 @@ public class ClassificationDataConceptRestService {
                                     return chain;
                                 }
                                 for (ClassificationDataConceptDataIncludes include : includesList) {
-                                    chain = chain.chain(d -> fetchInclude(session, concept, d, include, enterprise));
+                                    chain = chain.chain(d -> fetchInclude(session, concept, d, include, enterprise, system, token));
                                 }
                                 return chain;
                             })
@@ -175,7 +181,8 @@ public class ClassificationDataConceptRestService {
 
     private Uni<ClassificationDataConceptDTO> fetchInclude(Mutiny.StatelessSession session, ClassificationDataConcept concept,
                                                            ClassificationDataConceptDTO dto,
-                                                           ClassificationDataConceptDataIncludes include, IEnterprise<?, ?> enterprise) {
+                                                           ClassificationDataConceptDataIncludes include, IEnterprise<?, ?> enterprise,
+                                                           ISystems<?, ?> system, UUID[] token) {
         return switch (include) {
             case Classifications -> new Classification().builder(session)
                     .withEnterprise(enterprise)
@@ -201,7 +208,7 @@ public class ClassificationDataConceptRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (ClassificationDataConceptXResourceItem link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getResourceItemID())
                                             .invoke(resource -> {
                                                 String key = classification != null && classification.getName() != null
@@ -252,7 +259,7 @@ public class ClassificationDataConceptRestService {
                             .chain(list -> {
                                 Uni<Void> expireChain = Uni.createFrom().voidItem();
                                 for (ClassificationDataConceptXResourceItem link : list) {
-                                    expireChain = expireChain.chain(() -> s.fetch(link.getClassificationID())
+                                    expireChain = expireChain.chain(() -> classificationService.find(s, link.getClassificationID().getId(), sys, token)
                                             .chain(classification -> {
                                                 String name = classification != null ? classification.getName() : null;
                                                 if (name != null && namesToDelete.contains(name)) {

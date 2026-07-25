@@ -56,11 +56,11 @@ import jakarta.persistence.criteria.JoinType;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.entityassist.enumerations.Operand.Equals;
 import static com.entityassist.enumerations.OrderByType.DESC;
@@ -92,14 +92,6 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     private final com.guicedee.activitymaster.fsdm.util.BoundedLruCache<String, java.util.UUID> involvedPartyNameTypeKeyToId = new com.guicedee.activitymaster.fsdm.util.BoundedLruCache<>(NAME_TYPE_MAX);
     private final com.guicedee.activitymaster.fsdm.util.BoundedLruCache<String, java.util.UUID> involvedPartyIdentificationTypeKeyToId = new com.guicedee.activitymaster.fsdm.util.BoundedLruCache<>(
             IDENT_TYPE_MAX);
-
-    // Stateless detached-prepped reference-type caches (party type / name type / identification type),
-    // keyed by enterpriseId then name. Safe because the stateless finds return fresh DETACHED entities
-    // (scalar projection, no persistence context) and these install-time reference types are stable for
-    // the JVM lifetime. Only cached on a real hit; mutable user rows are not cached.
-    private static final Map<UUID, Map<String, IInvolvedPartyType<?, ?>>> STATELESS_TYPE_CACHE = new ConcurrentHashMap<>();
-    private static final Map<UUID, Map<String, IInvolvedPartyNameType<?, ?>>> STATELESS_NAME_TYPE_CACHE = new ConcurrentHashMap<>();
-    private static final Map<UUID, Map<String, IInvolvedPartyIdentificationType<?, ?>>> STATELESS_IDENT_TYPE_CACHE = new ConcurrentHashMap<>();
 
     // --- Cache configuration helpers & static log ---
     private static long mbToBytes(long mb)
@@ -377,121 +369,82 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     // + the stateless default-security matrix. Mirrors the managed find-or-create methods above.
     // ============================================================================================
 
-    public Uni<IInvolvedPartyIdentificationType<?, ?>> findInvolvedPartyIdentificationType(Mutiny.StatelessSession session, String idType, ISystems<?, ?> system, UUID... identityToken)
+    @Override
+    @CacheResult(cacheName = "InvolvedPartyIdentificationTypeFindByNameStateless")
+    public Uni<IInvolvedPartyIdentificationType<?, ?>> findInvolvedPartyIdentificationType(Mutiny.StatelessSession session, @CacheKey String idType, @CacheKey ISystems<?, ?> system, UUID... identityToken)
     {
-        // A null name can never match a seeded identification type; fail with the finder's NoResultException
-        // contract rather than dereferencing null against the ConcurrentHashMap cache (which would NPE).
         if (idType == null) {
             return Uni.createFrom().failure(new NoResultException("InvolvedPartyIdentificationType name must not be null"));
         }
         var enterprise = system.getEnterprise();
-        UUID enterpriseId = enterprise.getId();
-        Map<String, IInvolvedPartyIdentificationType<?, ?>> byName = STATELESS_IDENT_TYPE_CACHE.computeIfAbsent(enterpriseId, k -> new ConcurrentHashMap<>());
-        IInvolvedPartyIdentificationType<?, ?> hit = byName.get(idType);
-        if (hit != null) {
-            return Uni.createFrom()
-                      .item(hit);
-        }
-        Uni<IInvolvedPartyIdentificationType<?, ?>> resolved = new InvolvedPartyIdentificationType().builder(session)
-                                                                                                    .withName(idType)
-                                                                                                    .inActiveRange()
-                                                                                                    .inDateRange()
-                                                                                                    .withEnterprise(enterprise)
-                                                                                                    .selectColumn(InvolvedPartyIdentificationType_.id)
-                                                                                                    .selectColumn(InvolvedPartyIdentificationType_.name)
-                                                                                                    .selectColumn(InvolvedPartyIdentificationType_.description)
-                                                                                                    .get(Object[].class)
-                                                                                                    .map(row -> {
-                                                                                                        InvolvedPartyIdentificationType prepped = new InvolvedPartyIdentificationType((UUID) row[0],
-                                                                                                                                                                                      (String) row[1],
-                                                                                                                                                                                      (String) row[2]
-                                                                                                        );
-                                                                                                        prepped.setEnterpriseID(enterprise);
-                                                                                                        prepped.setFake(false);
-                                                                                                        return (IInvolvedPartyIdentificationType<?, ?>) prepped;
-                                                                                                    });
-        return resolved.onItem()
-                       .invoke(t -> {
-                           if (t != null && t.getId() != null) {
-                               byName.put(idType, t);
-                           }
-                       });
+        return new InvolvedPartyIdentificationType().builder(session)
+                                                    .withName(idType)
+                                                    .inActiveRange()
+                                                    .inDateRange()
+                                                    .withEnterprise(enterprise)
+                                                    .selectColumn(InvolvedPartyIdentificationType_.id)
+                                                    .selectColumn(InvolvedPartyIdentificationType_.name)
+                                                    .selectColumn(InvolvedPartyIdentificationType_.description)
+                                                    .get(Object[].class)
+                                                    .map(row -> {
+                                                        InvolvedPartyIdentificationType prepped = new InvolvedPartyIdentificationType((UUID) row[0],
+                                                                                                                                      (String) row[1],
+                                                                                                                                      (String) row[2]
+                                                        );
+                                                        prepped.setEnterpriseID(enterprise);
+                                                        prepped.setFake(false);
+                                                        return (IInvolvedPartyIdentificationType<?, ?>) prepped;
+                                                    });
     }
 
-    public Uni<IInvolvedPartyNameType<?, ?>> findInvolvedPartyNameType(Mutiny.StatelessSession session, String nameType, ISystems<?, ?> system, UUID... identityToken)
+    @Override
+    @CacheResult(cacheName = "InvolvedPartyNameTypeFindByNameStateless")
+    public Uni<IInvolvedPartyNameType<?, ?>> findInvolvedPartyNameType(Mutiny.StatelessSession session, @CacheKey String nameType, @CacheKey ISystems<?, ?> system, UUID... identityToken)
     {
-        // A null name can never match a seeded name type; fail with the finder's NoResultException contract
-        // rather than dereferencing null against the ConcurrentHashMap cache (which would NPE).
         if (nameType == null) {
             return Uni.createFrom().failure(new NoResultException("InvolvedPartyNameType name must not be null"));
         }
         var enterprise = system.getEnterprise();
-        UUID enterpriseId = enterprise.getId();
-        Map<String, IInvolvedPartyNameType<?, ?>> byName = STATELESS_NAME_TYPE_CACHE.computeIfAbsent(enterpriseId, k -> new ConcurrentHashMap<>());
-        IInvolvedPartyNameType<?, ?> hit = byName.get(nameType);
-        if (hit != null) {
-            return Uni.createFrom()
-                      .item(hit);
-        }
-        Uni<IInvolvedPartyNameType<?, ?>> resolved = new InvolvedPartyNameType().builder(session)
-                                                                                .withName(nameType)
-                                                                                .inActiveRange()
-                                                                                .inDateRange()
-                                                                                .withEnterprise(enterprise)
-                                                                                .selectColumn(InvolvedPartyNameType_.id)
-                                                                                .selectColumn(InvolvedPartyNameType_.name)
-                                                                                .selectColumn(InvolvedPartyNameType_.description)
-                                                                                .get(Object[].class)
-                                                                                .map(row -> {
-                                                                                    InvolvedPartyNameType prepped = new InvolvedPartyNameType((UUID) row[0], (String) row[1], (String) row[2]);
-                                                                                    prepped.setEnterpriseID(enterprise);
-                                                                                    prepped.setFake(false);
-                                                                                    return (IInvolvedPartyNameType<?, ?>) prepped;
-                                                                                });
-        return resolved.onItem()
-                       .invoke(t -> {
-                           if (t != null && t.getId() != null) {
-                               byName.put(nameType, t);
-                           }
-                       });
+        return new InvolvedPartyNameType().builder(session)
+                                          .withName(nameType)
+                                          .inActiveRange()
+                                          .inDateRange()
+                                          .withEnterprise(enterprise)
+                                          .selectColumn(InvolvedPartyNameType_.id)
+                                          .selectColumn(InvolvedPartyNameType_.name)
+                                          .selectColumn(InvolvedPartyNameType_.description)
+                                          .get(Object[].class)
+                                          .map(row -> {
+                                              InvolvedPartyNameType prepped = new InvolvedPartyNameType((UUID) row[0], (String) row[1], (String) row[2]);
+                                              prepped.setEnterpriseID(enterprise);
+                                              prepped.setFake(false);
+                                              return (IInvolvedPartyNameType<?, ?>) prepped;
+                                          });
     }
 
-    public Uni<IInvolvedPartyType<?, ?>> findType(Mutiny.StatelessSession session, String nameType, ISystems<?, ?> system, UUID... identityToken)
+    @Override
+    @CacheResult(cacheName = "InvolvedPartyTypeFindByNameStateless")
+    public Uni<IInvolvedPartyType<?, ?>> findType(Mutiny.StatelessSession session, @CacheKey String nameType, @CacheKey ISystems<?, ?> system, UUID... identityToken)
     {
-        // A null name can never match a seeded involved-party type; fail with the finder's NoResultException
-        // contract rather than dereferencing null against the ConcurrentHashMap cache (which would NPE).
         if (nameType == null) {
             return Uni.createFrom().failure(new NoResultException("InvolvedPartyType name must not be null"));
         }
         var enterprise = system.getEnterprise();
-        UUID enterpriseId = enterprise.getId();
-        Map<String, IInvolvedPartyType<?, ?>> byName = STATELESS_TYPE_CACHE.computeIfAbsent(enterpriseId, k -> new ConcurrentHashMap<>());
-        IInvolvedPartyType<?, ?> hit = byName.get(nameType);
-        if (hit != null) {
-            return Uni.createFrom()
-                      .item(hit);
-        }
-        Uni<IInvolvedPartyType<?, ?>> resolved = new InvolvedPartyType().builder(session)
-                                                                        .withName(nameType)
-                                                                        .inActiveRange()
-                                                                        .inDateRange()
-                                                                        .withEnterprise(enterprise)
-                                                                        .selectColumn(InvolvedPartyType_.id)
-                                                                        .selectColumn(InvolvedPartyType_.name)
-                                                                        .selectColumn(InvolvedPartyType_.description)
-                                                                        .get(Object[].class)
-                                                                        .map(row -> {
-                                                                            InvolvedPartyType prepped = new InvolvedPartyType((UUID) row[0], (String) row[1], (String) row[2]);
-                                                                            prepped.setEnterpriseID(enterprise);
-                                                                            prepped.setFake(false);
-                                                                            return (IInvolvedPartyType<?, ?>) prepped;
-                                                                        });
-        return resolved.onItem()
-                       .invoke(t -> {
-                           if (t != null && t.getId() != null) {
-                               byName.put(nameType, t);
-                           }
-                       });
+        return new InvolvedPartyType().builder(session)
+                                      .withName(nameType)
+                                      .inActiveRange()
+                                      .inDateRange()
+                                      .withEnterprise(enterprise)
+                                      .selectColumn(InvolvedPartyType_.id)
+                                      .selectColumn(InvolvedPartyType_.name)
+                                      .selectColumn(InvolvedPartyType_.description)
+                                      .get(Object[].class)
+                                      .map(row -> {
+                                          InvolvedPartyType prepped = new InvolvedPartyType((UUID) row[0], (String) row[1], (String) row[2]);
+                                          prepped.setEnterpriseID(enterprise);
+                                          prepped.setFake(false);
+                                          return (IInvolvedPartyType<?, ?>) prepped;
+                                      });
     }
 
     @Override

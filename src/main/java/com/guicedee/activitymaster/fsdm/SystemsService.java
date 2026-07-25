@@ -24,6 +24,8 @@ import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import java.util.UUID;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,10 +39,7 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.S
 @Log4j2
 @Singleton
 public class SystemsService implements ISystemsService<SystemsService> {
-    // Local cache: key = enterpriseId + '|' + systemName, value = Systems UUID
-    private final Map<String, UUID> systemKeyToId = new ConcurrentHashMap<>();
     private final Map<String, ISystems<?, ?>> systemKeyToEntity = new ConcurrentHashMap<>();
-    private final Map<String, ISystems<?, ?>> statelessSystemKeyToEntity = new ConcurrentHashMap<>();
     @Inject
     private IClassificationService<?> classificationService;
 
@@ -69,15 +68,17 @@ public class SystemsService implements ISystemsService<SystemsService> {
     }
 
     @Override
+    @CacheResult(cacheName = "SystemActivityMasterIdStateless")
     public Uni<UUID> getActivityMasterId(Mutiny.StatelessSession session,
-                                         IEnterprise<?, ?> requestingSystem,
+                                         @CacheKey IEnterprise<?, ?> requestingSystem,
                                          UUID... identityToken) {
         return findSystemId(session, requestingSystem, ActivityMasterSystemName, identityToken);
     }
 
     @Override
+    @CacheResult(cacheName = "SystemActivityMasterStateless")
     public Uni<ISystems<?, ?>> getActivityMaster(Mutiny.StatelessSession session,
-                                                 IEnterprise<?, ?> requestingSystem,
+                                                 @CacheKey IEnterprise<?, ?> requestingSystem,
                                                  UUID... identityToken) {
         return findSystem(session, requestingSystem, ActivityMasterSystemName, identityToken);
     }
@@ -131,14 +132,11 @@ public class SystemsService implements ISystemsService<SystemsService> {
     }
 
     @Override
+    @CacheResult(cacheName = "SystemFindIdStateless")
     public Uni<UUID> findSystemId(Mutiny.StatelessSession session,
-                                  IEnterprise<?, ?> enterprise,
-                                  String systemName,
+                                  @CacheKey IEnterprise<?, ?> enterprise,
+                                  @CacheKey String systemName,
                                   UUID... identityToken) {
-        UUID cachedId = systemKeyToId.get(systemCacheKey(enterprise, systemName));
-        if (cachedId != null) {
-            return Uni.createFrom().item(cachedId);
-        }
         // Stateless-safe resolution: project ONLY the PK (a scalar) — never hydrate the Systems entity.
         // Systems is @Cacheable with EAGER @ManyToOne associations (enterprise, activeFlag); on a
         // stateless session BOTH entity-load paths fail — a criteria query underflows the LoadContexts
@@ -146,23 +144,15 @@ public class SystemsService implements ISystemsService<SystemsService> {
         // reactive CompletableFuture association into the field). Callers that need a managed Systems
         // entity must use a Mutiny.Session; stateless callers resolve the id and use it for tokens/FKs.
         return new Systems().builder(session).withName(systemName).withEnterprise(enterprise).inDateRange()
-                            .inActiveRange().selectColumn(Systems_.id).get(UUID.class).invoke(id -> {
-                    if (id != null) {
-                        systemKeyToId.put(systemCacheKey(enterprise, systemName), id);
-                    }
-                });
+                            .inActiveRange().selectColumn(Systems_.id).get(UUID.class);
     }
 
     @Override
+    @CacheResult(cacheName = "SystemFindByNameStateless")
     public Uni<ISystems<?, ?>> findSystem(Mutiny.StatelessSession session,
-                                          IEnterprise<?, ?> enterprise,
-                                          String systemName,
+                                          @CacheKey IEnterprise<?, ?> enterprise,
+                                          @CacheKey String systemName,
                                           UUID... identityToken) {
-        String cacheKey = systemCacheKey(enterprise, systemName);
-        ISystems<?, ?> cached = statelessSystemKeyToEntity.get(cacheKey);
-        if (cached != null) {
-            return Uni.createFrom().item(cached);
-        }
         // Stateless "fetch ids/scalars + prep" — the approach that avoids the eager-association trap.
         // Instead of hydrating the managed Systems entity (which underflows Hibernate Reactive's
         // LoadContexts on a stateless criteria query, and trips the L2-cache reactive-association
@@ -180,7 +170,6 @@ public class SystemsService implements ISystemsService<SystemsService> {
                     Systems prepped = new Systems((UUID) row[0], (String) row[1], (String) row[2], (String) row[3]);
                     prepped.setEnterpriseID(enterprise);
                     prepped.setFake(false);
-                    cacheSystem(enterprise, systemName, prepped, statelessSystemKeyToEntity, false);
                     return (ISystems<?, ?>) prepped;
                 });
     }
@@ -207,11 +196,9 @@ public class SystemsService implements ISystemsService<SystemsService> {
         }
         prepped.setFake(false);
         String cacheKey = systemCacheKey(enterprise, systemName);
-        systemKeyToId.put(cacheKey, prepped.getId());
         targetCache.put(cacheKey, prepped);
         if (requestedName != null && !requestedName.equals(systemName)) {
             String requestedKey = systemCacheKey(enterprise, requestedName);
-            systemKeyToId.put(requestedKey, prepped.getId());
             targetCache.put(requestedKey, prepped);
         }
     }

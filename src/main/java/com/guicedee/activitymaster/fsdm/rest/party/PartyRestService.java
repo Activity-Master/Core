@@ -68,6 +68,8 @@ public class PartyRestService {
         return SessionUtils.<PartyDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
                 (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
                     Mutiny.StatelessSession session = tuple.getItem1();
+                    ISystems<?, ?> system = tuple.getItem3();
+                    UUID[] token = tuple.getItem4();
                     return involvedPartyService.find(session, partyId)
                             .chain(party -> {
                                 PartyDTO dto = new PartyDTO();
@@ -79,7 +81,7 @@ public class PartyRestService {
                                     return chain;
                                 }
                                 for (PartyDataIncludes include : includesList) {
-                                    chain = chain.chain(d -> fetchInclude(session, ip, d, include));
+                                    chain = chain.chain(d -> fetchInclude(session, ip, d, include, system, token));
                                 }
                                 return chain;
                             })
@@ -145,7 +147,7 @@ public class PartyRestService {
 
                                                         Uni<PartyDTO> fetchChain = Uni.createFrom().item(dto);
                                                         for (PartyDataIncludes include : includesList) {
-                                                            fetchChain = fetchChain.chain(d -> fetchInclude(session, ip, d, include));
+                                                            fetchChain = fetchChain.chain(d -> fetchInclude(session, ip, d, include, system, identityToken));
                                                         }
                                                         return fetchChain.map(d -> { dtoList.add(d); return dtoList; });
                                                     })
@@ -177,6 +179,8 @@ public class PartyRestService {
         return SessionUtils.<List<PartyDTO>>withActivityMasterStateless(enterpriseName, requestingSystemName,
                 (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
                     Mutiny.StatelessSession session = tuple.getItem1();
+                    ISystems<?, ?> system = tuple.getItem3();
+                    UUID[] token = tuple.getItem4();
 
                     return involvedPartyService.findAllByIdentificationType(session,
                                     searchDto.identificationType, searchDto.identificationValue)
@@ -205,7 +209,7 @@ public class PartyRestService {
 
                                                     Uni<PartyDTO> fetchChain = Uni.createFrom().item(dto);
                                                     for (PartyDataIncludes include : includesList) {
-                                                        fetchChain = fetchChain.chain(d -> fetchInclude(session, ip, d, include));
+                                                        fetchChain = fetchChain.chain(d -> fetchInclude(session, ip, d, include, system, token));
                                                     }
                                                     return fetchChain.map(d -> { dtoList.add(d); return dtoList; });
                                                 });
@@ -307,7 +311,8 @@ public class PartyRestService {
     // Include fetching — all use session.fetch() for lazy-loaded entities
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Uni<PartyDTO> fetchInclude(Mutiny.StatelessSession session, InvolvedParty party, PartyDTO dto, PartyDataIncludes include) {
+    private Uni<PartyDTO> fetchInclude(Mutiny.StatelessSession session, InvolvedParty party, PartyDTO dto, PartyDataIncludes include,
+                                       ISystems<?, ?> system, UUID[] token) {
         return switch (include) {
             case Types -> new InvolvedPartyXInvolvedPartyType().builder(session)
                     .where(InvolvedPartyXInvolvedPartyType_.involvedPartyID, Equals, party)
@@ -318,7 +323,7 @@ public class PartyRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (InvolvedPartyXInvolvedPartyType link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getInvolvedPartyTypeID())
                                             .invoke(type -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
@@ -339,7 +344,7 @@ public class PartyRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (InvolvedPartyXClassification link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .invoke(classification -> {
                                         String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
                                         map.put(key, link.getValue());
@@ -357,7 +362,7 @@ public class PartyRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (InvolvedPartyXInvolvedPartyNameType link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getInvolvedPartyNameTypeID())
                                             .invoke(nameType -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
@@ -378,7 +383,7 @@ public class PartyRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (InvolvedPartyXInvolvedPartyIdentificationType link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getInvolvedPartyIdentificationTypeID())
                                             .invoke(idType -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
@@ -399,7 +404,7 @@ public class PartyRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (InvolvedPartyXResourceItem link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getResourceItemID())
                                             .invoke(resource -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
@@ -419,7 +424,7 @@ public class PartyRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (InvolvedPartyXProduct link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getProductID())
                                             .invoke(product -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
@@ -439,7 +444,7 @@ public class PartyRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (InvolvedPartyXRules link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getRulesID())
                                             .invoke(rules -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
@@ -459,7 +464,7 @@ public class PartyRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (InvolvedPartyXAddress link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getAddressID())
                                             .invoke(address -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
@@ -742,7 +747,7 @@ public class PartyRestService {
 
             Uni<PartyDTO> fetchChain = Uni.createFrom().item(response);
             for (PartyDataIncludes include : includes) {
-                fetchChain = fetchChain.chain(d -> fetchInclude(session, party, d, include));
+                fetchChain = fetchChain.chain(d -> fetchInclude(session, party, d, include, tuple.getItem3(), tuple.getItem4()));
             }
             return fetchChain;
         });

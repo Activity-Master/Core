@@ -5,6 +5,7 @@ import java.util.*;
 import com.entityassist.services.entities.IRootEntity;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.ResourceItemService;
+import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
 import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -43,6 +44,9 @@ public class ResourceItemRestService
     private IResourceItemService<ResourceItemService> resourceItemService;
 
     @Inject
+    private IClassificationService<?> classificationService;
+
+    @Inject
     private com.guicedee.activitymaster.fsdm.rest.EventActionSupport eventActionSupport;
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -65,6 +69,8 @@ public class ResourceItemRestService
         return SessionUtils.<ResourceItemDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
             (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
                 Mutiny.StatelessSession session = tuple.getItem1();
+                ISystems<?, ?> system = tuple.getItem3();
+                UUID[] token = tuple.getItem4();
                 return resourceItemService.findByUUID(session, resourceItemId)
                     .map(resourceItem -> {
                         ResourceItemDTO dto = new ResourceItemDTO();
@@ -80,7 +86,7 @@ public class ResourceItemRestService
                             return chain;
                         }
                         for (ResourceItemDataIncludes include : includesList) {
-                            chain = chain.chain(d -> fetchInclude(session, ri, d, include));
+                            chain = chain.chain(d -> fetchInclude(session, ri, d, include, system, token));
                         }
                         return chain;
                     })
@@ -159,7 +165,7 @@ public class ResourceItemRestService
 
                                         Uni<ResourceItemDTO> fetchChain = Uni.createFrom().item(dto);
                                         for (ResourceItemDataIncludes include : includesList) {
-                                            fetchChain = fetchChain.chain(d -> fetchInclude(session, fetchedItem, d, include));
+                                            fetchChain = fetchChain.chain(d -> fetchInclude(session, fetchedItem, d, include, system, identityToken));
                                         }
                                         return fetchChain.map(d -> { dtoList.add(d); return dtoList; });
                                     });
@@ -343,7 +349,8 @@ public class ResourceItemRestService
     // Include fetching
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Uni<ResourceItemDTO> fetchInclude(Mutiny.StatelessSession session, ResourceItem resourceItem, ResourceItemDTO dto, ResourceItemDataIncludes include) {
+    private Uni<ResourceItemDTO> fetchInclude(Mutiny.StatelessSession session, ResourceItem resourceItem, ResourceItemDTO dto, ResourceItemDataIncludes include,
+                                              ISystems<?, ?> system, UUID[] token) {
         return switch (include) {
             case Types -> new ResourceItemXResourceItemType().builder(session)
                     .where(ResourceItemXResourceItemType_.resourceItemID, Equals, resourceItem)
@@ -372,7 +379,7 @@ public class ResourceItemRestService
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (ResourceItemXClassification link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .invoke(classification -> {
                                         String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
                                         map.put(key, link.getValue());
@@ -537,6 +544,8 @@ public class ResourceItemRestService
                                                       IResourceItem<?, ?> resourceItem, ResourceItemCreateDTO createDto) {
         return SessionUtils.<ResourceItemDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
             Mutiny.StatelessSession session = tuple.getItem1();
+            ISystems<?, ?> system = tuple.getItem3();
+            UUID[] token = tuple.getItem4();
             ResourceItem ri = (ResourceItem) resourceItem;
 
             ResourceItemDTO response = new ResourceItemDTO();
@@ -551,7 +560,7 @@ public class ResourceItemRestService
             Uni<ResourceItemDTO> fetchChain = Uni.createFrom().item(response);
             for (ResourceItemDataIncludes include : includes)
             {
-                fetchChain = fetchChain.chain(d -> fetchInclude(session, ri, d, include));
+                fetchChain = fetchChain.chain(d -> fetchInclude(session, ri, d, include, system, token));
             }
             return fetchChain;
         });

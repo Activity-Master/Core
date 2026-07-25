@@ -5,6 +5,7 @@ import java.util.*;
 import com.entityassist.services.entities.IRootEntity;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.ProductService;
+import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IProductService;
 import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
 import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
@@ -40,6 +41,9 @@ public class ProductRestService {
     private IResourceItemService<?> resourceItemService;
 
     @Inject
+    private IClassificationService<?> classificationService;
+
+    @Inject
     private com.guicedee.activitymaster.fsdm.rest.EventActionSupport eventActionSupport;
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -60,6 +64,8 @@ public class ProductRestService {
         return SessionUtils.<ProductDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
                 (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
                     Mutiny.StatelessSession session = tuple.getItem1();
+                    ISystems<?, ?> system = tuple.getItem3();
+                    UUID[] token = tuple.getItem4();
                     return productService.find(session, productId)
                             .chain(product -> {
                                 Product p = (Product) product;
@@ -74,7 +80,7 @@ public class ProductRestService {
                                     return chain;
                                 }
                                 for (ProductDataIncludes include : includesList) {
-                                    chain = chain.chain(d -> fetchInclude(session, p, d, include));
+                                    chain = chain.chain(d -> fetchInclude(session, p, d, include, system, token));
                                 }
                                 return chain;
                             })
@@ -163,7 +169,8 @@ public class ProductRestService {
     // Include fetching — all use session.fetch() for lazy-loaded entities
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Uni<ProductDTO> fetchInclude(Mutiny.StatelessSession session, Product product, ProductDTO dto, ProductDataIncludes include) {
+    private Uni<ProductDTO> fetchInclude(Mutiny.StatelessSession session, Product product, ProductDTO dto, ProductDataIncludes include,
+                                         ISystems<?, ?> system, UUID[] token) {
         return switch (include) {
             case Types -> new ProductXProductType().builder(session)
                     .where(ProductXProductType_.productID, Equals, product)
@@ -192,7 +199,7 @@ public class ProductRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (ProductXClassification link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .invoke(classification -> {
                                         String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
                                         map.put(key, link.getValue());
@@ -210,7 +217,7 @@ public class ProductRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (ProductXResourceItem link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getResourceItemID())
                                             .invoke(resource -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());

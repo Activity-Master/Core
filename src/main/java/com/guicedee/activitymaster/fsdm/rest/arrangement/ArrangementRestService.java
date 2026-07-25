@@ -6,6 +6,7 @@ import com.entityassist.services.entities.IRootEntity;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.ArrangementsService;
 import com.guicedee.activitymaster.fsdm.client.services.IArrangementsService;
+import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService;
 import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
 import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
@@ -50,6 +51,9 @@ public class ArrangementRestService {
     private IInvolvedPartyService<?> involvedPartyService;
 
     @Inject
+    private IClassificationService<?> classificationService;
+
+    @Inject
     private com.guicedee.activitymaster.fsdm.rest.EventActionSupport eventActionSupport;
 
     @POST
@@ -66,7 +70,9 @@ public class ArrangementRestService {
         return SessionUtils.<ArrangementDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
                 (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
                     Mutiny.StatelessSession session = tuple.getItem1();
-                    return arrangementsService.find(session, arrangementId, tuple.getItem3(), tuple.getItem4())
+                    ISystems<?, ?> system = tuple.getItem3();
+                    UUID[] token = tuple.getItem4();
+                    return arrangementsService.find(session, arrangementId, system, token)
                             .chain(arrangement -> {
                                 ArrangementDTO dto = new ArrangementDTO();
                                 dto.arrangementId = arrangementId;
@@ -80,7 +86,7 @@ public class ArrangementRestService {
                                 }
 
                                 for (ArrangementDataIncludes include : includesList) {
-                                    chain = chain.chain(d -> fetchInclude(session, arr, d, include));
+                                    chain = chain.chain(d -> fetchInclude(session, arr, d, include, system, token));
                                 }
 
                                 return chain;
@@ -97,7 +103,8 @@ public class ArrangementRestService {
      * Fetches a single include for the given arrangement and populates the DTO.
      * Each include queries its respective relationship table, pivoting the results into a Map.
      */
-    private Uni<ArrangementDTO> fetchInclude(Mutiny.StatelessSession session, Arrangement arrangement, ArrangementDTO dto, ArrangementDataIncludes include) {
+    private Uni<ArrangementDTO> fetchInclude(Mutiny.StatelessSession session, Arrangement arrangement, ArrangementDTO dto, ArrangementDataIncludes include,
+                                             ISystems<?, ?> system, UUID[] token) {
         return switch (include) {
             case Types -> new ArrangementXArrangementType().builder(session)
                     .where(ArrangementXArrangementType_.arrangement, Equals, arrangement)
@@ -126,7 +133,7 @@ public class ArrangementRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (ArrangementXClassification link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .invoke(classification -> {
                                         String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
                                         map.put(key, link.getValue());
@@ -162,7 +169,7 @@ public class ArrangementRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (ArrangementXResourceItem link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getResourceItemID())
                                             .invoke(resource -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
@@ -435,7 +442,8 @@ public class ArrangementRestService {
         return SessionUtils.<ArrangementDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
             Mutiny.StatelessSession session = tuple.getItem1();
             ISystems<?, ?> system = tuple.getItem3();
-            return arrangementsService.create(session, dto.key, dto.type, dto.classification, dto.typeValue, system)
+            UUID[] token = tuple.getItem4();
+            return arrangementsService.create(session, dto.key, dto.type, dto.classification, dto.typeValue, system,token)
                     .map(arrangement -> {
                         UUID arrangementId = arrangement.getId();
                         boolean hasRelationships = (dto.classifications != null && !dto.classifications.isEmpty())
@@ -752,7 +760,7 @@ public class ArrangementRestService {
 
             Uni<ArrangementDTO> fetchChain = Uni.createFrom().item(response);
             for (ArrangementDataIncludes include : includes) {
-                fetchChain = fetchChain.chain(d -> fetchInclude(session, arrangement, d, include));
+                fetchChain = fetchChain.chain(d -> fetchInclude(session, arrangement, d, include, tuple.getItem3(), tuple.getItem4()));
             }
             return fetchChain;
         });

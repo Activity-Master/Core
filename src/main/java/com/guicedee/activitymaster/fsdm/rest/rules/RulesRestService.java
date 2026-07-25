@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm.rest.rules;
 import java.util.*;
 
 import com.google.inject.Inject;
+import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IProductService;
 import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
 import com.guicedee.activitymaster.fsdm.client.services.IRulesService;
@@ -47,6 +48,9 @@ public class RulesRestService {
 
     @Inject
     private IProductService<?> productService;
+
+    @Inject
+    private IClassificationService<?> classificationService;
 
     @Inject
     private com.guicedee.activitymaster.fsdm.rest.EventActionSupport eventActionSupport;
@@ -189,7 +193,7 @@ public class RulesRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (RulesXClassification link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .invoke(classification -> {
                                         String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
                                         map.put(key, link.getValue());
@@ -207,7 +211,7 @@ public class RulesRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (RulesXResourceItem link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getResourceItemID())
                                             .invoke(resource -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
@@ -227,7 +231,7 @@ public class RulesRestService {
                         Map<String, String> map = new LinkedHashMap<>();
                         Uni<Void> fetchChain = Uni.createFrom().voidItem();
                         for (RulesXProduct link : list) {
-                            fetchChain = fetchChain.chain(() -> session.fetch(link.getClassificationID())
+                            fetchChain = fetchChain.chain(() -> classificationService.find(session, link.getClassificationID().getId(), system, token)
                                     .chain(classification -> session.fetch(link.getProductID())
                                             .invoke(product -> {
                                                 String key = classification != null && classification.getName() != null ? classification.getName() : String.valueOf(link.getId());
@@ -372,7 +376,7 @@ public class RulesRestService {
                                 .chain(ri -> rule.addOrUpdateResourceItem(s, classificationName, ri, null, null, sys, token)).replaceWithVoid());
                     }
                 }
-                chain = expireResourcesByName(chain, dto.resources, s, rule);
+                chain = expireResourcesByName(chain, dto.resources, s, rule, sys, token);
                 return chain;
             });
         }
@@ -388,7 +392,7 @@ public class RulesRestService {
                                 .chain(product -> rule.addOrUpdateProduct(s, classificationName, product, null, null, sys, token)).replaceWithVoid());
                     }
                 }
-                chain = expireProductsByName(chain, dto.products, s, rule);
+                chain = expireProductsByName(chain, dto.products, s, rule, sys, token);
                 return chain;
             });
         }
@@ -413,7 +417,8 @@ public class RulesRestService {
     }
 
     // Expire RulesXResourceItem rows whose classification name appears in the delete list.
-    private Uni<Void> expireResourcesByName(Uni<Void> chain, RelationshipUpdateEntry entry, Mutiny.StatelessSession s, Rules rule) {
+    private Uni<Void> expireResourcesByName(Uni<Void> chain, RelationshipUpdateEntry entry, Mutiny.StatelessSession s, Rules rule,
+                                            ISystems<?, ?> system, UUID[] token) {
         if (entry.delete == null || entry.delete.isEmpty()) return chain;
         Set<String> namesToDelete = new HashSet<>(entry.delete);
         return chain.chain(() -> new RulesXResourceItem().builder(s)
@@ -424,7 +429,7 @@ public class RulesRestService {
                 .chain(list -> {
                     Uni<Void> expireChain = Uni.createFrom().voidItem();
                     for (RulesXResourceItem link : list) {
-                        expireChain = expireChain.chain(() -> s.fetch(link.getClassificationID())
+                        expireChain = expireChain.chain(() -> classificationService.find(s, link.getClassificationID().getId(), system, token)
                                 .chain(classification -> {
                                     String name = classification != null ? classification.getName() : null;
                                     if (name != null && namesToDelete.contains(name)) {
@@ -438,7 +443,8 @@ public class RulesRestService {
     }
 
     // Expire RulesXProduct rows whose classification name appears in the delete list.
-    private Uni<Void> expireProductsByName(Uni<Void> chain, RelationshipUpdateEntry entry, Mutiny.StatelessSession s, Rules rule) {
+    private Uni<Void> expireProductsByName(Uni<Void> chain, RelationshipUpdateEntry entry, Mutiny.StatelessSession s, Rules rule,
+                                           ISystems<?, ?> system, UUID[] token) {
         if (entry.delete == null || entry.delete.isEmpty()) return chain;
         Set<String> namesToDelete = new HashSet<>(entry.delete);
         return chain.chain(() -> new RulesXProduct().builder(s)
@@ -449,7 +455,7 @@ public class RulesRestService {
                 .chain(list -> {
                     Uni<Void> expireChain = Uni.createFrom().voidItem();
                     for (RulesXProduct link : list) {
-                        expireChain = expireChain.chain(() -> s.fetch(link.getClassificationID())
+                        expireChain = expireChain.chain(() -> classificationService.find(s, link.getClassificationID().getId(), system, token)
                                 .chain(classification -> {
                                     String name = classification != null ? classification.getName() : null;
                                     if (name != null && namesToDelete.contains(name)) {

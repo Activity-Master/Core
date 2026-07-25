@@ -35,6 +35,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -733,26 +735,17 @@ public class EnterpriseService
     }
 
     @Override
-    public Uni<IEnterprise<?, ?>> getEnterprise(Mutiny.StatelessSession session, String name)
+    @CacheResult(cacheName = "EnterpriseGetByNameStateless")
+    public Uni<IEnterprise<?, ?>> getEnterprise(Mutiny.StatelessSession session, @CacheKey String name)
     {
         log.trace(" Session & transaction started for enterprise lookup: {}", name);
-        IEnterprise<?, ?> cached = enterpriseNameToEntity.get(name);
-        if (cached != null) {
-            return Uni.createFrom().item(cached);
-        }
-        // Cold path: query by name, then remember the UUID for next calls
         //noinspection unchecked,rawtypes
         return (Uni) new Enterprise()
                 .builder(session)
                 .withName(name)
                 .inDateRange()
                 //.setCacheName("getEnterpriseByName","default")
-                .get()
-                .invoke(ent -> {
-                    if (ent != null && ent.getId() != null) {
-                        cacheEnterprise(ent);
-                    }
-                });
+                .get();
     }
 
 
@@ -774,19 +767,11 @@ public class EnterpriseService
     }
 
     @Override
-    public Uni<IEnterprise<?, ?>> getEnterprise(Mutiny.StatelessSession session, UUID uuid)
+    @CacheResult(cacheName = "EnterpriseGetByIdStateless")
+    public Uni<IEnterprise<?, ?>> getEnterprise(Mutiny.StatelessSession session, @CacheKey UUID uuid)
     {
-        IEnterprise<?, ?> cached = enterpriseIdToEntity.get(uuid);
-        if (cached != null) {
-            return Uni.createFrom().item(cached);
-        }
         //noinspection unchecked
-        return (Uni) session.get(Enterprise.class, uuid)
-                .invoke(ent -> {
-                    if (ent != null && ent.getId() != null) {
-                        cacheEnterprise(ent);
-                    }
-                });
+        return (Uni) session.get(Enterprise.class, uuid);
     }
 
     private void cacheEnterprise(IEnterprise<?, ?> enterprise)

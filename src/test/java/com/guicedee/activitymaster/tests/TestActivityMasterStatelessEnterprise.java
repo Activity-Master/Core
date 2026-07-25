@@ -20,6 +20,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.secur
 import com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.SystemsClassifications;
+import com.guicedee.activitymaster.fsdm.client.services.classifications.types.IdentificationTypes;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.types.IPTypes;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.types.NameTypes;
 import com.guicedee.activitymaster.fsdm.ActiveFlagService;
@@ -1135,6 +1136,148 @@ public class TestActivityMasterStatelessEnterprise {
         assertNotNull(found, "findType(StatelessSession, id) must resolve the product type");
         assertEquals(typeId, found.getId(), "findType must resolve the same product type id");
         assertEquals(typeName, found.getName(), "findType must resolve the prepped product type name");
+    }
+
+    /**
+     * The stateless classification id lookup is JCache-backed and scalar-projected. Resolve a known
+     * classification by name first, then resolve it twice by id across independent stateless transactions.
+     * Both calls must complete and return the same prepped classification.
+     */
+    @Test
+    @Order(33)
+    public void classificationFindById_stateless_jcachePathResolvesConsistently() {
+        IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
+        ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
+        IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
+
+        UUID classificationId = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> cs.getIdentityType(session, (ISystems<?, ?>) sys))
+                        .map(c -> (UUID) c.getId())
+        ).await().atMost(Duration.ofMinutes(1));
+
+        Object[] first = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> cs.find(session, classificationId, (ISystems<?, ?>) sys)
+                                .map(c -> new Object[]{c.getId(), c.getName()}))
+        ).await().atMost(Duration.ofMinutes(1));
+
+        Object[] second = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> cs.find(session, classificationId, (ISystems<?, ?>) sys)
+                                .map(c -> new Object[]{c.getId(), c.getName()}))
+        ).await().atMost(Duration.ofMinutes(1));
+
+        assertEquals(classificationId, first[0], "First stateless classification id lookup must resolve the requested id");
+        assertEquals(first[0], second[0], "Repeated stateless classification id lookup must resolve the same id");
+        assertEquals(first[1], second[1], "Repeated stateless classification id lookup must resolve the same name");
+    }
+
+    /**
+     * Enterprise, system, and active-flag stateless reference lookups are JCache-annotated. Repeating them
+     * across independent stateless transactions must remain stable and return detached/prepped values with
+     * the same ids.
+     */
+    @Test
+    @Order(34)
+    public void enterpriseSystemActiveFlag_stateless_jcachePathsResolveConsistently() {
+        IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
+        ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
+        IActiveFlagService<?> afs = IGuiceContext.get(IActiveFlagService.class);
+
+        Object[] first = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.findSystemId(session, (IEnterprise<?, ?>) ent, ISystemsService.ActivityMasterSystemName)
+                                .chain(systemId -> ss.findSystem(session, (IEnterprise<?, ?>) ent, ISystemsService.ActivityMasterSystemName)
+                                        .chain(system -> afs.getActiveFlag(session, (IEnterprise<?, ?>) ent)
+                                                .chain(active -> afs.getArchivedFlag(session, (IEnterprise<?, ?>) ent)
+                                                        .chain(archived -> afs.getDeletedFlag(session, (IEnterprise<?, ?>) ent)
+                                                                .map(deleted -> new Object[]{
+                                                                        ent.getId(),
+                                                                        systemId,
+                                                                        system.getId(),
+                                                                        active.getId(),
+                                                                        archived.getId(),
+                                                                        deleted.getId()
+                                                                }))))))
+        ).await().atMost(Duration.ofMinutes(1));
+
+        Object[] second = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, enterpriseId)
+                        .chain(ent -> ss.findSystemId(session, (IEnterprise<?, ?>) ent, ISystemsService.ActivityMasterSystemName)
+                                .chain(systemId -> ss.findSystem(session, (IEnterprise<?, ?>) ent, ISystemsService.ActivityMasterSystemName)
+                                        .chain(system -> afs.getActiveFlag(session, (IEnterprise<?, ?>) ent)
+                                                .chain(active -> afs.getArchivedFlag(session, (IEnterprise<?, ?>) ent)
+                                                        .chain(archived -> afs.getDeletedFlag(session, (IEnterprise<?, ?>) ent)
+                                                                .map(deleted -> new Object[]{
+                                                                        ent.getId(),
+                                                                        systemId,
+                                                                        system.getId(),
+                                                                        active.getId(),
+                                                                        archived.getId(),
+                                                                        deleted.getId()
+                                                                }))))))
+        ).await().atMost(Duration.ofMinutes(1));
+
+        assertArrayEquals(first, second,
+                "Repeated JCache-backed stateless enterprise/system/active-flag lookups must resolve the same ids");
+        assertEquals(enterpriseId, first[0], "Enterprise lookup must resolve the baseline enterprise id");
+        assertEquals(activityMasterSystemId, first[1], "System id lookup must resolve the baseline Activity Master id");
+        assertEquals(activityMasterSystemId, first[2], "System entity lookup must resolve the baseline Activity Master id");
+    }
+
+    /**
+     * The stateless involved-party reference lookups are JCache-backed and scalar-projected. Repeating
+     * representative party, name, and identification type lookups across independent stateless transactions
+     * must resolve the same detached/prepped values.
+     */
+    @Test
+    @Order(35)
+    public void involvedPartyReferenceTypes_stateless_jcachePathsResolveConsistently() {
+        IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
+        ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
+        IInvolvedPartyService<?> ips = IGuiceContext.get(IInvolvedPartyService.class);
+
+        Object[] first = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> ips.findType(session, IPTypes.TypeIndividual.toString(), (ISystems<?, ?>) sys)
+                                .chain(type -> ips.findInvolvedPartyNameType(session, NameTypes.FirstNameType.toString(), (ISystems<?, ?>) sys)
+                                        .chain(nameType -> ips.findInvolvedPartyIdentificationType(session, IdentificationTypes.IdentificationTypeUUID.toString(), (ISystems<?, ?>) sys)
+                                                .map(idType -> new Object[]{
+                                                        type.getId(),
+                                                        type.getName(),
+                                                        nameType.getId(),
+                                                        nameType.getName(),
+                                                        idType.getId(),
+                                                        idType.getName()
+                                                }))))
+        ).await().atMost(Duration.ofMinutes(1));
+
+        Object[] second = sessionFactory.withStatelessTransaction(session ->
+                es.getEnterprise(session, TestEnterprise.name())
+                        .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
+                        .chain(sys -> ips.findType(session, IPTypes.TypeIndividual.toString(), (ISystems<?, ?>) sys)
+                                .chain(type -> ips.findInvolvedPartyNameType(session, NameTypes.FirstNameType.toString(), (ISystems<?, ?>) sys)
+                                        .chain(nameType -> ips.findInvolvedPartyIdentificationType(session, IdentificationTypes.IdentificationTypeUUID.toString(), (ISystems<?, ?>) sys)
+                                                .map(idType -> new Object[]{
+                                                        type.getId(),
+                                                        type.getName(),
+                                                        nameType.getId(),
+                                                        nameType.getName(),
+                                                        idType.getId(),
+                                                        idType.getName()
+                                                }))))
+        ).await().atMost(Duration.ofMinutes(1));
+
+        assertArrayEquals(first, second,
+                "Repeated JCache-backed stateless involved-party reference type lookups must resolve the same ids and names");
+        assertEquals(IPTypes.TypeIndividual.toString(), first[1], "Involved-party type lookup must resolve TypeIndividual");
+        assertEquals(NameTypes.FirstNameType.toString(), first[3], "Name type lookup must resolve FirstNameType");
+        assertEquals(IdentificationTypes.IdentificationTypeUUID.toString(), first[5], "Identification type lookup must resolve IdentificationTypeUUID");
     }
 }
 
