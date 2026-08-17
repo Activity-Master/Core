@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm.rest.arrangement;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.entityassist.services.entities.IRootEntity;
 import com.google.inject.Inject;
@@ -439,29 +440,41 @@ public class ArrangementRestService {
         // Run the create inside the managed session/transaction. The create MUST use the session
         // provided by withActivityMaster — passing null leaves the EntityAssist query builder without
         // an entity manager (NPE in QueryBuilder.getQuery()).
+        boolean hasRelationships = (dto.classifications != null && !dto.classifications.isEmpty())
+                || (dto.parties != null && !dto.parties.isEmpty())
+                || (dto.resources != null && !dto.resources.isEmpty())
+                || (dto.rules != null && !dto.rules.isEmpty())
+                || (dto.products != null && !dto.products.isEmpty())
+                || (dto.childArrangements != null && !dto.childArrangements.isEmpty());
+
+        // Holds the new arrangement id so the fire-and-forget relationship writes can be dispatched
+        // AFTER the create transaction has committed — see below.
+        AtomicReference<UUID> createdArrangementId = new AtomicReference<>();
+
         return SessionUtils.<ArrangementDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
             Mutiny.StatelessSession session = tuple.getItem1();
             ISystems<?, ?> system = tuple.getItem3();
             UUID[] token = tuple.getItem4();
             return arrangementsService.create(session, dto.key, dto.type, dto.classification, dto.typeValue, system,token)
                     .map(arrangement -> {
-                        UUID arrangementId = arrangement.getId();
-                        boolean hasRelationships = (dto.classifications != null && !dto.classifications.isEmpty())
-                                || (dto.parties != null && !dto.parties.isEmpty())
-                                || (dto.resources != null && !dto.resources.isEmpty())
-                                || (dto.rules != null && !dto.rules.isEmpty())
-                                || (dto.products != null && !dto.products.isEmpty())
-                                || (dto.childArrangements != null && !dto.childArrangements.isEmpty());
-
-                        if (hasRelationships) {
-                            persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, arrangementId, dto);
-                        }
-
-                        // Optionally associate this create with an event (fire-and-forget)
-                        eventActionSupport.recordArrangementAction(enterpriseName, requestingSystemName, dto.event, true, arrangementId);
-
+                        createdArrangementId.set(arrangement.getId());
                         return buildCreateResponseFromDto((Arrangement) arrangement, dto);
                     });
+        }).onItem().invoke(response -> {
+            // The relationship writes and the event association each run on their OWN session. They must
+            // therefore only be dispatched once THIS create transaction has committed, otherwise their
+            // arrangementsService.find(...) cannot see the new (still uncommitted) arrangement and fails
+            // with "jakarta.persistence.NoResultException: No result found for query" — silently dropping
+            // the classifications/resources. Dispatching from .onItem() of the completed session block
+            // guarantees the row is visible to the new sessions.
+            UUID arrangementId = createdArrangementId.get();
+            if (arrangementId == null) {
+                return;
+            }
+            if (hasRelationships) {
+                persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, arrangementId, dto);
+            }
+            eventActionSupport.recordArrangementAction(enterpriseName, requestingSystemName, dto.event, true, arrangementId);
         }).onFailure().invoke(e ->
                 log.error("Error creating arrangement for enterprise {} and system {}: {}",
                         enterpriseName, requestingSystemName, e.getMessage(), e)

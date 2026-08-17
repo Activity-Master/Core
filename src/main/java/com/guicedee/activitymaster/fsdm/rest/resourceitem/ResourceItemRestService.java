@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm.rest.resourceitem;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.entityassist.services.entities.IRootEntity;
 import com.google.inject.Inject;
@@ -199,6 +200,14 @@ public class ResourceItemRestService
         // Resolve enterprise/system context and run the create inside the managed session/transaction.
         // The create MUST use the session provided by withActivityMaster — passing null leaves the
         // EntityAssist query builder without an entity manager (NPE in QueryBuilder.getQuery()).
+        boolean hasRelationships = (dto.classifications != null && !dto.classifications.isEmpty())
+                || (dto.types != null && !dto.types.isEmpty())
+                || (dto.children != null && !dto.children.isEmpty());
+
+        // Holds the new resource item id so the fire-and-forget writes can be dispatched AFTER the
+        // create transaction has committed — see below.
+        AtomicReference<UUID> createdResourceItemId = new AtomicReference<>();
+
         return SessionUtils.<ResourceItemDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
             Mutiny.StatelessSession session = tuple.getItem1();
             ISystems<?, ?> system = tuple.getItem3();
@@ -216,24 +225,25 @@ public class ResourceItemRestService
             return createUni.map(resourceItem -> {
                 // Extract the ID before the session closes — the entity will be detached
                 // after withActivityMaster's transaction completes
-                UUID resourceItemId = resourceItem.getId();
-
-                boolean hasRelationships = (dto.classifications != null && !dto.classifications.isEmpty())
-                        || (dto.types != null && !dto.types.isEmpty())
-                        || (dto.children != null && !dto.children.isEmpty());
-
-                if (hasRelationships)
-                {
-                    // Pass the ID, not the detached entity — each fire-and-forget will
-                    // re-find the entity in its own session
-                    persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, resourceItemId, dto);
-                }
-
-                // Optionally associate this create with an event (fire-and-forget)
-                eventActionSupport.recordResourceItemAction(enterpriseName, requestingSystemName, dto.event, true, resourceItemId);
-
+                createdResourceItemId.set(resourceItem.getId());
                 return buildCreateResponseFromDto(resourceItem, dto);
             });
+        })
+        .onItem().invoke(response -> {
+            // Each fire-and-forget write re-finds the entity in its OWN session, so it may only be
+            // dispatched once THIS create transaction has committed — otherwise the still-uncommitted
+            // resource item is invisible and the write fails with NoResultException, silently dropping
+            // the relationships.
+            UUID resourceItemId = createdResourceItemId.get();
+            if (resourceItemId == null)
+            {
+                return;
+            }
+            if (hasRelationships)
+            {
+                persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, resourceItemId, dto);
+            }
+            eventActionSupport.recordResourceItemAction(enterpriseName, requestingSystemName, dto.event, true, resourceItemId);
         })
         .onFailure().invoke(e ->
             log.error("Error creating resource item for enterprise {} and system {}: {}",

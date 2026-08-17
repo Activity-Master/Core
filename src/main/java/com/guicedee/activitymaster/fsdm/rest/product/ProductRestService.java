@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm.rest.product;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.entityassist.services.entities.IRootEntity;
 import com.google.inject.Inject;
@@ -107,6 +108,9 @@ public class ProductRestService {
                                   ProductCreateDTO dto) {
         // Use the first entry in dto.types as the primary product type during creation
         Map.Entry<String, String> primaryType = dto.types.entrySet().iterator().next();
+        // Holds the new product id so the fire-and-forget writes can be dispatched AFTER the create
+        // transaction has committed — see below.
+        AtomicReference<UUID> createdProductId = new AtomicReference<>();
         return SessionUtils.<ProductDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
                 (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
                     Mutiny.StatelessSession session = tuple.getItem1();
@@ -115,18 +119,24 @@ public class ProductRestService {
                     return productService.createProduct(session, primaryType.getKey(),
                                     dto.name, dto.description, dto.code, system, token)
                             .map(product -> {
-                                UUID productId = product.getId();
-                                // Fire-and-forget relationship persistence in parallel
-                                if (hasAnyRelationship(dto)) {
-                                    persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, productId, dto);
-                                }
-                                // Optionally associate this create with an event (fire-and-forget)
-                                eventActionSupport.recordProductAction(enterpriseName, requestingSystemName, dto.event, true, productId);
+                                createdProductId.set(product.getId());
                                 // Build response immediately from the DTO input — no DB round-trip needed
                                 return buildCreateResponseFromDto((Product) product, dto);
                             });
                 }
-        ).onFailure().invoke(e ->
+        ).onItem().invoke(response -> {
+            // Each fire-and-forget write runs on its OWN session, so it may only be dispatched once THIS
+            // create transaction has committed — otherwise its find(...) cannot see the still-uncommitted
+            // product and fails with NoResultException, silently dropping the relationships.
+            UUID productId = createdProductId.get();
+            if (productId == null) {
+                return;
+            }
+            if (hasAnyRelationship(dto)) {
+                persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, productId, dto);
+            }
+            eventActionSupport.recordProductAction(enterpriseName, requestingSystemName, dto.event, true, productId);
+        }).onFailure().invoke(e ->
                 log.error("Error creating product for enterprise {} and system {}: {}",
                         enterpriseName, requestingSystemName, e.getMessage(), e)
         );

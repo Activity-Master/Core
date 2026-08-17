@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm.rest.rules;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
@@ -118,6 +119,9 @@ public class RulesRestService {
                                 RulesCreateDTO dto) {
         String primaryRuleType = (dto.ruleTypes != null && !dto.ruleTypes.isEmpty())
                 ? dto.ruleTypes.keySet().iterator().next() : null;
+        // Holds the new rule id so the fire-and-forget writes can be dispatched AFTER the create
+        // transaction has committed — see below.
+        AtomicReference<UUID> createdRulesId = new AtomicReference<>();
         return SessionUtils.<RulesDTO>withActivityMasterStateless(enterpriseName, requestingSystemName,
                 (Tuple4<Mutiny.StatelessSession, IEnterprise<?, ?>, ISystems<?, ?>, UUID[]> tuple) -> {
                     Mutiny.StatelessSession session = tuple.getItem1();
@@ -125,16 +129,23 @@ public class RulesRestService {
                     UUID[] token = tuple.getItem4();
                     return rulesService.createRules(session, primaryRuleType, dto.name, dto.description, system, token)
                             .map(rule -> {
-                                UUID rulesId = rule.getId();
-                                if (hasAnyRelationship(dto)) {
-                                    persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, rulesId, dto);
-                                }
-                                // Optionally associate this create with an event (fire-and-forget)
-                                eventActionSupport.recordRulesAction(enterpriseName, requestingSystemName, dto.event, true, rulesId);
+                                createdRulesId.set(rule.getId());
                                 return buildCreateResponseFromDto(rule.getId(), dto);
                             });
                 }
-        ).onFailure().invoke(e ->
+        ).onItem().invoke(response -> {
+            // Each fire-and-forget write runs on its OWN session, so it may only be dispatched once THIS
+            // create transaction has committed — otherwise its find(...) cannot see the still-uncommitted
+            // rule and fails with NoResultException, silently dropping the relationships.
+            UUID rulesId = createdRulesId.get();
+            if (rulesId == null) {
+                return;
+            }
+            if (hasAnyRelationship(dto)) {
+                persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, rulesId, dto);
+            }
+            eventActionSupport.recordRulesAction(enterpriseName, requestingSystemName, dto.event, true, rulesId);
+        }).onFailure().invoke(e ->
                 log.error("Error creating rule '{}' for enterprise {} and system {}: {}",
                         dto.name, enterpriseName, requestingSystemName, e.getMessage(), e)
         );

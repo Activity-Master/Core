@@ -88,6 +88,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
 
     // New: cache for InvolvedParty entity lookups by identification key
     private final com.guicedee.activitymaster.fsdm.util.BoundedLruCache<String, java.util.UUID> involvedPartyKeyToId = new com.guicedee.activitymaster.fsdm.util.BoundedLruCache<>(PARTY_MAX);
+    private final com.guicedee.activitymaster.fsdm.util.BoundedLruCache<java.util.UUID, IInvolvedParty<?, ?>> involvedPartyIdToStatelessEntity = new com.guicedee.activitymaster.fsdm.util.BoundedLruCache<>(PARTY_MAX);
     private final com.guicedee.activitymaster.fsdm.util.BoundedLruCache<String, java.util.UUID> involvedPartyTypeKeyToId = new com.guicedee.activitymaster.fsdm.util.BoundedLruCache<>(TYPE_MAX);
     private final com.guicedee.activitymaster.fsdm.util.BoundedLruCache<String, java.util.UUID> involvedPartyNameTypeKeyToId = new com.guicedee.activitymaster.fsdm.util.BoundedLruCache<>(NAME_TYPE_MAX);
     private final com.guicedee.activitymaster.fsdm.util.BoundedLruCache<String, java.util.UUID> involvedPartyIdentificationTypeKeyToId = new com.guicedee.activitymaster.fsdm.util.BoundedLruCache<>(
@@ -168,6 +169,38 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedParty<?, ?>> getInvolvedPartyById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id)
     {
         return (io.smallrye.mutiny.Uni) session.find(com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty.class, id);
+    }
+
+    private Uni<IInvolvedParty<?, ?>> getStatelessInvolvedPartyById(Mutiny.StatelessSession session, UUID id)
+    {
+        IInvolvedParty<?, ?> cached = involvedPartyIdToStatelessEntity.get(id);
+        if (cached != null) {
+            log.trace("InvolvedParty stateless entity cache hit for UUID {}", id);
+            return Uni.createFrom()
+                      .item(cached);
+        }
+        return loadStatelessInvolvedPartyById(session, id)
+                .invoke(this::cacheStatelessInvolvedParty);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Uni<IInvolvedParty<?, ?>> loadStatelessInvolvedPartyById(Mutiny.StatelessSession session, UUID id)
+    {
+        return (Uni) new InvolvedParty().builder(session)
+                                        .find(id)
+                                        .get()
+                                        .onFailure(NoResultException.class)
+                                        .invoke(e -> log.warn("InvolvedParty with UUID '{}' could not be found (stateless)", id))
+                                        .onItem()
+                                        .ifNull()
+                                        .failWith(() -> new InvolvedPartyException("The InvolvedParty does not exist - " + id));
+    }
+
+    private void cacheStatelessInvolvedParty(IInvolvedParty<?, ?> involvedParty)
+    {
+        if (involvedParty != null && involvedParty.getId() != null) {
+            involvedPartyIdToStatelessEntity.put((UUID) involvedParty.getId(), involvedParty);
+        }
     }
 
     // UUID-based helpers delegating to session.find(...)
@@ -1122,14 +1155,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     public Uni<IInvolvedParty<?, ?>> find(Mutiny.StatelessSession session, UUID uuid)
     {
         log.debug("🔍 Finding InvolvedParty by UUID (stateless): {}", uuid);
-        return (Uni) new InvolvedParty().builder(session)
-                                        .find(uuid)
-                                        .get()
-                                        .onFailure(NoResultException.class)
-                                        .invoke(e -> log.warn("InvolvedParty with UUID '{}' could not be found (stateless)", uuid))
-                                        .onItem()
-                                        .ifNull()
-                                        .failWith(() -> new InvolvedPartyException("The InvolvedParty does not exist - " + uuid));
+        return getStatelessInvolvedPartyById(session, uuid);
     }
 
     @Override
@@ -1406,28 +1432,45 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     {
         log.debug("Finding InvolvedParty by UUID token (stateless): {}", token);
         var enterprise = system.getEnterprise();
-        return findInvolvedPartyIdentificationType(session, IdentificationTypeUUID.toString(), system, identityToken)
-                .chain(id ->
-                               new InvolvedPartyXInvolvedPartyIdentificationType().builder(session)
-                                                                                  .findLink(null,
-                                                                                            (InvolvedPartyIdentificationType) id,
-                                                                                            token.toString()
-                                                                                  )
-                                                                                  .inActiveRange()
-                                                                                  .inDateRange()
-                                                                                  .withEnterprise(
-                                                                                          enterprise)
-                                                                                  .canRead(system,
-                                                                                           identityToken
-                                                                                  )
-                                                                                  .get()
-                                                                                  .onFailure(
-                                                                                          NoResultException.class)
-                                                                                  .invoke(e -> log.warn(
-                                                                                          "InvolvedParty by UUID (stateless) '{}' could not be found",
-                                                                                          token
-                                                                                  )))
-                .chain(idxid -> session.fetch(idxid.getInvolvedPartyID()));
+        java.util.UUID enterpriseId = null;
+        java.util.UUID systemId = null;
+        if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
+            enterpriseId = ent.getId();
+        }
+        if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems s) {
+            systemId = s.getId();
+        }
+        String identTypeName = IdentificationTypeUUID.toString();
+        String key = enterpriseId + "|" + systemId + "|" + identTypeName + "|" + token;
+
+        java.util.UUID cachedId = involvedPartyKeyToId.get(key);
+        if (cachedId != null) {
+            log.trace("InvolvedParty stateless UUID-token cache hit for key '{}' -> {}", key, cachedId);
+            return getStatelessInvolvedPartyById(session, cachedId);
+        }
+
+        return findInvolvedPartyIdentificationType(session, identTypeName, system, identityToken)
+                .chain(id -> new InvolvedPartyXInvolvedPartyIdentificationType().builder(session)
+                                                                                .findLink(null,
+                                                                                          (InvolvedPartyIdentificationType) id,
+                                                                                          token.toString())
+                                                                                .inActiveRange()
+                                                                                .inDateRange()
+                                                                                .withEnterprise(enterprise)
+                                                                                .canRead(system, identityToken)
+                                                                                .get()
+                                                                                .onFailure(NoResultException.class)
+                                                                                .invoke(e -> log.warn(
+                                                                                        "InvolvedParty by UUID (stateless) '{}' could not be found",
+                                                                                        token)))
+                .chain(idxid -> session.fetch(idxid.getInvolvedPartyID()))
+                .invoke(involvedParty -> {
+                    if (involvedParty != null && involvedParty.getId() != null) {
+                        involvedPartyKeyToId.put(key, (UUID) involvedParty.getId());
+                        cacheStatelessInvolvedParty((IInvolvedParty<?, ?>) involvedParty);
+                    }
+                })
+                .map(involvedParty -> (IInvolvedParty<?, ?>) involvedParty);
     }
 
     @Override

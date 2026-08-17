@@ -17,10 +17,36 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
 /**
+ * Link between an {@link InvolvedParty} and an {@link InvolvedPartyIdentificationType}, carrying the
+ * identification value (identity number, farm name, account reference, ...).
+ *
+ * <h2>Value round-trip contract</h2>
+ * <ul>
+ *     <li>{@link #setValue(String)} takes <b>plaintext</b> and stores <b>ciphertext</b>.</li>
+ *     <li>{@link #getValue()} returns <b>plaintext</b>.</li>
+ *     <li>The persisted {@code Value} column therefore always holds <b>ciphertext</b>
+ *     (field access is used, so JPA reads/writes the raw column and never goes through these accessors).</li>
+ *     <li>Any query builder that compares against this column <b>must encrypt the search term first</b> -
+ *     see {@link InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder#withValue}.</li>
+ *     <li>The whole scheme is gated by the {@code encrypt} system property (default {@code true});
+ *     {@code -Dencrypt=false} is a plaintext passthrough on both accessors.</li>
+ *     <li>Legacy rows holding plaintext in the column are returned verbatim by {@link #getValue()} -
+ *     they are never decrypted and never blanked.</li>
+ * </ul>
+ *
+ * <h2>Do not "harmonise" with the name link</h2>
+ * {@code InvolvedPartyXInvolvedPartyNameType} is deliberately <b>plaintext</b> - every find-by-name /
+ * resolve-name consumer depends on it. Do not add encryption there, and do not remove encryption here.
+ * The two links are intentionally asymmetric.
+ *
+ * <p>The cipher itself ({@link Passwords} - a fixed, keyless per-byte ASCII offset) is frozen; it is
+ * obfuscation, not security.
+ *
  * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
@@ -52,6 +78,14 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 
     @Serial
     private static final long serialVersionUID = 1L;
+
+    /**
+     * The shape produced by {@link Passwords#integerEncrypt(byte[])} - one or more decimal groups, each
+     * terminated by a pipe. The groups may be negative because the cipher offsets <i>signed</i> bytes, so
+     * non-ASCII input yields values below zero. Anything else in the column is legacy plaintext.
+     */
+    private static final Pattern ENCRYPTED_VALUE = Pattern.compile("(-?\\d+\\|)+");
+
     @Id
 
     @Column(nullable = false,
@@ -156,6 +190,16 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
         return getInvolvedPartyIdentificationTypeID();
     }
 
+    /**
+     * Stores the identification value in the frozen obfuscation format.
+     * <p>
+     * Accepts <b>plaintext</b> and writes <b>ciphertext</b> to the {@code Value} column. When the
+     * {@code encrypt} system property is explicitly {@code false} the value is stored verbatim.
+     *
+     * @param value the plaintext identification value
+     *
+     * @see #getValue()
+     */
     @Override
     public void setValue(String value)
     {
@@ -166,6 +210,45 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
         else
         {
             super.setValue(value);
+        }
+    }
+
+    /**
+     * Returns the identification value as <b>plaintext</b>, reversing {@link #setValue(String)}.
+     * <p>
+     * Mirrors {@code Address#getValue()} - the same {@code encrypt} system-property gate and the same
+     * {@link Passwords#integerDecrypt(String)} round trip.
+     * <p>
+     * <b>Legacy tolerance:</b> rows written before the {@link #setValue(String)} encryption was introduced,
+     * rows written with {@code -Dencrypt=false}, and rows repaired by hand hold plaintext in the same column.
+     * {@link Passwords#integerDecrypt(String)} would throw {@link NumberFormatException} on those, so any stored
+     * value that is not in the {@code (\d+\|)+} cipher shape is returned unchanged rather than decrypted or
+     * blanked. Mixed-vintage data therefore still reads correctly.
+     *
+     * @return the plaintext identification value, or the stored value verbatim when it is not ciphertext
+     */
+    @Override
+    public String getValue()
+    {
+        String stored = super.getValue();
+        if (Strings.isNullOrEmpty(stored) || !"true".equals(System.getProperty("encrypt", "true")))
+        {
+            return stored;
+        }
+        if (!ENCRYPTED_VALUE.matcher(stored)
+                            .matches())
+        {
+            //legacy / hand-repaired / -Dencrypt=false vintage row - already plaintext
+            return stored;
+        }
+        try
+        {
+            return new String(new Passwords().integerDecrypt(stored));
+        }
+        catch (NumberFormatException e)
+        {
+            //value only looked like ciphertext - never swallow the row contents
+            return stored;
         }
     }
 }

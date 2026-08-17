@@ -31,6 +31,29 @@ public abstract class QueryBuilderSCDEntity<J extends QueryBuilderSCDEntity<J, E
     return false;
   }
 
+  /**
+   * Final safety net for every warehouse entity.
+   * <p>
+   * All FSDM entities use manually assigned {@link java.util.UUID} identifiers ({@code isIdGenerated() == false}) and
+   * are frequently written through stateless sessions, which bypass the {@code @PrePersist} callback on
+   * {@link SCDEntity}. If any builder in the hierarchy fails to delegate {@code onCreate(..)} up the chain, the
+   * insert would fail with "Identifier of entity ... must be manually assigned before calling 'insert()'".
+   * Assigning here guarantees an identifier is always present before the insert is issued.
+   *
+   * @param entity The entity being persisted
+   * @return A {@link Uni} producing the persisted entity
+   */
+  @Override
+  @SuppressWarnings("unchecked")
+  public @NotNull Uni<E> persist(E entity)
+  {
+    if (entity != null && entity.getId() == null && !isIdGenerated())
+    {
+      entity.setId((I) java.util.UUID.randomUUID());
+    }
+    return super.persist(entity);
+  }
+
   @Override
   public Uni<E> get()
   {

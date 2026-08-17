@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm.rest.event;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.entityassist.services.entities.IRootEntity;
 import com.google.inject.Inject;
@@ -109,21 +110,28 @@ public class EventRestService {
         // an entity manager (NPE in QueryBuilder.getQuery()).
         //         Use the first entry in dto.types as the primary event type
         Map.Entry<String, String> primaryType = dto.types.entrySet().iterator().next();
+        // Holds the new event id so the fire-and-forget relationship writes can be dispatched AFTER the
+        // create transaction has committed — see below.
+        AtomicReference<UUID> createdEventId = new AtomicReference<>();
         return SessionUtils.<EventDTO>withActivityMasterStateless(enterpriseName, requestingSystemName, tuple -> {
             Mutiny.StatelessSession session = tuple.getItem1();
             ISystems<?, ?> system = tuple.getItem3();
             UUID[] token = tuple.getItem4();
             return eventService.createEvent(session, primaryType.getKey(), system,token)
                     .map(event -> {
-                        UUID eventId = event.getId();
-                        // Step 2: Fire-and-forget relationship persistence in parallel
-                        if (hasAnyRelationship(dto)) {
-                            persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, eventId, dto);
-                        }
-
-                        // Step 3: Build response immediately from the DTO input — no DB round-trip needed
+                        createdEventId.set(event.getId());
+                        // Step 2: Build response immediately from the DTO input — no DB round-trip needed
                         return buildCreateResponseFromDto((Event) event, dto);
                     });
+        }).onItem().invoke(response -> {
+            // Step 3: Fire-and-forget relationship persistence. Each write runs on its OWN session, so it
+            // may only be dispatched once THIS create transaction has committed — otherwise its find(...)
+            // cannot see the still-uncommitted event and fails with NoResultException, silently dropping
+            // the relationships.
+            UUID eventId = createdEventId.get();
+            if (eventId != null && hasAnyRelationship(dto)) {
+                persistCreateRelationshipsAsync(enterpriseName, requestingSystemName, eventId, dto);
+            }
         }).onFailure().invoke(e ->
                 log.error("Error creating event for enterprise {} and system {}: {}",
                         enterpriseName, requestingSystemName, e.getMessage(), e)

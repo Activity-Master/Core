@@ -212,6 +212,9 @@ module com.guicedee.activitymaster.fsdm {
 
 
     opens com.guicedee.activitymaster.fsdm.db.entities.involvedparty to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
+    // Exported only to the test module so the identification-value encryption round-trip
+    // (InvolvedPartyXInvolvedPartyIdentificationType set/get) can be asserted directly on the entity.
+    exports com.guicedee.activitymaster.fsdm.db.entities.involvedparty to activity.master.test;
     exports com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders;
     opens com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 

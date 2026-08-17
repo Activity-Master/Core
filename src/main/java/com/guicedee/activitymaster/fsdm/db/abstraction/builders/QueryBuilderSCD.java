@@ -51,7 +51,9 @@ public abstract class QueryBuilderSCD<
 		{
 			entity.setEffectiveToDate(EndOfTime.atOffset(UTC));
 		}
-		return true;
+		//must delegate up the chain - the identifier, source system and partition defaults
+		//are applied by QueryBuilderTable / QueryBuilderDefault
+		return super.onCreate(entity);
 	}
 
 	/**
