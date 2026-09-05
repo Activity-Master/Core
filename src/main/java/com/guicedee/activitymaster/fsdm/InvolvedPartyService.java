@@ -1154,7 +1154,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Uni<IInvolvedParty<?, ?>> find(Mutiny.StatelessSession session, UUID uuid)
     {
-        log.debug("🔍 Finding InvolvedParty by UUID (stateless): {}", uuid);
+        log.trace("🔍 Finding InvolvedParty by UUID (stateless): {}", uuid);
         return getStatelessInvolvedPartyById(session, uuid);
     }
 
@@ -1248,7 +1248,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     @Override
     public Uni<IInvolvedParty<?, ?>> findByUUID(Mutiny.Session session, UUID token, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.debug("Finding InvolvedParty by UUID token: {}", token);
+        log.trace("Finding InvolvedParty by UUID token: {}", token);
         var enterprise = system.getEnterprise();
         java.util.UUID enterpriseId = null;
         java.util.UUID systemId = null;
@@ -1430,7 +1430,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     @Override
     public Uni<IInvolvedParty<?, ?>> findByUUID(Mutiny.StatelessSession session, UUID token, ISystems<?, ?> system, UUID... identityToken)
     {
-        log.debug("Finding InvolvedParty by UUID token (stateless): {}", token);
+        log.trace("Finding InvolvedParty by UUID token (stateless): {}", token);
         var enterprise = system.getEnterprise();
         java.util.UUID enterpriseId = null;
         java.util.UUID systemId = null;

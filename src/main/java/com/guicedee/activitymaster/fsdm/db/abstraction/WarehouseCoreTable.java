@@ -45,7 +45,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 
     @Inject
     @Transient
-    private SecurityTokenService securityTokenService;
+    private transient SecurityTokenService securityTokenService;
 
     public WarehouseCoreTable() {
 
