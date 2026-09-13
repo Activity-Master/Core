@@ -247,21 +247,22 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
         );
         Uni<Long> chain = Uni.createFrom().item(0L);
 
-        // todo can this be a Multi<> running the creates in parallel for security?
+        // Validate the complete required matrix before writing. One Hibernate session
+        // must sequence its asynchronous writes; an invoke callback would discard each Uni.
+        if (groupFolderTokens == null || grants.stream().anyMatch(grant -> groupFolderTokens.get(grant.key()) == null)) {
+            return Uni.createFrom().failure(new IllegalStateException("Required restricted security folders unavailable"));
+        }
         for (Grant grant : grants) {
             com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> token =
                     groupFolderTokens.get(grant.key());
-            if (token == null) {
-                continue;
-            }
-            chain = chain.invoke(total -> createSecurityGrant(session, system, enterprise, activeFlag, token,
+            chain = chain.chain(total -> createSecurityGrant(session, system, enterprise, activeFlag, token,
                     grant.create(), grant.update(), grant.delete(), grant.read(), identityToken)
                     .map(perRow -> total + perRow)
                     .onItem().invoke(perRow -> log.debug("Created {} default security rows for token {}", perRow, grant.key())));
         }
         // The scope read-grant: the only path by which scoped identities (and their descendants) may read.
         if (scopeToken != null) {
-            chain = chain.invoke(total -> createSecurityGrant(session, system, enterprise, activeFlag, scopeToken,
+            chain = chain.chain(total -> createSecurityGrant(session, system, enterprise, activeFlag, scopeToken,
                     false, false, false, true, identityToken)
                     .map(perRow -> total + perRow));
         }
@@ -293,17 +294,8 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                 .chain(() -> scopeToken == null
                         ? Uni.createFrom().item((S) null)
                         : grantOnLiveSession(session, system, scopeToken, false, false, false, true))
-                .replaceWithVoid()
-                // Same bootstrap tolerance as the live default path: when the canonical structure or the
-                // owning row is not ready yet, the row is secured by a later batch pass instead of failing.
-                .onFailure().recoverWithUni(t -> {
-                    if (isSecurityNotApplicableYet(t)) {
-                        log.debug("⏭️ Skipping live scope-restricted security ({}): {}",
-                                t.getClass().getSimpleName(), t.getMessage());
-                        return Uni.createFrom().voidItem();
-                    }
-                    return Uni.createFrom().failure(t);
-                });
+                // Restricted runtime creation must not defer security to a later bootstrap pass.
+                .replaceWithVoid();
     }
 
     /**
@@ -313,6 +305,9 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
     private Uni<S> grantOnLiveSession(Mutiny.Session session, ISystems<?, ?> system,
                                       com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> token,
                                       boolean create, boolean update, boolean delete, boolean read) {
+        if (token == null) {
+            return Uni.createFrom().failure(new IllegalStateException("Required restricted security token unavailable"));
+        }
         S stAdmin = get(findPersistentSecurityClass());
         QueryBuilderSecurities<?, ?, ?> securities = stAdmin.builder(session);
         return securities.findLinkedSecurityToken((SecurityToken) token, this)
@@ -321,7 +316,10 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                 .get()
                 .onItemOrFailure()
                 .transformToUni((result, throwable) -> {
-                    if (throwable != null) {
+                    if (throwable != null && !(throwable instanceof jakarta.persistence.NoResultException)) {
+                        return Uni.createFrom().failure(throwable);
+                    }
+                    if (throwable instanceof jakarta.persistence.NoResultException) {
                         S stEntity = get(findPersistentSecurityClass());
                         configureDefaultsForNewToken(stEntity, system);
                         stEntity.setSecurityTokenID(token);
@@ -331,6 +329,9 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                         stEntity.setReadAllowed(read);
                         configureSecurityEntity(stEntity);
                         return session.persist(stEntity).replaceWith(stEntity);
+                    }
+                    if (result == null) {
+                        return Uni.createFrom().failure(new IllegalStateException("Restricted security lookup returned no result"));
                     }
                     return Uni.createFrom().item((S) result);
                 });

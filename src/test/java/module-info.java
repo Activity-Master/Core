@@ -7,6 +7,7 @@ open module activity.master.test {
     requires transitive com.guicedee.persistence;
 
     requires org.junit.jupiter.api;
+    requires org.mockito;
     requires junit;
 
     requires jakarta.xml.bind;
