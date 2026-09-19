@@ -318,18 +318,6 @@ public class Event
     }
 
     @Override
-    public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
-    {
-        EventXClassification e = (EventXClassification) linkTable;
-        if (e.getId() == null) {
-            e.setId(UUID.randomUUID());
-        }
-        e.setEventID(this);
-        e.setClassificationID(classificationValue);
-        return io.smallrye.mutiny.Uni.createFrom().voidItem();
-    }
-
-    @Override
     public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.StatelessSession session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
     {
         EventXClassification e = (EventXClassification) linkTable;
@@ -373,7 +361,7 @@ public class Event
     }
 
     @Override
-    public void configureProductAddable(Mutiny.Session session, IWarehouseRelationshipTable linkTable, Event primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    public void configureProductAddable(Mutiny.StatelessSession session, IWarehouseRelationshipTable linkTable, Event primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
     {
         EventXProduct product = (EventXProduct) linkTable;
         product.setEventID(primary);

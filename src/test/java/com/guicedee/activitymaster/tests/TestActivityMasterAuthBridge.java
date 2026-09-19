@@ -103,7 +103,7 @@ public class TestActivityMasterAuthBridge {
         IPasswordsService<?> passwords = IGuiceContext.get(IPasswordsService.class);
         ActivityMasterAuthBridge bridge = IGuiceContext.get(ActivityMasterAuthBridge.class);
 
-        return sessionFactory.withTransaction(session ->
+        return sessionFactory.withStatelessTransaction(session ->
                 es.getEnterprise(session, TestEnterprise.name())
                         .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
                         .chain(sys -> passwords

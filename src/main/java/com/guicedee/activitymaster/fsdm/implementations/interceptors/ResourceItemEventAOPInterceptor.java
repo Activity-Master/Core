@@ -73,7 +73,7 @@ public class ResourceItemEventAOPInterceptor implements MethodInterceptor
 		var refObject = getRefObject(methodInvocation);
 
 		return SessionUtils.<Void>withActivityMaster(enterpriseName, ActivityMasterSystemName, tuple -> {
-			Mutiny.Session session = tuple.getItem1();
+			Mutiny.StatelessSession session = tuple.getItem1();
 			return Uni.createFrom().item((IEnterprise<?, ?>) tuple.getItem2())
 				.chain(enterprise -> {
 					List<Uni<?>> operations = new ArrayList<>();
@@ -101,7 +101,7 @@ public class ResourceItemEventAOPInterceptor implements MethodInterceptor
 		});
 	}
 
-	private Uni<Void> checkClassificationExists(Mutiny.Session session, String classificationName, IEnterprise<?, ?> enterprise)
+	private Uni<Void> checkClassificationExists(Mutiny.StatelessSession session, String classificationName, IEnterprise<?, ?> enterprise)
 	{
 		return getISystem(session, ActivityMasterSystemName, enterprise)
 			.chain(system -> getISystemToken(session, ActivityMasterSystemName, enterprise)

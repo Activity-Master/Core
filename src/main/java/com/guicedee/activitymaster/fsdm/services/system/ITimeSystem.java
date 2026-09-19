@@ -10,8 +10,6 @@ public interface ITimeSystem
 {
 	Uni<Void> loadTimeRange(int startYear, int endYear);
 
-	Uni<Days> getDay(Mutiny.Session session, Date date);
-
 	/**
 	 * Gets or creates a day for the given date
 	 *

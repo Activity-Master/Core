@@ -81,7 +81,7 @@ public class ActivityMasterAuthBridge
 	 * @param callerIdentityToken optional caller identity token(s) used for the security-checked reads
 	 * @return a {@link Uni} emitting the established {@link User}, or {@code null} when one could not be built
 	 */
-	public Uni<User> login(Mutiny.Session session, IInvolvedParty<?, ?> party, String username, ISystems<?, ?> system, UUID... callerIdentityToken)
+	public Uni<User> login(Mutiny.StatelessSession session, IInvolvedParty<?, ?> party, String username, ISystems<?, ?> system, UUID... callerIdentityToken)
 	{
 		return buildUser(session, party, username, system, callerIdentityToken)
 				.invoke(this::publish)
@@ -96,7 +96,7 @@ public class ActivityMasterAuthBridge
 	 * Builds a Vert.x {@link User} for an authenticated party, populated with the caller's details and the
 	 * roles resolved from the ActivityMaster security hierarchy. Does not touch the call scope.
 	 */
-	public Uni<User> buildUser(Mutiny.Session session, IInvolvedParty<?, ?> party, String username, ISystems<?, ?> system, UUID... callerIdentityToken)
+	public Uni<User> buildUser(Mutiny.StatelessSession session, IInvolvedParty<?, ?> party, String username, ISystems<?, ?> system, UUID... callerIdentityToken)
 	{
 		return resolveIdentityToken(session, username, system, callerIdentityToken)
 				.chain(identity -> resolveDisplayName(session, party, username, system, callerIdentityToken)
@@ -110,7 +110,7 @@ public class ActivityMasterAuthBridge
 	 *
 	 * @return the identity token UUID, or {@code null} when it cannot be resolved
 	 */
-	private Uni<UUID> resolveIdentityToken(Mutiny.Session session, String username, ISystems<?, ?> system, UUID... callerIdentityToken)
+	private Uni<UUID> resolveIdentityToken(Mutiny.StatelessSession session, String username, ISystems<?, ?> system, UUID... callerIdentityToken)
 	{
 		ISecurityTokenService<?> securityTokenService = IGuiceContext.get(ISecurityTokenService.class);
 		return securityTokenService.getSecurityTokenByName(session, username, system, callerIdentityToken)
@@ -123,7 +123,7 @@ public class ActivityMasterAuthBridge
 	 * Resolves a friendly display name for the party: preferred name, then full name, then first name,
 	 * finally falling back to the username. Best-effort — never fails.
 	 */
-	private Uni<String> resolveDisplayName(Mutiny.Session session, IInvolvedParty<?, ?> party, String username, ISystems<?, ?> system, UUID... identityToken)
+	private Uni<String> resolveDisplayName(Mutiny.StatelessSession session, IInvolvedParty<?, ?> party, String username, ISystems<?, ?> system, UUID... identityToken)
 	{
 		return readName(session, party, PreferredNameType.toString(), system, identityToken)
 				.chain(preferred -> preferred != null ? Uni.createFrom().item(preferred)
@@ -136,7 +136,7 @@ public class ActivityMasterAuthBridge
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	private Uni<String> readName(Mutiny.Session session, IInvolvedParty<?, ?> party, String nameType, ISystems<?, ?> system, UUID... identityToken)
+	private Uni<String> readName(Mutiny.StatelessSession session, IInvolvedParty<?, ?> party, String nameType, ISystems<?, ?> system, UUID... identityToken)
 	{
 		return ((IInvolvedParty) party).findInvolvedPartyNameType(session, NoClassification.toString(), nameType, null, system, true, true, identityToken)
 				.map(rel -> rel == null ? null : ((com.guicedee.activitymaster.fsdm.client.services.IRelationshipValue<?, ?, ?>) rel).getValue())
@@ -148,7 +148,7 @@ public class ActivityMasterAuthBridge
 	 * Expands the identity token into the set of applicable security tokens and reads their friendly names
 	 * to use as roles. Best-effort — returns an empty set on any failure.
 	 */
-	private Uni<Set<String>> resolveRoles(Mutiny.Session session, ISystems<?, ?> system, UUID identity, UUID... callerIdentityToken)
+	private Uni<Set<String>> resolveRoles(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID identity, UUID... callerIdentityToken)
 	{
 		if (identity == null)
 		{

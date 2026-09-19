@@ -27,57 +27,7 @@ public class ClassificationBaseSetup implements ISystemUpdate
 	@Inject
 	private IClassificationService<?> service;
 
-	@Override
-	public Uni<Boolean> update(Mutiny.Session session, IEnterprise<?,?> enterprise)
-	{
-		log.info("Starting sequential creation of classifications");
-		log.info("Creating Languages and Hardware classifications sequentially");
-		
-		// Get the SystemsService and then the ActivityMaster system
-		ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
-		
-		// Get the ActivityMaster system and then create classifications
-		return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-			.chain(activityMasterSystem -> {
-				// Create the Languages classification and its children
-				return service.create(session, Languages, activityMasterSystem, DefaultClassifications.DefaultClassification)
-					.chain(baseLanguage -> {
-						log.info("Creating language classifications sequentially");
-						
-						// Chain language-related classification creation operations sequentially
-						return service.create(session, InvolvedPartyClassifications.ISO639_1, activityMasterSystem, Languages)
-							.chain(() -> service.create(session, InvolvedPartyClassifications.ISO639_2, activityMasterSystem, Languages))
-							.chain(() -> service.create(session, ISO6392EnglishName, activityMasterSystem, Languages))
-							.chain(() -> service.create(session, ISO6392FrenchName, activityMasterSystem, Languages))
-							.chain(() -> service.create(session, ISO6392GermanName, activityMasterSystem, Languages))
-							.onFailure().invoke(error -> log.error("Error creating language classifications: {}", error.getMessage(), error))
-							.invoke(() -> logProgress("Classifications System", "Loading Base Languages...", 6));
-					})
-					// Chain to create the Hardware classification and its children
-					.chain(() -> service.create(session, Hardware, activityMasterSystem))
-					.chain(baseHardware -> {
-						// First create the Computer classification
-						return service.create(session, Computer, activityMasterSystem, Hardware);
-					})
-					.chain(computerClassification -> {
-						log.info("Creating hardware and computer classifications sequentially");
-						
-						// Chain hardware-related classification creation operations sequentially
-						return service.create(session, Scanner, activityMasterSystem, Hardware)
-							.chain(() -> service.create(session, Printer, activityMasterSystem, Hardware))
-							.chain(() -> service.create(session, Phone, activityMasterSystem, Hardware))
-							// Chain computer-specific classification creation operations
-							.chain(() -> service.create(session, Desktop, activityMasterSystem, Computer))
-							.chain(() -> service.create(session, Laptop, activityMasterSystem, Computer))
-							.onFailure().invoke(error -> log.error("Error creating hardware and computer classifications: {}", error.getMessage(), error));
-					})
-					.onFailure().invoke(error -> log.error("Error creating classifications: {}", error.getMessage(), error))
-					.invoke(() -> logProgress("Classifications System", "Loading Default Devices...", 7))
-					.map(result -> true); // Return Boolean
-			});
-	}
-
-	/** Stateless twin of {@link #update(Mutiny.Session, IEnterprise)}. */
+	/** Stateless twin of {@link #update(Mutiny.StatelessSession, IEnterprise)}. */
 	@Override
 	public Uni<Boolean> update(Mutiny.StatelessSession session, IEnterprise<?,?> enterprise)
 	{

@@ -151,35 +151,6 @@ public class ResourceItem
   }
 
   @Override
-  public Uni<byte[]> getData(Mutiny.Session session, UUID... identityToken)
-  {
-    // When this resource item's payload lives in MongoDB (JSON type), read it from there; otherwise
-    // (or when no document is present) fall back to the relational ResourceItemDataValue.
-    com.guicedee.activitymaster.fsdm.ResourceItemJsonStore jsonStore =
-            IGuiceContext.get(com.guicedee.activitymaster.fsdm.ResourceItemJsonStore.class);
-    if (jsonStore.isEnabled())
-    {
-      return jsonStore.fetch(getId())
-              .chain(jsonBytes -> jsonBytes != null
-                      ? Uni.createFrom().item(jsonBytes)
-                      : relationalGetData(session));
-    }
-    return relationalGetData(session);
-  }
-
-  private Uni<byte[]> relationalGetData(Mutiny.Session session)
-  {
-    return session.find(ResourceItemDataValue.class, getId())
-            .onFailure()
-            .call(err->{
-              IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
-              return resourceItemService.updateResourceData(session,new byte[]{},getId());
-            })
-               .onItem()
-               .transform(data -> unzip( data== null ? new byte[]{} : data.getData()));
-  }
-
-  @Override
   public Uni<byte[]> getData(Mutiny.StatelessSession session, UUID... identityToken)
   {
     com.guicedee.activitymaster.fsdm.ResourceItemJsonStore jsonStore =
@@ -204,23 +175,6 @@ public class ResourceItem
   }
 
   @Override
-  public Uni<String> getFilename(Mutiny.Session session)
-  {
-    ResourceItemData rid = new ResourceItemData();
-    return rid.builder(session)
-               .inActiveRange()
-               .inDateRange()
-               .where(ResourceItemData_.resource, Equals, this)
-               .get()
-               .onItem()
-               .ifNotNull()
-               .transform(r -> "data/" + r.getId() + ".dat")
-               .onItem()
-               .ifNull()
-               .continueWith(() -> null);
-  }
-
-  @Override
   public Uni<String> getFilename(Mutiny.StatelessSession session)
   {
     ResourceItemData rid = new ResourceItemData();
@@ -235,18 +189,6 @@ public class ResourceItem
                .onItem()
                .ifNull()
                .continueWith(() -> null);
-  }
-
-  @Override
-  public Uni<IResourceData<?, ?, ?>> getDataRow(Mutiny.Session session, UUID... identityToken)
-  {
-    ResourceItemData rid = new ResourceItemData();
-    return rid.builder(session)
-               .inActiveRange()
-               .inDateRange()
-               .where(ResourceItemData_.resource, Equals, this)
-               .get()
-               .map(ridd -> ridd);
   }
 
   @Override
@@ -322,7 +264,7 @@ public class ResourceItem
    * @return A Uni that completes when the archiving is done
    */
   @SuppressWarnings("unchecked")
-  public Uni<ResourceItem> archive(Mutiny.Session session)
+  public Uni<ResourceItem> archive(Mutiny.StatelessSession session)
   {
     IEnterprise<?, ?> enterprise = getEnterpriseID();
     ActiveFlagSystem activeSystem = com.guicedee.client.IGuiceContext.get(ActiveFlagSystem.class);
@@ -332,7 +274,7 @@ public class ResourceItem
                             .getArchivedFlag(session, enterprise, systemToken)
                             .chain(archivedFlag -> {
                               setActiveFlagID((IActiveFlag<?, ?>) archivedFlag);
-                              return session.merge(this);
+                              return session.update(this).replaceWith(this);
                             });
                });
   }
@@ -357,14 +299,6 @@ public class ResourceItem
     ri.setParentResourceItemID(parent);
     ri.setChildResourceItemID(child);
     ri.setValue(value);
-  }
-
-  @Override
-  public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
-  {
-    ResourceItemXClassification rxc = (ResourceItemXClassification) linkTable;
-    rxc.setResourceItemID(this);
-    return io.smallrye.mutiny.Uni.createFrom().voidItem();
   }
 
   @Override

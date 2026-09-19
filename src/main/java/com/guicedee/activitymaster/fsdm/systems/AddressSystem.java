@@ -22,7 +22,7 @@ public class AddressSystem
   private ISystemsService<?> systemsService;
 		
   @Override
-  public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<ISystems<?, ?>> registerSystem(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Registering Address System for enterprise: '{}'", enterprise.getName());
     log.debug("📋 Creating Address System with session: {}", session.hashCode());
@@ -50,23 +50,6 @@ public class AddressSystem
                .map(result->result);
   }
 
-  @Override
-  public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
-  {
-    logProgress("Address System", "Starting Address Checks");
-    log.info("🚀 Creating address defaults for enterprise: '{}'", enterprise.getName());
-    log.debug("📋 Starting with session: {}", session.hashCode());
-    // No actual operations needed, just return a void item
-    log.debug("✅ No specific defaults needed for Address System");
-    return Uni.createFrom()
-               .voidItem()
-               .onItem()
-               .invoke(() -> log.info("🎉 Successfully completed Address System defaults"))
-               .onFailure()
-               .invoke(error -> log.error("❌ Error in Address System defaults: {}", error.getMessage(), error))
-               .replaceWithVoid();
-  }
-
   /** Stateless variant — the Address System has no default data to provision. */
   @Override
   public Uni<Void> createDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
@@ -76,7 +59,7 @@ public class AddressSystem
   }
 
   @Override
-  public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<Void> postStartup(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Starting reactive postStartup for Address System");
     log.debug("📋 Beginning postStartup operations for enterprise: '{}' with session: {}",

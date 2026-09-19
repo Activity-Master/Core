@@ -33,7 +33,7 @@ public class InvolvedPartySystem
   private Mutiny.SessionFactory sessionFactory;
 
   @Override
-  public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<ISystems<?, ?>> registerSystem(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Registering Involved Party System for enterprise: '{}'", enterprise.getName());
     log.debug("📋 Creating Involved Party System with session: {}", session.hashCode());
@@ -62,37 +62,8 @@ public class InvolvedPartySystem
                .map(result -> result);
   }
 
-  @Override
-  public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
-  {
-    logProgress("Involved Party System", "Starting Checks for Required Values");
-    log.info("🚀 Creating involved party defaults for enterprise: '{}' with external session: {}",
-        enterprise.getName(), session.hashCode());
-
-    // Create all three types sequentially in a single transaction
-    log.info("📋 Starting sequential creation of identification types, name types, and types");
-
-    // Chain the operations in sequence using the same session
-    return createIdentificationTypes(session, enterprise)
-               .flatMap(v -> {
-                 log.debug("🔄 Identification types created, proceeding to name types");
-                 return createNameTypes(session, enterprise);
-               })
-               .flatMap(v -> {
-                 log.debug("🔄 Name types created, proceeding to involved party types");
-                 return createTypes(session, enterprise);
-               })
-               .onFailure()
-               .invoke(error -> log.error("❌ Error in sequential operations: {}", error.getMessage(), error))
-               .invoke(v -> {
-                 log.info("🎉 Completed sequential creation of identification types, name types, and types");
-                 // Create default users
-                 createDefaultUsers(enterprise);
-               });
-  }
-
   /**
-   * Stateless end-to-end variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — provisions the
+   * Stateless end-to-end variant of {@link #createDefaults(Mutiny.StatelessSession, IEnterprise)} — provisions the
    * 15 identification types, 12 name types, and 7 involved-party types entirely on a
    * {@link Mutiny.StatelessSession}, via the stateless prepped {@code IInvolvedPartyService} create methods
    * (each a find-or-create + stateless default security). Idempotent.
@@ -164,7 +135,7 @@ public class InvolvedPartySystem
                .replaceWithVoid();
   }
 
-  private Uni<Void> createIdentificationTypes(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  private Uni<Void> createIdentificationTypes(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.debug("📋 Creating identification types for enterprise: '{}'", enterprise.getName());
     log.info("🚀 Creating identification types with session: {}", session.hashCode());
@@ -224,7 +195,7 @@ public class InvolvedPartySystem
                });
   }
 
-  private Uni<Void> createNameTypes(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  private Uni<Void> createNameTypes(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.debug("📋 Creating name types for enterprise: '{}'", enterprise.getName());
     log.info("🚀 Creating name types with session: {}", session.hashCode());
@@ -278,7 +249,7 @@ public class InvolvedPartySystem
                });
   }
 
-  private Uni<Void> createTypes(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  private Uni<Void> createTypes(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.debug("📋 Creating types for enterprise: '{}'", enterprise.getName());
     log.info("🚀 Creating types with session: {}", session.hashCode());
@@ -329,7 +300,7 @@ public class InvolvedPartySystem
   }
 
   @Override
-  public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<Void> postStartup(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Starting reactive postStartup for Involved Party System with session: {}", session.hashCode());
     log.debug("📋 Preparing to verify system and security token for enterprise: '{}'", enterprise.getName());

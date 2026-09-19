@@ -29,7 +29,7 @@ public class ClassificationsSystem
     private Mutiny.SessionFactory sessionFactory;
 
     @Override
-    public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    public Uni<ISystems<?, ?>> registerSystem(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         return systemsService
                 .create(session, enterprise, getSystemName(), getSystemDescription())
                 .chain(iSystems -> {
@@ -48,25 +48,8 @@ public class ClassificationsSystem
                 });
     }
 
-    @Override
-    public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
-        logProgress("Classifications System", "Starting Classifications Creation");
-        log.info("🚀 Creating classifications for enterprise: '{}' with external session: {}",
-                enterprise.getName(), session.hashCode());
-
-        return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-                .onItem()
-                .invoke(system -> log.debug("✅ Found ActivityMaster system: '{}' with session: {}",
-                        system.getName(), session.hashCode()))
-                .onFailure()
-                .invoke(error -> log.error("❌ Failed to find ActivityMaster system: {}",
-                        error.getMessage(), error))
-                .chain(system -> createEnterpriseRootClassification(session, enterprise, system))
-                .replaceWithVoid();
-    }
-
     /**
-     * Stateless end-to-end variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — provisions the
+     * Stateless end-to-end variant of {@link #createDefaults(Mutiny.StatelessSession, IEnterprise)} — provisions the
      * foundational classification set (enterprise root, hierarchy type, NoClassification, default, Security
      * + SystemIdentity / SecurityPassword(/Salt), and the enterprise classifications) entirely on a
      * {@link Mutiny.StatelessSession} using the concept-/parent-aware stateless {@code IClassificationService.create}.
@@ -98,7 +81,7 @@ public class ClassificationsSystem
     }
 
 
-    private Uni<Void> createEnterpriseRootClassification(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
+    private Uni<Void> createEnterpriseRootClassification(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
         log.info("🚀 Creating enterprise root classification for enterprise: '{}' with session: {}",
                 enterprise.getName(), session.hashCode());
         log.debug("📋 Preparing to create root classification with name: '{}'", enterprise.getName());
@@ -120,7 +103,7 @@ public class ClassificationsSystem
     }
 
 
-    private Uni<Void> createBaseClassifications(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
+    private Uni<Void> createBaseClassifications(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
         log.info("🚀 Creating base classifications for enterprise: '{}' with session: {}",
                 enterprise.getName(), session.hashCode());
         log.debug("📋 Preparing to create hierarchy type and default classifications");
@@ -141,7 +124,7 @@ public class ClassificationsSystem
     }
 
 
-    private Uni<Void> createSecurityClassifications(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
+    private Uni<Void> createSecurityClassifications(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
         log.info("🚀 Creating security-related classifications for enterprise: '{}' with session: {}",
                 enterprise.getName(), session.hashCode());
         log.debug("📋 Preparing to create security classifications");
@@ -189,7 +172,7 @@ public class ClassificationsSystem
     }
 
 
-    private Uni<Void> createEnterpriseClassifications(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
+    private Uni<Void> createEnterpriseClassifications(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
         log.info("🚀 Creating enterprise-related classifications for enterprise: '{}' with session: {}",
                 enterprise.getName(), session.hashCode());
         log.debug("📋 Preparing to create enterprise classifications");
@@ -226,7 +209,7 @@ public class ClassificationsSystem
 
 
     @Override
-    public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    public Uni<Void> postStartup(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         log.info("🚀 Starting reactive postStartup for Classifications System with session: {}", session.hashCode());
         log.debug("📋 Preparing to verify system and security token for enterprise: '{}'", enterprise.getName());
 

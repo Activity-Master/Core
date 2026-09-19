@@ -3,11 +3,11 @@ package com.guicedee.activitymaster.fsdm;
 /**
  * Reactivity Migration Checklist:
  * <p>
- * [✓] One action per Mutiny.Session at a time
+ * [✓] One action per Mutiny.StatelessSession at a time
  * - All operations on a session are sequential
  * - No parallel operations on the same session
  * <p>
- * [✓] Pass Mutiny.Session through the chain
+ * [✓] Pass Mutiny.StatelessSession through the chain
  * - All methods accept session as parameter
  * - Session is passed to all dependent operations
  * <p>
@@ -62,8 +62,8 @@ public class ProductService
     private static final Map<UUID, Map<String, IProductType<?, ?>>> STATELESS_PRODUCT_TYPE_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
 
     // UUID-based lookup to leverage Hibernate 2nd-level cache
-    public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.products.IProductType<?, ?>> getProductTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id) {
-        return (io.smallrye.mutiny.Uni) session.find(com.guicedee.activitymaster.fsdm.db.entities.product.ProductType.class, id);
+    public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.products.IProductType<?, ?>> getProductTypeById(org.hibernate.reactive.mutiny.Mutiny.StatelessSession session, java.util.UUID id) {
+        return (io.smallrye.mutiny.Uni) session.get(com.guicedee.activitymaster.fsdm.db.entities.product.ProductType.class, id);
     }
 
     @Inject
@@ -75,23 +75,7 @@ public class ProductService
     }
 
     
-    @Override
-    public Uni<IProduct<?, ?>> find(Mutiny.Session session, UUID id) {
-        return (Uni) new Product()
-                .builder(session)
-                .find(id)
-                .get();
-    }
-
     
-    @Override
-    public Uni<IProductType<?, ?>> findType(Mutiny.Session session, UUID id) {
-        return (Uni) new ProductType()
-                .builder(session)
-                .find(id)
-                .get();
-    }
-
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Uni<IProduct<?, ?>> find(Mutiny.StatelessSession session, UUID id) {
@@ -154,35 +138,7 @@ public class ProductService
         return new ProductType();
     }
 
-    @Override
-    public Uni<IProduct<?, ?>> createProduct(Mutiny.Session session, String productType, String name, String description, String code, ISystems<?, ?> system, UUID... identityToken) {
-        return createProduct(session, productType, null, name, description, code, system, identityToken);
-    }
-
-    @Override
-    public Uni<IProduct<?, ?>> createProduct(Mutiny.Session session, String productType, UUID key, String name, String description, String code, ISystems<?, ?> system, UUID... identityToken) {
-        // Public create — world-readable (public/default security matrix).
-        return createProductWithSecurity(session, productType, key, name, description, code, system,
-                p -> p.createDefaultSecurity(session, system, identityToken), identityToken);
-    }
-
-    /**
-     * Opt-in <strong>scope-restricted</strong> product create. Identical to
-     * {@link #createProduct(Mutiny.Session, String, UUID, String, String, String, ISystems, UUID...)} except the
-     * product is secured with the restricted matrix: only Administrators / Systems / Applications / Plugins retain
-     * access, plus a <em>read</em> grant for {@code scopeToken}. Only identity tokens at that scope node or below it
-     * may read the product.
-     */
-    @Override
-    public Uni<IProduct<?, ?>> createProductScopeRestricted(Mutiny.Session session, String productType, UUID key, String name, String description, String code, ISystems<?, ?> system,
-                                                            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
-                                                            UUID... identityToken) {
-        return createProductWithSecurity(session, productType, key, name, description, code, system,
-                p -> p.createScopeRestrictedSecurity(session, system, scopeToken, identityToken), identityToken);
-    }
-
-
-    private Uni<IProduct<?, ?>> createProductWithSecurity(Mutiny.Session session, String productType, UUID key, String name, String description, String code, ISystems<?, ?> system,
+    private Uni<IProduct<?, ?>> createProductWithSecurity(Mutiny.StatelessSession session, String productType, UUID key, String name, String description, String code, ISystems<?, ?> system,
                                                           java.util.function.Function<Product, Uni<?>> securityFn, UUID... identityToken) {
         var enterprise = system.getEnterprise();
 
@@ -205,7 +161,7 @@ public class ProductService
                             .chain(activeFlag -> {
                                 newProduct.setActiveFlagID(activeFlag);
                                 return session
-                                        .persist(newProduct)
+                                        .insert(newProduct)
                                         .replaceWith(Uni
                                                 .createFrom()
                                                 .item(newProduct))
@@ -238,68 +194,7 @@ public class ProductService
                 });
     }
 
-    @Override
-    public Uni<IProduct<?, ?>> findProduct(Mutiny.Session session, String name, ISystems<?, ?> system, UUID... identityToken) {
-        var enterprise = system.getEnterprise();
-        return new Product()
-                .builder(session)
-                .withName(name)
-                .inActiveRange()
-                .inDateRange()
-                .withEnterprise(enterprise)
-                .get()
-                .onItem()
-                .transform(product->product);
-    }
-
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
-    public Uni<List<IRelationshipValue<IProduct<?, ?>, IResourceItem<?, ?>, ?>>> findProductByResourceItem(Mutiny.Session session, IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken) {
-        if (Strings.isNullOrEmpty(classificationName)) {
-            classificationName = NoClassification.toString();
-        }
-        var enterprise = system.getEnterprise();
-        return (Uni) classificationService
-                .find(session, classificationName, system, identityToken)
-                .chain(classification -> {
-                    return new ProductXResourceItem()
-                            .builder(session)
-                            .inActiveRange()
-                            .inDateRange()
-                            .withEnterprise(enterprise)
-                            .withClassification(classification)
-                            .withValue(value)
-                            .where(ProductXResourceItem_.resourceItemID, Equals, (ResourceItem) resourceItem)
-                            .getAll();
-                });
-    }
-    @Override
-    public Uni<IProductType<?, ?>> createProductType(Mutiny.Session session, String productsType, String description, ISystems<?, ?> system, UUID... identityToken) {
-        return createProductType(session, productsType, null, description, system, identityToken);
-    }
-
-    @Override
-    public Uni<IProductType<?, ?>> createProductType(Mutiny.Session session, String productsType, UUID key, String description, ISystems<?, ?> system, UUID... identityToken) {
-        // Public create — world-readable (public/default security matrix).
-        return createProductTypeWithSecurity(session, productsType, key, description, system,
-                pt -> pt.createDefaultSecurity(session, system, identityToken), identityToken);
-    }
-
-    /**
-     * Opt-in <strong>scope-restricted</strong> product-type create. Same as
-     * {@link #createProductType(Mutiny.Session, String, UUID, String, ISystems, UUID...)} but secured with the
-     * restricted matrix plus a <em>read</em> grant for {@code scopeToken}.
-     */
-    @Override
-    public Uni<IProductType<?, ?>> createProductTypeScopeRestricted(Mutiny.Session session, String productsType, UUID key, String description, ISystems<?, ?> system,
-                                                                    com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
-                                                                    UUID... identityToken) {
-        return createProductTypeWithSecurity(session, productsType, key, description, system,
-                pt -> pt.createScopeRestrictedSecurity(session, system, scopeToken, identityToken), identityToken);
-    }
-
-    private Uni<IProductType<?, ?>> createProductTypeWithSecurity(Mutiny.Session session, String productsType, UUID key, String description, ISystems<?, ?> system,
+    private Uni<IProductType<?, ?>> createProductTypeWithSecurity(Mutiny.StatelessSession session, String productsType, UUID key, String description, ISystems<?, ?> system,
                                                                  java.util.function.Function<ProductType, Uni<?>> securityFn, UUID... identityToken) {
         var enterprise = system.getEnterprise();
 
@@ -321,7 +216,7 @@ public class ProductService
                             .chain(activeFlag -> {
                                 newProductType.setActiveFlagID(activeFlag);
                                 return session
-                                        .persist(newProductType)
+                                        .insert(newProductType)
                                         .replaceWith(Uni
                                                 .createFrom()
                                                 .item(newProductType))
@@ -336,57 +231,6 @@ public class ProductService
                                                         .replaceWith((IProductType<?, ?>) persisted)
                                         );
                             });
-                });
-    }
-
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
-    public Uni<IProductType<?, ?>> findProductTypeForProduct(Mutiny.Session session, String productType, ISystems<?, ?> system, UUID... identityToken) {
-        var enterprise = system.getEnterprise();
-        java.util.UUID enterpriseId = null;
-        java.util.UUID systemId = null;
-        if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
-            enterpriseId = ent.getId();
-        }
-        if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys) {
-            systemId = sys.getId();
-        }
-        String key = enterpriseId + "|" + systemId + "|" + productType;
-        java.util.UUID cachedId = productTypeKeyToId.get(key);
-        if (cachedId != null) {
-            log.trace("🔁 ProductType cache hit for key '{}': {} — loading by UUID", key, cachedId);
-            return (Uni) getProductTypeById(session, cachedId)
-                    .flatMap(found -> {
-                        if (found != null) {
-                            return Uni.createFrom().item(found);
-                        }
-                        productTypeKeyToId.remove(key);
-                        return (Uni) new ProductType()
-                                .builder(session)
-                                .withName(productType)
-                                .withEnterprise(enterprise)
-                                .inActiveRange()
-                                .inDateRange()
-                                .get()
-                                .invoke(res -> {
-                                    if (res != null && res.getId() != null) {
-                                        productTypeKeyToId.put(key,res.getId());
-                                    }
-                                });
-                    });
-        }
-        return (Uni) new ProductType()
-                .builder(session)
-                .withName(productType)
-                .withEnterprise(enterprise)
-                .inActiveRange()
-                .inDateRange()
-                .get()
-                .invoke(res -> {
-                    if (res != null && res.getId() != null) {
-                        productTypeKeyToId.put(key, res.getId());
-                    }
                 });
     }
 
@@ -419,29 +263,14 @@ public class ProductService
         return resolved.onItem().invoke(t -> { if (t != null && t.getId() != null) byName.put(productType, t); });
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public Uni<IProduct<?, ?>> findProduct(Mutiny.Session session, String productName, IClassification<?, ?> classification, ISystems<?, ?> system, UUID... identityToken) {
-        var enterprise = system.getEnterprise();
-        return (Uni) new Product()
-                .builder(session)
-                .withName(productName)
-                .withClassification(classification)
-                .inActiveRange()
-                .inDateRange()
-                .withEnterprise(enterprise)
-                .get();
-    }
-
-
-    @Override
-    public Uni<IProductType<?, ?>> findProductTypeForProduct(Mutiny.Session session, IProduct<?, ?> product, IClassification<?, ?> classification, ISystems<?, ?> system, UUID... identityToken) {
+    public Uni<IProductType<?, ?>> findProductTypeForProduct(Mutiny.StatelessSession session, IProduct<?, ?> product, IClassification<?, ?> classification, ISystems<?, ?> system, UUID... identityToken) {
         return findProductTypeForProduct(session, product, classification.getName(), system, identityToken);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public Uni<IProductType<?, ?>> findProductTypeForProduct(Mutiny.Session session, IProduct<?, ?> product, String classification, ISystems<?, ?> system, UUID... identityToken) {
+    public Uni<IProductType<?, ?>> findProductTypeForProduct(Mutiny.StatelessSession session, IProduct<?, ?> product, String classification, ISystems<?, ?> system, UUID... identityToken) {
         var enterprise = system.getEnterprise();
         return (Uni) classificationService
                 .find(session, classification, system, identityToken)
@@ -455,45 +284,6 @@ public class ProductService
                             .withEnterprise(enterprise)
                             .get();
                 });
-    }
-
-    public Uni<List<IProductType<?, ?>>> findProductTypes(Mutiny.Session session, IClassification<?, ?> classification, ISystems<?, ?> system, UUID... identityToken) {
-        return findProductTypes(session, classification.getName(), system, identityToken);
-    }
-
-    @Override
-    public Uni<List<IProductType<?, ?>>> findProductTypes(Mutiny.Session session, String classification, ISystems<?, ?> system, UUID... identityToken) {
-        return new ProductType()
-                .findClassifications(session, classification, system, identityToken)
-                .onFailure()
-                .invoke(error -> log.error("Error finding product types: {}", error.getMessage(), error))
-                .map(classifications -> {
-                    List<IProductType<?, ?>> list = new ArrayList<>();
-                    for (IRelationshipValue<ProductType, IClassification<?, ?>, ?> returns : classifications) {
-                        IProductType<?, ?> primary = returns.getPrimary();
-                        list.add(primary);
-                    }
-                    return list;
-                });
-    }
-
-    @Override
-    public Uni<List<IProduct<?, ?>>> findByProductTypes(Mutiny.Session session, IProductType<?, ?> type, ISystems<?, ?> system, UUID... identityToken) {
-        return findByProductTypes(session, type.getName(), system, identityToken);
-    }
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
-    public Uni<List<IProduct<?, ?>>> findByProductTypes(Mutiny.Session session, String type, ISystems<?, ?> system, UUID... identityToken) {
-        var enterprise = system.getEnterprise();
-        return (Uni) new ProductXProductType()
-                .builder(session)
-                .withEnterprise(enterprise)
-                .inActiveRange()
-                .inDateRange()
-                .canRead(system, identityToken)
-                .withType(type, system, identityToken)
-                .getAll();
     }
 
     // ============================================================================================
@@ -583,7 +373,7 @@ public class ProductService
         return createProductStateless(session, productType, key, name, description, code, system, null, false, identityToken);
     }
 
-    /** Stateless scope-restricted product create — twin of {@link #createProductScopeRestricted(Mutiny.Session, String, UUID, String, String, String, ISystems, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}. */
+    /** Stateless scope-restricted product create — twin of {@link #createProductScopeRestricted(Mutiny.StatelessSession, String, UUID, String, String, String, ISystems, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}. */
     @Override
     public Uni<IProduct<?, ?>> createProductScopeRestricted(Mutiny.StatelessSession session, String productType, UUID key, String name, String description, String code, ISystems<?, ?> system,
                                                             com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
@@ -639,7 +429,7 @@ public class ProductService
         return createProductTypeStateless(session, productsType, key, description, system, null, false, identityToken);
     }
 
-    /** Stateless scope-restricted product-type create — twin of {@link #createProductTypeScopeRestricted(Mutiny.Session, String, UUID, String, ISystems, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}. */
+    /** Stateless scope-restricted product-type create — twin of {@link #createProductTypeScopeRestricted(Mutiny.StatelessSession, String, UUID, String, ISystems, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}. */
     @Override
     public Uni<IProductType<?, ?>> createProductTypeScopeRestricted(Mutiny.StatelessSession session, String productsType, UUID key, String description, ISystems<?, ?> system,
                                                                     com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,

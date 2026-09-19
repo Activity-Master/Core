@@ -3,11 +3,11 @@ package com.guicedee.activitymaster.fsdm;
 /**
  * Reactivity Migration Checklist:
  * <p>
- * [✓] One action per Mutiny.Session at a time
+ * [✓] One action per Mutiny.StatelessSession at a time
  * - All operations on a session are sequential
  * - No parallel operations on the same session
  * <p>
- * [✓] Pass Mutiny.Session through the chain
+ * [✓] Pass Mutiny.StatelessSession through the chain
  * - All methods accept session as parameter
  * - Session is passed to all dependent operations
  * <p>
@@ -61,22 +61,6 @@ public class ActiveFlagService
         return new ActiveFlag();
     }
 
-    public Uni<UUID> resolveActiveFlagIdByName(Mutiny.Session session, IEnterprise<?, ?> enterpriseId, String flagName) {
-        return NameIdCache
-                .getActiveFlagId(session, enterpriseId.getId(), flagName, (sess, name) -> {
-                                     return new ActiveFlag()
-                                             .builder(session)
-                                             .withName(flagName)
-                                             .withEnterprise(enterpriseId)
-                                             .inActiveRange(enterpriseId)
-                                             .get()
-                                             .chain(flag -> {
-                                                 return Uni.createFrom().item(flag.getId());
-                                             });
-                                 }
-                );
-    }
-
     @Override
     public Uni<UUID> resolveActiveFlagIdByName(Mutiny.StatelessSession session, IEnterprise<?, ?> enterpriseId, String flagName) {
         return NameIdCache
@@ -95,39 +79,7 @@ public class ActiveFlagService
     }
 
 
-    public Uni<IActiveFlag<?, ?>> create(Mutiny.Session session, IEnterprise<?, ?> enterprise, String name, String description, UUID... identifyingToken) {
-        // Public create — ActiveFlags are enterprise reference data; no per-record security is stamped (unchanged).
-        return createWithSecurity(session, enterprise, name, description,
-                                  af -> Uni.createFrom().nullItem(), identifyingToken
-        );
-    }
-
-    /**
-     * Opt-in <strong>scope-restricted</strong> ActiveFlag create. Unlike the public {@link #create} (which stamps
-     * <em>no</em> security on this reference-data row), this variant secures the new flag with the restricted
-     * matrix: only Administrators / Systems / Applications / Plugins retain access, plus a <em>read</em> grant for
-     * {@code scopeToken}. Because the applicable-token climb is child&rarr;parent, only identity tokens at the
-     * {@code scopeToken} node <em>or below it</em> may read the flag.
-     *
-     * <p><strong>Caveat:</strong> ActiveFlags gate row visibility for every record that references them and are
-     * normally enterprise-global. Restricting a flag is unusual — use only for tenant/branch-private flags.</p>
-     */
-    @Override
-    public Uni<IActiveFlag<?, ?>> createScopeRestricted(Mutiny.Session session, IEnterprise<?, ?> enterprise, String name, String description,
-                                                        com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems<?, ?> system,
-                                                        com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
-                                                        UUID... identifyingToken
-    ) {
-        return createWithSecurity(session,
-                                  enterprise,
-                                  name,
-                                  description,
-                                  af -> af.createScopeRestrictedSecurity(session, system, scopeToken, identifyingToken),
-                                  identifyingToken
-        );
-    }
-
-    private Uni<IActiveFlag<?, ?>> createWithSecurity(Mutiny.Session session, IEnterprise<?, ?> enterprise, String name, String description,
+    private Uni<IActiveFlag<?, ?>> createWithSecurity(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, String name, String description,
                                                       java.util.function.Function<ActiveFlag, Uni<?>> securityFn, UUID... identifyingToken
     ) {
         return findFlagByName(session, name, enterprise, identifyingToken)
@@ -188,7 +140,7 @@ public class ActiveFlagService
 
     /**
      * Stateless opt-in <strong>scope-restricted</strong> ActiveFlag create — the stateless twin of
-     * {@link #createScopeRestricted(Mutiny.Session, IEnterprise, String, String, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}.
+     * {@link #createScopeRestricted(Mutiny.StatelessSession, IEnterprise, String, String, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}.
      * Existence is checked with a scalar {@code getCount()} (an existing flag is returned prepped); a new flag is
      * inserted and secured with the restricted matrix (no Everyone/Everywhere/Guests; {@code scopeToken}=read).
      * Each create runs on its own stateless unit, so independent stateless sessions can provision flags in parallel.
@@ -225,56 +177,15 @@ public class ActiveFlagService
     }
 
 
-    @Override
-    public Uni<IActiveFlag<?, ?>> findFlagByName(Mutiny.Session session, com.entityassist.enumerations.ActiveFlag flag, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return findFlagByName(session, flag.name(), enterprise, identifyingToken);
-    }
-
-
     //@CacheResult(cacheName = "FindActiveByName")
-    @Override
-    public Uni<IActiveFlag<?, ?>> findFlagByName(Mutiny.Session session, String flag, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        UUID enterpriseId = null;
-        if (enterprise instanceof Enterprise ent) {
-            enterpriseId = ent.getId();
-        }
-        String key = enterpriseId + "|" + flag;
-        UUID cachedId = flagKeyToId.get(key);
-        if (cachedId != null) {
-            log.trace("🔁 ActiveFlag cache hit for key '{}': {} — loading by UUID", key, cachedId);
-            return getFlagById(session, cachedId);
-        }
-
-        // Use ID-first resolution with shared NameIdCache and native SQL, then load by UUID
-        return resolveActiveFlagIdByName(session, enterprise, flag)
-                .flatMap(id -> {
-                    if (id == null) {
-                        return Uni.createFrom().failure(new NoResultException("ActiveFlag not found: " + flag));
-                    }
-                    flagKeyToId.put(key, id);
-                    return getFlagById(session, id);
-                });
-    }
-
     // UUID-based lookup to leverage L2 cache (@Cacheable on entity + L2 cache enabled)
-    public Uni<IActiveFlag<?, ?>> getFlagById(Mutiny.Session session, UUID id) {
+    public Uni<IActiveFlag<?, ?>> getFlagById(Mutiny.StatelessSession session, UUID id) {
         //noinspection unchecked
-        return (Uni) session.find(ActiveFlag.class, id);
+        return (Uni) session.get(ActiveFlag.class, id);
     }
 
 
-    @Override
-    //@CacheResult(cacheName = "FindActiveFlagRange")
-    public Uni<List<IActiveFlag<?, ?>>> findActiveRange(Mutiny.Session session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return (Uni) find(session,
-                          getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getActiveRangeAndUp()),
-                          enterprise,
-                          identifyingToken
-        );
-    }
-
-
-    Uni<List<ActiveFlag>> find(Mutiny.Session session, String[] name, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
+    Uni<List<ActiveFlag>> find(Mutiny.StatelessSession session, String[] name, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
         return new ActiveFlag().builder(session)
                 .withName(name)
                 .inDateRange()
@@ -286,52 +197,6 @@ public class ActiveFlagService
     private String[] getNamesForFlags(Set<com.entityassist.enumerations.ActiveFlag> flags) {
         return com.entityassist.enumerations.ActiveFlag.activeFlagToStrings(flags)
                 .toArray(new String[]{});
-    }
-
-    @Override
-    //@CacheResult(cacheName = "GetVisibleRange")
-    public Uni<List<IActiveFlag<?, ?>>> getVisibleRange(Mutiny.Session session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return (Uni) find(session,
-                          getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getVisibleRangeAndUp()),
-                          enterprise,
-                          identifyingToken
-        );
-    }
-
-    @Override
-    //@CacheResult
-    public Uni<List<IActiveFlag<?, ?>>> getRemovedRange(Mutiny.Session session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return (Uni) find(session,
-                          getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getRemovedRange()),
-                          enterprise,
-                          identifyingToken
-        );
-    }
-
-    @Override
-    //@CacheResult(cacheName = "GetArchivedRange")
-    public Uni<List<IActiveFlag<?, ?>>> getArchiveRange(Mutiny.Session session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return (Uni) find(session,
-                          getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getArchivedRange()),
-                          enterprise,
-                          identifyingToken
-        );
-    }
-
-    @Override
-    //@CacheResult(cacheName = "GetHighlightedRange")
-    public Uni<List<IActiveFlag<?, ?>>> getHighlightedRange(Mutiny.Session session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return (Uni) find(session,
-                          getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getHighlightedRange()),
-                          enterprise,
-                          identifyingToken
-        );
-    }
-
-    @Override
-    //@CacheResult(cacheName = "GetActiveFlag")
-    public Uni<IActiveFlag<?, ?>> getActiveFlag(Mutiny.Session session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return findFlagByName(session, com.entityassist.enumerations.ActiveFlag.Active, enterprise, identifyingToken);
     }
 
     // ============================================================================================
@@ -424,21 +289,9 @@ public class ActiveFlagService
     }
 
     @Override
-    //@CacheResult(cacheName = "GetArchivedFlag")
-    public Uni<IActiveFlag<?, ?>> getArchivedFlag(Mutiny.Session session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return findFlagByName(session, com.entityassist.enumerations.ActiveFlag.Archived, enterprise, identifyingToken);
-    }
-
-    @Override
     @CacheResult(cacheName = "ActiveFlagArchivedStateless")
     public Uni<IActiveFlag<?, ?>> getArchivedFlag(Mutiny.StatelessSession session, @CacheKey IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
         return findFlagByNameStateless(session, com.entityassist.enumerations.ActiveFlag.Archived.name(), enterprise);
-    }
-
-    @Override
-    //@CacheResult(cacheName = "GetDeletedFlag")
-    public Uni<IActiveFlag<?, ?>> getDeletedFlag(Mutiny.Session session, IEnterprise<?, ?> enterprise, UUID... identifyingToken) {
-        return findFlagByName(session, com.entityassist.enumerations.ActiveFlag.Deleted, enterprise, identifyingToken);
     }
 
     @Override

@@ -122,7 +122,7 @@ public abstract class WarehouseRelationshipTable<
     }
 
     @SuppressWarnings("unchecked")
-    public @NotNull Uni<J> update(Mutiny.Session session, String newValue, UUID... identifyingToken)
+    public @NotNull Uni<J> update(Mutiny.StatelessSession session, String newValue, UUID... identifyingToken)
     {
         IActiveFlagService<?> service = IGuiceContext.get(IActiveFlagService.class);
         return (Uni) service.getDeletedFlag(session, getEnterpriseID(), identifyingToken)
@@ -130,7 +130,7 @@ public abstract class WarehouseRelationshipTable<
                            setActiveFlagID(flag);
                            setEffectiveToDate(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
                            setWarehouseLastUpdatedTimestamp(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-                           return session.merge(this);
+                           return session.update(this).replaceWith(this);
                        })
                        .chain(deleted -> {
                            setId(null);
@@ -142,7 +142,7 @@ public abstract class WarehouseRelationshipTable<
                            return service.getActiveFlag(session, getEnterpriseID(), identifyingToken)
                                           .chain(flag -> {
                                               setActiveFlagID(flag);
-                                              return session.persist(this)
+                                              return session.insert(this)
                                                                     .chain(a -> {
                                                                         return createDefaultSecurity(session,getSystemID())
                                                                                    .replaceWith(Uni.createFrom()

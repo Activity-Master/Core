@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Replicates the reported defect: when an enterprise is created and started <strong>purely
- * statelessly</strong> (no bridge to a managed {@link Mutiny.Session}), some {@link IMasterSystem}s —
+ * statelessly</strong> (no bridge to a managed {@link Mutiny.StatelessSession}), some {@link IMasterSystem}s —
  * notably the {@code TimeSystem} — never get a row in the {@code Systems} table, even though the process
  * completes without error.
  *

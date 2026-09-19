@@ -52,7 +52,7 @@ public class AccountScopeSecurityIntegrationTest {
         IInvolvedParty<?, ?> party;
         Map<String, ISecurityToken<?, ?>> folders = new LinkedHashMap<>();
     }
-    private Uni<Context> create(Mutiny.Session session) {
+    private Uni<Context> create(Mutiny.StatelessSession session) {
         Context c = new Context(); String id = UUID.randomUUID().toString();
         return enterprises.getEnterprise(session, ENTERPRISE)
                 .chain(e -> systems.getActivityMaster(session, e)).invoke(s -> c.system = s)
@@ -72,12 +72,12 @@ public class AccountScopeSecurityIntegrationTest {
                 .chain(() -> security.getGuestsFolder(session, c.system)).invoke(t -> c.folders.put("guests", t))
                 .chain(() -> security.getEveryoneGroup(session, c.system)).invoke(t -> c.folders.put("everyone", t))
                 .chain(() -> security.getEverywhereGroup(session, c.system)).invoke(t -> c.folders.put("everywhere", t))
-                .chain(session::flush).replaceWith(c);
+                .replaceWith(c);
     }
 
     @Test void canonicalPartyAndOrganicSubtypeHaveExactlyRestrictedGrants() {
-        Context c = factory.withTransaction((session, tx) -> create(session)).await().atMost(TIMEOUT);
-        factory.withTransaction((session, tx) -> session.createNativeQuery("""
+        Context c = factory.withStatelessTransaction((session, tx) -> create(session)).await().atMost(TIMEOUT);
+        factory.withStatelessTransaction((session, tx) -> session.createNativeQuery("""
                 SELECT c.classificationname, d.classificationdataconceptname FROM security.securitytoken t
                 JOIN classification.classification c ON c.classificationid=t.securitytokenclassificationid
                 JOIN classification.classificationdataconcept d ON d.classificationdataconceptid=c.classificationdataconceptid
@@ -89,7 +89,7 @@ public class AccountScopeSecurityIntegrationTest {
                 .await().atMost(TIMEOUT);
     }
 
-    private Uni<Void> matrix(Mutiny.Session session, Context c, String table, String column, UUID id) {
+    private Uni<Void> matrix(Mutiny.StatelessSession session, Context c, String table, String column, UUID id) {
         return session.createNativeQuery("SELECT securitytokenid,createallowed,updateallowed,deleteallowed,readallowed FROM party."
                 + table + " WHERE " + column + "=:id", Object[].class).setParameter("id", id).getResultList().invoke(rows -> {
             assertEquals(5, rows.size()); Map<UUID, List<Integer>> actual = new HashMap<>();
@@ -103,9 +103,9 @@ public class AccountScopeSecurityIntegrationTest {
     }
 
     @Test void realHierarchyAllowsOwnerReadOnlyAndDeniesSiblingAndGuest() {
-        Context c = factory.withTransaction((session, tx) -> create(session)).await().atMost(TIMEOUT);
+        Context c = factory.withStatelessTransaction((session, tx) -> create(session)).await().atMost(TIMEOUT);
         var record = (IWarehouseCoreTable<?,?,?,?>) c.party;
-        factory.withTransaction((session, tx) -> access(session, record, c, UUID.fromString(c.scope.getSecurityToken()), true, false)
+        factory.withStatelessTransaction((session, tx) -> access(session, record, c, UUID.fromString(c.scope.getSecurityToken()), true, false)
                 .chain(() -> access(session, record, c, UUID.fromString(c.sibling.getSecurityToken()), false, false))
                 .chain(() -> access(session, record, c, UUID.fromString(c.parent.getSecurityToken()), false, false))
                 .chain(() -> access(session, record, c, UUID.fromString(c.folders.get("guests").getSecurityToken()), false, false))
@@ -113,7 +113,7 @@ public class AccountScopeSecurityIntegrationTest {
                 .chain(() -> access(session, record, c, c.systemIdentity, true, true)))
                 .await().atMost(TIMEOUT);
     }
-    private Uni<Void> access(Mutiny.Session session, IWarehouseCoreTable<?,?,?,?> record, Context c, UUID token, boolean read, boolean write) {
+    private Uni<Void> access(Mutiny.StatelessSession session, IWarehouseCoreTable<?,?,?,?> record, Context c, UUID token, boolean read, boolean write) {
         return record.canRead(session, c.system, token).invoke(actual -> assertEquals(read, actual))
                 .chain(() -> record.canWrite(session, c.system, token)).invoke(actual -> assertEquals(write, actual)).replaceWithVoid();
     }

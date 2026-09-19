@@ -129,6 +129,9 @@ public class Systems
     public void configureSecurityEntity(SystemsSecurityToken securityEntity)
     {
         securityEntity.setBase(this);
+        // Base is a read-only alias of SystemID. Persist the target system through
+        // the writable association, replacing the provisioning caller's context.
+        securityEntity.setSystemID(this);
     }
 
     @Override
@@ -150,13 +153,13 @@ public class Systems
      *
      * @return A Uni that completes when the removal is done
      */
-    public Uni<Systems> remove(Mutiny.Session  session)
+    public Uni<Systems> remove(Mutiny.StatelessSession  session)
     {
         IActiveFlagService<?> service = IGuiceContext.get(IActiveFlagService.class);
         return service.getDeletedFlag(session, getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(session, getEnterpriseID()).await().atMost(java.time.Duration.ofSeconds(50)))
                        .chain(deletedFlag -> {
                            setActiveFlagID((ActiveFlag) deletedFlag);
-                           return session.persist(this).replaceWith(Uni.createFrom().item(this));
+                           return session.update(this).replaceWith(Uni.createFrom().item(this));
                        })
                        .onItem()
                        .invoke(result -> {
@@ -169,13 +172,13 @@ public class Systems
     }
 
 
-    public Uni<Systems> archive(Mutiny.Session session)
+    public Uni<Systems> archive(Mutiny.StatelessSession session)
     {
         IActiveFlagService<?> service = IGuiceContext.get(IActiveFlagService.class);
         return service.getArchivedFlag(session, getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(session, getEnterpriseID()).await().atMost(java.time.Duration.ofSeconds(50)))
                        .chain(archivedFlag -> {
                            setActiveFlagID((ActiveFlag) archivedFlag);
-                           return session.merge(this);
+                           return session.update(this).replaceWith(this);
                        })
                        .onItem()
                        .invoke(result -> {
@@ -273,14 +276,6 @@ public class Systems
     {
         this.activeFlagID = activeFlagID;
         return this;
-    }
-
-    @Override
-    public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
-    {
-        ((SystemsXClassification) linkTable)
-                .setSystemID(this);
-        return io.smallrye.mutiny.Uni.createFrom().voidItem();
     }
 
     @Override

@@ -31,7 +31,7 @@ public class ActiveFlagSystem
   private Mutiny.SessionFactory sessionFactory;
 
   @Override
-  public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<ISystems<?, ?>> registerSystem(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Registering Active Flag System for enterprise: '{}'", enterprise.getName());
     log.debug("📋 Creating Active Flag System with session: {}", session.hashCode());
@@ -65,66 +65,8 @@ public class ActiveFlagSystem
                .map(result -> result);
   }
 
-  @Override
-  public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
-  {
-    logProgress("Active Flag Service", "Loading Active Flags");
-    log.info("🚀 Creating active flags for enterprise: '{}'", enterprise.getName());
-    log.debug("📋 Starting with session: {}", session.hashCode());
-
-    // Create a list of all active flags
-    ActiveFlag[] activeFlags = ActiveFlag.values();
-    log.debug("📋 Found {} active flags to create", activeFlags.length);
-
-    // Create the first active flag and then chain the rest
-    Uni<Void> createChain = null;
-
-    for (ActiveFlag activeFlag : activeFlags)
-    {
-      if (createChain == null)
-      {
-        // First flag
-        log.debug("🔄 Creating first active flag: '{}'", activeFlag.name());
-        createChain = ((ActiveFlagService) activeFlagService)
-                          .create(session, enterprise, activeFlag.name(), activeFlag.getDescription())
-                          .onItem()
-                          .invoke(result -> log.debug("✅ Created active flag: '{}'", activeFlag.name()))
-                          .onFailure()
-                          .invoke(error -> log.error("❌ Failed to create active flag '{}': {}",
-                              activeFlag.name(), error.getMessage(), error))
-                          .map(result -> null); // Convert to Void
-      }
-      else
-      {
-        // Chain subsequent flags
-        final Uni<Void> finalChain = createChain;
-        final ActiveFlag currentFlag = activeFlag; // Create final reference for lambda
-        createChain = finalChain.chain(v -> {
-          log.debug("🔄 Creating next active flag: '{}'", currentFlag.name());
-          return ((ActiveFlagService) activeFlagService)
-                     .create(session, enterprise, currentFlag.name(), currentFlag.getDescription())
-                     .onItem()
-                     .invoke(result -> log.debug("✅ Created active flag: '{}'", currentFlag.name()))
-                     .onFailure()
-                     .invoke(error -> log.error("❌ Failed to create active flag '{}': {}",
-                         currentFlag.name(), error.getMessage(), error))
-                     .map(result -> null); // Convert to Void
-        });
-      }
-    }
-
-    // Return the reactive chain or an empty one if no flags were created
-    return (createChain != null ? createChain : Uni.createFrom()
-                                                    .voidItem())
-               .onItem()
-               .invoke(() -> log.info("🎉 Successfully created all active flags"))
-               .onFailure()
-               .invoke(error -> log.error("❌ Error creating active flags: {}", error.getMessage(), error))
-               .replaceWithVoid();
-  }
-
   /**
-   * Stateless variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — creates every
+   * Stateless variant of {@link #createDefaults(Mutiny.StatelessSession, IEnterprise)} — creates every
    * {@link ActiveFlag} reference row on a {@link Mutiny.StatelessSession} via the stateless find-or-create.
    */
   @Override
@@ -148,7 +90,7 @@ public class ActiveFlagSystem
   }
 
   @Override
-  public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<Void> postStartup(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Starting reactive postStartup for Active Flag System");
     log.debug("📋 Beginning postStartup operations for enterprise: '{}' with session: {}",

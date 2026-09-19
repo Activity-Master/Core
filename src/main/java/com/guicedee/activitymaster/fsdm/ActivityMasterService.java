@@ -3,11 +3,11 @@ package com.guicedee.activitymaster.fsdm;
 /**
  * Reactivity Migration Checklist:
  * 
- * [✓] One action per Mutiny.Session at a time
+ * [✓] One action per Mutiny.StatelessSession at a time
  *     - All operations on a session are sequential
  *     - No parallel operations on the same session
  * 
- * [✓] Pass Mutiny.Session through the chain
+ * [✓] Pass Mutiny.StatelessSession through the chain
  *     - All methods accept session as parameter
  *     - Session is passed to all dependent operations
  * 
@@ -53,7 +53,7 @@ public class ActivityMasterService
 	private IEnterpriseService<?> enterpriseService;
 
  @Override
- public Uni<Void> loadSystems(Mutiny.Session session, String enterpriseName)
+ public Uni<Void> loadSystems(Mutiny.StatelessSession session, String enterpriseName)
  {
      return enterpriseService
              .resolveEnterpriseIdByName(session, enterpriseName)
@@ -62,7 +62,7 @@ public class ActivityMasterService
  }
 
 	@Override
-	public Uni<Void> loadUpdates(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+	public Uni<Void> loadUpdates(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
 	{
 		return enterpriseService.loadUpdates(session, enterprise)
 				.map(result -> null);

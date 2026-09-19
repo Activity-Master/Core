@@ -114,7 +114,7 @@ public class TestActivityMasterSecurityAccess {
         final Ctx ctx = new Ctx();
 
         // Phase A — resolve context + the system identity token, create two records (one to secure).
-        sessionFactory.withTransaction(session -> {
+        sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
             ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
             IClassificationDataConceptService<?> dcs = IGuiceContext.get(IClassificationDataConceptService.class);
@@ -205,7 +205,7 @@ public class TestActivityMasterSecurityAccess {
         assertNotNull(ctx.systemsFolder, "The Systems folder token must resolve");
 
         // The system token must expand (transitively) to include its parent Systems folder.
-        var applicable = sessionFactory.withTransaction(session -> {
+        var applicable = sessionFactory.withStatelessTransaction(session -> {
             ISecurityTokenService<?> sec = IGuiceContext.get(ISecurityTokenService.class);
             return sec.getApplicableSecurityTokenIds(session, ctx.system, ctx.systemToken);
         }).await().atMost(Duration.ofMinutes(1));
@@ -219,7 +219,7 @@ public class TestActivityMasterSecurityAccess {
     @Order(2)
     public void testSystemTokenGrantsReadAccess() {
         Ctx ctx = provision();
-        Boolean canRead = sessionFactory.withTransaction(session ->
+        Boolean canRead = sessionFactory.withStatelessTransaction(session ->
                 ((IWarehouseCoreTable<?, ?, ?, ?>) ctx.securedRecord).canRead(session, ctx.system, ctx.systemToken)
         ).await().atMost(Duration.ofMinutes(1));
         assertTrue(canRead, "A default-secured record must be READABLE by the system identity token");
@@ -229,7 +229,7 @@ public class TestActivityMasterSecurityAccess {
     @Order(3)
     public void testSystemTokenGrantsWriteAccess() {
         Ctx ctx = provision();
-        Boolean canWrite = sessionFactory.withTransaction(session ->
+        Boolean canWrite = sessionFactory.withStatelessTransaction(session ->
                 ((IWarehouseCoreTable<?, ?, ?, ?>) ctx.securedRecord).canWrite(session, ctx.system, ctx.systemToken)
         ).await().atMost(Duration.ofMinutes(1));
         assertTrue(canWrite, "A default-secured record must be WRITABLE (create/update) by the system identity token");
@@ -239,7 +239,7 @@ public class TestActivityMasterSecurityAccess {
     @Order(4)
     public void testUnsecuredRecordGrantsNoAccess() {
         Ctx ctx = provision();
-        boolean[] access = sessionFactory.withTransaction(session -> {
+        boolean[] access = sessionFactory.withStatelessTransaction(session -> {
             IWarehouseCoreTable<?, ?, ?, ?> rec = (IWarehouseCoreTable<?, ?, ?, ?>) ctx.unsecuredRecord;
             return rec.canRead(session, ctx.system, ctx.systemToken)
                     .chain(r -> rec.canWrite(session, ctx.system, ctx.systemToken)
@@ -253,7 +253,7 @@ public class TestActivityMasterSecurityAccess {
     @Order(5)
     public void testEmptyIdentityGrantsNoAccess() {
         Ctx ctx = provision();
-        boolean[] access = sessionFactory.withTransaction(session -> {
+        boolean[] access = sessionFactory.withStatelessTransaction(session -> {
             IWarehouseCoreTable<?, ?, ?, ?> rec = (IWarehouseCoreTable<?, ?, ?, ?>) ctx.securedRecord;
             return rec.canRead(session, ctx.system)         // no identity token
                     .chain(r -> rec.canWrite(session, ctx.system)
@@ -275,7 +275,7 @@ public class TestActivityMasterSecurityAccess {
         // The Guests folder token, used as an identity, seeds from its SecurityToken (varchar UUID) value.
         UUID guestIdentity = UUID.fromString(ctx.tokens.get(IWarehouseCoreTable.SECURITY_GUESTS).getSecurityToken());
 
-        boolean[] access = sessionFactory.withTransaction(session -> {
+        boolean[] access = sessionFactory.withStatelessTransaction(session -> {
             IWarehouseCoreTable<?, ?, ?, ?> rec = (IWarehouseCoreTable<?, ?, ?, ?>) ctx.securedRecord;
             return rec.canRead(session, ctx.system, guestIdentity)
                     .chain(r -> rec.canWrite(session, ctx.system, guestIdentity)
@@ -298,7 +298,7 @@ public class TestActivityMasterSecurityAccess {
         UUID securedId = (UUID) ctx.securedRecord.getId();
         UUID unsecuredId = (UUID) ctx.unsecuredRecord.getId();
 
-        java.util.Set<UUID> visible = sessionFactory.withTransaction(session -> {
+        java.util.Set<UUID> visible = sessionFactory.withStatelessTransaction(session -> {
             IWarehouseCoreTable<?, ?, ?, ?> rec = (IWarehouseCoreTable<?, ?, ?, ?>) ctx.securedRecord;
             return rec.readableIds(session, ctx.system, ctx.systemToken)
                     .chain(readable -> new Classification().builder(session)

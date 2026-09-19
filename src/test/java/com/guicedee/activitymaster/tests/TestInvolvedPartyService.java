@@ -53,7 +53,7 @@ public class TestInvolvedPartyService {
                 .await().atMost(Duration.of(2, ChronoUnit.MINUTES));
     }
 
-    private Uni<ISystems<?, ?>> getActivityMasterSystem(Mutiny.Session session) {
+    private Uni<ISystems<?, ?>> getActivityMasterSystem(Mutiny.StatelessSession session) {
         IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
         ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
         return enterpriseService.getEnterprise(session, TestEnterprise.name())
@@ -66,7 +66,7 @@ public class TestInvolvedPartyService {
     public void testCreateNameType_Idempotent_and_FindThrowsBeforeCreate() {
         // First: attempt to find before creation and expect NoResultException
         try {
-            sessionFactory.withTransaction(session -> {
+            sessionFactory.withStatelessTransaction(session -> {
                 IInvolvedPartyService<?> partyService = IGuiceContext.get(IInvolvedPartyService.class);
                 return getActivityMasterSystem(session)
                         .chain(sys -> partyService.findInvolvedPartyNameType(session, "QA_DisplayName", (ISystems<?, ?>) sys));
@@ -79,7 +79,7 @@ public class TestInvolvedPartyService {
         }
 
         // Second: create twice (idempotent)
-        var uni = sessionFactory.withTransaction(session -> {
+        var uni = sessionFactory.withStatelessTransaction(session -> {
             IInvolvedPartyService<?> partyService = IGuiceContext.get(IInvolvedPartyService.class);
             return getActivityMasterSystem(session)
                     .chain(sys -> partyService.createNameType(session, "QA_DisplayName", "Display Name Type", (ISystems<?, ?>) sys)
@@ -92,7 +92,7 @@ public class TestInvolvedPartyService {
     @Test
     @Order(2)
     public void testCreateIdentificationType_Idempotent() {
-        var uni = sessionFactory.withTransaction(session -> {
+        var uni = sessionFactory.withStatelessTransaction(session -> {
             IInvolvedPartyService<?> partyService = IGuiceContext.get(IInvolvedPartyService.class);
             return getActivityMasterSystem(session)
                     .chain(sys -> partyService.createIdentificationType(session, (ISystems<?, ?>) sys,
@@ -107,7 +107,7 @@ public class TestInvolvedPartyService {
     @Test
     @Order(3)
     public void testCreateType_Idempotent() {
-        var uni = sessionFactory.withTransaction(session -> {
+        var uni = sessionFactory.withStatelessTransaction(session -> {
             IInvolvedPartyService<?> partyService = IGuiceContext.get(IInvolvedPartyService.class);
             return getActivityMasterSystem(session)
                     .chain(sys -> partyService.createType(session, (ISystems<?, ?>) sys,
@@ -122,7 +122,7 @@ public class TestInvolvedPartyService {
     @Test
     @Order(4)
     public void testCreateInvolvedParty_OrganicTrue_and_FindAllByIdentificationType() {
-        var uni = sessionFactory.withTransaction(session -> {
+        var uni = sessionFactory.withStatelessTransaction(session -> {
             IInvolvedPartyService<?> partyService = IGuiceContext.get(IInvolvedPartyService.class);
             return getActivityMasterSystem(session)
                     .chain(sys -> {

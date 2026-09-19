@@ -49,7 +49,7 @@ public class TestActivityMasterManageArrangements {
         .await().atMost(Duration.ofMinutes(2));
   }
 
-  private Uni<IArrangement<?, ?>> createArrangement(Mutiny.Session session, ISystems<?, ?> sys, String typeName, String value) {
+  private Uni<IArrangement<?, ?>> createArrangement(Mutiny.StatelessSession session, ISystems<?, ?> sys, String typeName, String value) {
     IArrangementsService<?> arrangementsService = IGuiceContext.get(IArrangementsService.class);
     return arrangementsService.createArrangementType(session, typeName, sys)
         .chain(t -> arrangementsService.create(session, typeName,null,
@@ -59,7 +59,7 @@ public class TestActivityMasterManageArrangements {
 
   @Test
   public void testEvents_AddArrangement() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IEventService<?> eventService = IGuiceContext.get(IEventService.class);
@@ -89,7 +89,7 @@ public class TestActivityMasterManageArrangements {
 
   @Test
   public void testRules_AddArrangement() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IRulesService<?> rulesService = IGuiceContext.get(IRulesService.class);
@@ -118,7 +118,7 @@ public class TestActivityMasterManageArrangements {
 
   @Test
   public void testPassThrough_FindArrangementsByClassification() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IRulesService<?> rulesService = IGuiceContext.get(IRulesService.class);
@@ -139,7 +139,7 @@ public class TestActivityMasterManageArrangements {
 
   @Test
   public void testPassThrough_FindArrangementsByClassificationComparators() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IRulesService<?> rulesService = IGuiceContext.get(IRulesService.class);

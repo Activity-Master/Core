@@ -3,11 +3,11 @@ package com.guicedee.activitymaster.fsdm.systems;
 /**
  * Reactivity Migration Checklist:
  * 
- * [✓] One action per Mutiny.Session at a time
+ * [✓] One action per Mutiny.StatelessSession at a time
  *     - All operations on a session are sequential
  *     - No parallel operations on the same session
  * 
- * [✓] Pass Mutiny.Session through the chain
+ * [✓] Pass Mutiny.StatelessSession through the chain
  *     - All methods accept session as parameter
  *     - Session is passed to all dependent operations
  * 
@@ -52,7 +52,7 @@ public class EnterpriseSystem
   private Mutiny.SessionFactory sessionFactory;
 
   @Override
-  public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<ISystems<?, ?>> registerSystem(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
         return systemsService
                .create(session, enterprise, EnterpriseSystemName, "The Enterprise Management System", "Enterprise")
@@ -84,24 +84,6 @@ public class EnterpriseSystem
   }
 
 
-  @Override
-  public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
-  {
-    logProgress("Enterprise System", "Starting Enterprise Checks");
-    log.info("🚀 Creating enterprise defaults for enterprise: '{}'", enterprise.getName());
-    log.debug("📋 Starting with session: {}", session.hashCode());
-    
-    // No actual operations needed, just return a void item
-    log.debug("✅ No specific defaults needed for Enterprise System");
-    return Uni.createFrom()
-               .voidItem()
-               .onItem()
-               .invoke(() -> log.info("🎉 Successfully completed Enterprise System defaults"))
-               .onFailure()
-               .invoke(error -> log.error("❌ Error in Enterprise System defaults: {}", error.getMessage(), error))
-               .replaceWithVoid();
-  }
-
   /** Stateless variant — the Enterprise System has no default data to provision. */
   @Override
   public Uni<Void> createDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
@@ -111,7 +93,7 @@ public class EnterpriseSystem
   }
 
   @Override
-  public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<Void> postStartup(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Starting reactive postStartup for Enterprise System");
     log.debug("📋 Beginning postStartup operations for enterprise: '{}' with session: {}", 

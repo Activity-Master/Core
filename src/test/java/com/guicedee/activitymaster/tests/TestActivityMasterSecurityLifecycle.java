@@ -113,8 +113,8 @@ public class TestActivityMasterSecurityLifecycle {
      * the supplied reactive function, awaiting the result. Keeps the individual tests focused purely on
      * the security assertions.
      */
-    private <T> T withActivityMasterSystem(BiFunction<Mutiny.Session, ISystems<?, ?>, Uni<T>> fn) {
-        return sessionFactory.withTransaction(session -> {
+    private <T> T withActivityMasterSystem(BiFunction<Mutiny.StatelessSession, ISystems<?, ?>, Uni<T>> fn) {
+        return sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
             return enterpriseService.getEnterprise(session, TestEnterprise.name())
@@ -127,9 +127,9 @@ public class TestActivityMasterSecurityLifecycle {
      * Returns {@code true} when an <em>active, in-range</em> hierarchy edge
      * {@code parent -> child} exists in {@code security.securitytokenxsecuritytoken} for the enterprise.
      * Mirrors the edge semantics walked by
-     * {@link ISecurityTokenService#getApplicableSecurityTokenIds(Mutiny.Session, ISystems, UUID...)}.
+     * {@link ISecurityTokenService#getApplicableSecurityTokenIds(Mutiny.StatelessSession, ISystems, UUID...)}.
      */
-    private Uni<Boolean> edgeExists(Mutiny.Session session, UUID enterpriseId, OffsetDateTime now, UUID parentId, UUID childId) {
+    private Uni<Boolean> edgeExists(Mutiny.StatelessSession session, UUID enterpriseId, OffsetDateTime now, UUID parentId, UUID childId) {
         String sql = "select x.childsecuritytokenid from security.securitytokenxsecuritytoken x " +
                 "where x.parentsecuritytokenid = :parent and x.childsecuritytokenid = :child " +
                 "and x.enterpriseid = :ent and x.effectivefromdate <= :now and x.effectivetodate > :now";
@@ -143,7 +143,7 @@ public class TestActivityMasterSecurityLifecycle {
     }
 
     /** Returns the distinct set of parent ids linked above {@code childId} (its immediate parents). */
-    private Uni<java.util.List<UUID>> parentIdsOf(Mutiny.Session session, UUID enterpriseId, OffsetDateTime now, UUID childId) {
+    private Uni<java.util.List<UUID>> parentIdsOf(Mutiny.StatelessSession session, UUID enterpriseId, OffsetDateTime now, UUID childId) {
         String sql = "select distinct x.parentsecuritytokenid from security.securitytokenxsecuritytoken x " +
                 "where x.childsecuritytokenid = :child and x.enterpriseid = :ent " +
                 "and x.effectivefromdate <= :now and x.effectivetodate > :now";
@@ -328,7 +328,7 @@ public class TestActivityMasterSecurityLifecycle {
             final Map<String, ISecurityToken<?, ?>> tokens = new LinkedHashMap<>();
 
             // Phase A — resolve context + the canonical group/folder tokens, create a record to secure.
-            sessionFactory.withTransaction(session -> {
+            sessionFactory.withStatelessTransaction(session -> {
                 IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
                 ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
                 IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
@@ -374,7 +374,7 @@ public class TestActivityMasterSecurityLifecycle {
 
             // Phase C — a Guests-folder identity must be read-only: canRead true, canWrite false.
             UUID guestIdentity = UUID.fromString(((ISecurityToken<?, ?>) h[4]).getSecurityToken());
-            boolean[] access = sessionFactory.withTransaction(session -> {
+            boolean[] access = sessionFactory.withStatelessTransaction(session -> {
                 IWarehouseCoreTable<?, ?, ?, ?> rec = (IWarehouseCoreTable<?, ?, ?, ?>) h[3];
                 return rec.canRead(session, (ISystems<?, ?>) h[1], guestIdentity)
                         .chain(r -> rec.canWrite(session, (ISystems<?, ?>) h[1], guestIdentity)

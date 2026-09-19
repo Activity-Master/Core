@@ -54,17 +54,10 @@ public class SystemsService implements ISystemsService<SystemsService> {
     }
 
     @Override
-    public Uni<ISystems<?, ?>> getActivityMaster(Mutiny.Session session,
+    public Uni<ISystems<?, ?>> getActivityMaster(Mutiny.StatelessSession session,
                                                  ISystems<?, ?> requestingSystem,
                                                  UUID... identityToken) {
         return findSystem(session, requestingSystem.getEnterprise(), ActivityMasterSystemName, identityToken);
-    }
-
-    @Override
-    public Uni<ISystems<?, ?>> getActivityMaster(Mutiny.Session session,
-                                                 IEnterprise<?, ?> requestingSystem,
-                                                 UUID... identityToken) {
-        return findSystem(session, requestingSystem, ActivityMasterSystemName, identityToken);
     }
 
     @Override
@@ -85,18 +78,6 @@ public class SystemsService implements ISystemsService<SystemsService> {
 
 
     @Override
-    public Uni<Boolean> doesSystemExist(Mutiny.Session session,
-                                        IEnterprise<?, ?> enterprise,
-                                        String systemName,
-                                        UUID... identityToken) {
-        return new Systems().builder(session).withName(systemName).withEnterprise(enterprise).inDateRange()
-                            .inActiveRange().get().map(system -> true).onFailure().recoverWithUni(t -> {
-                    log.warn("System {} check failed: {}", systemName, t.getMessage());
-                    return Uni.createFrom().item(false);
-                });
-    }
-
-    @Override
     public Uni<Boolean> doesSystemExist(Mutiny.StatelessSession session,
                                         IEnterprise<?, ?> enterprise,
                                         String systemName,
@@ -114,24 +95,6 @@ public class SystemsService implements ISystemsService<SystemsService> {
     }
 
     @Override
-    public Uni<ISystems<?, ?>> findSystem(Mutiny.Session session,
-                                          IEnterprise<?, ?> enterprise,
-                                          String systemName,
-                                          UUID... identityToken) {
-        String cacheKey = systemCacheKey(enterprise, systemName);
-        ISystems<?, ?> cached = systemKeyToEntity.get(cacheKey);
-        if (cached != null) {
-            return Uni.createFrom().item(cached);
-        }
-        return (Uni) new Systems().builder(session).withName(systemName).withEnterprise(enterprise).inDateRange()
-                                  .inActiveRange().get().invoke(system -> cacheSystem(enterprise,
-                                                                                      systemName,
-                                                                                      system,
-                                                                                      systemKeyToEntity,
-                                                                                      true));
-    }
-
-    @Override
     @CacheResult(cacheName = "SystemFindIdStateless")
     public Uni<UUID> findSystemId(Mutiny.StatelessSession session,
                                   @CacheKey IEnterprise<?, ?> enterprise,
@@ -142,7 +105,7 @@ public class SystemsService implements ISystemsService<SystemsService> {
         // stateless session BOTH entity-load paths fail — a criteria query underflows the LoadContexts
         // stack ("Illegal pop()"), and session.get(...) trips the L2-cache assembler (it tries to set a
         // reactive CompletableFuture association into the field). Callers that need a managed Systems
-        // entity must use a Mutiny.Session; stateless callers resolve the id and use it for tokens/FKs.
+        // entity must use a Mutiny.StatelessSession; stateless callers resolve the id and use it for tokens/FKs.
         return new Systems().builder(session).withName(systemName).withEnterprise(enterprise).inDateRange()
                             .inActiveRange().selectColumn(Systems_.id).get(UUID.class);
     }
@@ -204,13 +167,13 @@ public class SystemsService implements ISystemsService<SystemsService> {
     }
 
     // UUID-based lookup to leverage L2 cache (@Cacheable on entity + L2 cache enabled)
-    public Uni<ISystems<?, ?>> getSystemById(Mutiny.Session session, UUID id) {
+    public Uni<ISystems<?, ?>> getSystemById(Mutiny.StatelessSession session, UUID id) {
         //noinspection unchecked
-        return (Uni) session.find(Systems.class, id);
+        return (Uni) session.get(Systems.class, id);
     }
 
     @Override
-    public Uni<ISystems<?, ?>> findSystem(Mutiny.Session session,
+    public Uni<ISystems<?, ?>> findSystem(Mutiny.StatelessSession session,
                                           ISystems<?, ?> requestingSystem,
                                           String parentSystem,
                                           UUID... identityToken) {
@@ -230,251 +193,6 @@ public class SystemsService implements ISystemsService<SystemsService> {
                                                         error.getMessage(),
                                                         error)).map(WarehouseSCDTable::getSystemID);
                                     });
-    }
-
-    @Override
-    public Uni<String> registerNewSystem(Mutiny.Session session,
-                                         IEnterprise<?, ?> enterprise,
-                                         ISystems<?, ?> newSystem) {
-        log.info(" Registering new system: '{}' for enterprise: '{}'", newSystem.getName(), enterprise.getName());
-        log.debug(" Starting registration with session: {}", session.hashCode());
-
-        // Get the activity master system first, then get the token sequentially
-        return getISystem(session, ActivityMasterSystemName, enterprise).onItem()
-                                                                        .invoke(activityMasterSystem -> log.debug(
-                                                                                "✅ Retrieved ActivityMaster system with session: {}",
-                                                                                session.hashCode())).onFailure()
-                                                                        .invoke(error -> log.error(
-                                                                                "❌ Failed to retrieve ActivityMaster system with session {}: {}",
-                                                                                session.hashCode(),
-                                                                                error.getMessage(),
-                                                                                error))
-                                                                        // Chain to get the token after getting the system
-                                                                        .chain(activityMasterSystem -> getISystemToken(
-                                                                                session,
-                                                                                ActivityMasterSystemName,
-                                                                                enterprise).onItem()
-                                                                                           .invoke(activityMasterSystemUUID -> log.debug(
-                                                                                                   "✅ Retrieved ActivityMaster system UUID with session: {}",
-                                                                                                   session.hashCode()))
-                                                                                           .onFailure()
-                                                                                           .invoke(error -> log.error(
-                                                                                                   "❌ Failed to retrieve ActivityMaster system UUID with session {}: {}",
-                                                                                                   session.hashCode(),
-                                                                                                   error.getMessage(),
-                                                                                                   error))
-                                                                                           .map(activityMasterSystemUUID -> new Pair<>(
-                                                                                                   activityMasterSystem,
-                                                                                                   activityMasterSystemUUID)))
-                                                                        .chain(pair -> {
-                                                                            ISystems<?, ?> activityMasterSystem = pair.getKey();
-                                                                            UUID activityMasterSystemUUID = pair.getValue();
-                                                                            log.debug(
-                                                                                    " Finding classification with session: {}",
-                                                                                    session.hashCode());
-
-                                                                            // Use the reactive classification service
-                                                                            return classificationService.find(session,
-                                                                                                              UserGroupSecurityTokenClassifications.System,
-                                                                                                              activityMasterSystem,
-                                                                                                              activityMasterSystemUUID)
-                                                                                                        .onItem()
-                                                                                                        .invoke(classification -> log.debug(
-                                                                                                                "✅ Found classification: '{}' with session: {}",
-                                                                                                                UserGroupSecurityTokenClassifications.System,
-                                                                                                                session.hashCode()))
-                                                                                                        .onFailure()
-                                                                                                        .invoke(error -> log.error(
-                                                                                                                "❌ Failed to find classification with session {}: {}",
-                                                                                                                session.hashCode(),
-                                                                                                                error.getMessage(),
-                                                                                                                error))
-                                                                                                        .chain(classification -> {
-                                                                                                            log.debug(
-                                                                                                                    " Creating security token for new system with session: {}",
-                                                                                                                    session.hashCode());
-                                                                                                            // Now that we have the classification, chain the reactive operations
-                                                                                                            return securityTokenService
-                                                                                                                    .create(session,
-                                                                                                                            UserGroupSecurityTokenClassifications.System.toString(),
-                                                                                                                            newSystem.getName(),
-                                                                                                                            newSystem.getDescription(),
-                                                                                                                            activityMasterSystem)
-                                                                                                                    .onItem()
-                                                                                                                    .invoke(token -> log.debug(
-                                                                                                                            "✅ Created security token for new system with session: {}",
-                                                                                                                            session.hashCode()))
-                                                                                                                    .onFailure()
-                                                                                                                    .invoke(error -> log.error(
-                                                                                                                            "❌ Failed to create security token for new system with session {}: {}",
-                                                                                                                            session.hashCode(),
-                                                                                                                            error.getMessage(),
-                                                                                                                            error))
-                                                                                                                    .chain(newSystemsSecurityToken -> {
-                                                                                                                        log.debug(
-                                                                                                                                " Creating second security token with session: {}",
-                                                                                                                                session.hashCode());
-                                                                                                                        // Create second security token (reactive)
-                                                                                                                        return securityTokenService
-                                                                                                                                .create(session,
-                                                                                                                                        UserGroupSecurityTokenClassifications.System.toString(),
-                                                                                                                                        UserGroupSecurityTokenClassifications.System.toString(),
-                                                                                                                                        UserGroupSecurityTokenClassifications.System.classificationDescription(),
-                                                                                                                                        activityMasterSystem)
-                                                                                                                                .onItem()
-                                                                                                                                .invoke(token -> log.debug(
-                                                                                                                                        "✅ Created second security token with session: {}",
-                                                                                                                                        session.hashCode()))
-                                                                                                                                .onFailure()
-                                                                                                                                .invoke(error -> log.error(
-                                                                                                                                        "❌ Failed to create second security token with session {}: {}",
-                                                                                                                                        session.hashCode(),
-                                                                                                                                        error.getMessage(),
-                                                                                                                                        error))
-                                                                                                                                .chain(systemsToken -> {
-                                                                                                                                    log.debug(
-                                                                                                                                            " Linking tokens with session: {}",
-                                                                                                                                            session.hashCode());
-                                                                                                                                    // Link tokens (reactive)
-                                                                                                                                    return securityTokenService
-                                                                                                                                            .link(session,
-                                                                                                                                                  systemsToken,
-                                                                                                                                                  newSystemsSecurityToken,
-                                                                                                                                                  classification)
-                                                                                                                                            .onItem()
-                                                                                                                                            .invoke(result -> log.debug(
-                                                                                                                                                    "✅ Linked tokens with session: {}",
-                                                                                                                                                    session.hashCode()))
-                                                                                                                                            .onFailure()
-                                                                                                                                            .invoke(error -> log.error(
-                                                                                                                                                    "❌ Failed to link tokens with session {}: {}",
-                                                                                                                                                    session.hashCode(),
-                                                                                                                                                    error.getMessage(),
-                                                                                                                                                    error))
-                                                                                                                                            .chain(v -> {
-                                                                                                                                                log.debug(
-                                                                                                                                                        " Adding classification to new system with session: {}",
-                                                                                                                                                        session.hashCode());
-                                                                                                                                                // Add classification to new system - include in chain
-                                                                                                                                                return newSystem
-                                                                                                                                                        .addOrReuseClassification(
-                                                                                                                                                                session,
-                                                                                                                                                                SystemsClassifications.SystemIdentity,
-                                                                                                                                                                ((SecurityToken) newSystemsSecurityToken).getSecurityToken(),
-                                                                                                                                                                newSystem,
-                                                                                                                                                                activityMasterSystemUUID)
-                                                                                                                                                        .onItem()
-                                                                                                                                                        .invoke(result -> log.debug(
-                                                                                                                                                                "✅ Added classification to new system with session: {}",
-                                                                                                                                                                session.hashCode()))
-                                                                                                                                                        .onFailure()
-                                                                                                                                                        .invoke(error -> log.error(
-                                                                                                                                                                "❌ Failed to add classification to new system with session {}: {}",
-                                                                                                                                                                session.hashCode(),
-                                                                                                                                                                error.getMessage(),
-                                                                                                                                                                error))
-                                                                                                                                                        // Get security identity token
-                                                                                                                                                        .chain(result -> {
-                                                                                                                                                            log.debug(
-                                                                                                                                                                    " Getting security identity token with session: {}",
-                                                                                                                                                                    session.hashCode());
-                                                                                                                                                            return getSecurityIdentityToken(
-                                                                                                                                                                    session,
-                                                                                                                                                                    newSystem,
-                                                                                                                                                                    activityMasterSystemUUID)
-                                                                                                                                                                    .onItem()
-                                                                                                                                                                    .invoke(uuid -> log.debug(
-                                                                                                                                                                            "✅ Got security identity token: '{}' with session: {}",
-                                                                                                                                                                            uuid,
-                                                                                                                                                                            session.hashCode()))
-                                                                                                                                                                    .onFailure()
-                                                                                                                                                                    .invoke(error -> log.error(
-                                                                                                                                                                            "❌ Failed to get security identity token with session {}: {}",
-                                                                                                                                                                            session.hashCode(),
-                                                                                                                                                                            error.getMessage(),
-                                                                                                                                                                            error))
-                                                                                                                                                                    .chain(newSystemUUID -> {
-                                                                                                                                                                        log.debug(
-                                                                                                                                                                                " Creating default security for tokens sequentially with session: {}",
-                                                                                                                                                                                session.hashCode());
-
-                                                                                                                                                                        // Create default security sequentially (first token)
-                                                                                                                                                                        return ((SecurityToken) newSystemsSecurityToken)
-                                                                                                                                                                                .createDefaultSecurity(
-                                                                                                                                                                                        session,
-                                                                                                                                                                                        activityMasterSystem,
-                                                                                                                                                                                        activityMasterSystemUUID)
-                                                                                                                                                                                .onItem()
-                                                                                                                                                                                .invoke(firstSecurityResult -> log.debug(
-                                                                                                                                                                                        "✅ Created default security for first token with session: {}",
-                                                                                                                                                                                        session.hashCode()))
-                                                                                                                                                                                .onFailure()
-                                                                                                                                                                                .invoke(error -> log.error(
-                                                                                                                                                                                        "❌ Failed to create default security for first token with session {}: {}",
-                                                                                                                                                                                        session.hashCode(),
-                                                                                                                                                                                        error.getMessage(),
-                                                                                                                                                                                        error))
-                                                                                                                                                                                // Then create default security for second token
-                                                                                                                                                                                .chain(firstSecurityComplete -> {
-                                                                                                                                                                                    log.debug(
-                                                                                                                                                                                            " Creating default security for second token with session: {}",
-                                                                                                                                                                                            session.hashCode());
-                                                                                                                                                                                    return ((SecurityToken) systemsToken)
-                                                                                                                                                                                            .createDefaultSecurity(
-                                                                                                                                                                                                    session,
-                                                                                                                                                                                                    activityMasterSystem,
-                                                                                                                                                                                                    activityMasterSystemUUID)
-                                                                                                                                                                                            .onItem()
-                                                                                                                                                                                            .invoke(secondSecurityResult -> log.debug(
-                                                                                                                                                                                                    "✅ Created default security for second token with session: {}",
-                                                                                                                                                                                                    session.hashCode()))
-                                                                                                                                                                                            .onFailure()
-                                                                                                                                                                                            .invoke(error -> log.error(
-                                                                                                                                                                                                    "❌ Failed to create default security for second token with session {}: {}",
-                                                                                                                                                                                                    session.hashCode(),
-                                                                                                                                                                                                    error.getMessage(),
-                                                                                                                                                                                                    error));
-                                                                                                                                                                                })
-                                                                                                                                                                                // Then create involved party
-                                                                                                                                                                                .chain(secondSecurityComplete -> {
-                                                                                                                                                                                    log.debug(
-                                                                                                                                                                                            " Creating involved party for new system with session: {}",
-                                                                                                                                                                                            session.hashCode());
-                                                                                                                                                                                    // Create involved party and wait for it to complete
-                                                                                                                                                                                    SystemsSystem systemsSystem = IGuiceContext.get(
-                                                                                                                                                                                            SystemsSystem.class);
-                                                                                                                                                                                    return systemsSystem
-                                                                                                                                                                                            .createInvolvedPartyForNewSystem(
-                                                                                                                                                                                                    session,
-                                                                                                                                                                                                    newSystem)
-                                                                                                                                                                                            .onItem()
-                                                                                                                                                                                            .invoke(ip -> log.debug(
-                                                                                                                                                                                                    "✅ Created involved party for new system with session: {}",
-                                                                                                                                                                                                    session.hashCode()))
-                                                                                                                                                                                            .onFailure()
-                                                                                                                                                                                            .invoke(error -> log.error(
-                                                                                                                                                                                                    "❌ Failed to create involved party for new system with session {}: {}",
-                                                                                                                                                                                                    session.hashCode(),
-                                                                                                                                                                                                    error.getMessage(),
-                                                                                                                                                                                                    error))
-                                                                                                                                                                                            // Finally return the system UUID as a string
-                                                                                                                                                                                            .chain(ip -> {
-                                                                                                                                                                                                log.info(
-                                                                                                                                                                                                        " Successfully registered new system: '{}' with UUID: '{}'",
-                                                                                                                                                                                                        newSystem.getName(),
-                                                                                                                                                                                                        newSystemUUID);
-                                                                                                                                                                                                return Uni
-                                                                                                                                                                                                        .createFrom()
-                                                                                                                                                                                                        .item(newSystemUUID.toString());
-                                                                                                                                                                                            });
-                                                                                                                                                                                });
-                                                                                                                                                                    });
-                                                                                                                                                        });
-                                                                                                                                            });
-                                                                                                                                });
-                                                                                                                    });
-                                                                                                        });
-                                                                        });
     }
 
     @Override
@@ -559,67 +277,6 @@ public class SystemsService implements ISystemsService<SystemsService> {
     }
 
     @Override
-    public Uni<ISystems<?, ?>> create(Mutiny.Session session,
-                                      IEnterprise<?, ?> enterprise,
-                                      String systemName,
-                                      String systemDesc,
-                                      UUID... identityToken) {
-        return create(session, enterprise, systemName, systemDesc, systemName, identityToken);
-    }
-
-    @Override
-
-    public Uni<ISystems<?, ?>> create(Mutiny.Session session,
-                                      IEnterprise<?, ?> enterprise,
-                                      String systemName,
-                                      String systemDesc,
-                                      String historyName,
-                                      UUID... identityToken) {
-        Systems newSystem = new Systems();
-
-        // Check if system exists and recover with creating a new one if not found
-        return findSystem(session, enterprise, systemName, identityToken).onFailure(NoResultException.class)
-                                                                         .recoverWithUni(() -> {
-                                                                             log.info(
-                                                                                     "System {} not found, creating new system",
-                                                                                     systemName);
-                                                                             // Set up the new system
-                                                                             newSystem.setName(systemName);
-                                                                             newSystem.setDescription(systemDesc);
-                                                                             newSystem.setSystemHistoryName(historyName);
-                                                                             newSystem.setEnterpriseID(enterprise);
-
-                                                                             // Get active flag service
-                                                                             IActiveFlagService<?> acService = IGuiceContext.get(
-                                                                                     IActiveFlagService.class);
-
-                                                                             // Get active flag (reactive)
-                                                                             return acService
-                                                                                     .getActiveFlag(session, enterprise)
-                                                                                     .chain(activeFlag -> {
-                                                                                         // Set active flag
-                                                                                         newSystem.setActiveFlagID(
-                                                                                                 activeFlag);
-                                                                                         // Persist the new system (reactive)
-                                                                                         return session.persist(
-                                                                                                               newSystem)
-                                                                                                       //.chain(a -> session.flush())
-                                                                                                       .replaceWith(Uni
-                                                                                                                            .createFrom()
-                                                                                                                            .item(newSystem))
-                                                                                                       .map(persistedSystem -> {
-                                                                                                           log.info(
-                                                                                                                   "Successfully created new system: {}",
-                                                                                                                   systemName);
-                                                                                                           return persistedSystem;
-                                                                                                       });
-                                                                                     });
-                                                                         }).onItem().invoke(item -> {
-                    log.debug("System {} created successfully", systemName);
-                });
-    }
-
-    @Override
     public Uni<ISystems<?, ?>> create(Mutiny.StatelessSession session,
                                       IEnterprise<?, ?> enterprise,
                                       String systemName,
@@ -652,7 +309,7 @@ public class SystemsService implements ISystemsService<SystemsService> {
 
 
     //@CacheResult(cacheName = "SystemGetSecurityToken")
-    public Uni<ISecurityToken<?, ?>> getSecurityToken(Mutiny.Session session,
+    public Uni<ISecurityToken<?, ?>> getSecurityToken(Mutiny.StatelessSession session,
                                                       String uuidIdentity,
                                                       ISystems<?, ?> system,
                                                       UUID... identityToken) {
@@ -667,12 +324,6 @@ public class SystemsService implements ISystemsService<SystemsService> {
     }
 
     //@CacheResult(cacheName = "SystemSetSecurityTokenUUID")
-    @Override
-    public Uni<UUID> getSecurityIdentityToken(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
-        return system.findClassification(session, SystemIdentity, system, identityToken)
-                     .map(IRelationshipValue::getValueAsUUID);
-    }
-
     @Override
     public Uni<UUID> getSecurityIdentityToken(Mutiny.StatelessSession session,
                                               ISystems<?, ?> system,

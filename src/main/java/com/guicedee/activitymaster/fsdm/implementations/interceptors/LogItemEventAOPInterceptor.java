@@ -77,7 +77,7 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 		String enterpriseName = configuration.getApplicationEnterpriseName();
 		
 		return SessionUtils.<Void>withActivityMaster(enterpriseName, ActivityMasterSystemName, tuple -> {
-			Mutiny.Session session = tuple.getItem1();
+			Mutiny.StatelessSession session = tuple.getItem1();
 			return Uni.createFrom().item((IEnterprise<?, ?>) tuple.getItem2())
 				.chain(enterprise -> {
 					List<Uni<?>> operations = new ArrayList<>();
@@ -107,7 +107,7 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 		});
 	}
 	
-	private Uni<Void> checkClassificationExists(Mutiny.Session session, String classificationName, IEnterprise<?, ?> enterprise)
+	private Uni<Void> checkClassificationExists(Mutiny.StatelessSession session, String classificationName, IEnterprise<?, ?> enterprise)
 	{
 		return getISystem(session, ActivityMasterSystemName, enterprise)
 			.chain(system -> getISystemToken(session, ActivityMasterSystemName, enterprise)
@@ -118,7 +118,7 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 				}));
 	}
 	
-	public Uni<Void> processLogItemEntry(Mutiny.Session session, IEvent<?, ?> currentEvent, Pair<LogItem, Object> logItemObjectPair, IEnterprise<?, ?> enterprise) {
+	public Uni<Void> processLogItemEntry(Mutiny.StatelessSession session, IEvent<?, ?> currentEvent, Pair<LogItem, Object> logItemObjectPair, IEnterprise<?, ?> enterprise) {
 		Object value = logItemObjectPair.getValue();
 		if (value == null) value = "null";
 		
@@ -134,7 +134,7 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 						.replaceWith(Uni.createFrom().voidItem()))));
 	}
 	
-	private Uni<byte[]> decodeReferenceObject(Mutiny.Session session, Pair<Object, LogItemTypes> pair)
+	private Uni<byte[]> decodeReferenceObject(Mutiny.StatelessSession session, Pair<Object, LogItemTypes> pair)
 	{
 		Object key = pair.getKey();
 		if (key instanceof IResourceItem)

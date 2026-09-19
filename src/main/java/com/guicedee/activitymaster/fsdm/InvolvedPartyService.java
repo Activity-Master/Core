@@ -3,11 +3,11 @@ package com.guicedee.activitymaster.fsdm;
 /**
  * Reactivity Migration Checklist:
  * <p>
- * [✓] One action per Mutiny.Session at a time
+ * [✓] One action per Mutiny.StatelessSession at a time
  * - All operations on a session are sequential
  * - No parallel operations on the same session
  * <p>
- * [✓] Pass Mutiny.Session through the chain
+ * [✓] Pass Mutiny.StatelessSession through the chain
  * - All methods accept session as parameter
  * - Session is passed to all dependent operations
  * <p>
@@ -165,9 +165,9 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
 
     // Helper to load InvolvedParty by ID (eligible for Hibernate 2nd-level cache)
     public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedParty<?, ?>> getInvolvedPartyById(
-            org.hibernate.reactive.mutiny.Mutiny.Session session,
+            org.hibernate.reactive.mutiny.Mutiny.StatelessSession session,
             java.util.UUID id) {
-        return (io.smallrye.mutiny.Uni) session.find(com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty.class,
+        return (io.smallrye.mutiny.Uni) session.get(com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty.class,
                                                      id);
     }
 
@@ -195,20 +195,20 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
         }
     }
 
-    // UUID-based helpers delegating to session.find(...)
-    public io.smallrye.mutiny.Uni getInvolvedPartyTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session,
+    // UUID-based helpers delegating to session.get(...)
+    public io.smallrye.mutiny.Uni getInvolvedPartyTypeById(org.hibernate.reactive.mutiny.Mutiny.StatelessSession session,
                                                            java.util.UUID id) {
-        return session.find(InvolvedPartyType.class, id);
+        return session.get(InvolvedPartyType.class, id);
     }
 
-    public io.smallrye.mutiny.Uni getInvolvedPartyNameTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session,
+    public io.smallrye.mutiny.Uni getInvolvedPartyNameTypeById(org.hibernate.reactive.mutiny.Mutiny.StatelessSession session,
                                                                java.util.UUID id) {
-        return session.find(InvolvedPartyNameType.class, id);
+        return session.get(InvolvedPartyNameType.class, id);
     }
 
-    public io.smallrye.mutiny.Uni getInvolvedPartyIdentificationTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session,
+    public io.smallrye.mutiny.Uni getInvolvedPartyIdentificationTypeById(org.hibernate.reactive.mutiny.Mutiny.StatelessSession session,
                                                                          java.util.UUID id) {
-        return session.find(InvolvedPartyIdentificationType.class, id);
+        return session.get(InvolvedPartyIdentificationType.class, id);
     }
 
     @Inject
@@ -224,175 +224,10 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     }
 
     @Override
-    public Uni<IInvolvedParty<?, ?>> findByID(Mutiny.Session session, UUID id) {
-        log.trace("🔍 Finding InvolvedParty by ID: {} with session: {}", id, session.hashCode());
-        // Use session.find to leverage Hibernate 2nd-level cache on repeat loads
-        return (Uni) session.find(InvolvedParty.class, id);
-    }
-
-    @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Uni<IInvolvedParty<?, ?>> findByID(Mutiny.StatelessSession session, UUID id) {
         log.trace("🔍 Finding InvolvedParty by ID (stateless): {}", id);
         return (Uni) session.get(InvolvedParty.class, id);
-    }
-
-    @Override
-    public Uni<IInvolvedPartyNameType<?, ?>> createNameType(Mutiny.Session session,
-                                                            String name,
-                                                            String description,
-                                                            ISystems<?, ?> system,
-                                                            UUID... identityToken) {
-        log.trace("Creating InvolvedPartyNameType: name={}, description={}", name, description);
-
-        var enterprise = system.getEnterprise();
-
-        // Find-or-create using NoResultException handling (finders never return null)
-        return findInvolvedPartyNameType(session, name, system, identityToken).onItem().invoke(found -> log.debug(
-                "InvolvedPartyNameType already exists: {}",
-                name)).onFailure(NoResultException.class).recoverWithUni(err -> {
-            log.debug("Creating new InvolvedPartyNameType: {} (not found)", name);
-            InvolvedPartyNameType xr = new InvolvedPartyNameType();
-            xr.setName(name);
-            xr.setDescription(description);
-            xr.setSystemID(system);
-            xr.setOriginalSourceSystemID(system.getId());
-            xr.setEnterpriseID(enterprise);
-
-            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-            return acService.getActiveFlag(session, enterprise, identityToken).chain(activeFlag -> {
-                xr.setActiveFlagID(activeFlag);
-                return session.persist(xr).replaceWith(Uni.createFrom().item(xr));
-            }).chain(persisted -> {
-                // Handle security setup sequentially on the same session/thread
-                return persisted.createDefaultSecurity(session, system, identityToken).onItem()
-                                .invoke(result -> log.debug("Security setup completed successfully for name type {}",
-                                                            persisted.getName())).onFailure()
-                                .recoverWithItem(error2 -> {
-                                    log.warn("Error in createDefaultSecurity for name type", error2);
-                                    return null; // Continue chain even if security creation fails
-                                }).chain(() -> Uni.createFrom().item((IInvolvedPartyNameType<?, ?>) persisted));
-            });
-        });
-    }
-
-    @Override
-    public Uni<IInvolvedPartyIdentificationType<?, ?>> createIdentificationType(Mutiny.Session session,
-                                                                                ISystems<?, ?> system,
-                                                                                String name,
-                                                                                String description,
-                                                                                UUID... identityToken) {
-        log.debug("Creating InvolvedPartyIdentificationType: name={}, description={}", name, description);
-
-        var enterprise = system.getEnterprise();
-
-        // Find-or-create using NoResultException handling (finders never return null)
-        return findInvolvedPartyIdentificationType(session, name, system, identityToken).onItem()
-                                                                                        .invoke(found -> log.debug(
-                                                                                                "InvolvedPartyIdentificationType already exists: {}",
-                                                                                                name))
-                                                                                        .onFailure(NoResultException.class)
-                                                                                        .recoverWithUni(err -> {
-                                                                                            log.debug(
-                                                                                                    "Creating new InvolvedPartyIdentificationType: {} (not found)",
-                                                                                                    name);
-                                                                                            InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
-                                                                                            xr.setName(name);
-                                                                                            xr.setDescription(
-                                                                                                    description);
-                                                                                            xr.setSystemID(system);
-                                                                                            xr.setOriginalSourceSystemID(
-                                                                                                    system.getId());
-                                                                                            xr.setEnterpriseID(
-                                                                                                    enterprise);
-
-                                                                                            IActiveFlagService<?> acService = IGuiceContext.get(
-                                                                                                    IActiveFlagService.class);
-                                                                                            return acService
-                                                                                                    .getActiveFlag(
-                                                                                                            session,
-                                                                                                            enterprise,
-                                                                                                            identityToken)
-                                                                                                    .chain(activeFlag -> {
-                                                                                                        xr.setActiveFlagID(
-                                                                                                                activeFlag);
-                                                                                                        return session
-                                                                                                                .persist(
-                                                                                                                        xr)
-                                                                                                                .replaceWith(
-                                                                                                                        Uni
-                                                                                                                                .createFrom()
-                                                                                                                                .item(xr));
-                                                                                                    })
-                                                                                                    .chain(persisted -> {
-                                                                                                        // Handle security setup sequentially on the same session/thread
-                                                                                                        return persisted
-                                                                                                                .createDefaultSecurity(
-                                                                                                                        session,
-                                                                                                                        system,
-                                                                                                                        identityToken)
-                                                                                                                .onItem()
-                                                                                                                .invoke(result -> log.debug(
-                                                                                                                        "Security setup completed successfully for identification type {}",
-                                                                                                                        persisted.getName()))
-                                                                                                                .onFailure()
-                                                                                                                .recoverWithItem(
-                                                                                                                        error2 -> {
-                                                                                                                            log.warn(
-                                                                                                                                    "Error in createDefaultSecurity for identification type",
-                                                                                                                                    error2);
-                                                                                                                            return null; // Continue chain even if security creation fails
-                                                                                                                        })
-                                                                                                                .chain(() -> Uni
-                                                                                                                        .createFrom()
-                                                                                                                        .item((IInvolvedPartyIdentificationType<?, ?>) persisted));
-                                                                                                    });
-                                                                                        });
-    }
-
-    @Override
-    public Uni<IInvolvedPartyType<?, ?>> createType(Mutiny.Session session,
-                                                    ISystems<?, ?> system,
-                                                    String name,
-                                                    String description,
-                                                    UUID... identityToken) {
-        log.debug("Creating InvolvedPartyType: name={}, description={}", name, description);
-
-        var enterprise = system.getEnterprise();
-
-        // First try to find the entity
-        return findType(session, name, system, identityToken).onItem().invoke(found -> log.debug(
-                "InvolvedPartyType already exists: {}",
-                name)).onFailure(NoResultException.class).recoverWithUni(err -> {
-            // Create new entity if not found
-            log.debug("Creating new InvolvedPartyType: {} (not found)", name);
-            InvolvedPartyType xr = new InvolvedPartyType();
-            xr.setName(name);
-            xr.setDescription(description);
-            xr.setSystemID(system);
-            xr.setOriginalSourceSystemID(system.getId());
-            xr.setEnterpriseID(enterprise);
-
-            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-            return acService.getActiveFlag(session, enterprise, identityToken).chain(activeFlag -> {
-                xr.setActiveFlagID(activeFlag);
-                return session.persist(xr).replaceWith(Uni.createFrom().item(xr));
-            }).chain(persisted -> {
-                // Get activity master system and handle security setup sequentially
-                return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-                                     .chain(activityMasterSystem -> {
-                                         return persisted
-                                                 .createDefaultSecurity(session, activityMasterSystem, identityToken)
-                                                 .onItem().invoke(result -> log.debug(
-                                                         "Security setup completed successfully for type {}",
-                                                         persisted.getName())).onFailure().recoverWithItem(error2 -> {
-                                                     log.warn("Error in createDefaultSecurity for type", error2);
-                                                     return null; // Continue the chain even if security creation fails
-                                                 }).chain(() -> Uni.createFrom()
-                                                                   .item((IInvolvedPartyType<?, ?>) persisted));
-                                     });
-            });
-        });
     }
 
     // ============================================================================================
@@ -590,7 +425,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
 
     // ============================================================================================
     // Stateless involved-party create (world-readable default security), mirroring the managed
-    // create(Mutiny.Session, system, key, idTypes, isOrganic, …). Uses session.insert + the stateless
+    // create(Mutiny.StatelessSession, system, key, idTypes, isOrganic, …). Uses session.insert + the stateless
     // resolveDefaultGroupFolderTokens/createDefaultSecurity path and the stateless addOrReuse* mixins.
     // The enterprise/system references are taken from the (prepped) system parameter — no managed fetch.
     // ============================================================================================
@@ -617,7 +452,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
 
     /**
      * Stateless opt-in <strong>scope-restricted</strong> involved-party create — the stateless twin of
-     * {@link #createScopeRestricted(Mutiny.Session, ISystems, UUID, Pair, boolean, ISecurityToken, UUID...)}.
+     * {@link #createScopeRestricted(Mutiny.StatelessSession, ISystems, UUID, Pair, boolean, ISecurityToken, UUID...)}.
      * The party <em>and</em> its organic/non-organic sub-record are secured with the restricted matrix (no
      * Everyone/Everywhere/Guests; {@code scopeToken}=read). Each create runs on its own stateless unit, so
      * independent stateless sessions can provision parties in parallel.
@@ -740,7 +575,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
         });
     }
 
-    private Uni<InvolvedPartyOrganicType> createOrganicType(Mutiny.Session session,
+    private Uni<InvolvedPartyOrganicType> createOrganicType(Mutiny.StatelessSession session,
                                                             ISystems<?, ?> system,
                                                             UUID key,
                                                             String name,
@@ -761,7 +596,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
         IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
         return acService.getActiveFlag(session, enterprise, identityToken).chain(activeFlag -> {
             xr.setActiveFlagID(activeFlag);
-            return session.persist(xr).replaceWith(Uni.createFrom().item(xr));
+            return session.insert(xr).replaceWith(Uni.createFrom().item(xr));
         }).chain(persisted -> {
             // Get activity master system and handle security setup sequentially
             return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
@@ -776,121 +611,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
         });
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public Uni<IInvolvedPartyIdentificationType<?, ?>> findInvolvedPartyIdentificationType(Mutiny.Session session,
-                                                                                           String idType,
-                                                                                           ISystems<?, ?> system,
-                                                                                           UUID... identityToken) {
-        log.debug("Finding InvolvedPartyIdentificationType by name: {}", idType);
-        var enterprise = system.getEnterprise();
-        java.util.UUID enterpriseId = null;
-        java.util.UUID systemId = null;
-        if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
-            enterpriseId = ent.getId();
-        }
-        if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys) {
-            systemId = sys.getId();
-        }
-        String key = enterpriseId + "|" + systemId + "|" + idType;
-        java.util.UUID cachedId = involvedPartyIdentificationTypeKeyToId.get(key);
-        if (cachedId != null) {
-            log.trace("🔁 InvolvedPartyIdentificationType cache hit for key '{}': {} — loading by UUID", key, cachedId);
-            return getInvolvedPartyIdentificationTypeById(session, cachedId).flatMap(found -> {
-                if (found != null) {
-                    return Uni.createFrom().item(found);
-                }
-                involvedPartyIdentificationTypeKeyToId.remove(key);
-                InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
-                return xr.builder(session).withName(idType).inActiveRange().inDateRange().withEnterprise(enterprise)
-                         .get().onFailure(NoResultException.class).invoke(e -> log.warn(
-                                "InvolvedPartyIdentificationType with name '{}' could not be found",
-                                idType)).invoke(res -> {
-                            if (res != null && res.getId() != null) {
-                                involvedPartyIdentificationTypeKeyToId.put(key, res.getId());
-                            }
-                        });
-            });
-        }
-        InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
-        return (Uni) xr.builder(session).withName(idType).inActiveRange().inDateRange().withEnterprise(enterprise).get()
-                       .onFailure(NoResultException.class).invoke(e -> log.warn(
-                        "InvolvedPartyIdentificationType with name '{}' could not be found",
-                        idType)).invoke(res -> {
-                    if (res != null && res.getId() != null) {
-                        involvedPartyIdentificationTypeKeyToId.put(key, res.getId());
-                    }
-                });
-    }
-
-    @Override
-    public Uni<IInvolvedParty<?, ?>> findByResourceItem(Mutiny.Session session,
-                                                        IResourceItem<?, ?> idType,
-                                                        String value,
-                                                        ISystems<?, ?> system,
-                                                        UUID... identityToken) {
-        log.debug("Finding InvolvedParty by ResourceItem: value={}", value);
-        return new InvolvedPartyXResourceItem().builder(session).canRead(system, identityToken).inActiveRange()
-                                               .inDateRange().findLink(null, (ResourceItem) idType, value)
-                                               .setReturnFirst(true).get().onFailure(NoResultException.class)
-                                               .invoke(e -> log.warn(
-                                                       "InvolvedParty by ResourceItem with value '{}' could not be found",
-                                                       value)).onItem()
-                                               .transform(InvolvedPartyXResourceItem::getInvolvedPartyID);
-
-    }
-
-    @Override
-    public Uni<IInvolvedParty<?, ?>> create(Mutiny.Session session,
-                                            ISystems<?, ?> system,
-                                            Pair<String, String> idTypes,
-                                            boolean isOrganic,
-                                            UUID... identityToken) {
-        return create(session, system, null, idTypes, isOrganic, identityToken);
-    }
-
-    @Override
-    public Uni<IInvolvedParty<?, ?>> create(Mutiny.Session session,
-                                            ISystems<?, ?> system,
-                                            UUID key,
-                                            Pair<String, String> idTypes,
-                                            boolean isOrganic,
-                                            UUID... identityToken) {
-        // Public create → world-readable (public/default security matrix).
-        return createWithSecurity(session,
-                                  system,
-                                  key,
-                                  idTypes,
-                                  isOrganic,
-                                  rec -> rec.createDefaultSecurity(session, system, identityToken),
-                                  identityToken);
-    }
-
-    /**
-     * Opt-in <strong>scope-restricted</strong> involved-party create. Identical to
-     * {@link #create(Mutiny.Session, ISystems, UUID, Pair, boolean, UUID...)} except the party (and its
-     * organic/non-organic record) are secured with the restricted matrix: only Administrators / Systems /
-     * Applications / Plugins retain access, plus a <em>read</em> grant for {@code scopeToken}. Only identity
-     * tokens at that scope node or below it may read the party.
-     */
-    @Override
-    public Uni<IInvolvedParty<?, ?>> createScopeRestricted(Mutiny.Session session,
-                                                           ISystems<?, ?> system,
-                                                           UUID key,
-                                                           Pair<String, String> idTypes,
-                                                           boolean isOrganic,
-                                                           ISecurityToken<?, ?> scopeToken,
-                                                           UUID... identityToken) {
-        return createWithSecurity(session,
-                                  system,
-                                  key,
-                                  idTypes,
-                                  isOrganic,
-                                  rec -> rec.createScopeRestrictedSecurity(session, system, scopeToken, identityToken),
-                                  identityToken);
-    }
-
-    private Uni<IInvolvedParty<?, ?>> createWithSecurity(Mutiny.Session session,
+    private Uni<IInvolvedParty<?, ?>> createWithSecurity(Mutiny.StatelessSession session,
                                                          ISystems<?, ?> system,
                                                          UUID key,
                                                          Pair<String, String> idTypes,
@@ -912,7 +633,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
         IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
         return acService.getActiveFlag(session, enterprise, identityToken).chain(activeFlag -> {
             ip.setActiveFlagID(activeFlag);
-            return session.persist(ip).replaceWith(ip);
+            return session.insert(ip).replaceWith(ip);
         }).chain(persisted -> {
             // Handle security setup sequentially (strategy supplied by the caller).
             return securityFn.apply(persisted).chain(() -> findInvolvedPartyIdentificationType(session,
@@ -946,7 +667,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
         });
     }
 
-    private Uni<Void> setupInvolvedPartyOrganicStatus(Mutiny.Session session,
+    private Uni<Void> setupInvolvedPartyOrganicStatus(Mutiny.StatelessSession session,
                                                       boolean isOrganic,
                                                       IInvolvedParty<?, ?> ip,
                                                       java.util.function.Function<IWarehouseCoreTable<?, ?, ?, ?>, Uni<?>> securityFn,
@@ -967,7 +688,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
 
             return acService.getActiveFlag(session, enterprise, identityToken).chain(activeFlag -> {
                 ipo.setActiveFlagID(activeFlag);
-                return session.persist(ipo).replaceWith(ipo);
+                return session.insert(ipo).replaceWith(ipo);
             }).chain(persisted -> {
                 // Handle security setup sequentially
                 return securityFn.apply(persisted).onItem().invoke(result -> log.debug(
@@ -984,7 +705,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
 
             return acService.getActiveFlag(session, enterprise, identityToken).chain(activeFlag -> {
                 ipo.setActiveFlagID(activeFlag);
-                return session.persist(ipo).replaceWith(ipo);
+                return session.insert(ipo).replaceWith(ipo);
             }).chain(persisted -> {
                 // Handle security setup sequentially
                 return securityFn.apply(persisted).onItem().invoke(result -> log.debug(
@@ -994,144 +715,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
         }
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public Uni<IInvolvedPartyType<?, ?>> findType(Mutiny.Session session,
-                                                  String nameType,
-                                                  ISystems<?, ?> system,
-                                                  UUID... identityToken) {
-        log.debug("Finding InvolvedPartyType by name: {}", nameType);
-        var enterprise = system.getEnterprise();
-        java.util.UUID enterpriseId = null;
-        java.util.UUID systemId = null;
-        if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
-            enterpriseId = ent.getId();
-        }
-        if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys) {
-            systemId = sys.getId();
-        }
-        String key = enterpriseId + "|" + systemId + "|" + nameType;
-        java.util.UUID cachedId = involvedPartyTypeKeyToId.get(key);
-        if (cachedId != null) {
-            log.trace("🔁 InvolvedPartyType cache hit for key '{}': {} — loading by UUID", key, cachedId);
-            return getInvolvedPartyTypeById(session, cachedId).flatMap(found -> {
-                if (found != null) {
-                    return Uni.createFrom().item(found);
-                }
-                involvedPartyTypeKeyToId.remove(key);
-                InvolvedPartyType xr = new InvolvedPartyType();
-                return xr.builder(session).withName(nameType).inActiveRange().withEnterprise(enterprise).inDateRange()
-                         .get().onFailure(NoResultException.class)
-                         .invoke(e -> log.warn("InvolvedPartyType with name '{}' could not be found", nameType))
-                         .invoke(res -> {
-                             if (res != null && res.getId() != null) {
-                                 involvedPartyTypeKeyToId.put(key, res.getId());
-                             }
-                         });
-            });
-        }
-        InvolvedPartyType xr = new InvolvedPartyType();
-        return (Uni) xr.builder(session).withName(nameType).inActiveRange().withEnterprise(enterprise).inDateRange()
-                       .get().onFailure(NoResultException.class)
-                       .invoke(e -> log.warn("InvolvedPartyType with name '{}' could not be found", nameType))
-                       .invoke(res -> {
-                           if (res != null && res.getId() != null) {
-                               involvedPartyTypeKeyToId.put(key, (java.util.UUID) res.getId());
-                           }
-                       });
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Uni<IInvolvedPartyNameType<?, ?>> findInvolvedPartyNameType(Mutiny.Session session,
-                                                                       String nameType,
-                                                                       ISystems<?, ?> system,
-                                                                       UUID... identityToken) {
-        log.debug("Finding InvolvedPartyNameType by name: {}", nameType);
-        var enterprise = system.getEnterprise();
-        java.util.UUID enterpriseId = null;
-        java.util.UUID systemId = null;
-        if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
-            enterpriseId = ent.getId();
-        }
-        if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys) {
-            systemId = sys.getId();
-        }
-        String key = enterpriseId + "|" + systemId + "|" + nameType;
-        java.util.UUID cachedId = involvedPartyNameTypeKeyToId.get(key);
-        if (cachedId != null) {
-            log.trace("🔁 InvolvedPartyNameType cache hit for key '{}': {} — loading by UUID", key, cachedId);
-            return getInvolvedPartyNameTypeById(session, cachedId).flatMap(found -> {
-                if (found != null) {
-                    return Uni.createFrom().item(found);
-                }
-                involvedPartyNameTypeKeyToId.remove(key);
-                InvolvedPartyNameType xr = new InvolvedPartyNameType();
-                return xr.builder(session).withName(nameType).inActiveRange().inDateRange().withEnterprise(enterprise)
-                         .get().onFailure(NoResultException.class)
-                         .invoke(e -> log.warn("InvolvedPartyNameType with name '{}' could not be found", nameType))
-                         .invoke(res -> {
-                             if (res != null && res.getId() != null) {
-                                 involvedPartyNameTypeKeyToId.put(key, res.getId());
-                             }
-                         });
-            });
-        }
-        InvolvedPartyNameType xr = new InvolvedPartyNameType();
-        return (Uni) xr.builder(session).withName(nameType).inActiveRange().inDateRange().withEnterprise(enterprise)
-                       .get().onFailure(NoResultException.class)
-                       .invoke(e -> log.warn("InvolvedPartyNameType with name '{}' could not be found", nameType))
-                       .invoke(res -> {
-                           if (res != null && res.getId() != null) {
-                               involvedPartyNameTypeKeyToId.put(key, res.getId());
-                           }
-                       });
-    }
-
-    @Override
-    public Uni<IInvolvedParty<?, ?>> findByToken(Mutiny.Session session,
-                                                 ISecurityToken<?, ?> token,
-                                                 UUID... identityToken) {
-        log.debug("Finding InvolvedParty by token: {}", token.getSecurityToken());
-
-        var sys = ((SecurityToken) token).getSystemID();
-        var enterprise = sys.getEnterprise();
-        java.util.UUID enterpriseId = null;
-        java.util.UUID systemId = null;
-        if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
-            enterpriseId = ent.getId();
-        }
-        if (sys instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems s) {
-            systemId = s.getId();
-        }
-        String identTypeName = IdentificationTypeUUID.toString();
-        String key = enterpriseId + "|" + systemId + "|" + identTypeName + "|" + token.getSecurityToken();
-
-        java.util.UUID cachedId = involvedPartyKeyToId.get(key);
-        if (cachedId != null) {
-            log.trace("🔁 InvolvedParty cache hit for key '{}' → {} — loading by UUID", key, cachedId);
-            return getInvolvedPartyById(session, cachedId).flatMap(found -> {
-                if (found != null) {
-                    return Uni.createFrom().item(found);
-                }
-                involvedPartyKeyToId.remove(key); // stale
-                return proceedFindByTokenColdPath(session, token, identityToken).invoke(p -> {
-                    if (p != null && p.getId() != null) {
-                        involvedPartyKeyToId.put(key, p.getId());
-                    }
-                });
-            });
-        }
-
-        // Cold path
-        return proceedFindByTokenColdPath(session, token, identityToken).invoke(p -> {
-            if (p != null && p.getId() != null) {
-                involvedPartyKeyToId.put(key, p.getId());
-            }
-        });
-    }
-
-    private Uni<IInvolvedParty<?, ?>> proceedFindByTokenColdPath(Mutiny.Session session,
+    private Uni<IInvolvedParty<?, ?>> proceedFindByTokenColdPath(Mutiny.StatelessSession session,
                                                                  ISecurityToken<?, ?> token,
                                                                  UUID... identityToken) {
         return findInvolvedPartyIdentificationType(session,
@@ -1150,22 +734,6 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     }
 
     @Override
-    public Uni<IInvolvedParty<?, ?>> find(Mutiny.Session session, UUID uuid) {
-        log.debug("🔍 Finding InvolvedParty by UUID: {} with session: {}", uuid, session.hashCode());
-        return new InvolvedParty().builder(session).find(uuid).get().onFailure(NoResultException.class)
-                                  .invoke(e -> log.warn("InvolvedParty with UUID '{}' could not be found", uuid))
-                                  .onItem().invoke(result -> {
-                    if (result != null) {
-                        log.debug("✅ Found InvolvedParty with UUID: {}", uuid);
-                    } else {
-                        log.debug("⚠️ InvolvedParty with UUID: {} not found", uuid);
-                    }
-                }).onItem().ifNull()
-                                  .failWith(() -> new InvolvedPartyException("The InvolvedParty does not exist - " + uuid))
-                                  .map(involvedParty -> involvedParty);
-    }
-
-    @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Uni<IInvolvedParty<?, ?>> find(Mutiny.StatelessSession session, UUID uuid) {
         log.trace("🔍 Finding InvolvedParty by UUID (stateless): {}", uuid);
@@ -1173,7 +741,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     }
 
     @Override
-    public Uni<IInvolvedPartyType<?, ?>> findType(Mutiny.Session session, UUID uuid) {
+    public Uni<IInvolvedPartyType<?, ?>> findType(Mutiny.StatelessSession session, UUID uuid) {
         log.debug("🔍 Finding InvolvedPartyType by UUID: {} with session: {}", uuid, session.hashCode());
         return new InvolvedPartyType().builder(session).find(uuid).get().onFailure(NoResultException.class)
                                       .invoke(e -> log.warn("InvolvedPartyType with UUID '{}' could not be found",
@@ -1187,32 +755,6 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                       .failWith(() -> new InvolvedPartyException(
                                               "The InvolvedPartyType does not exist - " + uuid))
                                       .map(involvedPartyType -> involvedPartyType);
-    }
-
-    @Override
-    public Uni<IInvolvedPartyNameType<?, ?>> findNameType(Mutiny.Session session, UUID uuid) {
-        log.debug("🔍 Finding InvolvedPartyNameType by UUID: {} with session: {}", uuid, session.hashCode());
-        return new InvolvedPartyNameType().builder(session).find(uuid).get().onFailure(NoResultException.class)
-                                          .invoke(e -> log.warn(
-                                                  "InvolvedPartyNameType with UUID '{}' could not be found",
-                                                  uuid)).onItem().invoke(result -> {
-                    if (result != null) {
-                        log.debug("✅ Found InvolvedPartyNameType with UUID: {}", uuid);
-                    } else {
-                        log.debug("⚠️ InvolvedPartyNameType with UUID: {} not found", uuid);
-                    }
-                }).onItem().ifNull().failWith(() -> new InvolvedPartyException(
-                        "The InvolvedPartyNameType does not exist - " + uuid)).map(nameType -> nameType);
-    }
-
-    @Override
-    public Uni<IInvolvedPartyIdentificationType<?, ?>> findIdentificationType(Mutiny.Session session, UUID uuid) {
-        log.debug("Finding InvolvedPartyIdentificationType by UUID: {}", uuid);
-        return (Uni) new InvolvedPartyIdentificationType().builder(session).find(uuid).get()
-                                                          .onFailure(NoResultException.class).invoke(e -> log.warn(
-                        "InvolvedPartyIdentificationType with UUID '{}' could not be found",
-                        uuid));
-
     }
 
     @Override
@@ -1238,49 +780,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                         uuid));
     }
 
-    @Override
-    public Uni<IInvolvedParty<?, ?>> findByUUID(Mutiny.Session session,
-                                                UUID token,
-                                                ISystems<?, ?> system,
-                                                UUID... identityToken) {
-        log.trace("Finding InvolvedParty by UUID token: {}", token);
-        var enterprise = system.getEnterprise();
-        java.util.UUID enterpriseId = null;
-        java.util.UUID systemId = null;
-        if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
-            enterpriseId = ent.getId();
-        }
-        if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems s) {
-            systemId = s.getId();
-        }
-        String identTypeName = IdentificationTypeUUID.toString();
-        String key = enterpriseId + "|" + systemId + "|" + identTypeName + "|" + token.toString();
-
-        java.util.UUID cachedId = involvedPartyKeyToId.get(key);
-        if (cachedId != null) {
-            log.trace("🔁 InvolvedParty cache hit for key '{}' → {} — loading by UUID", key, cachedId);
-            return getInvolvedPartyById(session, cachedId).flatMap(found -> {
-                if (found != null) {
-                    return Uni.createFrom().item(found);
-                }
-                involvedPartyKeyToId.remove(key);
-                return proceedFindByUUIDColdPath(session, token, system, identityToken).invoke(p -> {
-                    if (p != null && p.getId() != null) {
-                        involvedPartyKeyToId.put(key, p.getId());
-                    }
-                });
-            });
-        }
-
-        // Cold path
-        return proceedFindByUUIDColdPath(session, token, system, identityToken).invoke(p -> {
-            if (p != null && p.getId() != null) {
-                involvedPartyKeyToId.put(key, p.getId());
-            }
-        });
-    }
-
-    private Uni<IInvolvedParty<?, ?>> proceedFindByUUIDColdPath(Mutiny.Session session,
+    private Uni<IInvolvedParty<?, ?>> proceedFindByUUIDColdPath(Mutiny.StatelessSession session,
                                                                 UUID token,
                                                                 ISystems<?, ?> system,
                                                                 UUID... identityToken) {
@@ -1294,78 +794,6 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                  .onFailure(NoResultException.class)
                                  .invoke(e -> log.warn("InvolvedParty by UUID '{}' could not be found", token));
                 }).chain(idxid -> session.fetch(idxid.getInvolvedPartyID()));
-    }
-
-    @Override
-    public Uni<List<IRelationshipValue<IInvolvedParty<?, ?>, IInvolvedPartyIdentificationType<?, ?>, ?>>> findAllByIdentificationType(
-            Mutiny.Session session,
-            String identificationType,
-            String value) {
-        log.debug("Finding all InvolvedParties by identification type: {}, value: {}", identificationType, value);
-        InvolvedPartyIdentificationTypeQueryBuilder builder = new InvolvedPartyIdentificationType().builder(session);
-        builder.inDateRange().where(InvolvedPartyIdentificationType_.name, Equals, identificationType);
-
-        InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder ipQb = new InvolvedPartyXInvolvedPartyIdentificationType().builder(
-                session);
-        if (value != null) {
-            ipQb.withValue(value);
-        }
-
-        ipQb.inDateRange()
-            .orderBy(InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyIdentificationTypeID, DESC).join(
-                    InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyIdentificationTypeID,
-                    builder,
-                    JoinType.INNER);
-
-        return ipQb.getAll().onFailure().invoke(error -> log.error(
-                           "Error finding involved parties by identification type: {}",
-                           error.getMessage(),
-                           error))
-                   .map(list -> (List<IRelationshipValue<IInvolvedParty<?, ?>, IInvolvedPartyIdentificationType<?, ?>, ?>>) (List<?>) list);
-
-    }
-
-    @Override
-    public Uni<List<IInvolvedParty<?, ?>>> findByRulesClassification(Mutiny.Session session,
-                                                                     String classification,
-                                                                     String value,
-                                                                     ISystems<?, ?> system,
-                                                                     UUID... identityToken) {
-        log.debug("Finding InvolvedParties by rules classification: {}, value: {}", classification, value);
-        return classificationService.find(session, classification, system, identityToken).chain(classification1 -> {
-            return new InvolvedPartyXRules().builder(session).withClassification(classification1).withValue(value)
-                                            .inActiveRange().inDateRange().getAll().onFailure()
-                                            .invoke(error -> log.error(
-                                                    "Error finding involved parties by rules classification: {}",
-                                                    error.getMessage(),
-                                                    error)).map(list -> {
-                        List<IInvolvedParty<?, ?>> result = new ArrayList<>();
-                        for (InvolvedPartyXRules item : list) {
-                            result.add(item.getInvolvedPartyID());
-                        }
-                        return result;
-                    });
-        });
-    }
-
-    @Override
-    public Uni<IInvolvedParty<?, ?>> findByClassification(Mutiny.Session session,
-                                                          String classification,
-                                                          String value,
-                                                          ISystems<?, ?> system,
-                                                          UUID... identityToken) {
-        log.debug("Finding InvolvedParty by classification: {}, value: {}", classification, value);
-        return classificationService.find(session, classification, system, identityToken).chain(classification1 -> {
-            return new InvolvedPartyXClassification().builder(session).withClassification(classification1)
-                                                     .withValue(value).inActiveRange().inDateRange().get().onFailure()
-                                                     .invoke(error -> log.error(
-                                                             "Error finding involved party by classification: {}",
-                                                             error.getMessage(),
-                                                             error)).onItem().ifNotNull()
-                                                     .transform(item -> (IInvolvedParty<?, ?>) item.getPrimary())
-                                                     .onItem().ifNull().continueWith(() -> null);
-        });
-
     }
 
     // ============================================================================================

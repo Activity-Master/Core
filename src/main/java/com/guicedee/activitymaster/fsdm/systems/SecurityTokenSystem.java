@@ -25,6 +25,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsXClassificati
 import com.guicedee.client.IGuiceContext;
 //import jakarta.transaction.Transactional;
 import io.smallrye.mutiny.Uni;
+import jakarta.persistence.NoResultException;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
@@ -71,7 +72,7 @@ public class SecurityTokenSystem
     }
 
     @Override
-    public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    public Uni<ISystems<?, ?>> registerSystem(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         log.info("🚀 Registering Security Token System for enterprise: '{}'", enterprise.getName());
         log.debug("📋 Creating Security Token System with session: {}", session.hashCode());
 
@@ -99,30 +100,8 @@ public class SecurityTokenSystem
                 .map(result -> result);
     }
 
-    @Override
-    public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
-        logProgress("Security Token Service", "Starting Security Structure Checks/Install");
-        log.info("Creating security token defaults in a new session and transaction");
-
-        // Fresh install run: drop any context cached from a previous enterprise.
-        defaultSecurityContext = null;
-
-        // Use the passed-in session
-        return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-                .onItem()
-                .invoke(activityMasterSystem -> {
-                    log.debug("Found ActivityMaster system: '{}' with session: {}",
-                            activityMasterSystem.getName(), session.hashCode());
-                })
-                .onFailure()
-                .invoke(error -> log.error("Failed to find ActivityMaster system: {}",
-                        error.getMessage(), error))
-                .chain(activityMasterSystem -> createSecurityDefaults(session, enterprise, activityMasterSystem))
-                .replaceWithVoid();
-    }
-
     /**
-     * Genuinely stateless variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — provisions the
+     * Genuinely stateless variant of {@link #createDefaults(Mutiny.StatelessSession, IEnterprise)} — provisions the
      * entire security structure (classifications, token hierarchy, access-grant matrix, default-security
      * for every bootstrap table and the ActivityMaster involved party) on the supplied
      * {@link Mutiny.StatelessSession} <strong>without bridging</strong> to a managed session.
@@ -506,147 +485,7 @@ public class SecurityTokenSystem
                 .invoke(() -> log.info("✅ (stateless) All post-ActivityMaster security defaults applied successfully"));
     }
 
-    private Uni<Void> createSecurityDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
-        log.info("🔐 Creating security defaults for enterprise: '{}' with session: {}",
-                enterprise.getName(), session.hashCode());
-
-        return createSecurityClassifications(session, enterprise, system)
-                .chain(v -> createSecurityTokens(session, enterprise, system))
-                .chain(rootToken -> createGroupsAndFolders(session, enterprise, rootToken, system))
-                .chain(v -> applyDefaultsToNewEnterprise(session, enterprise, system))
-                .chain(v -> createActivityMasterInvolvedParty(session, enterprise, system))
-                .chain(v -> applyDefaultsToNewEnterpriseAfterActivityMaster(session, enterprise, system))
-                .onItem()
-                .invoke(() -> log.info("✅ Security defaults created successfully for enterprise: '{}'", enterprise.getName()))
-                .onFailure()
-                .invoke(error -> log.error("❌ Failed to create security defaults for enterprise '{}': {}",
-                        enterprise.getName(), error.getMessage(), error))
-                .replaceWithVoid();
-    }
-
-    private Uni<Void> createSecurityClassifications(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
-        log.info("🏷️ Creating security classifications for enterprise: '{}' with session: {}",
-                enterprise.getName(), session.hashCode());
-
-        // Create the enterprise classification first
-        return classificationService.create(session, enterprise.getName(), system)
-                .onItem()
-                .invoke(entClassification ->
-                        log.debug("✅ Created enterprise classification: '{}'", entClassification.getName()))
-                .onFailure()
-                .invoke(error ->
-                        log.error("❌ Failed to create enterprise classification: {}", error.getMessage(), error))
-                .chain(entClassification -> {
-                    // Create all security-related classifications sequentially
-                    log.info("🏷️ Creating security classifications sequentially");
-
-                    // Chain all classification creation operations
-                    return classificationService.create(session,
-                                    SecurityTokenClassifications.UserGroup.toString(),
-                                    SecurityTokenClassifications.UserGroup.toString(),
-                                    EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
-                                    system, 1, entClassification)
-                            .chain(v -> classificationService.create(session,
-                                    SecurityTokenClassifications.User.toString(),
-                                    SecurityTokenClassifications.User.toString(),
-                                    EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
-                                    system, 2))
-                            .chain(v -> classificationService.create(session,
-                                    SecurityTokenClassifications.Guests.toString(),
-                                    SecurityTokenClassifications.Guests.toString(),
-                                    EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
-                                    system, 2))
-                            .chain(v -> classificationService.create(session,
-                                    SecurityTokenClassifications.Visitors.toString(),
-                                    SecurityTokenClassifications.Visitors.toString(),
-                                    EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
-                                    system, 2))
-                            .chain(v -> classificationService.create(session,
-                                    SecurityTokenClassifications.Registered.toString(),
-                                    SecurityTokenClassifications.Registered.toString(),
-                                    EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
-                                    system, 2))
-                            .chain(v -> classificationService.create(session,
-                                    SecurityTokenClassifications.Application.toString(),
-                                    SecurityTokenClassifications.Application.toString(),
-                                    EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
-                                    system, 3))
-                            .chain(v -> classificationService.create(session,
-                                    UserGroupSecurityTokenClassifications.System.toString(),
-                                    UserGroupSecurityTokenClassifications.System.toString(),
-                                    EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
-                                    system, 4))
-                            .chain(v -> classificationService.create(session,
-                                    SecurityTokenClassifications.Plugin.toString(),
-                                    SecurityTokenClassifications.Plugin.toString(),
-                                    EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
-                                    system, 5))
-                            .chain(v -> classificationService.create(session,
-                                    SecurityTokenClassifications.Identity.toString(),
-                                    "A security token identity",
-                                    EnterpriseClassificationDataConcepts.SecurityTokenXClassification,
-                                    system, 1, entClassification))
-                            .onItem()
-                            .invoke(() -> {
-                                log.info("✅ All security classifications created successfully");
-                                logProgress("Security Token Service", "Security Classifications Installed", 11);
-                            })
-                            .onFailure()
-                            .invoke(error ->
-                                    log.error("❌ Error creating security classifications: {}", error.getMessage(), error));
-                })
-                .replaceWith(Uni.createFrom()
-                        .voidItem());
-    }
-
-    private Uni<SecurityToken> createSecurityTokens(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
-        log.info("🎫 Creating security tokens for enterprise: '{}' with session: {}",
-                enterprise.getName(), session.hashCode());
-
-        // Prepare the description
-        String description = enterprise.getDescription()
-                .isEmpty()
-                ? "An enterprise-wide project"
-                : enterprise.getDescription();
-
-        // Create the root token
-        return securityTokenService.create(session, enterprise.getName(),
-                        enterprise.getName(), description, system)
-                .onItem()
-                .invoke(token ->
-                        log.debug("✅ Created root token: '{}'", token.getName()))
-                .onFailure()
-                .invoke(error ->
-                        log.error("❌ Error creating root token: {}", error.getMessage(), error))
-                .chain(rootToken -> {
-                    // Grant access to the token
-                    return securityTokenService.grantAccessToToken(session, rootToken, rootToken,
-                                    false, false, false, false, system)
-                            .onFailure()
-                            .invoke(error ->
-                                    log.error("❌ Error granting access to token: {}", error.getMessage(), error))
-                            .map(v -> {
-                                // Add classification to the enterprise
-                                try {
-                                    enterprise.addOrUpdateClassification(session,
-                                            EnterpriseClassifications.EnterpriseIdentity,
-                                            (String) null,
-                                            rootToken.getSecurityToken(),
-                                            system);
-                                    log.debug("✅ Added classification to enterprise: {}",
-                                            EnterpriseClassifications.EnterpriseIdentity);
-                                } catch (Exception e) {
-                                    log.error("❌ Error adding classification to enterprise: {}", e.getMessage(), e);
-                                }
-
-                                logProgress("Security Token Service", "Enterprise Security Validated", 3);
-                                log.info("✅ Successfully created security tokens for enterprise: '{}'", enterprise.getName());
-                                return (SecurityToken) rootToken;
-                            });
-                });
-    }
-
-    private Uni<Void> createGroupsAndFolders(Mutiny.Session session, IEnterprise<?, ?> enterprise, SecurityToken rootToken, ISystems<?, ?> system) {
+    private Uni<Void> createGroupsAndFolders(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, SecurityToken rootToken, ISystems<?, ?> system) {
         log.info("👥 Creating groups and folders for enterprise: '{}' with session: {}",
                 enterprise.getName(), session.hashCode());
 
@@ -828,7 +667,7 @@ public class SecurityTokenSystem
                 });
     }
 
-    private Uni<Void> createAccessGrantsSequentially(Mutiny.Session session,
+    private Uni<Void> createAccessGrantsSequentially(Mutiny.StatelessSession session,
                                                      SecurityToken administratorsToken, SecurityToken everyoneToken, SecurityToken everywhereToken,
                                                      SecurityToken usersGuestsToken, SecurityToken usersGuestsRegisteredToken, SecurityToken usersGuestsVisitorsToken,
                                                      SecurityToken applicationToken, SecurityToken systemsToken, SecurityToken pluginToken,
@@ -935,160 +774,12 @@ public class SecurityTokenSystem
                 .chain(v -> securityTokenService.grantAccessToToken(session, pluginToken, usersGuestsVisitorsToken, true, true, true, true, system));
     }
 
-    private Uni<Void> applyDefaultsToNewEnterprise(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
-        log.info("🏢 Applying reactive security defaults for enterprise: '{}' with session: {}",
-                enterprise.getName(), session.hashCode());
-
-        logProgress("Security Token Service", "Checking Default Security for all enterprise default items");
-
-        // Create sequential operations for all security table creation
-        logProgress("Security Token Service", "Starting basic security checks", 1);
-        return createDefaultSecurityForTableReactive(session, new ActiveFlag(), system)
-                .chain(v -> {
-                    logProgress("Security Token Service", "Systems securities", 1);
-                    return createDefaultSecurityForTableReactive(session, new Systems(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "System Classifications securities", 1);
-                    return createDefaultSecurityForTableReactive(session, new SystemsXClassification(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Classification Data Concepts security checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new ClassificationDataConcept(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Classifications checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new Classification(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Hierarchy checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new ClassificationXClassification(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Identification Type checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new InvolvedPartyIdentificationType(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Name Types checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new InvolvedPartyNameType(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Party Type checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new InvolvedPartyType(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Involved Party Organic Types checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new InvolvedPartyOrganicType(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Final Enterprise checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new EnterpriseXClassification(), system);
-                })
-                .chain(v -> createDefaultSecurityForTableReactive(session, (WarehouseCoreTable<?, ?, ?, ?>) enterprise, system))
-                .onItem()
-                .invoke(() -> {
-                    log.info("✅ All enterprise security defaults applied successfully");
-                    logProgress("Security Token Service", "Completed Checks", 1);
-                })
-                .onFailure()
-                .invoke(error -> {
-                    log.error("❌ Failed to apply enterprise security defaults: {}", error.getMessage(), error);
-                });
-    }
-
-    private Uni<Void> createActivityMasterInvolvedParty(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
-        log.info("👤 Creating ActivityMaster involved party for enterprise: '{}' with session: {}",
-                enterprise.getName(), session.hashCode());
-
-        return IGuiceContext.get(SystemsSystem.class)
-                .createInvolvedPartyForNewSystem(session, system)
-                .replaceWith(Uni.createFrom()
-                        .voidItem());
-    }
-
-    private Uni<Void> applyDefaultsToNewEnterpriseAfterActivityMaster(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system) {
-        log.info("🏢 Applying reactive post-ActivityMaster security defaults for enterprise: '{}' with session: {}",
-                enterprise.getName(), session.hashCode());
-
-        // Create sequential operations for all post-ActivityMaster security table creation
-        logProgress("Security Token Service", "Starting Involved Party Relationship checks", 1);
-        return createDefaultSecurityForTableReactive(session, new InvolvedParty(), system)
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Involved Party Organic Relationship checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new InvolvedPartyOrganic(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Involved Party Non Organic checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new InvolvedPartyNonOrganic(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Involved Party Relationship checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new InvolvedPartyXInvolvedPartyIdentificationType(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Involved Party Classifications Relationship checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new InvolvedPartyXClassification(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Involved Party Name Type Relationship checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new InvolvedPartyXInvolvedPartyNameType(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Involved Party Type Relationship checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new InvolvedPartyXInvolvedPartyType(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Events checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new EventType(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Resource Item Types checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new ResourceItemType(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Arrangement Types checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new ArrangementType(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting Arrangement checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new Arrangement(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting ArrangementXType checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new ArrangementXArrangementType(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting ArrangementXClassification checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new ArrangementXClassification(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting ArrangementXResourceItem checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new ArrangementXResourceItem(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting ArrangementXInvolvedParty checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new ArrangementXInvolvedParty(), system);
-                })
-                .chain(v -> {
-                    logProgress("Security Token Service", "Starting ArrangementXProduct checks", 1);
-                    return createDefaultSecurityForTableReactive(session, new ArrangementXProduct(), system);
-                })
-                .onItem()
-                .invoke(() -> {
-                    log.info("✅ All post-ActivityMaster security defaults applied successfully");
-                })
-                .onFailure()
-                .invoke(error -> {
-                    log.error("❌ Failed to apply post-ActivityMaster security defaults: {}", error.getMessage(), error);
-                });
-    }
-
     /**
      * Resolves the shared default-security context (canonical group/folder tokens + enterprise +
      * active flag) <em>once</em> per install and caches it. Every record across every table gets the
      * same set of grants, so there is no need to re-query these for each table.
      */
-    private Uni<DefaultSecurityContext> resolveDefaultSecurityContext(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
+    private Uni<DefaultSecurityContext> resolveDefaultSecurityContext(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
         if (defaultSecurityContext != null) {
             return Uni.createFrom().item(defaultSecurityContext);
         }
@@ -1130,7 +821,7 @@ public class SecurityTokenSystem
      * the stateless inserts run in their own (scope-free) transaction where the flag falls back to its
      * secure-by-default {@code true} state — so install always provisions default security.
      */
-    private Uni<Void> createDefaultSecurityForTableReactive(Mutiny.Session session, WarehouseCoreTable<?, ?, ?, ?> table, ISystems<?, ?> system, java.util.UUID... identityToken) {
+    private Uni<Void> createDefaultSecurityForTableReactive(Mutiny.StatelessSession session, WarehouseCoreTable<?, ?, ?, ?> table, ISystems<?, ?> system, java.util.UUID... identityToken) {
         log.debug("🔐 Creating reactive (batched/stateless) security for table: {}",
                 table.getClass().getSimpleName());
 
@@ -1194,29 +885,34 @@ public class SecurityTokenSystem
     }
 
     @Override
-    public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    public Uni<Void> postStartup(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         log.info("Starting reactive postStartup for Security Token System");
 
-        // Create a reactive chain for the postStartup operations
-        // Get the system
+        // Only absent registration data is recoverable. Repair once on the caller's session,
+        // then read the identity back; a failed repair must still fail startup.
         return systemsService.findSystem(session, enterprise, getSystemName())
                 .onItem()
                 .ifNull()
-                .failWith(() -> new RuntimeException("System not found: " + getSystemName()))
-                .chain(system -> {
-                    log.debug("Found system: {}", system.getName());
-                    // Get the security token
-                    return systemsService.getSecurityIdentityToken(session, system)
-                            .onItem()
-                            .ifNull()
-                            .failWith(() -> new RuntimeException("Security token not found for system: " + system.getName()))
-                            .map(token -> {
-                                log.debug("Found security token for system: {}", system.getName());
-                                return null; // Return Void
-                            });
+                .failWith(() -> new NoResultException("System not found: " + getSystemName()))
+                .chain(system -> verifyStartupIdentity(session, system))
+                .onFailure(NoResultException.class)
+                .recoverWithUni(missing -> {
+                    log.warn("Repairing missing registration or identity for system '{}' in enterprise '{}'",
+                            getSystemName(), enterprise.getName());
+                    return registerSystem(session, enterprise)
+                            .chain(system -> verifyStartupIdentity(session, system))
+                            .invoke(() -> log.info("Recovered security system startup for enterprise '{}'", enterprise.getName()));
                 })
-                .replaceWith(Uni.createFrom()
-                        .voidItem());
+                .onFailure().invoke(error -> log.error("Security system startup failed for enterprise '{}'",
+                        enterprise.getName(), error));
+    }
+
+    private Uni<Void> verifyStartupIdentity(Mutiny.StatelessSession session, ISystems<?, ?> system) {
+        return systemsService.getSecurityIdentityToken(session, system)
+                .onItem().ifNull().failWith(() -> new NoResultException(
+                        "Security token not found for system: " + system.getName()))
+                .invoke(() -> log.debug("Verified security identity for system: {}", system.getName()))
+                .replaceWithVoid();
     }
 
     @Override

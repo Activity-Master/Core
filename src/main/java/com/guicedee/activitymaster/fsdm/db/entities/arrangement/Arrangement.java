@@ -150,7 +150,7 @@ public class Arrangement
      * @return A Uni that completes when the removal is done
      */
     @Override
-    public Uni<Arrangement> remove(Mutiny.Session session)
+    public Uni<Arrangement> remove(Mutiny.StatelessSession session)
     {
         // First remove all child entities
         if (classifications != null)
@@ -280,13 +280,6 @@ public class Arrangement
     }
 
     @Override
-    public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
-    {
-        ((ArrangementXClassification) linkTable).setArrangementID(this);
-        return io.smallrye.mutiny.Uni.createFrom().voidItem();
-    }
-
-    @Override
     public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.StatelessSession session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
     {
         ((ArrangementXClassification) linkTable).setArrangementID(this);
@@ -294,7 +287,7 @@ public class Arrangement
     }
 
     @Override
-    public void configureProductAddable(Mutiny.Session session, IWarehouseRelationshipTable linkTable, Arrangement primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    public void configureProductAddable(Mutiny.StatelessSession session, IWarehouseRelationshipTable linkTable, Arrangement primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
     {
         ArrangementXProduct axa = (ArrangementXProduct) linkTable;
         axa.setArrangementID(primary);

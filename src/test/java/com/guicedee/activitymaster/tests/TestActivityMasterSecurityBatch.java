@@ -113,7 +113,7 @@ public class TestActivityMasterSecurityBatch {
         final Ctx ctx = new Ctx();
 
         // ── Phase A: resolve the shared security context + create the owning records (stateful) ──
-        sessionFactory.withTransaction(session -> {
+        sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
             ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
             IClassificationDataConceptService<?> dcs = IGuiceContext.get(IClassificationDataConceptService.class);
@@ -195,7 +195,7 @@ public class TestActivityMasterSecurityBatch {
                 "Each record should produce " + SECURITY_ROWS_PER_RECORD + " security rows");
 
         // ── Phase C: assert the rows were actually persisted for every record (stateful read) ──
-        sessionFactory.withTransaction(session -> {
+        sessionFactory.withStatelessTransaction(session -> {
             Uni<Void> chain = Uni.createFrom().voidItem();
             for (IClassification<?, ?> record : ctx.records) {
                 final IWarehouseCoreTable<?, ?, ?, ?> core = (IWarehouseCoreTable<?, ?, ?, ?>) record;

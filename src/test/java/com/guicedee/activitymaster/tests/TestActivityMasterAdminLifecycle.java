@@ -112,14 +112,14 @@ public class TestActivityMasterAdminLifecycle {
     // ──────────────────────────────────────────────────────────────────────────────────────────────
 
     /** Resolves the enterprise for the test. */
-    private Uni<IEnterprise<?, ?>> enterprise(Mutiny.Session session) {
+    private Uni<IEnterprise<?, ?>> enterprise(Mutiny.StatelessSession session) {
         return IGuiceContext.get(IEnterpriseService.class)
                 .getEnterprise(session, TestEnterprise.name())
                 .map(e -> (IEnterprise<?, ?>) e);
     }
 
     /** Resolves the Activity Master system for the given enterprise. */
-    private Uni<ISystems<?, ?>> system(Mutiny.Session session, IEnterprise<?, ?> ent) {
+    private Uni<ISystems<?, ?>> system(Mutiny.StatelessSession session, IEnterprise<?, ?> ent) {
         return IGuiceContext.get(ISystemsService.class)
                 .getActivityMaster(session, ent)
                 .map(s -> (ISystems<?, ?>) s);
@@ -130,7 +130,7 @@ public class TestActivityMasterAdminLifecycle {
      * the {@code Administrators} folder by the enterprise install) into the UUID identity consumed by the
      * access APIs.
      */
-    private Uni<UUID> loginAndResolveAdminIdentity(Mutiny.Session session, IEnterprise<?, ?> ent, ISystems<?, ?> system) {
+    private Uni<UUID> loginAndResolveAdminIdentity(Mutiny.StatelessSession session, IEnterprise<?, ?> ent, ISystems<?, ?> system) {
         IPasswordsService<?> passwords = IGuiceContext.get(IPasswordsService.class);
         return passwords.findByUsernameAndPassword(session, ADMIN_USER, ADMIN_PASSWORD, system, true)
                 .invoke(party -> assertNotNull(party, "Admin must authenticate with the correct password"))
@@ -153,7 +153,7 @@ public class TestActivityMasterAdminLifecycle {
         @Test
         @Order(1)
         public void testAdminAuthenticatesAndResolvesIdentityToken() {
-            UUID adminIdentity = sessionFactory.withTransaction(session ->
+            UUID adminIdentity = sessionFactory.withStatelessTransaction(session ->
                     enterprise(session).chain(ent -> system(session, ent)
                             .chain(sys -> loginAndResolveAdminIdentity(session, ent, sys)))
             ).await().atMost(Duration.ofMinutes(2));
@@ -164,7 +164,7 @@ public class TestActivityMasterAdminLifecycle {
         @Order(2)
         public void testAdminIdentityExpandsToAdministratorsFolder() {
             boolean[] holder = new boolean[1];
-            sessionFactory.withTransaction(session ->
+            sessionFactory.withStatelessTransaction(session ->
                     enterprise(session).chain(ent -> system(session, ent).chain(sys -> {
                         ISecurityTokenService<?> sec = IGuiceContext.get(ISecurityTokenService.class);
                         return sec.getAdministratorsFolder(session, sys).chain(adminFolder ->
@@ -192,7 +192,7 @@ public class TestActivityMasterAdminLifecycle {
         @Order(1)
         public void testAdminCanReadAndWriteSecuredRecordWhileEmptyIdentityCannot() {
             final String runId = Long.toHexString(System.nanoTime());
-            boolean[] access = sessionFactory.withTransaction(session ->
+            boolean[] access = sessionFactory.withStatelessTransaction(session ->
                     enterprise(session).chain(ent -> system(session, ent).chain(sys -> {
                         IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
                         // Creating the record secures it per-row (default security: Administrators full CRUD).
@@ -234,13 +234,14 @@ public class TestActivityMasterAdminLifecycle {
             final String name = "AdminLc_EntClassify_" + runId;
             final String value = "ADM-ENT-1";
 
-            Object[] result = sessionFactory.withTransaction(session ->
+            Object[] result = sessionFactory.withStatelessTransaction(session ->
                     enterprise(session).chain(ent -> system(session, ent).chain(sys -> {
                         IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
                         return loginAndResolveAdminIdentity(session, ent, sys).chain(adminIdentity ->
                                 cs.create(session, name, "admin enterprise classification", EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, sys, adminIdentity)
                                         // Add the join AS the admin — the join row is secured per-row on create.
                                         .chain(created -> ent.addClassification(session, name, value, sys, adminIdentity))
+                                        .chain(() -> ent.findClassification(session, name, sys, adminIdentity))
                                         .chain(join -> {
                                             IWarehouseCoreTable<?, ?, ?, ?> link = (IWarehouseCoreTable<?, ?, ?, ?>) join;
                                             return link.countDefaultSecurity(session)
@@ -268,12 +269,13 @@ public class TestActivityMasterAdminLifecycle {
             final String name = "AdminLc_EntRemove_" + runId;
             final String value = "ADM-ENT-REM-1";
 
-            Long countAfterRemove = sessionFactory.withTransaction(session ->
+            Long countAfterRemove = sessionFactory.withStatelessTransaction(session ->
                     enterprise(session).chain(ent -> system(session, ent).chain(sys -> {
                         IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
                         return loginAndResolveAdminIdentity(session, ent, sys).chain(adminIdentity ->
                                 cs.create(session, name, "admin enterprise remove classification", EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, sys, adminIdentity)
                                         .chain(created -> ent.addClassification(session, name, value, sys, adminIdentity))
+                                        .chain(() -> ent.findClassification(session, name, sys, adminIdentity))
                                         .chain(join -> ent.removeClassification(session, name, value, sys, adminIdentity))
                                         .chain(ignored -> ent.numberOfClassifications(session, name, value, sys, adminIdentity)));
                     }))
@@ -290,7 +292,7 @@ public class TestActivityMasterAdminLifecycle {
             final String name = "AdminLc_ActiveArchive_" + runId;
             final String value = "ADM-AF-ARC-1";
 
-            Long countAfterArchive = sessionFactory.withTransaction(session ->
+            Long countAfterArchive = sessionFactory.withStatelessTransaction(session ->
                     enterprise(session).chain(ent -> system(session, ent).chain(sys -> {
                         IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
                         IActiveFlagService<?> afs = IGuiceContext.get(IActiveFlagService.class);

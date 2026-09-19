@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * (see {@code stateless-enterprise-creation-prompt.md}).
  *
  * <p>The enterprise is provisioned once through the proven <strong>stateful</strong>
- * {@link IEnterpriseService#startNewEnterprise(Mutiny.Session, String, String, String)} path, then every
+ * {@link IEnterpriseService#startNewEnterprise(Mutiny.StatelessSession, String, String, String)} path, then every
  * genuinely-stateless lookup/leaf added in Phases 1-2 is asserted to return results that match the
  * stateful path:</p>
  *
@@ -64,7 +64,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *     <li>{@link ISystemsService#getActivityMaster(Mutiny.StatelessSession, IEnterprise, UUID...)},
  *         {@link ISystemsService#findSystem(Mutiny.StatelessSession, IEnterprise, String, UUID...)} and
  *         {@link ISystemsService#doesSystemExist(Mutiny.StatelessSession, IEnterprise, String, UUID...)}
- *         match their {@code Mutiny.Session} counterparts.</li>
+ *         match their {@code Mutiny.StatelessSession} counterparts.</li>
  * </ul>
  *
  * <p>This protects the bridge/lookup surface so later phases can push statelessness deeper without
@@ -270,7 +270,7 @@ public class TestActivityMasterStatelessEnterprise {
      * Stateless prepped {@code Classification}: {@link IClassificationService#getIdentityType(
      * Mutiny.StatelessSession, ISystems, UUID...)} returns a detached classification built from a scalar
      * projection (the eager {@code concept} association is never hydrated). It must resolve the same id +
-     * name as the managed {@code Mutiny.Session} path, composing on the prepped stateless system.
+     * name as the managed {@code Mutiny.StatelessSession} path, composing on the prepped stateless system.
      */
     @Test
     @Order(9)
@@ -280,7 +280,7 @@ public class TestActivityMasterStatelessEnterprise {
         IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
 
         // Stateful baseline: managed session resolve of the identity-type classification.
-        IClassification<?, ?> stateful = sessionFactory.withSession(session ->
+        IClassification<?, ?> stateful = sessionFactory.withStatelessSession(session ->
                 session.withTransaction(tx ->
                         es.getEnterprise(session, TestEnterprise.name())
                                 .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
@@ -307,7 +307,7 @@ public class TestActivityMasterStatelessEnterprise {
      * Stateless prepped {@code SecurityToken}: {@link ISecurityTokenService#getAdministratorsFolder(
      * Mutiny.StatelessSession, ISystems, UUID...)} returns a detached folder token built from a scalar
      * projection (id, securityToken, name, description) through the same folder/name/enterprise filters.
-     * It must resolve the same id + name as the managed {@code Mutiny.Session} path, composing on the
+     * It must resolve the same id + name as the managed {@code Mutiny.StatelessSession} path, composing on the
      * prepped stateless system.
      */
     @Test
@@ -318,7 +318,7 @@ public class TestActivityMasterStatelessEnterprise {
         ISecurityTokenService<?> sts = IGuiceContext.get(ISecurityTokenService.class);
 
         // Stateful baseline: managed session resolve of the Administrators folder token.
-        ISecurityToken<?, ?> stateful = sessionFactory.withSession(session ->
+        ISecurityToken<?, ?> stateful = sessionFactory.withStatelessSession(session ->
                 session.withTransaction(tx ->
                         es.getEnterprise(session, TestEnterprise.name())
                                 .chain(ent -> ss.getActivityMaster(session, (IEnterprise<?, ?>) ent))
@@ -712,7 +712,7 @@ public class TestActivityMasterStatelessEnterprise {
      * security structure (security classifications, the root + group/folder token hierarchy, the full
      * access-grant matrix, default security for every bootstrap table, and the ActivityMaster involved party)
      * directly on the supplied {@link Mutiny.StatelessSession} — it no longer bridges to a managed
-     * {@code Mutiny.Session}. Stateless inserts execute immediately (read-your-writes within the same DB
+     * {@code Mutiny.StatelessSession}. Stateless inserts execute immediately (read-your-writes within the same DB
      * transaction), so the tokens created earlier in the flow are visible to the later apply-defaults phases.
      * Invoked top-level via {@code openStatelessSession()} (not nested in a transaction); afterwards the
      * canonical Administrators folder and Everyone group tokens must resolve.

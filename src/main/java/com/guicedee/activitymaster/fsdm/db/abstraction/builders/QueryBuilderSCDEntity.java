@@ -246,11 +246,11 @@ public abstract class QueryBuilderSCDEntity<J extends QueryBuilderSCDEntity<J, E
   public Uni<E> delete(ActiveFlag newActiveFlagType, E entity)
   {
     return IGuiceContext.get(Mutiny.SessionFactory.class)
-               .openSession()
+               .openStatelessSession()
                .chain(session -> session.withTransaction(transaction -> {
                    //todo complete the deletion by setting the active flag to the new ActiveFlagType
                    //entity.setActiveFlagID((IActiveFlag<?, ?>) newActiveFlagType);
-                   return session.merge(entity);
+                   return session.update(entity).replaceWith(entity);
                  })
                  .eventually(session::close));
   }

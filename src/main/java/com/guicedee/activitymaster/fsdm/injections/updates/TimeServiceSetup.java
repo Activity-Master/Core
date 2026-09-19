@@ -16,18 +16,7 @@ public class TimeServiceSetup implements ISystemUpdate
 	@Inject
 	private TimeSystem timeSystem;
 
-	@Override
-	public Uni<Boolean> update(Mutiny.Session session, IEnterprise<?, ?> enterprise)
-	{
-		log.info("Starting time service setup");
-		logProgress("Time Service", "Loading Time Specifications", 1);
-		/*timeSystem.loadTimeRange(LocalDate.now()
-		                                  .getYear(), LocalDate.now()
-		                                        .getYear());*/
-		return Uni.createFrom().item(true);
-	}
-
-	/** Stateless twin of {@link #update(Mutiny.Session, IEnterprise)} — no persistence work to perform. */
+	/** Stateless twin of {@link #update(Mutiny.StatelessSession, IEnterprise)} — no persistence work to perform. */
 	@Override
 	public Uni<Boolean> update(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
 	{

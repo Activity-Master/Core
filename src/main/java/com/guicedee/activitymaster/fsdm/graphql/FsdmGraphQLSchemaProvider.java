@@ -123,7 +123,7 @@ public class FsdmGraphQLSchemaProvider implements IGraphQLSchemaProvider<FsdmGra
      * @return a data fetcher returning a Vert.x {@link Future} of serialised rows
      */
     @SuppressWarnings("rawtypes")
-    private DataFetcher<Future<List<Map<String, Object>>>> domain(Function<Mutiny.Session, QueryBuilderSCD> builderFn)
+    private DataFetcher<Future<List<Map<String, Object>>>> domain(Function<Mutiny.StatelessSession, QueryBuilderSCD> builderFn)
     {
         return env -> {
             Map<String, Object> input = env.getArgument("query");

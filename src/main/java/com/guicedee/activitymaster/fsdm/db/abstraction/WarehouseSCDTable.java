@@ -71,7 +71,7 @@ public abstract class WarehouseSCDTable<
     }
 
     @SuppressWarnings("unchecked")
-    protected J configureDefaultsSystemValues(Mutiny.Session session, Systems requestingSystem) {
+    protected J configureDefaultsSystemValues(Mutiny.StatelessSession session, Systems requestingSystem) {
         setSystemID(requestingSystem);
         IActiveFlagService<?> service = IGuiceContext.get(IActiveFlagService.class);
         service.getActiveFlag(session, requestingSystem.getEnterpriseID())
@@ -86,7 +86,7 @@ public abstract class WarehouseSCDTable<
 
 
     @SuppressWarnings("unchecked")
-    public Uni<J> remove(Mutiny.Session session) {
+    public Uni<J> remove(Mutiny.StatelessSession session) {
         IActiveFlagService<?> service = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
         return (Uni) get(ActiveFlagSystem.class).getSystemToken(session, getEnterpriseID())
                 .chain(systemToken ->
@@ -97,14 +97,14 @@ public abstract class WarehouseSCDTable<
                     setActiveFlagID(flag);
                     setEffectiveToDate(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
                 })
-                .chain(flag -> session.merge(this))
+                .chain(flag -> session.update(this).replaceWith(this))
                 .log("Removed record from database")
                 ;
     }
 
 
     @SuppressWarnings("unchecked")
-    public Uni<J> archive(Mutiny.Session session) {
+    public Uni<J> archive(Mutiny.StatelessSession session) {
         IActiveFlagService<?> service = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
         return (Uni) get(ActiveFlagSystem.class).getSystemToken(session, getEnterpriseID())
                 .chain(systemToken ->
@@ -115,7 +115,7 @@ public abstract class WarehouseSCDTable<
                     setActiveFlagID(flag);
                     setEffectiveToDate(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
                 })
-                .chain(flag -> session.merge(this))
+                .chain(flag -> session.update(this).replaceWith(this))
                 .log("Archived record in database");
     }
 

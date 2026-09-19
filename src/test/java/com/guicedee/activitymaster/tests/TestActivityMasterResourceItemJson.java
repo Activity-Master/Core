@@ -90,7 +90,7 @@ public class TestActivityMasterResourceItemJson
         final String json = "{\"title\":\"The Hobbit\",\"author\":\"J. R. R. Tolkien\",\"year\":1937}";
 
         // TX1: create a JSON resource item.
-        UUID resourceId = sessionFactory.withSession(session -> session.withTransaction(tx -> {
+        UUID resourceId = sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
             IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
@@ -105,15 +105,15 @@ public class TestActivityMasterResourceItemJson
         assertNotNull(resourceId, "JSON resource item should be created");
 
         // TX2: the relational value row should be empty (the payload lives in MongoDB).
-        byte[] relationalBytes = sessionFactory.withSession(session ->
-                session.find(ResourceItemDataValue.class, resourceId)
+        byte[] relationalBytes = sessionFactory.withStatelessSession(session ->
+                session.get(ResourceItemDataValue.class, resourceId)
                         .map(dv -> dv == null ? null : dv.getData())
         ).await().atMost(Duration.ofMinutes(1));
         assertNotNull(relationalBytes, "ResourceItemDataValue row should still exist for the JSON resource item");
         assertEquals(0, relationalBytes.length, "JSON payload should not be stored in the relational column");
 
         // TX3: getData should read the payload back from MongoDB.
-        byte[] fetched = sessionFactory.withSession(session -> {
+        byte[] fetched = sessionFactory.withStatelessSession(session -> {
             ResourceItem ri = new ResourceItem();
             ri.setId(resourceId);
             return ri.getData(session);
@@ -125,7 +125,7 @@ public class TestActivityMasterResourceItemJson
         assertEquals(1937, (int) fetchedJson.getInteger("year"));
 
         // TX4: locate the document with native Mongo lookup criteria.
-        List<JsonObject> hits = sessionFactory.withSession(session -> {
+        List<JsonObject> hits = sessionFactory.withStatelessSession(session -> {
             IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
             return resourceItemService.findJsonResourceData(new JsonObject().put("author", "J. R. R. Tolkien"));
         }).await().atMost(Duration.ofMinutes(1));
@@ -140,7 +140,7 @@ public class TestActivityMasterResourceItemJson
         final String original = "{\"status\":\"draft\",\"version\":1}";
         final String updated = "{\"status\":\"published\",\"version\":2}";
 
-        UUID resourceId = sessionFactory.withSession(session -> session.withTransaction(tx -> {
+        UUID resourceId = sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
             IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
@@ -155,13 +155,13 @@ public class TestActivityMasterResourceItemJson
         assertNotNull(resourceId);
 
         // Update the data — should replace the MongoDB document.
-        sessionFactory.withSession(session -> session.withTransaction(tx -> {
+        sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
             IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
             return resourceItemService.updateResourceData(session, updated.getBytes(StandardCharsets.UTF_8), resourceId,
                     ISystemsService.ActivityMasterSystemName);
         })).await().atMost(Duration.ofMinutes(1));
 
-        byte[] fetched = sessionFactory.withSession(session -> {
+        byte[] fetched = sessionFactory.withStatelessSession(session -> {
             ResourceItem ri = new ResourceItem();
             ri.setId(resourceId);
             return ri.getData(session);
@@ -177,7 +177,7 @@ public class TestActivityMasterResourceItemJson
     {
         final String json = "{\"status\":\"draft\",\"meta\":{},\"history\":[]}";
 
-        UUID resourceId = sessionFactory.withSession(session -> session.withTransaction(tx -> {
+        UUID resourceId = sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
             IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
@@ -193,11 +193,11 @@ public class TestActivityMasterResourceItemJson
         IResourceItemService<?> service = IGuiceContext.get(IResourceItemService.class);
 
         // Set a top-level field, a nested child field (dot-notation), and append an array child.
-        sessionFactory.withSession(session -> service.updateJsonResourceField(resourceId, "status", "active"))
+        sessionFactory.withStatelessSession(session -> service.updateJsonResourceField(resourceId, "status", "active"))
                 .await().atMost(Duration.ofMinutes(1));
-        sessionFactory.withSession(session -> service.updateJsonResourceField(resourceId, "meta.reviewer", "alice"))
+        sessionFactory.withStatelessSession(session -> service.updateJsonResourceField(resourceId, "meta.reviewer", "alice"))
                 .await().atMost(Duration.ofMinutes(1));
-        sessionFactory.withSession(session -> service.addJsonResourceChild(resourceId, "history",
+        sessionFactory.withStatelessSession(session -> service.addJsonResourceChild(resourceId, "history",
                 new JsonObject().put("action", "created"))).await().atMost(Duration.ofMinutes(1));
 
         JsonObject afterUpdate = fetchJson(resourceId);
@@ -207,9 +207,9 @@ public class TestActivityMasterResourceItemJson
         assertEquals("created", afterUpdate.getJsonArray("history").getJsonObject(0).getString("action"));
 
         // Remove the nested field and pull the array child back out.
-        sessionFactory.withSession(session -> service.removeJsonResourceField(resourceId, "meta.reviewer"))
+        sessionFactory.withStatelessSession(session -> service.removeJsonResourceField(resourceId, "meta.reviewer"))
                 .await().atMost(Duration.ofMinutes(1));
-        sessionFactory.withSession(session -> service.removeJsonResourceChild(resourceId, "history",
+        sessionFactory.withStatelessSession(session -> service.removeJsonResourceChild(resourceId, "history",
                 new JsonObject().put("action", "created"))).await().atMost(Duration.ofMinutes(1));
 
         JsonObject afterRemoval = fetchJson(resourceId);
@@ -222,7 +222,7 @@ public class TestActivityMasterResourceItemJson
     {
         final String json = "{\"sku\":\"SKU-NAMED-1\",\"qty\":7}";
 
-        UUID resourceId = sessionFactory.withSession(session -> session.withTransaction(tx -> {
+        UUID resourceId = sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
             IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
@@ -239,7 +239,7 @@ public class TestActivityMasterResourceItemJson
         String collection = jsonStore.getDefaultCollection();
 
         IResourceItemService<?> service = IGuiceContext.get(IResourceItemService.class);
-        List<JsonObject> hits = sessionFactory.withSession(session ->
+        List<JsonObject> hits = sessionFactory.withStatelessSession(session ->
                 service.findJsonResourceData(collection, new JsonObject().put("sku", "SKU-NAMED-1"))
         ).await().atMost(Duration.ofMinutes(1));
 
@@ -252,7 +252,7 @@ public class TestActivityMasterResourceItemJson
     public void testFarmJsonResourceFluentApi()
     {
         // Create a "Farm" JSON resource item, then build up its document with the fluent entity API.
-        UUID farmId = sessionFactory.withSession(session -> session.withTransaction(tx -> {
+        UUID farmId = sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
             IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
@@ -277,14 +277,14 @@ public class TestActivityMasterResourceItemJson
         more.put("hectares", 48.5);
 
         // String / int / boolean / list / object — all via storeField, plus a multi-field store and a child push.
-        sessionFactory.withSession(session -> farm.storeField("acres", 120)).await().atMost(Duration.ofMinutes(1));
-        sessionFactory.withSession(session -> farm.storeField("organic", true)).await().atMost(Duration.ofMinutes(1));
-        sessionFactory.withSession(session -> farm.storeField("animals", List.of("cow", "sheep", "goat"))).await().atMost(Duration.ofMinutes(1));
-        sessionFactory.withSession(session -> farm.storeField("owner", owner)).await().atMost(Duration.ofMinutes(1));
-        sessionFactory.withSession(session -> farm.storeFields(more)).await().atMost(Duration.ofMinutes(1));
-        sessionFactory.withSession(session -> farm.addJsonChild("crops", new JsonObject().put("name", "maize"))).await().atMost(Duration.ofMinutes(1));
+        sessionFactory.withStatelessSession(session -> farm.storeField("acres", 120)).await().atMost(Duration.ofMinutes(1));
+        sessionFactory.withStatelessSession(session -> farm.storeField("organic", true)).await().atMost(Duration.ofMinutes(1));
+        sessionFactory.withStatelessSession(session -> farm.storeField("animals", List.of("cow", "sheep", "goat"))).await().atMost(Duration.ofMinutes(1));
+        sessionFactory.withStatelessSession(session -> farm.storeField("owner", owner)).await().atMost(Duration.ofMinutes(1));
+        sessionFactory.withStatelessSession(session -> farm.storeFields(more)).await().atMost(Duration.ofMinutes(1));
+        sessionFactory.withStatelessSession(session -> farm.addJsonChild("crops", new JsonObject().put("name", "maize"))).await().atMost(Duration.ofMinutes(1));
 
-        JsonObject doc = sessionFactory.withSession(session -> farm.getJson()).await().atMost(Duration.ofMinutes(1));
+        JsonObject doc = sessionFactory.withStatelessSession(session -> farm.getJson()).await().atMost(Duration.ofMinutes(1));
         assertNotNull(doc, "Farm JSON document should be readable");
         assertEquals("Farm", doc.getString("name"));
         assertEquals(120, (int) doc.getInteger("acres"), "int field");
@@ -298,14 +298,14 @@ public class TestActivityMasterResourceItemJson
         assertEquals("maize", doc.getJsonArray("crops").getJsonObject(0).getString("name"), "child push");
 
         // Remove a field.
-        sessionFactory.withSession(session -> farm.removeField("organic")).await().atMost(Duration.ofMinutes(1));
-        JsonObject afterRemoval = sessionFactory.withSession(session -> farm.getJson()).await().atMost(Duration.ofMinutes(1));
+        sessionFactory.withStatelessSession(session -> farm.removeField("organic")).await().atMost(Duration.ofMinutes(1));
+        JsonObject afterRemoval = sessionFactory.withStatelessSession(session -> farm.getJson()).await().atMost(Duration.ofMinutes(1));
         assertFalse(afterRemoval.containsKey("organic"), "removed field should be gone");
     }
 
     private JsonObject fetchJson(UUID resourceId)
     {
-        byte[] fetched = sessionFactory.withSession(session -> {
+        byte[] fetched = sessionFactory.withStatelessSession(session -> {
             ResourceItem ri = new ResourceItem();
             ri.setId(resourceId);
             return ri.getData(session);

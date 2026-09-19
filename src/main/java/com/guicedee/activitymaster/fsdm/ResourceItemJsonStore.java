@@ -339,7 +339,7 @@ public class ResourceItemJsonStore
      * @param data           the JSON payload bytes
      * @return a Uni completing when the document has been written
      */
-    public Uni<Void> storeForResource(Mutiny.Session session, UUID resourceItemId, byte[] data)
+    public Uni<Void> storeForResource(Mutiny.StatelessSession session, UUID resourceItemId, byte[] data)
     {
         if (!isEnabled() || resourceItemId == null)
         {
@@ -468,7 +468,7 @@ public class ResourceItemJsonStore
      * @param resourceItemId the resource item id
      * @return a Uni emitting {@code true} when MongoDB is the system of record for this item's payload
      */
-    public Uni<Boolean> isJsonResource(Mutiny.Session session, UUID resourceItemId)
+    public Uni<Boolean> isJsonResource(Mutiny.StatelessSession session, UUID resourceItemId)
     {
         if (!isEnabled() || resourceItemId == null)
         {
@@ -806,7 +806,7 @@ public class ResourceItemJsonStore
     }
 
     /** Resolves the collection to write a resource's document to: existing location, else its type's collection. */
-    private Uni<String> resolveCollection(Mutiny.Session session, UUID resourceItemId)
+    private Uni<String> resolveCollection(Mutiny.StatelessSession session, UUID resourceItemId)
     {
         Set<String> known = knownCollections();
         if (known.size() == 1)
@@ -825,7 +825,7 @@ public class ResourceItemJsonStore
                         }));
     }
 
-    private Uni<List<String>> typeIsJson(Mutiny.Session session, UUID resourceItemId)
+    private Uni<List<String>> typeIsJson(Mutiny.StatelessSession session, UUID resourceItemId)
     {
         if (session == null)
         {

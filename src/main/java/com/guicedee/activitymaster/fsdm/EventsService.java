@@ -57,43 +57,7 @@ public class EventsService
                        .item(new Event());
     }
 
-    @Override
-    public Uni<IEvent<?, ?>> find(Mutiny.Session session, UUID id)
-    {
-        return new Event().builder(session)
-                       .find(id)
-                       .get()
-                       .onItem()
-                       .ifNull()
-                       .failWith(() -> new NoSuchElementException("Event not found with id: " + id))
-                       .map(result -> result);
-    }
-
-    @Override
-    public Uni<IEvent<?, ?>> createEvent(Mutiny.Session session, String eventType, ISystems<?, ?> system, UUID... identityToken)
-    {
-        return createEvent(session, eventType, null, system, identityToken);
-    }
-
-    @Override
-    public Uni<IEvent<?, ?>> createEvent(Mutiny.Session session, String eventType, UUID key, ISystems<?, ?> system, UUID... identityToken)
-    {
-        // Public create → world-readable (public/default security matrix).
-        return createEventWithSecurity(session, eventType, key,
-                event -> event.createDefaultSecurity(session, system, identityToken), system, identityToken);
-    }
-
-    @Override
-    public Uni<IEvent<?, ?>> createEventScopeRestricted(Mutiny.Session session, String eventType, UUID key,
-            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
-            ISystems<?, ?> system, UUID... identityToken)
-    {
-        // Opt-in scope-restricted create: only Administrators/Systems/Apps/Plugins + the scope token may read.
-        return createEventWithSecurity(session, eventType, key,
-                event -> event.createScopeRestrictedSecurity(session, system, scopeToken, identityToken), system, identityToken);
-    }
-
-    private Uni<IEvent<?, ?>> createEventWithSecurity(Mutiny.Session session, String eventType, UUID key,
+    private Uni<IEvent<?, ?>> createEventWithSecurity(Mutiny.StatelessSession session, String eventType, UUID key,
             java.util.function.Function<Event, Uni<?>> securityFn, ISystems<?, ?> system, UUID... identityToken)
     {
         var enterprise = system.getEnterprise();
@@ -111,7 +75,7 @@ public class EventsService
         return acService.getActiveFlag(session, enterprise, identityToken)
                        .chain(activeFlag -> {
                            event.setActiveFlagID(activeFlag);
-                           return session.persist(event)
+                           return session.insert(event)
                                           .replaceWith(Uni.createFrom()
                                                                .item(event));
                        })
@@ -127,7 +91,7 @@ public class EventsService
 
     // ============================================================================================
     // Stateless event create (world-readable default security), mirroring the managed
-    // createEvent(Mutiny.Session, …). Uses session.insert + the stateless resolveDefaultGroupFolderTokens/
+    // createEvent(Mutiny.StatelessSession, …). Uses session.insert + the stateless resolveDefaultGroupFolderTokens/
     // createDefaultSecurity path and the stateless addEventTypes mixin. The enterprise/system references
     // are taken from the (prepped) system parameter — no managed fetch.
     // ============================================================================================
@@ -147,7 +111,7 @@ public class EventsService
 
     /**
      * Stateless opt-in <strong>scope-restricted</strong> event create — the stateless twin of
-     * {@link #createEventScopeRestricted(Mutiny.Session, String, UUID, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, ISystems, UUID...)}.
+     * {@link #createEventScopeRestricted(Mutiny.StatelessSession, String, UUID, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, ISystems, UUID...)}.
      * The event is secured with the restricted matrix (no Everyone/Everywhere/Guests; {@code scopeToken}=read).
      * Each create runs on its own stateless unit, so independent stateless sessions can provision events in parallel.
      */
@@ -192,74 +156,6 @@ public class EventsService
     }
 
     @Override
-    public Uni<IEventType<?, ?>> createEventType(Mutiny.Session session, String eventType, ISystems<?, ?> system, UUID... identityToken)
-    {
-        var enterprise = system.getEnterprise();
-
-        EventType et = new EventType();
-        return et.builder(session)
-                       .withName(eventType)
-                       .withEnterprise(enterprise)
-                       .inActiveRange()
-                       .inDateRange()
-                       .getCount()
-                       .map(count -> count > 0)
-                       .chain(exists -> {
-                           if (!exists)
-                           {
-                               if (et.getId() == null)
-                               {
-                                   et.setId(UUID.randomUUID());
-                               }
-
-                               EventType etBuilt = new EventType();
-                               etBuilt.setId(et.getId());
-                               etBuilt.setName(eventType);
-                               etBuilt.setDescription(eventType);
-                               etBuilt.setSystemID(system);
-                               etBuilt.setEnterpriseID(enterprise);
-
-                               IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-                               return acService.getActiveFlag(session, enterprise, identityToken)
-                                              .chain(activeFlag -> {
-                                                  etBuilt.setActiveFlagID(activeFlag);
-                                                  etBuilt.setOriginalSourceSystemID(system.getId());
-                                                  return session.persist(etBuilt).replaceWith(Uni.createFrom().item(etBuilt));
-                                              })
-                                              .chain(persistedEt -> {
-                                                  return persistedEt.createDefaultSecurity(session, system, identityToken)
-                                                      .onItem().invoke(() -> log.trace("Security setup completed successfully for event type"))
-                                                      .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for event type: " + error.getMessage()))
-                                                      .onFailure().recoverWithItem(() -> null)
-                                                      .map(_ -> persistedEt);
-                                              });
-                           }
-                           else
-                           {
-                               return findEventType(session, eventType, system, identityToken);
-                           }
-                       });
-    }
-
-    @Override
-    //@CacheResult(cacheName = "EventTypesStrings")
-    public Uni<IEventType<?, ?>> findEventType(Mutiny.Session session, String eventType, ISystems<?, ?> system, UUID... identityToken)
-    {
-        var enterprise = system.getEnterprise();
-        return new EventType().builder(session)
-                       .withName(eventType)
-                       .withEnterprise(enterprise)
-                       .inActiveRange()
-                       .inDateRange()
-                       //  .canRead(system, identityToken)
-                       .get()
-                       .onItem()
-                       .ifNull()
-                       .failWith(() -> new EventException("Invalid Event Type - " + eventType))
-                       .map(result -> result);
-    }
-
-    @Override
     public Uni<IEventType<?, ?>> findEventType(Mutiny.StatelessSession session, String eventType, ISystems<?, ?> system, UUID... identityToken)
     {
         var enterprise = system.getEnterprise();
@@ -290,123 +186,7 @@ public class EventsService
 
     // --- Cross-domain searchable queries (EventX<DomainType>) ---
 
-    @Override
-    public Uni<List<IEvent<?, ?>>> findEventsByClassification(Mutiny.Session session, String classificationName, String value, ISystems<?, ?> systems, UUID... identityToken)
-    {
-        log.trace("Finding events by classification - name: {}, value: {}", classificationName, value);
-        var enterprise = systems.getEnterprise();
-        return classificationService.find(session, classificationName, systems, identityToken)
-                .chain(classification -> {
-                    if (classification == null)
-                    {
-                        return Uni.createFrom().item(Collections.<IEvent<?, ?>>emptyList());
-                    }
-                    EventQueryBuilder eqb = new Event().builder(session);
-                    eqb.withEnterprise(enterprise)
-                       .inActiveRange()
-                       .inDateRange();
-
-                    JoinExpression<Event, Classification, ?> je = new JoinExpression<>();
-                    EventXClassificationQueryBuilder qb = new EventXClassification().builder(session);
-                    qb.withEnterprise(enterprise)
-                      .withClassification((Classification) classification)
-                      .withValue(value)
-                      .inActiveRange()
-                      .inDateRange();
-
-                    eqb.join(Event_.classifications, qb, JoinType.INNER, je);
-                    eqb.orderBy(Event_.effectiveFromDate, OrderByType.DESC);
-
-                    return eqb.getAll().map(ArrayList::new);
-                });
-    }
-
-    @Override
-    public Uni<List<IEvent<?, ?>>> findEventsByClassification(Mutiny.Session session, String classificationName, IEvent<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
-    {
-        log.trace("Finding events by classification with parent - name: {}, value: {}, parent: {}",
-                classificationName, value, withParent != null ? withParent.getId() : null);
-        var enterprise = systems.getEnterprise();
-        return classificationService.find(session, classificationName, systems, identityToken)
-                .chain(classification -> {
-                    if (classification == null)
-                    {
-                        return Uni.createFrom().item(Collections.<IEvent<?, ?>>emptyList());
-                    }
-                    EventQueryBuilder eqb = new Event().builder(session);
-                    eqb.withEnterprise(enterprise)
-                       .inActiveRange()
-                       .inDateRange();
-
-                    JoinExpression<Event, Classification, ?> je = new JoinExpression<>();
-                    EventXClassificationQueryBuilder qb = new EventXClassification().builder(session);
-                    qb.withEnterprise(enterprise)
-                      .withClassification((Classification) classification)
-                      .withValue(value)
-                      .inActiveRange()
-                      .inDateRange();
-                    eqb.join(Event_.classifications, qb, JoinType.INNER, je);
-
-                    if (withParent != null)
-                    {
-                        // Restrict to children of provided parent
-                        return new EventXEvent().builder(session)
-                                .inActiveRange()
-                                .inDateRange()
-                                .where(EventXEvent_.parentEventID, Equals, (Event) withParent)
-                                .getAll()
-                                .map(links -> {
-                                    List<UUID> ids = new ArrayList<>();
-                                    for (EventXEvent l : links)
-                                    {
-                                        Event child = l.getChildEventID();
-                                        if (child != null && child.getId() != null)
-                                        {
-                                            ids.add(child.getId());
-                                        }
-                                    }
-                                    return ids;
-                                })
-                                .chain(ids -> {
-                                    if (ids.isEmpty())
-                                    {
-                                        return Uni.createFrom().item(Collections.<IEvent<?, ?>>emptyList());
-                                    }
-                                    eqb.where(Event_.id, InList, ids);
-                                    eqb.orderBy(Event_.effectiveFromDate, OrderByType.DESC);
-                                    return eqb.getAll().map(ArrayList::new);
-                                });
-                    }
-                    eqb.orderBy(Event_.effectiveFromDate, OrderByType.DESC);
-                    return eqb.getAll().map(ArrayList::new);
-                });
-    }
-
-    @Override
-    public Uni<List<IEvent<?, ?>>> findEventsByClassificationGT(Mutiny.Session session, String classificationName, IEvent<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
-    {
-        return findEventsByClassificationWithOp(session, classificationName, withParent, value, systems, GreaterThan, identityToken);
-    }
-
-    @Override
-    public Uni<List<IEvent<?, ?>>> findEventsByClassificationGTE(Mutiny.Session session, String classificationName, IEvent<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
-    {
-        return findEventsByClassificationWithOp(session, classificationName, withParent, value, systems, GreaterThanEqualTo, identityToken);
-    }
-
-    @Override
-    public Uni<List<IEvent<?, ?>>> findEventsByClassificationLT(Mutiny.Session session, String classificationName, IEvent<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
-    {
-        return findEventsByClassificationWithOp(session, classificationName, withParent, value, systems, LessThan, identityToken);
-    }
-
-    @Override
-    public Uni<List<IEvent<?, ?>>> findEventsByClassificationLTE(Mutiny.Session session, String classificationName, IEvent<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
-    {
-        return findEventsByClassificationWithOp(session, classificationName, withParent, value, systems, LessThanEqualTo, identityToken);
-    }
-
-    private Uni<List<IEvent<?, ?>>> findEventsByClassificationWithOp(Mutiny.Session session,
+    private Uni<List<IEvent<?, ?>>> findEventsByClassificationWithOp(Mutiny.StatelessSession session,
                                                                       String classificationName,
                                                                       IEvent<?, ?> withParent,
                                                                       String value,
@@ -468,242 +248,6 @@ public class EventsService
                     eqb.orderBy(Event_.effectiveFromDate, OrderByType.DESC);
                     return eqb.getAll().map(ArrayList::new);
                 });
-    }
-
-    @Override
-    public Uni<IEvent<?, ?>> findEventByResourceItem(Mutiny.Session session, IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
-    {
-        log.trace("Finding event by resource item: {}, classification: {}, value: {}",
-                resourceItem.getId(), classificationName, value);
-        if (Strings.isNullOrEmpty(classificationName))
-        {
-            classificationName = NoClassification.toString();
-        }
-        var enterprise = system.getEnterprise();
-        final String finalClassificationName = classificationName;
-        return classificationService.find(session, classificationName, system, identityToken)
-                .chain(classification -> new EventXResourceItem().builder(session)
-                        .inActiveRange()
-                        .inDateRange()
-                        .withEnterprise(enterprise)
-                        .withClassification(classification)
-                        .withValue(value)
-                        .where(EventXResourceItem_.resourceItemID, Equals, (ResourceItem) resourceItem)
-                        .orderBy(EventXResourceItem_.effectiveFromDate, OrderByType.DESC)
-                        .get()
-                        .map(result -> result != null ? result.getEventID() : null));
-    }
-
-    @Override
-    public Uni<IEvent<?, ?>> findEventByArrangement(Mutiny.Session session, IArrangement<?, ?> arrangement, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
-    {
-        log.trace("Finding event by arrangement: {}, classification: {}, value: {}",
-                arrangement.getId(), classificationName, value);
-        if (Strings.isNullOrEmpty(classificationName))
-        {
-            classificationName = NoClassification.toString();
-        }
-        var enterprise = system.getEnterprise();
-        final String finalClassificationName = classificationName;
-        return classificationService.find(session, classificationName, system, identityToken)
-                .chain(classification -> new EventXArrangement().builder(session)
-                        .inActiveRange()
-                        .inDateRange()
-                        .withEnterprise(enterprise)
-                        .withClassification(classification)
-                        .withValue(value)
-                        .where(EventXArrangement_.arrangementID, Equals, (Arrangement) arrangement)
-                        .orderBy(EventXArrangement_.effectiveFromDate, OrderByType.DESC)
-                        .get()
-                        .map(result -> result != null ? result.getEventID() : null));
-    }
-
-    @Override
-    public Uni<IEvent<?, ?>> findEventByProduct(Mutiny.Session session, IProduct<?, ?> product, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
-    {
-        log.trace("Finding event by product: {}, classification: {}, value: {}",
-                product.getId(), classificationName, value);
-        if (Strings.isNullOrEmpty(classificationName))
-        {
-            classificationName = NoClassification.toString();
-        }
-        var enterprise = system.getEnterprise();
-        final String finalClassificationName = classificationName;
-        return classificationService.find(session, classificationName, system, identityToken)
-                .chain(classification -> new EventXProduct().builder(session)
-                        .inActiveRange()
-                        .inDateRange()
-                        .withEnterprise(enterprise)
-                        .withClassification(classification)
-                        .withValue(value)
-                        .where(EventXProduct_.productID, Equals, (Product) product)
-                        .orderBy(EventXProduct_.effectiveFromDate, OrderByType.DESC)
-                        .get()
-                        .map(result -> result != null ? result.getEventID() : null));
-    }
-
-    @Override
-    public Uni<IEvent<?, ?>> findEventByInvolvedParty(Mutiny.Session session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
-    {
-        log.trace("Finding event by involved party: {}, classification: {}, value: {}",
-                involvedParty.getId(), classificationName, value);
-        if (Strings.isNullOrEmpty(classificationName))
-        {
-            classificationName = NoClassification.toString();
-        }
-        var enterprise = system.getEnterprise();
-        final String finalClassificationName = classificationName;
-        return classificationService.find(session, classificationName, system, identityToken)
-                .chain(classification -> new EventXInvolvedParty().builder(session)
-                        .inActiveRange()
-                        .inDateRange()
-                        .withEnterprise(enterprise)
-                        .withClassification(classification)
-                        .withValue(value)
-                        .where(EventXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
-                        .orderBy(EventXInvolvedParty_.effectiveFromDate, OrderByType.DESC)
-                        .get()
-                        .map(result -> result != null ? result.getEventID() : null));
-    }
-
-    @Override
-    public Uni<List<IEvent<?, ?>>> findEventsByInvolvedParty(Mutiny.Session session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
-    {
-        log.trace("Finding events by involved party: {}, classification: {}, value: {}",
-                involvedParty.getId(), classificationName, value);
-        if (Strings.isNullOrEmpty(classificationName))
-        {
-            classificationName = NoClassification.toString();
-        }
-        var enterprise = system.getEnterprise();
-        return classificationService.find(session, classificationName, system, identityToken)
-                .chain(classification -> new EventXInvolvedParty().builder(session)
-                        .inActiveRange()
-                        .inDateRange()
-                        .withEnterprise(enterprise)
-                        .withClassification(classification)
-                        .withValue(value)
-                        .where(EventXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
-                        .orderBy(EventXInvolvedParty_.effectiveFromDate, OrderByType.DESC)
-                        .getAll()
-                        .map(list -> {
-                            List<IEvent<?, ?>> out = new ArrayList<>();
-                            for (EventXInvolvedParty l : list)
-                            {
-                                out.add(l.getEventID());
-                            }
-                            return out;
-                        }));
-    }
-
-    @Override
-    public Uni<List<IEvent<?, ?>>> findEventsByInvolvedParty(Mutiny.Session session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, ISystems<?, ?> system, UUID... identityToken)
-    {
-        log.trace("Finding events by involved party (from date): {}, classification: {}, value: {}, startDate: {}",
-                involvedParty.getId(), classificationName, value, startDate);
-        if (Strings.isNullOrEmpty(classificationName))
-        {
-            classificationName = NoClassification.toString();
-        }
-        var enterprise = system.getEnterprise();
-        return classificationService.find(session, classificationName, system, identityToken)
-                .chain(classification -> new EventXInvolvedParty().builder(session)
-                        .inActiveRange()
-                        .inDateRange(startDate, com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.EndOfTime)
-                        .withEnterprise(enterprise)
-                        .withClassification(classification)
-                        .withValue(value)
-                        .where(EventXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
-                        .orderBy(EventXInvolvedParty_.effectiveFromDate, OrderByType.DESC)
-                        .getAll()
-                        .map(list -> {
-                            List<IEvent<?, ?>> out = new ArrayList<>();
-                            for (EventXInvolvedParty l : list)
-                            {
-                                out.add(l.getEventID());
-                            }
-                            return out;
-                        }));
-    }
-
-    @Override
-    public Uni<List<IEvent<?, ?>>> findEventsByInvolvedParty(Mutiny.Session session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, LocalDateTime endDate, ISystems<?, ?> system, UUID... identityToken)
-    {
-        log.trace("Finding events by involved party (date window): {}, classification: {}, value: {}, startDate: {}, endDate: {}",
-                involvedParty.getId(), classificationName, value, startDate, endDate);
-        if (Strings.isNullOrEmpty(classificationName))
-        {
-            classificationName = NoClassification.toString();
-        }
-        var enterprise = system.getEnterprise();
-        return classificationService.find(session, classificationName, system, identityToken)
-                .chain(classification -> new EventXInvolvedParty().builder(session)
-                        .inActiveRange()
-                        .inDateRange(startDate, endDate)
-                        .withEnterprise(enterprise)
-                        .withClassification(classification)
-                        .withValue(value)
-                        .where(EventXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
-                        .orderBy(EventXInvolvedParty_.effectiveFromDate, OrderByType.DESC)
-                        .getAll()
-                        .map(list -> {
-                            List<IEvent<?, ?>> out = new ArrayList<>();
-                            for (EventXInvolvedParty l : list)
-                            {
-                                out.add(l.getEventID());
-                            }
-                            return out;
-                        }));
-    }
-
-    @Override
-    public Uni<List<IEvent<?, ?>>> findEventsByRules(Mutiny.Session session, IRules<?, ?> rules, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
-    {
-        log.trace("Finding events by rules: {}, classification: {}, value: {}", rules.getId(), classificationName, value);
-        if (Strings.isNullOrEmpty(classificationName))
-        {
-            classificationName = NoClassification.toString();
-        }
-        var enterprise = system.getEnterprise();
-        return classificationService.find(session, classificationName, system, identityToken)
-                .chain(classification -> new EventXRules().builder(session)
-                        .inActiveRange()
-                        .inDateRange()
-                        .withEnterprise(enterprise)
-                        .withClassification(classification)
-                        .withValue(value)
-                        .where(EventXRules_.rulesID, Equals, (Rules) rules)
-                        .orderBy(EventXRules_.effectiveFromDate, OrderByType.DESC)
-                        .getAll()
-                        .map(list -> {
-                            List<IEvent<?, ?>> out = new ArrayList<>();
-                            for (EventXRules l : list)
-                            {
-                                out.add(l.getEventID());
-                            }
-                            return out;
-                        }));
-    }
-
-    @Override
-    public Uni<List<IEvent<?, ?>>> findAll(Mutiny.Session session, String eventType, ISystems<?, ?> system, UUID... identityToken)
-    {
-        log.trace("Finding all events of type: {}", eventType);
-        return findEventType(session, eventType, system, identityToken)
-                .chain(type -> new EventXEventType().builder(session)
-                        .inActiveRange()
-                        .inDateRange()
-                        // .canRead(system, identityToken) // enable if security filtering is required here
-                        .findLink(null, (EventType) type, null)
-                        .getAll()
-                        .map(links -> {
-                            List<IEvent<?, ?>> out = new ArrayList<>();
-                            for (EventXEventType l : links)
-                            {
-                                out.add(l.getEventID());
-                            }
-                            return out;
-                        }));
     }
 
     // ============================================================================================

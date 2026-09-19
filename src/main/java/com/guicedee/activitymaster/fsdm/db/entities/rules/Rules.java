@@ -261,14 +261,6 @@ public class Rules
     }
 
     @Override
-    public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
-    {
-        RulesXClassification rxc = (RulesXClassification) linkTable;
-        rxc.setRulesID(this);
-        return io.smallrye.mutiny.Uni.createFrom().voidItem();
-    }
-
-    @Override
     public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.StatelessSession session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
     {
         RulesXClassification rxc = (RulesXClassification) linkTable;
@@ -277,7 +269,7 @@ public class Rules
     }
 
     @Override
-    public void configureProductAddable(Mutiny.Session session, IWarehouseRelationshipTable linkTable, Rules primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    public void configureProductAddable(Mutiny.StatelessSession session, IWarehouseRelationshipTable linkTable, Rules primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
     {
         RulesXProduct rxp = (RulesXProduct) linkTable;
         rxp.setRulesID(primary);

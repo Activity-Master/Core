@@ -92,7 +92,7 @@ public class TestActivityMasterSecurityMembershipPolicy {
         ISecurityToken<?, ?> childSystem;  // a fresh System-typed token
     }
 
-    private Uni<Ctx> resolveCtx(Mutiny.Session session, String runId) {
+    private Uni<Ctx> resolveCtx(Mutiny.StatelessSession session, String runId) {
         IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
         ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
         IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
@@ -121,7 +121,7 @@ public class TestActivityMasterSecurityMembershipPolicy {
     }
 
     /** Reactively runs the given link and emits {@code true} when the membership policy rejects it. */
-    private Uni<Boolean> linkRejected(Mutiny.Session session, ISecurityTokenService<?> sec,
+    private Uni<Boolean> linkRejected(Mutiny.StatelessSession session, ISecurityTokenService<?> sec,
                                       ISecurityToken<?, ?> parent, ISecurityToken<?, ?> child, IClassification<?, ?> cls) {
         return sec.link(session, parent, child, cls)
                 .replaceWith(Boolean.FALSE)
@@ -132,7 +132,7 @@ public class TestActivityMasterSecurityMembershipPolicy {
     @Order(1)
     public void testGroupCanAddGroupsAndUsers() {
         final String runId = Long.toHexString(System.nanoTime());
-        Boolean ok = sessionFactory.withTransaction(session ->
+        Boolean ok = sessionFactory.withStatelessTransaction(session ->
                 resolveCtx(session, runId).chain(ctx -> {
                     ISecurityTokenService<?> sec = IGuiceContext.get(ISecurityTokenService.class);
                     // group -> group with the UserGroup type is permitted
@@ -147,7 +147,7 @@ public class TestActivityMasterSecurityMembershipPolicy {
     @Order(2)
     public void testSystemsFolderRejectsNonSystemTokens() {
         final String runId = Long.toHexString(System.nanoTime());
-        Boolean rejected = sessionFactory.withTransaction(session ->
+        Boolean rejected = sessionFactory.withStatelessTransaction(session ->
                 resolveCtx(session, runId).chain(ctx -> {
                     ISecurityTokenService<?> sec = IGuiceContext.get(ISecurityTokenService.class);
                     return linkRejected(session, sec, ctx.systemsFolder, ctx.childGroup, ctx.userGroupClass);
@@ -160,7 +160,7 @@ public class TestActivityMasterSecurityMembershipPolicy {
     @Order(3)
     public void testApplicationsFolderRejectsNonApplicationTokens() {
         final String runId = Long.toHexString(System.nanoTime());
-        Boolean rejected = sessionFactory.withTransaction(session ->
+        Boolean rejected = sessionFactory.withStatelessTransaction(session ->
                 resolveCtx(session, runId).chain(ctx -> {
                     ISecurityTokenService<?> sec = IGuiceContext.get(ISecurityTokenService.class);
                     return linkRejected(session, sec, ctx.applicationsFolder, ctx.childGroup, ctx.userGroupClass);
@@ -173,7 +173,7 @@ public class TestActivityMasterSecurityMembershipPolicy {
     @Order(4)
     public void testSystemsFolderAcceptsSystemTokens() {
         final String runId = Long.toHexString(System.nanoTime());
-        Boolean ok = sessionFactory.withTransaction(session ->
+        Boolean ok = sessionFactory.withStatelessTransaction(session ->
                 resolveCtx(session, runId).chain(ctx -> {
                     ISecurityTokenService<?> sec = IGuiceContext.get(ISecurityTokenService.class);
                     return sec.link(session, ctx.systemsFolder, ctx.childSystem, ctx.systemClass)
@@ -187,7 +187,7 @@ public class TestActivityMasterSecurityMembershipPolicy {
     @Order(5)
     public void testSystemTokenRejectedUnderGenericGroup() {
         final String runId = Long.toHexString(System.nanoTime());
-        Boolean rejected = sessionFactory.withTransaction(session ->
+        Boolean rejected = sessionFactory.withStatelessTransaction(session ->
                 resolveCtx(session, runId).chain(ctx -> {
                     ISecurityTokenService<?> sec = IGuiceContext.get(ISecurityTokenService.class);
                     return linkRejected(session, sec, ctx.everyone, ctx.childSystem, ctx.systemClass);

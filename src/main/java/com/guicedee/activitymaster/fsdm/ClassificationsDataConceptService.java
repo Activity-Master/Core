@@ -40,74 +40,25 @@ public class ClassificationsDataConceptService
 
 
     @Override
-    public Uni<IClassificationDataConcept<?, ?>> createDataConcept(Mutiny.Session session, EnterpriseClassificationDataConcepts name,
-                                                                   String description,
-                                                                   ISystems<?, ?> system,
-                                                                   UUID... identityToken) {
-        var enterprise = system.getEnterprise();
-        ClassificationDataConcept newConcept = new ClassificationDataConcept();
-        return find(session, name, system, identityToken)
-                .onFailure(NoResultException.class)
-                .recoverWithUni(_ -> {
-                    newConcept.setDescription(description);
-                    newConcept.setName(name.classificationValue());
-                    newConcept.setSystemID(system);
-                    newConcept.setOriginalSourceSystemID(system.getId());
-                    newConcept.setOriginalSourceSystemUniqueID(null);
-                    return activeFlagService.getActiveFlag(session, enterprise, identityToken)
-                            .chain(activeFlag -> {
-                                newConcept.setActiveFlagID(activeFlag);
-                                newConcept.setEnterpriseID(enterprise);
-                                return session.persist(newConcept)
-                                        .replaceWith(Uni.createFrom()
-                                                .item(newConcept))
-                                        .chain(persisted -> {
-                                            log.debug("🔐 Starting security setup for classification data concept: '{}'", persisted.getName());
-                                            return persisted.createDefaultSecurity(session, system, identityToken)
-                                                    .onItem()
-                                                    .invoke(() -> log.debug("✅ Security setup completed successfully for: '{}'", persisted.getName()))
-                                                    .onFailure()
-                                                    .invoke(error -> log.warn("⚠️ Error in createDefaultSecurity for '{}': {}", persisted.getName(), error.getMessage(), error))
-                                                    .chain(() -> Uni.createFrom().item((IClassificationDataConcept<?, ?>) persisted));
-                                        });
-                            });
-
-                });
-    }
-
-    @Override
     //@CacheResult(cacheName = "GetGlobalConcept")
-    public Uni<IClassificationDataConcept<?, ?>> getGlobalConcept(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
+    public Uni<IClassificationDataConcept<?, ?>> getGlobalConcept(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
         return find(session, GlobalClassificationsDataConceptName, system, identityToken);
     }
 
     @Override
     //@CacheResult(cacheName = "FindConceptWithConceptValueAndSystem")
-    public Uni<IClassificationDataConcept<?, ?>> find(Mutiny.Session session, EnterpriseClassificationDataConcepts name, ISystems<?, ?> system, UUID... identityToken) {
+    public Uni<IClassificationDataConcept<?, ?>> find(Mutiny.StatelessSession session, EnterpriseClassificationDataConcepts name, ISystems<?, ?> system, UUID... identityToken) {
         return find(session, name.classificationValue(), system, identityToken);
     }
 
-    public Uni<IClassificationDataConcept<?, ?>> find(Mutiny.Session session, String name, ISystems<?, ?> system, UUID... identityToken) {
-        var enterprise = system.getEnterprise();
-        return new ClassificationDataConcept()
-                .builder(session)
-                .withEnterprise(enterprise)
-                .inActiveRange()
-                .inDateRange()
-                .withName(name)
-                .get()
-                .map(com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept::getId)
-                .flatMap(id -> getConceptById(session, id));
-    }
-
     // UUID-based lookup to leverage L2 cache (@Cacheable on entity + L2 cache enabled)
-    public Uni<IClassificationDataConcept<?, ?>> getConceptById(Mutiny.Session session, UUID id) {
+    public Uni<IClassificationDataConcept<?, ?>> getConceptById(Mutiny.StatelessSession session, UUID id) {
         //noinspection unchecked
-        return (Uni) session.find(ClassificationDataConcept.class, id);
+        return (Uni) session.get(ClassificationDataConcept.class, id);
     }
 
     /**
-     * Stateless "fetch ids/scalars + prep" variant of {@link #find(Mutiny.Session, String, ISystems, UUID...)}.
+     * Stateless "fetch ids/scalars + prep" variant of {@link #find(Mutiny.StatelessSession, String, ISystems, UUID...)}.
      * {@code ClassificationDataConcept} is {@code @Cacheable} with no eager {@code @ManyToOne}, so projecting
      * its own scalars ({@code id, name, description}) and building a detached instance is stateless-safe.
      */
@@ -140,7 +91,7 @@ public class ClassificationsDataConceptService
 
     @Override
     //@CacheResult(cacheName = "NoDataConcept")
-    public Uni<IClassificationDataConcept<?, ?>> getNoConcept(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
+    public Uni<IClassificationDataConcept<?, ?>> getNoConcept(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
         return find(session, NoClassificationDataConceptName, system, identityToken);
     }
 
@@ -177,7 +128,7 @@ public class ClassificationsDataConceptService
 
     @Override
     //@CacheResult(cacheName = "SecurityHierarchyConcept")
-    public Uni<IClassificationDataConcept<?, ?>> getSecurityHierarchyConcept(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
+    public Uni<IClassificationDataConcept<?, ?>> getSecurityHierarchyConcept(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
         return find(session, EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken, system, identityToken);
     }
 }

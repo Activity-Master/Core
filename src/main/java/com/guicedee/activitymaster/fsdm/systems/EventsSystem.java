@@ -39,7 +39,7 @@ public class EventsSystem
   private Mutiny.SessionFactory sessionFactory;
 
   @Override
-  public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<ISystems<?, ?>> registerSystem(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Registering Events System for enterprise: '{}'", enterprise.getName());
     log.debug("📋 Creating Events System with session: {}", session.hashCode());
@@ -67,123 +67,8 @@ public class EventsSystem
                .map(result->result);
   }
 
-  @Override
-  public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
-  {
-    logProgress("Loading Events", "Events creating default types");
-    logProgress("Loading Time", "Loading in Today");
-    log.debug("📋 Starting event defaults creation for enterprise: '{}'", enterprise.getName());
-    // Get the day using reactive ITimeSystem
-//    log.debug("📅 Getting today's date using reactive ITimeSystem");
-/*    com.guicedee.client.IGuiceContext.get(ITimeSystem.class)
-        .getDay(session, new Date())
-        .onItem().invoke(day -> log.debug("✅ Successfully retrieved day: {}", day.getId()))
-        .onFailure().invoke(error -> log.error("❌ Failed to retrieve day: {}", error))
-        .await().indefinitely();*/
-
-    // Start reactive chain with getting the ActivityMaster system
-    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-               .onItem()
-               .invoke(activityMasterSystem ->
-                           log.debug("✅ Found ActivityMaster system: '{}' with session: {}",
-                               activityMasterSystem.getName(), session.hashCode()))
-               .onFailure()
-               .invoke(error ->
-                           log.error("❌ Failed to find ActivityMaster system: {}", error.getMessage(), error))
-               .chain(activityMasterSystem -> {
-                 logProgress("Loading Logging Types", "Creating Log Types");
-                 log.debug("🔍 Creating event classifications and types");
-
-                 // Get system token once and reuse it
-                 return getSystemToken(session, enterprise)
-                            .onItem()
-                            .invoke(systemToken ->
-                                        log.debug("🔑 Retrieved system token for enterprise: '{}'", enterprise.getName()))
-                            .onFailure()
-                            .invoke(error ->
-                                        log.error("❌ Failed to retrieve system token: {}", error.getMessage(), error))
-                            .chain(systemToken -> {
-                              // Create base classifications sequentially
-                              log.debug("📋 Creating base event classifications");
-                              return classificationServiceProvider.create(
-                                      session, "LogItemTypes", "The log item event registered types",
-                                      Classification, activityMasterSystem, systemToken)
-                                         .onItem()
-                                         .invoke(logItemTypes ->
-                                                     log.debug("✅ Created LogItemTypes classification: '{}'", logItemTypes.getName()))
-                                         .onFailure()
-                                         .invoke(error ->
-                                                     log.error("❌ Failed to create LogItemTypes classification: {}", error.getMessage(), error))
-                                         .chain(logItemTypes -> {
-                                           return classificationServiceProvider.create(
-                                                   session, "EventStatus", "The status of the event",
-                                                   EventXClassification, activityMasterSystem, systemToken)
-                                                      .onItem()
-                                                      .invoke(eventStatus ->
-                                                                  log.debug("✅ Created EventStatus classification: '{}'", eventStatus.getName()))
-                                                      .onFailure()
-                                                      .invoke(error ->
-                                                                  log.error("❌ Failed to create EventStatus classification: {}", error.getMessage(), error))
-                                                      .chain(eventStatus -> {
-                                                        // Create LogItemTypes classifications sequentially
-                                                        log.debug("📋 Creating LogItemTypes classifications sequentially");
-                                                        
-                                                        // Start with a completed Uni to begin the chain
-                                                        Uni<Void> sequentialChain = Uni.createFrom().voidItem();
-                                                        
-                                                        // Process each LogItemType sequentially by chaining operations
-                                                        for (LogItemTypes value : LogItemTypes.values())
-                                                        {
-                                                          final LogItemTypes currentValue = value; // Create final reference for lambda
-                                                          sequentialChain = sequentialChain.chain(() -> 
-                                                              classificationServiceProvider.create(
-                                                                      session, currentValue, activityMasterSystem, "LogItemTypes", systemToken)
-                                                                  .onItem()
-                                                                  .invoke(classification ->
-                                                                              log.debug("✅ Created LogItemType classification: '{}'", classification.getName()))
-                                                                  .onFailure()
-                                                                  .invoke(error ->
-                                                                              log.error("❌ Failed to create LogItemType classification '{}': {}",
-                                                                                  currentValue, error.getMessage(), error))
-                                                                  .replaceWithVoid()
-                                                          );
-                                                        }
-                                                        
-                                                        // Continue with the chain after all LogItemTypes are processed
-                                                        return sequentialChain
-                                                                   .onItem()
-                                                                   .invoke(() -> log.debug("✅ Successfully created all LogItemTypes classifications sequentially"))
-                                                                   .onFailure()
-                                                                   .invoke(error ->
-                                                                               log.error("❌ Error creating LogItemTypes classifications: {}", error.getMessage(), error))
-                                                                   .chain(v -> {
-                                                                     // Create LogItem resource type
-                                                                     log.debug("📋 Creating LogItem resource type");
-                                                                     return resourceItemServiceProvider.createType(
-                                                                             session, "LogItem", "An attached log item",
-                                                                             activityMasterSystem, systemToken)
-                                                                                .onItem()
-                                                                                .invoke(result -> {
-                                                                                  log.debug("✅ Created LogItem resource type");
-                                                                                })
-                                                                                .onFailure()
-                                                                                .invoke(error ->
-                                                                                            log.error("❌ Failed to create LogItem resource type: {}", error.getMessage(), error));
-                                                                   });
-                                                      });
-                                         });
-                            });
-               })
-               .onItem()
-               .invoke(() -> log.info("✅ Successfully created all event defaults"))
-               .onFailure()
-               .invoke(error ->
-                           log.error("❌ Failed to create event defaults: {}", error.getMessage(), error))
-               .replaceWithVoid();
-  }
-
   /**
-   * Stateless end-to-end variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — provisions the
+   * Stateless end-to-end variant of {@link #createDefaults(Mutiny.StatelessSession, IEnterprise)} — provisions the
    * LogItemTypes / EventStatus concept classifications, every {@code LogItemTypes} value under LogItemTypes,
    * and the LogItem resource-item type, entirely on a {@link Mutiny.StatelessSession}.
    */
@@ -216,7 +101,7 @@ public class EventsSystem
   }
 
   @Override
-  public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<Void> postStartup(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Starting reactive postStartup for Events System");
     log.debug("📋 Beginning postStartup operations for enterprise: '{}' with session: {}",

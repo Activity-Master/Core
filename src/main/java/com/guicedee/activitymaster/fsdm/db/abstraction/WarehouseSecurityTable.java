@@ -77,13 +77,13 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
    * @return
    */
   @SuppressWarnings("UnusedReturnValue")
-  public Uni<J> remove(Mutiny.Session session)
+  public Uni<J> remove(Mutiny.StatelessSession session)
   {
     IActiveFlagService<?> service = get(IActiveFlagService.class);
     return (Uni) service.getDeletedFlag(session, getEnterpriseID())
                      .chain(flag -> {
                        setActiveFlagID(flag);
-                       return session.merge(this);
+                       return session.update(this).replaceWith(this);
                      });
   }
 

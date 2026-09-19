@@ -52,7 +52,7 @@ public class TestContainsHierarchyAcrossDomains extends TestDatabaseSetup {
         .await().atMost(Duration.ofMinutes(2));
   }
 
-  private Uni<Void> ensureHierarchyClassification(Mutiny.Session session, ISystems<?, ?> sys) {
+  private Uni<Void> ensureHierarchyClassification(Mutiny.StatelessSession session, ISystems<?, ?> sys) {
     return Uni.createFrom()
                .voidItem();
 
@@ -65,7 +65,7 @@ public class TestContainsHierarchyAcrossDomains extends TestDatabaseSetup {
   @Test
   @Order(1)
   public void testArrangementHierarchy_AddFindArchive() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IArrangementsService<?> arrangementsService = IGuiceContext.get(IArrangementsService.class);
@@ -100,7 +100,7 @@ public class TestContainsHierarchyAcrossDomains extends TestDatabaseSetup {
   @Test
   @Order(2)
   public void testEventHierarchy_AddFindArchive() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IEventService<?> eventService = IGuiceContext.get(IEventService.class);
@@ -135,7 +135,7 @@ public class TestContainsHierarchyAcrossDomains extends TestDatabaseSetup {
   @Test
   @Order(3)
   public void testRulesHierarchy_AddFindArchive() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IRulesService<?> rulesService = IGuiceContext.get(IRulesService.class);
@@ -169,7 +169,7 @@ public class TestContainsHierarchyAcrossDomains extends TestDatabaseSetup {
   @Test
   @Order(4)
   public void testResourceItemHierarchy_AddFindArchive() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);

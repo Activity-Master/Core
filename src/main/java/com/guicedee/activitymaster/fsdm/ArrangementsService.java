@@ -3,11 +3,11 @@ package com.guicedee.activitymaster.fsdm;
 /**
  * Reactivity Migration Checklist:
  * <p>
- * [✓] One action per Mutiny.Session at a time
+ * [✓] One action per Mutiny.StatelessSession at a time
  * - All operations on a session are sequential
  * - No parallel operations on the same session
  * <p>
- * [✓] Pass Mutiny.Session through the chain
+ * [✓] Pass Mutiny.StatelessSession through the chain
  * - All methods accept session as parameter
  * - Session is passed to all dependent operations
  * <p>
@@ -91,8 +91,8 @@ public class ArrangementsService
     private static final java.util.Map<UUID, java.util.Map<String, IArrangementType<?, ?>>> STATELESS_ARRANGEMENT_TYPE_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
 
     // UUID-based lookup to leverage Hibernate 2nd-level cache
-    public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangementType<?, ?>> getArrangementTypeById(org.hibernate.reactive.mutiny.Mutiny.Session session, java.util.UUID id) {
-        return (io.smallrye.mutiny.Uni) session.find(com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementType.class, id);
+    public io.smallrye.mutiny.Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangementType<?, ?>> getArrangementTypeById(org.hibernate.reactive.mutiny.Mutiny.StatelessSession session, java.util.UUID id) {
+        return (io.smallrye.mutiny.Uni) session.get(com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementType.class, id);
     }
 
     @Inject
@@ -111,52 +111,8 @@ public class ArrangementsService
     }
 
 
-    @Override
-    public Uni<IArrangement<?, ?>> create(Mutiny.Session session,UUID key, String type,
-                                          String arrangementTypeClassification,
-                                          String arrangementTypeValue,
-                                          ISystems<?, ?> system,
-                                          UUID... identityToken) {
-        log.debug("Creating arrangement - type: {}, classification: {}, value: {}", type, arrangementTypeClassification, arrangementTypeValue);
-        return create(session, type, key, arrangementTypeClassification, arrangementTypeValue, system, identityToken);
-    }
-
-
-    @Override
-    public Uni<IArrangement<?, ?>> create(
-            Mutiny.Session session, String type,
-            UUID key,
-            String arrangementTypeClassification,
-            String arrangementTypeValue,
-            ISystems<?, ?> system,
-            UUID... identityToken) {
-        // Public create — world-readable (public/default security matrix).
-        return createWithSecurity(session, type, key, arrangementTypeClassification, arrangementTypeValue, system,
-                arrangement -> arrangement.createDefaultSecurity(session, system, identityToken), identityToken);
-    }
-
-    /**
-     * Opt-in <strong>scope-restricted</strong> arrangement create. Identical to
-     * {@link #create(Mutiny.Session, String, UUID, String, String, ISystems, UUID...)} except the arrangement
-     * is secured with the restricted matrix: only Administrators / Systems / Applications / Plugins retain
-     * access, plus a <em>read</em> grant for {@code scopeToken}. Only identity tokens at that scope node or
-     * below it may read the arrangement.
-     */
-    @Override
-    public Uni<IArrangement<?, ?>> createScopeRestricted(
-            Mutiny.Session session, String type,
-            UUID key,
-            String arrangementTypeClassification,
-            String arrangementTypeValue,
-            ISystems<?, ?> system,
-            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
-            UUID... identityToken) {
-        return createWithSecurity(session, type, key, arrangementTypeClassification, arrangementTypeValue, system,
-                arrangement -> arrangement.createScopeRestrictedSecurity(session, system, scopeToken, identityToken), identityToken);
-    }
-
     private Uni<IArrangement<?, ?>> createWithSecurity(
-            Mutiny.Session session, String type,
+            Mutiny.StatelessSession session, String type,
             UUID key,
             String arrangementTypeClassification,
             String arrangementTypeValue,
@@ -177,7 +133,7 @@ public class ArrangementsService
         return (Uni) activeFlagService.getActiveFlag(session, enterprise)
                 .chain(activeFlag -> {
                     arrangement.setActiveFlagID(activeFlag);
-                    return session.persist(arrangement).replaceWith(Uni.createFrom().item(arrangement));
+                    return session.insert(arrangement).replaceWith(Uni.createFrom().item(arrangement));
                 })
                 .call(persisted ->
                         // Step 2: Create security (strategy supplied by the caller; subscribed via call so it actually runs)
@@ -200,7 +156,7 @@ public class ArrangementsService
 
     // ============================================================================================
     // Stateless arrangement create (world-readable default security), mirroring the managed
-    // create(Mutiny.Session, …). Uses session.insert + the stateless resolveDefaultGroupFolderTokens/
+    // create(Mutiny.StatelessSession, …). Uses session.insert + the stateless resolveDefaultGroupFolderTokens/
     // createDefaultSecurity path and the stateless addArrangementType mixin. The enterprise/system
     // references are taken from the (prepped) system parameter — no managed fetch.
     // ============================================================================================
@@ -226,7 +182,7 @@ public class ArrangementsService
 
     /**
      * Stateless opt-in <strong>scope-restricted</strong> arrangement create — the stateless twin of
-     * {@link #createScopeRestricted(Mutiny.Session, String, UUID, String, String, ISystems, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}.
+     * {@link #createScopeRestricted(Mutiny.StatelessSession, String, UUID, String, String, ISystems, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}.
      * The arrangement is secured with the restricted matrix (no Everyone/Everywhere/Guests; {@code scopeToken}=read).
      * Each create runs on its own stateless unit, so independent stateless sessions can provision arrangements in parallel.
      */
@@ -280,15 +236,9 @@ public class ArrangementsService
     }
 
     @Override
-    public Uni<IArrangementType<?, ?>> createArrangementType(Mutiny.Session session, String type, ISystems<?, ?> system, UUID... identityToken) {
-        log.trace("Creating arrangement type: {}", type);
-        return createArrangementType(session, type, null, system, identityToken);
-    }
-
-    @Override
     ////@CacheResult(cacheName = "ArrangementTypes")
     //
-    public Uni<IArrangementType<?, ?>> createArrangementType(Mutiny.Session session, String type, UUID key, ISystems<?, ?> system, UUID... identityToken) {
+    public Uni<IArrangementType<?, ?>> createArrangementType(Mutiny.StatelessSession session, String type, UUID key, ISystems<?, ?> system, UUID... identityToken) {
         log.trace("Creating arrangement type: {}, key: {}", type, key);
         var enterprise = system.getEnterprise();
 
@@ -303,7 +253,7 @@ public class ArrangementsService
         return (Uni) activeFlagService.getActiveFlag(session, enterprise, identityToken)
                 .chain(activeFlag -> {
                     xr.setActiveFlagID(activeFlag);
-                    return session.persist(xr).replaceWith(Uni.createFrom().item(xr));
+                    return session.insert(xr).replaceWith(Uni.createFrom().item(xr));
                 })
                 .chain(persisted -> {
                     // Create default security with proper chaining
@@ -405,68 +355,7 @@ public class ArrangementsService
     }
 
     @Override
-    public Uni<IArrangementType<?, ?>> findArrangementType(Mutiny.Session session, String type, ISystems<?, ?> system, UUID... identityToken) {
-        log.trace("Finding arrangement type: {}", type);
-        var enterprise = system.getEnterprise();
-        java.util.UUID enterpriseId = null;
-        java.util.UUID systemId = null;
-        if (enterprise instanceof com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise ent) {
-            enterpriseId = ent.getId();
-        }
-        if (system instanceof com.guicedee.activitymaster.fsdm.db.entities.systems.Systems sys) {
-            systemId = sys.getId();
-        }
-        String key = enterpriseId + "|" + systemId + "|" + type;
-        java.util.UUID cachedId = arrangementTypeKeyToId.get(key);
-        if (cachedId != null) {
-            log.trace("🔁 ArrangementType cache hit for key '{}': {} — loading by UUID", key, cachedId);
-            return (Uni) getArrangementTypeById(session, cachedId)
-                    .flatMap(found -> {
-                        if (found != null) {
-                            return Uni.createFrom().item(found);
-                        }
-                        arrangementTypeKeyToId.remove(key);
-                        ArrangementType xr = new ArrangementType();
-                        return (Uni) xr.builder(session)
-                                .withName(type)
-                                .inActiveRange()
-                                .inDateRange()
-                                .withEnterprise(enterprise)
-                                .get()
-                                .invoke(res -> {
-                                    if (res != null && res.getId() != null) {
-                                        arrangementTypeKeyToId.put(key, (java.util.UUID) res.getId());
-                                    }
-                                })
-                                .onItem()
-                                .ifNull()
-                                .failWith(() -> new ArrangementException("Unable to find arrangement type - " + type))
-                                .map(result -> (IArrangementType<?, ?>) result);
-                    });
-        }
-        ArrangementType xr = new ArrangementType();
-        return (Uni) xr.builder(session)
-                .withName(type)
-                .inActiveRange()
-                .inDateRange()
-                .withEnterprise(enterprise)
-                .get()
-                .invoke(res -> {
-                    if (res != null && res.getId() != null) {
-                        arrangementTypeKeyToId.put(key, (java.util.UUID) res.getId());
-                    }
-                })
-                .onItem()
-                .ifNull()
-                .failWith(() -> new ArrangementException("Unable to find arrangement type - " + type))
-                .map(result -> (IArrangementType<?, ?>) result)
-                .onFailure()
-                .invoke(error -> log.error("Error finding arrangement type: {}", type, error));
-    }
-
-
-    @Override
-    public Uni<List<IArrangement<?, ?>>> findInvolvedPartyArrangements(Mutiny.Session session, IInvolvedParty<?, ?> ip, String arrType, ISystems<?, ?> systems, UUID... identityToken) {
+    public Uni<List<IArrangement<?, ?>>> findInvolvedPartyArrangements(Mutiny.StatelessSession session, IInvolvedParty<?, ?> ip, String arrType, ISystems<?, ?> systems, UUID... identityToken) {
         log.trace("Finding involved party arrangements for IP: {}, type: {}", ip.getId(), arrType);
         var enterprise = systems.getEnterprise();
         return new ArrangementXInvolvedParty()
@@ -489,51 +378,6 @@ public class ArrangementsService
                 .onFailure()
                 .invoke(error ->
                         log.error("Error finding involved party arrangements: {}", error.getMessage(), error));
-    }
-
-
-    @Override
-    public Uni<List<IArrangement<?, ?>>> findArrangementsByClassification(Mutiny.Session session, String classificationName, String value, ISystems<?, ?> systems, UUID... identityToken) {
-        log.trace("Finding arrangements by classification - name: {}, value: {}", classificationName, value);
-        var enterprise = systems.getEnterprise();
-        // First get the classification using reactive pattern
-        return classificationService.find(session, classificationName, systems, identityToken)
-                .chain(classification -> {
-                    if (classification == null) {
-                        return Uni.createFrom()
-                                .item(Collections.<IArrangement<?, ?>>emptyList());
-                    }
-
-                    ArrangementQueryBuilder aqb = new Arrangement().builder(session);
-                    aqb.withEnterprise(enterprise)
-                            .inActiveRange()
-                            .inDateRange()
-                    ;
-                    JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
-
-                    ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder(session);
-                    qb.withEnterprise(enterprise)
-                            .withClassification((Classification) classification)
-                            .withValue(value)
-                            .inActiveRange()
-                            .inDateRange()
-                    ;
-
-                    aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
-
-                    aqb.orderBy(Arrangement_.effectiveFromDate, OrderByType.DESC);
-
-                    // Get the result from the builder using reactive pattern
-                    return aqb.getAll()
-                            .map(arrangementList -> {
-                                List<IArrangement<?, ?>> result = new ArrayList<>(arrangementList);
-                                log.trace("Found {} arrangements for classification {}", result.size(), classificationName);
-                                return result;
-                            });
-                })
-                .onFailure()
-                .invoke(error ->
-                        log.error("Error finding arrangements by classification: {}", error.getMessage(), error));
     }
 
 
@@ -577,123 +421,7 @@ public class ArrangementsService
 
 
     @Override
-    public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationGT(Mutiny.Session session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken) {
-        log.trace("Finding arrangements by classification GT - type: {}, value: {}", arrType, value);
-        var enterprise = systems.getEnterprise();
-        // First get the classification using reactive pattern
-        return classificationService.find(session, arrType, systems, identityToken)
-                .chain(classification -> {
-                    if (classification == null) {
-                        return Uni.createFrom()
-                                .item(Collections.<IArrangement<?, ?>>emptyList());
-                    }
-
-                    ArrangementQueryBuilder aqb = new Arrangement().builder(session);
-                    aqb.withEnterprise(enterprise)
-                            .inActiveRange()
-                            .inDateRange()
-                    ;
-                    JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
-
-                    ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder(session);
-                    qb.withEnterprise(enterprise)
-                            .withClassification((Classification) classification)
-                            .withValue(GreaterThan, value)
-                            .inActiveRange()
-                            .inDateRange()
-                    ;
-
-                    aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
-
-                    if (withParent != null) {
-                        JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
-                        ArrangementXArrangementQueryBuilder builder =
-                                new ArrangementXArrangement()
-                                        .builder(session)
-                                        .inActiveRange()
-                                        .inDateRange()
-                                        .where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
-                        aqb.join(Arrangement_.arrangementXArrangementList,
-                                builder,
-                                JoinType.INNER, joinExpression);
-                    }
-
-                    aqb.orderBy(Arrangement_.effectiveFromDate, OrderByType.DESC);
-
-                    // Get the result from the builder using reactive pattern
-                    return aqb.getAll()
-                            .map(arrangementList -> {
-                                List<IArrangement<?, ?>> result = new ArrayList<>(arrangementList);
-                                log.trace("Found {} arrangements for classification GT {}", result.size(), arrType);
-                                return result;
-                            });
-                })
-                .onFailure()
-                .invoke(error ->
-                        log.error("Error finding arrangements by classification GT: {}", error.getMessage(), error));
-    }
-
-
-    @Override
-    public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationGTE(Mutiny.Session session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken) {
-        log.trace("Finding arrangements by classification GTE - type: {}, value: {}", arrType, value);
-        var enterprise = systems.getEnterprise();
-        // First get the classification using reactive pattern
-        return classificationService.find(session, arrType, systems, identityToken)
-                .chain(classification -> {
-                    if (classification == null) {
-                        return Uni.createFrom()
-                                .item(Collections.<IArrangement<?, ?>>emptyList());
-                    }
-                    ArrangementQueryBuilder aqb = new Arrangement().builder(session);
-                    aqb.withEnterprise(enterprise)
-                            .inActiveRange()
-                            .inDateRange()
-                    ;
-                    JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
-
-                    ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder(session);
-                    qb.withEnterprise(enterprise)
-                            .withClassification((Classification) classification)
-                            .withValue(GreaterThanEqualTo, value)
-                            .inActiveRange()
-                            .inDateRange()
-                    ;
-
-                    aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
-
-                    if (withParent != null) {
-                        JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
-                        ArrangementXArrangementQueryBuilder builder =
-                                new ArrangementXArrangement()
-                                        .builder(session)
-                                        .inActiveRange()
-                                        .inDateRange()
-                                        .where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
-                        aqb.join(Arrangement_.arrangementXArrangementList,
-                                builder,
-                                JoinType.INNER, joinExpression);
-                    }
-
-                    aqb.orderBy(Arrangement_.effectiveFromDate, OrderByType.DESC);
-
-                    // Get the result from the builder using reactive pattern
-                    return aqb.getAll()
-                            .map(arrangementList -> {
-                                List<IArrangement<?, ?>> result = new ArrayList<>(arrangementList);
-                                log.trace("Found {} arrangements for classification GTE {}", result.size(), arrType);
-                                return result;
-                            });
-
-                })
-                .onFailure()
-                .invoke(error ->
-                        log.error("Error finding arrangements by classification GTE: {}", error.getMessage(), error));
-    }
-
-
-    @Override
-    public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationGTEWithIP(Mutiny.Session session, String arrangementType, String classificationName,
+    public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationGTEWithIP(Mutiny.StatelessSession session, String arrangementType, String classificationName,
                                                                                    IInvolvedParty<?, ?> withInvolvedParty,
                                                                                    String ipClassification,
                                                                                    IArrangement<?, ?> withParent,
@@ -809,526 +537,7 @@ public class ArrangementsService
     }
 
 
-    @Override
-    public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationLT(Mutiny.Session session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken) {
-        log.trace("Finding arrangements by classification LT - type: {}, value: {}", arrType, value);
-        var enterprise = systems.getEnterprise();
-        // First get the classification using reactive pattern
-        return (Uni) classificationService.find(session, arrType, systems, identityToken)
-                .onItem()
-                .ifNull()
-                .continueWith(() -> {
-                    log.warn("Classification not found: {}", arrType);
-                    return null;
-                })
-                .chain(classification -> {
-                    if (classification == null) {
-                        return Uni.createFrom()
-                                .item(Collections.<IArrangement<?, ?>>emptyList());
-                    }
-                    ArrangementQueryBuilder aqb = new Arrangement().builder(session);
-                    aqb.withEnterprise(enterprise)
-                            .inActiveRange()
-                            .inDateRange()
-                    ;
-                    JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
-
-                    ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder(session);
-                    qb.withEnterprise(enterprise)
-                            .withClassification((Classification) classification)
-                            .withValue(LessThan, value)
-                            .inActiveRange()
-                            .inDateRange()
-                    ;
-
-                    aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
-
-                    if (withParent != null) {
-                        JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
-                        ArrangementXArrangementQueryBuilder builder =
-                                new ArrangementXArrangement()
-                                        .builder(session)
-                                        .inActiveRange()
-                                        .inDateRange()
-                                        .where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
-                        aqb.join(Arrangement_.arrangementXArrangementList,
-                                builder,
-                                JoinType.INNER, joinExpression);
-                    }
-
-                    aqb.orderBy(Arrangement_.effectiveFromDate, OrderByType.DESC);
-
-                    // Get the result from the builder using reactive pattern
-                    return aqb.getAll()
-                            .map(result -> result);
-                })
-                .onFailure()
-                .invoke(error ->
-                        log.error("Error finding arrangements by classification LT: {}", error.getMessage(), error));
-    }
-
-
-    @Override
-    public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationLTE(Mutiny.Session session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken) {
-        log.trace("Finding arrangements by classification LTE - type: {}, value: {}", arrType, value);
-        var enterprise = systems.getEnterprise();
-        // First get the classification using reactive pattern
-        return classificationService.find(session, arrType, systems, identityToken)
-                .onItem()
-                .ifNull()
-                .continueWith(() -> {
-                    log.warn("Classification not found: {}", arrType);
-                    return null;
-                })
-                .chain(classification -> {
-                    if (classification == null) {
-                        return Uni.createFrom()
-                                .item(Collections.<IArrangement<?, ?>>emptyList());
-                    }
-
-                    ArrangementQueryBuilder aqb = new Arrangement().builder(session);
-                    aqb.withEnterprise(enterprise)
-                            .inActiveRange()
-                            .inDateRange()
-                    ;
-                    JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
-
-                    ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder(session);
-                    qb.withEnterprise(enterprise)
-                            .withClassification((Classification) classification)
-                            .withValue(LessThanEqualTo, value)
-                            .inActiveRange()
-                            .inDateRange()
-                    ;
-
-                    aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
-
-                    if (withParent != null) {
-                        JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
-                        ArrangementXArrangementQueryBuilder builder =
-                                new ArrangementXArrangement()
-                                        .builder(session)
-                                        .inActiveRange()
-                                        .inDateRange()
-                                        .where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
-                        aqb.join(Arrangement_.arrangementXArrangementList,
-                                builder,
-                                JoinType.INNER, joinExpression);
-                    }
-
-                    aqb.orderBy(Arrangement_.effectiveFromDate, OrderByType.DESC);
-
-                    // Get the result from the builder using reactive pattern
-                    return aqb.getAll()
-                            .map(arrangementList -> {
-                                List<IArrangement<?, ?>> result = new ArrayList<>(arrangementList);
-                                log.debug("Found {} arrangements for classification LTE {}", result.size(), arrType);
-                                return result;
-                            });
-                })
-                .onFailure()
-                .invoke(error ->
-                        log.error("Error finding arrangements by classification LTE: {}", error.getMessage(), error));
-    }
-
-    @Override
-    public Uni<List<IArrangement<?, ?>>> findArrangementsByClassification(Mutiny.Session session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken) {
-        log.trace("Finding arrangements by classification - type: {}, withParent: {}, value: {}",
-                arrType, withParent != null ? withParent.getId() : "null", value);
-        var enterprise = systems.getEnterprise();
-        // First get the classification using reactive pattern
-        return classificationService.find(session, arrType, systems, identityToken)
-                .onItem()
-                .ifNull()
-                .continueWith(() -> {
-                    log.warn("Classification not found: {}", arrType);
-                    return null;
-                })
-                .chain(classification -> {
-                    if (classification == null) {
-                        return Uni.createFrom()
-                                .item(Collections.<IArrangement<?, ?>>emptyList());
-                    }
-
-                    ArrangementQueryBuilder aqb = new Arrangement().builder(session);
-                    aqb.withEnterprise(enterprise)
-                            .inActiveRange()
-                            .inDateRange()
-                    ;
-                    JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
-
-                    ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder(session);
-                    qb.withEnterprise(enterprise)
-                            .withClassification((Classification) classification)
-                            .withValue(value)
-                            .inActiveRange()
-                            .inDateRange()
-                    ;
-
-                    aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
-
-                    if (withParent != null) {
-                        JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
-                        ArrangementXArrangementQueryBuilder builder =
-                                new ArrangementXArrangement()
-                                        .builder(session)
-                                        .inActiveRange()
-                                        .inDateRange()
-                                        .where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
-                        if (!Strings.isNullOrEmpty(value)) {
-                            builder.where(ArrangementXClassification_.value, Equals, value);
-                        }
-
-                        aqb.join(Arrangement_.arrangementXArrangementList,
-                                builder,
-                                JoinType.INNER, joinExpression);
-                    }
-
-                    aqb.orderBy(Arrangement_.effectiveFromDate, OrderByType.DESC);
-
-                    // Get the result from the builder using reactive pattern
-                    return aqb.getAll()
-                            .map(arrangementList -> {
-                                List<IArrangement<?, ?>> result = new ArrayList<>(arrangementList);
-                                log.trace("Found {} arrangements for classification {} with parent",
-                                        result.size(), arrType);
-                                return result;
-                            });
-
-                })
-                .onFailure()
-                .invoke(error ->
-                        log.error("Error finding arrangements by classification with parent: {}", error.getMessage(), error));
-    }
-
-
-    @Override
-    public Uni<IArrangement<?, ?>> findArrangementByResourceItem(Mutiny.Session session, IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken) {
-        log.trace("Finding arrangement by resource item: {}, classification: {}, value: {}",
-                resourceItem.getId(), classificationName, value);
-
-        if (Strings.isNullOrEmpty(classificationName)) {
-            classificationName = NoClassification.toString();
-        }
-        var enterprise = system.getEnterprise();
-        final String finalClassificationName = classificationName;
-
-        return (Uni) classificationService.find(session, classificationName, system, identityToken)
-                .chain(classification -> {
-                    return new ArrangementXResourceItem().builder(session)
-                            .inActiveRange()
-                            .inDateRange()
-                            .withEnterprise(enterprise)
-                            .withClassification(classification)
-                            .withValue(value)
-                            .where(ArrangementXResourceItem_.resourceItemID, Equals, (ResourceItem) resourceItem)
-                            .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
-                            .get()
-                            .map(result -> {
-                                log.trace("Found arrangement for resource item: {}, classification: {}",
-                                        resourceItem.getId(), finalClassificationName);
-                                return result != null ? result.getArrangementID() : null;
-                            });
-                })
-                .onFailure()
-                .invoke(error ->
-                        log.error("Error finding arrangement by resource item: {}", error.getMessage(), error));
-    }
-
-
-    @Override
-    public Uni<IArrangement<?, ?>> findArrangementByInvolvedParty(Mutiny.Session session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken) {
-        log.trace("Finding arrangement by involved party: {}, classification: {}, value: {}",
-                involvedParty.getId(), classificationName, value);
-
-        if (Strings.isNullOrEmpty(classificationName)) {
-            classificationName = NoClassification.toString();
-        }
-
-        final String finalClassificationName = classificationName;
-        var enterprise = system.getEnterprise();
-        return (Uni) classificationService.find(session, classificationName, system, identityToken)
-                .chain(classification -> {
-
-                    return new ArrangementXInvolvedParty().builder(session)
-                            .inActiveRange()
-                            .inDateRange()
-                            .withEnterprise(enterprise)
-                            .withClassification(classification)
-                            .withValue(value)
-                            .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
-                            .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
-                            .get()
-                            .map(result -> {
-                                log.trace("Found arrangement for involved party: {}, classification: {}",
-                                        involvedParty.getId(), finalClassificationName);
-                                return result.getArrangementID();
-                            });
-
-                })
-                .onFailure()
-                .invoke(error ->
-                        log.error("Error finding arrangement by involved party: {}", error.getMessage(), error));
-    }
-
-
-    @Override
-    public Uni<List<IArrangement<?, ?>>> findArrangementsByRulesType(Mutiny.Session session, IRulesType<?, ?> ruleType, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken) {
-        log.trace("Finding arrangements by rules type: {}, classification: {}, value: {}", ruleType.getId(), classificationName, value);
-
-        if (Strings.isNullOrEmpty(classificationName)) {
-            classificationName = NoClassification.toString();
-        }
-
-        final String finalClassificationName = classificationName;
-        var enterprise = system.getEnterprise();
-        return classificationService.find(session, classificationName, system, identityToken)
-                .chain(classification -> {
-                    return new ArrangementXRulesType().builder(session)
-                            .inActiveRange()
-                            .inDateRange()
-                            .withEnterprise(enterprise)
-                            .withClassification(classification)
-                            .withValue(value)
-                            .where(ArrangementXRulesType_.rulesTypeID, Equals, (RulesType) ruleType)
-                            .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
-                            .getAll()
-                            .map(results -> {
-                                List<IArrangement<?, ?>> arrangements = results.stream()
-                                        .map(ArrangementXRulesType::getArrangement)
-                                        .collect(Collectors.toList());
-                                log.trace("Found {} arrangements for rules type: {}, classification: {}",
-                                        arrangements.size(), ruleType.getId(), finalClassificationName);
-                                return arrangements;
-                            });
-
-                })
-                .onFailure()
-                .invoke(error ->
-                        log.error("Error finding arrangements by rules type: {}", error.getMessage(), error));
-    }
-
-
-    @Override
-    public Uni<List<IArrangement<?, ?>>> findArrangementsByInvolvedParty(Mutiny.Session session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, ISystems<?, ?> system, UUID... identityToken) {
-        log.trace("Finding arrangements by involved party: {}, classification: {}, value: {}, startDate: {}",
-                involvedParty.getId(), classificationName, value, startDate);
-
-        if (Strings.isNullOrEmpty(classificationName)) {
-            classificationName = NoClassification.toString();
-        }
-
-        final String finalClassificationName = classificationName;
-        var enterprise = system.getEnterprise();
-        return classificationService.find(session, classificationName, system, identityToken)
-                .chain(classification -> {
-                    return new ArrangementXInvolvedParty().builder(session)
-                            .inActiveRange()
-                            .inDateRange(startDate, EndOfTime)
-                            .withEnterprise(enterprise)
-                            .withClassification(classification)
-                            .withValue(value)
-                            .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
-                            .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
-                            .getAll()
-                            .map(all -> {
-                                List<IArrangement<?, ?>> arrangements = all.stream()
-                                        .map(ArrangementXInvolvedParty::getArrangementID)
-                                        .collect(Collectors.toList());
-                                log.trace("Found {} arrangements for involved party: {}, classification: {}",
-                                        arrangements.size(), involvedParty.getId(), finalClassificationName);
-                                return arrangements;
-                            });
-
-                })
-                .onFailure()
-                .invoke(error ->
-                        log.error("Error finding arrangements by involved party: {}", error.getMessage(), error));
-    }
-
-
-    @Override
-    public Uni<List<IArrangement<?, ?>>> findArrangementsByInvolvedParty(Mutiny.Session session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, LocalDateTime endDate, ISystems<?, ?> system, UUID... identityToken) {
-        log.trace("Finding arrangements by involved party: {}, classification: {}, value: {}, startDate: {}, endDate: {}",
-                involvedParty.getId(), classificationName, value, startDate, endDate);
-
-        if (Strings.isNullOrEmpty(classificationName)) {
-            classificationName = NoClassification.toString();
-        }
-
-        final String finalClassificationName = classificationName;
-        var enterprise = system.getEnterprise();
-        return classificationService.find(session, classificationName, system, identityToken)
-                .chain(classification -> {
-                    return new ArrangementXInvolvedParty().builder(session)
-                            .inActiveRange()
-                            .inDateRange(startDate, endDate)
-                            .withEnterprise(enterprise)
-                            .withClassification(classification)
-                            .withValue(value)
-                            .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
-                            .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
-                            .getAll()
-                            .map(all -> {
-                                List<IArrangement<?, ?>> arrangements = all.stream()
-                                        .map(ArrangementXInvolvedParty::getArrangementID)
-                                        .collect(Collectors.toList());
-                                log.trace("Found {} arrangements for involved party: {}, classification: {}, with date range",
-                                        arrangements.size(), involvedParty.getId(), finalClassificationName);
-                                return arrangements;
-                            });
-
-                })
-                .onFailure()
-                .invoke(error ->
-                        log.error("Error finding arrangements by involved party with date range: {}", error.getMessage(), error));
-    }
-
-
-    @Override
-    public Uni<List<IArrangement<?, ?>>> findArrangementsByInvolvedParty(Mutiny.Session session, IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken) {
-        log.trace("Finding arrangements by involved party: {}, classification: {}, value: {}",
-                involvedParty.getId(), classificationName, value);
-
-        if (Strings.isNullOrEmpty(classificationName)) {
-            classificationName = NoClassification.toString();
-        }
-
-        final String finalClassificationName = classificationName;
-        var enterprise = system.getEnterprise();
-        return classificationService.find(session, classificationName, system, identityToken)
-                .chain(classification -> {
-                    return new ArrangementXInvolvedParty().builder(session)
-                            .inActiveRange()
-                            .inDateRange()
-                            .withEnterprise(enterprise)
-                            .withClassification(classification)
-                            .withValue(value)
-                            .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
-                            .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
-                            .getAll()
-                            .map(arxip -> {
-                                List<IArrangement<?, ?>> arrangements = arxip.stream()
-                                        .<IArrangement<?, ?>>map(ArrangementXInvolvedParty::getArrangementID)
-                                        .collect(Collectors.toList());
-                                log.trace("Found {} arrangements for involved party: {}, classification: {}",
-                                        arrangements.size(), involvedParty.getId(), finalClassificationName);
-                                return arrangements;
-                            });
-                })
-                .onFailure()
-                .invoke(error ->
-                        log.error("Error finding arrangements by involved party: {}", error.getMessage(), error));
-    }
-
-
-    @Override
-    public Uni<List<IInvolvedParty<?, ?>>> findArrangementInvolvedParties(Mutiny.Session session, IArrangement<?, ?> arrangement, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken) {
-        log.trace("Finding involved parties for arrangement: {}, classification: {}, value: {}",
-                arrangement.getId(), classificationName, value);
-
-        if (Strings.isNullOrEmpty(classificationName)) {
-            classificationName = NoClassification.toString();
-        }
-
-        final String finalClassificationName = classificationName;
-        var enterprise = system.getEnterprise();
-        return classificationService.find(session, classificationName, system, identityToken)
-                .chain(classification -> {
-                    return new ArrangementXInvolvedParty().builder(session)
-                            .inActiveRange()
-                            .inDateRange()
-                            .withEnterprise(enterprise)
-                            .withClassification(classification)
-                            .withValue(value)
-                            .where(ArrangementXInvolvedParty_.arrangementID, Equals, (Arrangement) arrangement)
-                            .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
-                            .getAll()
-                            .map(arxip -> {
-                                List<IInvolvedParty<?, ?>> involvedParties = arxip.stream()
-                                        .<IInvolvedParty<?, ?>>map(ArrangementXInvolvedParty::getInvolvedPartyID)
-                                        .collect(Collectors.toList());
-                                log.trace("Found {} involved parties for arrangement: {}, classification: {}",
-                                        involvedParties.size(), arrangement.getId(), finalClassificationName);
-                                return involvedParties;
-                            });
-
-                })
-                .onFailure()
-                .invoke(error ->
-                        log.error("Error finding involved parties for arrangement: {}", error.getMessage(), error));
-    }
-
-
     /// /@CacheResult(cacheName = "ArrangementArrangementTypeString")
-    @Override
-    public @NotNull Uni<IArrangementType<?, ?>> find(Mutiny.Session session, String idType, ISystems<?, ?> system, UUID... identityToken) {
-        log.trace("Finding arrangement type by name: {}", idType);
-        var enterprise = system.getEnterprise();
-        ArrangementType xr = new ArrangementType();
-        return (Uni) xr.builder(session)
-                .withName(idType)
-                .inActiveRange()
-                .inDateRange()
-                .withEnterprise(enterprise)
-                //   .canRead(system, tokens)
-                .get();
-    }
-
-
-    @Override
-    ////@CacheResult
-    public @NotNull Uni<IArrangement<?, ?>> find(Mutiny.Session session, UUID id, ISystems<?, ?> system, UUID... identityToken) {
-        log.trace("Finding arrangement by ID: {}", id);
-        Arrangement xr = new Arrangement();
-        return (Uni) xr.builder(session)
-                .where(Arrangement_.id, Equals, id)
-                .get();
-    }
-
-
-    @Override
-    ////@CacheResult
-    public @NotNull Uni<IArrangement<?, ?>> find(Mutiny.Session session, UUID id) {
-        log.trace("Finding arrangement by ID (no system): {}", id);
-        Arrangement xr = new Arrangement();
-        return (Uni) xr.builder(session)
-                .where(Arrangement_.id, Equals, id)
-                .get();
-    }
-
-
-    @Override
-    public Uni<List<IArrangement<?, ?>>> findAll(Mutiny.Session session, String arrangementType, ISystems<?, ?> system, UUID... identityToken) {
-        log.trace("Finding all arrangements of type: {}", arrangementType);
-
-        return find(session, arrangementType, system, identityToken)
-                .chain(type -> {
-                    return new ArrangementXArrangementType().builder(session)
-                            .inActiveRange()
-                            .inDateRange()
-                            .canRead(system, identityToken)
-                            .findLink(null, (ArrangementType) type, null)
-                            .getAll()
-                            .map(arrs -> {
-                                List<IArrangement<?, ?>> arrOut = new ArrayList<>();
-                                for (ArrangementXArrangementType arr : arrs) {
-                                    arrOut.add(arr.getArrangement());
-                                }
-                                return arrOut;
-                            });
-
-                });
-    }
-
-    @Override
-    public Uni<IArrangement<?, ?>> completeArrangement(Mutiny.Session session, IArrangement<?, ?> arrangement, ISystems<?, ?> system, UUID... identityToken) {
-        log.trace("Completing arrangement: {}", arrangement.getId());
-        Arrangement arr = (Arrangement) arrangement;
-        return (Uni) arr.expire(Duration.ZERO);
-
-    }
-
     // ============================================================================================
     // Stateless finder twins (builder reads; associations resolved via session.fetch).
     // ============================================================================================

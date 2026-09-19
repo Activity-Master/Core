@@ -31,7 +31,7 @@ public class ClassificationsDataConceptSystem
     private Mutiny.SessionFactory sessionFactory;
 
     @Override
-    public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    public Uni<ISystems<?, ?>> registerSystem(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         log.info("🚀 Registering Classifications Data Concept System for enterprise: '{}'", enterprise.getName());
         log.debug("📋 Creating Classifications Data Concept System with session: {}", session.hashCode());
 
@@ -73,34 +73,8 @@ public class ClassificationsDataConceptSystem
                 .map(result -> result);
     }
 
-    @Override
-    public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
-        logProgress("Classification Data Concept System", "Checking/Creating Base Concepts");
-        log.info("🚀 Creating classification data concepts for enterprise: '{}'", enterprise.getName());
-        log.debug("📋 Using provided session: {}", session.hashCode());
-
-        // First, create the default concepts
-        // These are foundational and should be created before other concepts
-        return createDefaultConcepts(session, enterprise)
-                .flatMap(v -> {
-                    log.info("📋 Starting sequential creation of classification data concepts");
-                    // All methods now accept a session parameter
-                    return createInvolvedPartyConcepts(session, enterprise)
-                            .flatMap(x -> createProductConcepts(session, enterprise))
-                            .flatMap(x -> createResourceItemConcepts(session, enterprise))
-                            .flatMap(x -> createRulesConcepts(session, enterprise))
-                            .flatMap(x -> createActiveFlagConcepts(session, enterprise))
-                            .flatMap(x -> createGeographyConcepts(session, enterprise))
-                            .flatMap(x -> createAddressConcepts(session, enterprise))
-                            .flatMap(x -> createArrangementConcepts(session, enterprise))
-                            .flatMap(x -> createClassificationsConcepts(session, enterprise))
-                            .flatMap(x -> createEventsConcepts(session, enterprise))
-                            .invoke(() -> log.info("🎉 Completed creation of all classification data concepts"));
-                });
-    }
-
     /**
-     * Stateless variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — provisions every
+     * Stateless variant of {@link #createDefaults(Mutiny.StatelessSession, IEnterprise)} — provisions every
      * {@link EnterpriseClassificationDataConcepts} value as a data concept on a {@link Mutiny.StatelessSession}
      * via the stateless find-or-create (each value is, by definition, a data-concept designation). Idempotent.
      */
@@ -124,7 +98,7 @@ public class ClassificationsDataConceptSystem
     }
 
     @Override
-    public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    public Uni<Void> postStartup(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         log.info("🚀 Starting reactive postStartup for Classification Data Concept System");
         log.debug("📋 Beginning postStartup operations for enterprise: '{}' with session: {}",
                 enterprise.getName(), session.hashCode());
@@ -162,7 +136,7 @@ public class ClassificationsDataConceptSystem
                 .invoke(error -> log.error("❌ Error in Classification Data Concept System postStartup: {}", error.getMessage(), error));
     }
 
-    private Uni<Void> createDefaultConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    private Uni<Void> createDefaultConcepts(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         logProgress("Data Concept System", "Base Concepts");
         log.info("🚀 Creating default concepts for enterprise: '{}'", enterprise.getName());
         log.debug("📋 Using provided session: {}", session.hashCode());
@@ -310,7 +284,7 @@ public class ClassificationsDataConceptSystem
     }
 
 
-    private Uni<Void> createInvolvedPartyConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    private Uni<Void> createInvolvedPartyConcepts(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         logProgress("Data Concept System", "Involved Party Concepts");
         log.info("🚀 Creating involved party concepts for enterprise: '{}'", enterprise.getName());
         log.debug("📋 Using provided session: {}", session.hashCode());
@@ -514,7 +488,7 @@ public class ClassificationsDataConceptSystem
     }
 
 
-    private Uni<Void> createProductConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    private Uni<Void> createProductConcepts(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         logProgress("Data Concept System", "Product Concepts");
         log.info("🚀 Creating product concepts for enterprise: '{}'", enterprise.getName());
         log.debug("📋 Using provided session: {}", session.hashCode());
@@ -611,7 +585,7 @@ public class ClassificationsDataConceptSystem
                 .replaceWithVoid();
     }
 
-    private Uni<Void> createResourceItemConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    private Uni<Void> createResourceItemConcepts(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         logProgress("Data Concept System", "Resource Item Concepts");
         log.info("🚀 Creating resource item concepts for enterprise: '{}'", enterprise.getName());
         log.debug("📋 Using provided session: {}", session.hashCode());
@@ -708,7 +682,7 @@ public class ClassificationsDataConceptSystem
                 .replaceWithVoid();
     }
 
-    private Uni<Void> createRulesConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    private Uni<Void> createRulesConcepts(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         logProgress("Data Concept System", "Rules Concepts");
         log.info("🚀 Creating rules concepts for enterprise: '{}'", enterprise.getName());
         log.debug("📋 Using provided session: {}", session.hashCode());
@@ -794,7 +768,7 @@ public class ClassificationsDataConceptSystem
     }
 
 
-    private Uni<Void> createActiveFlagConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    private Uni<Void> createActiveFlagConcepts(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         logProgress("Data Concept System", "Active Flag Concepts");
         log.info("🚀 Creating active flag concepts for enterprise: '{}'", enterprise.getName());
         log.debug("📋 Using provided session: {}", session.hashCode());
@@ -844,7 +818,7 @@ public class ClassificationsDataConceptSystem
     }
 
 
-    private Uni<Void> createGeographyConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    private Uni<Void> createGeographyConcepts(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         logProgress("Data Concept System", "Geography Concepts");
         log.info("🚀 Creating geography concepts for enterprise: '{}'", enterprise.getName());
         log.debug("📋 Using provided session: {}", session.hashCode());
@@ -917,7 +891,7 @@ public class ClassificationsDataConceptSystem
                 .replaceWithVoid();
     }
 
-    private Uni<Void> createAddressConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    private Uni<Void> createAddressConcepts(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         logProgress("Data Concept System", "Address Concepts");
         log.info("🚀 Creating address concepts for enterprise: '{}'", enterprise.getName());
         log.debug("📋 Using provided session: {}", session.hashCode());
@@ -978,7 +952,7 @@ public class ClassificationsDataConceptSystem
                 .replaceWithVoid();
     }
 
-    private Uni<Void> createArrangementConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    private Uni<Void> createArrangementConcepts(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         logProgress("Data Concept System", "Arrangement Concepts");
         log.info("🚀 Creating arrangement concepts for enterprise: '{}'", enterprise.getName());
         log.debug("📋 Using provided session: {}", session.hashCode());
@@ -1135,7 +1109,7 @@ public class ClassificationsDataConceptSystem
                 .replaceWithVoid();
     }
 
-    private Uni<Void> createClassificationsConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    private Uni<Void> createClassificationsConcepts(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         logProgress("Data Concept System", "Classification Concepts");
         log.info("🚀 Creating classification concepts for enterprise: '{}'", enterprise.getName());
         log.debug("📋 Using provided session: {}", session.hashCode());
@@ -1232,7 +1206,7 @@ public class ClassificationsDataConceptSystem
                 .replaceWithVoid();
     }
 
-    private Uni<Void> createEventsConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+    private Uni<Void> createEventsConcepts(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
         logProgress("Data Concept System", "Event Concepts");
         log.info("🚀 Creating event concepts for enterprise: '{}'", enterprise.getName());
         log.debug("📋 Using provided session: {}", session.hashCode());

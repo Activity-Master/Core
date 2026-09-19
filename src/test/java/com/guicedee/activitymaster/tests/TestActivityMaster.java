@@ -55,7 +55,7 @@ public class TestActivityMaster extends TestDatabaseSetup
   public void testPostgreSQLConnects()
   {
     var result =
-        sessionFactory.withSession(session -> {
+        sessionFactory.withStatelessSession(session -> {
               // Persist the entity
               return session.withTransaction(tx -> {
                 log.info("Session: " + session);
@@ -119,7 +119,7 @@ public class TestActivityMaster extends TestDatabaseSetup
       public void testEnterpriseUpdates()
       {
         IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
-        var updates = sessionFactory.withTransaction(session -> {
+        var updates = sessionFactory.withStatelessTransaction(session -> {
           return enterpriseService.getEnterprise(session, TestEnterprise.name())
                      .chain(enterprise -> {
                        return enterpriseService.loadUpdates(session, enterprise)
@@ -167,7 +167,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         public void testClassificationDataConceptFindAfterStartup()
         {
           // This test intentionally runs AFTER EnterpriseSetup.testStartNewEnterprise() to rely on startup-created defaults
-          var foundConcept = sessionFactory.withTransaction(session -> {
+          var foundConcept = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IClassificationDataConceptService<?> conceptService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConceptService.class);
@@ -198,7 +198,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(2)
         public void testCreateFindIdempotentByString()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IClassificationDataConceptService<?> conceptService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConceptService.class);
@@ -243,7 +243,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(3)
         public void testGetGlobalNoAndSecurityConceptsViaInterface()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IClassificationDataConceptService<?> conceptService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConceptService.class);
@@ -285,7 +285,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(4)
         public void testFindByEnumViaInterface()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IClassificationDataConceptService<?> conceptService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConceptService.class);
@@ -327,7 +327,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(1)
         public void testClassificationDefaultsAfterStartup()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IClassificationService<?> classificationService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationService.class);
@@ -361,7 +361,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(2)
         public void testCreateFindIdempotentClassification()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IClassificationService<?> classificationService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationService.class);
@@ -400,7 +400,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(3)
         public void testFindByNameAndConceptViaInterface()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IClassificationService<?> classificationService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationService.class);
@@ -429,7 +429,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(4)
         public void testGetHierarchyTypeViaInterface()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IClassificationService<?> classificationService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationService.class);
@@ -455,7 +455,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(5)
         public void testAddClassificationToSystemCreatesJoin()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IClassificationService<?> classificationService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationService.class);
@@ -500,7 +500,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(6)
         public void testHasAndNumberOfClassificationsHelpers()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
 
@@ -527,7 +527,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(7)
         public void testAddOrUpdateClassificationUpdatesValue()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
 
@@ -563,7 +563,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(8)
         public void testAddClassificationToEnterpriseCreatesJoin()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IClassificationService<?> classificationService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationService.class);
@@ -608,7 +608,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(9)
         public void testAddOrUpdateClassificationOnEnterpriseUpdatesValue()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
 
@@ -649,7 +649,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(1)
         public void testActiveFlagDefaultsAfterStartup()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             IActiveFlagService<?> activeFlagService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService.class);
 
@@ -691,7 +691,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(2)
         public void testFindFlagByNameEnum()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             IActiveFlagService<?> activeFlagService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService.class);
 
@@ -719,7 +719,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(3)
         public void testRangesNonEmpty()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             IActiveFlagService<?> activeFlagService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService.class);
 
@@ -757,7 +757,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(5)
         public void testAddClassificationToActiveFlagCreatesJoin()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IClassificationService<?> classificationService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationService.class);
@@ -806,7 +806,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(6)
         public void testAddOrUpdateClassificationOnActiveFlagUpdatesValue()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IActiveFlagService<?> activeFlagService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService.class);
@@ -852,7 +852,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(1)
         public void testAddOrFindEmailContactCreatesAddressAndValue()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             com.guicedee.activitymaster.fsdm.client.services.IAddressService<?> addressService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IAddressService.class);
@@ -913,7 +913,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(2)
         public void testAddClassificationToAddressCreatesJoin()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IClassificationService<?> classificationService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationService.class);
@@ -932,8 +932,8 @@ public class TestActivityMaster extends TestDatabaseSetup
                                                       .chain(createdClassy -> addressService.addOrFindEmailContact(session, email, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems<?, ?>) sys))
                                                       .chain(address -> ((com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.address.IAddress<?, ?>) address)
                                                                             .addClassification(session, classyName, relValue, sys))
-                                                      .chain(rel -> ((com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.address.IAddress<?, ?>) rel.getPrimary())
-                                                                        .numberOfClassifications(session, classyName, relValue, sys)
+                                                      .chain(ignored -> addressService.addOrFindEmailContact(session, email, sys)
+                                                                        .chain(address -> address.numberOfClassifications(session, classyName, relValue, sys))
                                                                         .invoke(count -> Assertions.assertEquals(1L, count, "Exactly one AddressXClassification record should exist after addClassification"))
                                                       )
                                                       .chain(ignored -> addressService.addOrFindEmailContact(session, email, (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems<?, ?>) sys)
@@ -958,7 +958,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(3)
         public void testAddOrUpdateClassificationOnAddressUpdatesValue()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             com.guicedee.activitymaster.fsdm.client.services.IAddressService<?> addressService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IAddressService.class);
@@ -999,7 +999,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(4)
         public void testRemoveClassificationFromAddress()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IClassificationService<?> classificationService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationService.class);
@@ -1038,7 +1038,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(5)
         public void testArchiveClassificationOnAddress()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IClassificationService<?> classificationService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationService.class);
@@ -1083,7 +1083,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(1)
         public void testCreateAndFindNameType()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var partyService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService.class);
@@ -1107,7 +1107,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(2)
         public void testCreateAndFindIdentificationType()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var partyService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService.class);
@@ -1132,7 +1132,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(3)
         public void testCreateAndFindPartyType()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var partyService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService.class);
@@ -1157,7 +1157,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(4)
         public void testCreateInvolvedPartyAndFindByIdentificationType()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var partyService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService.class);
@@ -1205,7 +1205,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(6)
         public void testAddClassificationToInvolvedPartyCreatesJoin()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var classificationService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationService.class);
@@ -1266,7 +1266,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(1)
         public void testCreateAndFindArrangementType()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var arrangementsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IArrangementsService.class);
@@ -1291,7 +1291,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(2)
         public void testCreateArrangementAndFindByClassification()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var arrangementsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IArrangementsService.class);
@@ -1346,7 +1346,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(1)
         public void testCreateAndFindProductType()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var productService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IProductService.class);
@@ -1371,7 +1371,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(2)
         public void testCreateProductAndFindByName()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var productService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IProductService.class);
@@ -1398,7 +1398,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(3)
         public void testAddProductTypeToProductCreatesJoin()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var productService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IProductService.class);
@@ -1462,7 +1462,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(5)
         public void testAddClassificationToProductCreatesJoin()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var productService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IProductService.class);
@@ -1509,7 +1509,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(6)
         public void testAddOrUpdateClassificationOnProductUpdatesValue()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var productService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IProductService.class);
@@ -1548,7 +1548,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(7)
         public void testRemoveClassificationFromProduct()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var productService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IProductService.class);
@@ -1592,7 +1592,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(8)
         public void testArchiveClassificationOnProduct()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var productService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IProductService.class);
@@ -1641,7 +1641,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(1)
         public void testCreateAndFindRulesType()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var rulesService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IRulesService.class);
@@ -1666,7 +1666,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(2)
         public void testCreateRulesAndFindByName()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var rulesService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IRulesService.class);
@@ -1694,7 +1694,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(3)
         public void testAddRuleTypeToRulesCreatesJoin()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var rulesService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IRulesService.class);
@@ -1753,7 +1753,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(1)
         public void testDefaultSecurityGroupsAndFoldersExist()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var securityService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.class);
@@ -1783,7 +1783,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(2)
         public void testCreateSecurityTokenAndFindByUUID()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var securityService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.class);
@@ -1812,7 +1812,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(3)
         public void testGrantAccessBetweenTokens()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var securityService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.class);
@@ -1848,7 +1848,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(1)
         public void testGetActivityMasterByEnterprise()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
 
@@ -1871,7 +1871,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(2)
         public void testDoesSystemExistAndFind()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
 
@@ -1901,7 +1901,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(3)
         public void testGetSecurityIdentityToken()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
 
@@ -1924,7 +1924,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(4)
         public void testGetActivityMasterBySystemOverload()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
 
@@ -1949,7 +1949,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(5)
         public void testRemoveClassificationFromSystem()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IClassificationService<?> classificationService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationService.class);
@@ -1986,7 +1986,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(6)
         public void testArchiveClassificationOnSystem()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IClassificationService<?> classificationService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IClassificationService.class);
@@ -2028,7 +2028,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(1)
         public void testCreateAndFindResourceItemType()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var resourceService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IResourceItemService.class);
@@ -2053,7 +2053,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(2)
         public void testCreateResourceItemAndFindByType()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var resourceService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IResourceItemService.class);
@@ -2084,7 +2084,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(3)
         public void testAddClassificationToResourceItemCreatesJoin()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var resourceService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IResourceItemService.class);
@@ -2132,7 +2132,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(4)
         public void testUpdateDataValueAndGetDataRow()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             IResourceItemService<?> resourceService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IResourceItemService.class);
@@ -2167,7 +2167,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(1)
         public void testCreateAndFindEventType()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var eventService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEventService.class);
@@ -2192,7 +2192,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(2)
         public void testCreateEventAndAddClassificationCreatesJoin()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var eventService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEventService.class);
@@ -2239,7 +2239,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(3)
         public void testAddOrUpdateClassificationOnEventUpdatesValue()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var eventService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEventService.class);
@@ -2278,7 +2278,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(4)
         public void testRemoveClassificationFromEvent()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var eventService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEventService.class);
@@ -2322,7 +2322,7 @@ public class TestActivityMaster extends TestDatabaseSetup
         @Order(5)
         public void testArchiveClassificationOnEvent()
         {
-          var uni = sessionFactory.withTransaction(session -> {
+          var uni = sessionFactory.withStatelessTransaction(session -> {
             var enterpriseService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.class);
             var systemsService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISystemsService.class);
             var eventService = IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.IEventService.class);

@@ -64,7 +64,7 @@ public class TimeSystemTest extends TestDatabaseSetup
     Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault())
                               .toInstant());
 
-    sessionFactory.withTransaction(session -> {
+    sessionFactory.withStatelessTransaction(session -> {
           Uni<Days> dayUni = timeSystem.getDay(session, date);
 
           // Wait for the result

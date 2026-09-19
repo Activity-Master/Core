@@ -22,7 +22,7 @@ public class ArrangementsSystem
   private ISystemsService<?> systemsService;
 		
   @Override
-  public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<ISystems<?, ?>> registerSystem(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Registering Arrangements System for enterprise: '{}'", enterprise.getName());
     log.trace("📋 Creating Arrangements System with session: {}", session.hashCode());
@@ -51,23 +51,6 @@ public class ArrangementsSystem
                .map(result -> result);
   }
 
-  @Override
-  public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
-  {
-    logProgress("Arrangements System", "Starting Arrangements Checks");
-    log.trace("🚀 Creating arrangement defaults for enterprise: '{}'", enterprise.getName());
-    log.trace("📋 Starting with session: {}", session.hashCode());
-    // No actual operations needed, just return a void item
-    log.debug("✅ No specific defaults needed for Arrangements System");
-    return Uni.createFrom()
-               .voidItem()
-               .onItem()
-               .invoke(() -> log.info("🎉 Successfully completed Arrangements System defaults"))
-               .onFailure()
-               .invoke(error -> log.error("❌ Error in Arrangements System defaults: {}", error.getMessage(), error))
-               .replaceWithVoid();
-  }
-
   /** Stateless variant — the Arrangements System has no default data to provision. */
   @Override
   public Uni<Void> createDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
@@ -77,7 +60,7 @@ public class ArrangementsSystem
   }
 
   @Override
-  public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<Void> postStartup(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.trace("🚀 Starting reactive postStartup for Arrangements System");
     log.trace("📋 Beginning postStartup operations for enterprise: '{}' with session: {}",

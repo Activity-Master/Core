@@ -81,31 +81,24 @@ class PartySecurityFailureTest {
     }
 
     @Test void liveRestrictedSecurityDoesNotSwallowMissingCanonicalFolders() {
-        var session = mock(Mutiny.Session.class); var system = mock(ISystems.class);
+        var session = mock(Mutiny.StatelessSession.class); var system = mock(ISystems.class);
         var security = mock(SecurityTokenService.class); var failure = new NoResultException("missing fixture folder");
-        when(session.flush()).thenReturn(Uni.createFrom().voidItem());
         doReturn(Uni.createFrom().failure(failure)).when(security).getAdministratorsFolder(eq(session), eq(system), any(UUID[].class));
         {
             context.when(() -> IGuiceContext.get(SecurityTokenService.class)).thenReturn(security);
             assertSame(failure, assertThrows(NoResultException.class, () -> new InvolvedParty()
                     .createScopeRestrictedSecurity(session, system, null, UUID.randomUUID()).await().atMost(TIMEOUT)));
-            verify(security, never()).getSystemsFolder(any(Mutiny.Session.class), any(), any(UUID[].class));
+            verify(security, never()).getSystemsFolder(any(Mutiny.StatelessSession.class), any(), any(UUID[].class));
         }
     }
 
-    @Test void managedPartyAndBothSubtypeFailuresPropagate() {
-        for (boolean organic : List.of(true, false)) for (boolean failParent : List.of(true, false))
-            assertServiceFailure(false, organic, failParent);
-    }
-
     @Test void liveGrantLookupFailureIsNotReinterpretedAsPermissionToInsert() {
-        var session = mock(Mutiny.Session.class); var system = mock(ISystems.class);
+        var session = mock(Mutiny.StatelessSession.class); var system = mock(ISystems.class);
         var security = mock(SecurityTokenService.class);
         var token = mock(com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken.class);
         var record = mock(InvolvedPartySecurityToken.class);
         var query = mock(com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.InvolvedPartySecurityTokenQueryBuilder.class, RETURNS_SELF);
         var failure = new IllegalStateException("fixture lookup unavailable");
-        when(session.flush()).thenReturn(Uni.createFrom().voidItem());
         doReturn(Uni.createFrom().item(token)).when(security).getAdministratorsFolder(eq(session), eq(system), any(UUID[].class));
         when(record.builder(session)).thenReturn(query);
         when(query.get()).thenReturn(Uni.createFrom().failure(failure));
@@ -113,16 +106,16 @@ class PartySecurityFailureTest {
         context.when(() -> IGuiceContext.get(InvolvedPartySecurityToken.class)).thenReturn(record);
         assertSame(failure, assertThrows(IllegalStateException.class, () -> new InvolvedParty()
                 .createScopeRestrictedSecurity(session, system, null, UUID.randomUUID()).await().atMost(TIMEOUT)));
-        verify(session, never()).persist(any(Object.class));
+        verify(session, never()).insert(any(Object.class));
         when(query.get()).thenReturn(Uni.createFrom().nullItem());
         assertThrows(IllegalStateException.class, () -> new InvolvedParty()
                 .createScopeRestrictedSecurity(session, system, null, UUID.randomUUID()).await().atMost(TIMEOUT));
-        verify(session, never()).persist(any(Object.class));
+        verify(session, never()).insert(any(Object.class));
     }
 
     @Test void statelessPartyAndBothSubtypeFailuresPropagate() {
         for (boolean organic : List.of(true, false)) for (boolean failParent : List.of(true, false))
-            assertServiceFailure(true, organic, failParent);
+            assertServiceFailure(organic, failParent);
     }
 
     private static Map<String, ISecurityToken<?, ?>> folders() {
@@ -130,8 +123,8 @@ class PartySecurityFailureTest {
         FOLDERS.forEach(name -> result.put(name, mock(ISecurityToken.class))); return result;
     }
 
-    private void assertServiceFailure(boolean stateless, boolean organic, boolean failParent) {
-        var managed = mock(Mutiny.Session.class); var batch = mock(Mutiny.StatelessSession.class);
+    private void assertServiceFailure(boolean organic, boolean failParent) {
+        var batch = mock(Mutiny.StatelessSession.class);
         var system = mock(ISystems.class); var enterprise = mock(IEnterprise.class); var flag = mock(IActiveFlag.class);
         var active = mock(IActiveFlagService.class); var tokens = mock(ISecurityTokenService.class);
         var scope = mock(ISecurityToken.class); var identification = mock(IInvolvedPartyIdentificationType.class);
@@ -139,37 +132,27 @@ class PartySecurityFailureTest {
         var failure = new IllegalStateException("fixture security failure");
         when(system.getEnterprise()).thenReturn(enterprise);
         when(system.getId()).thenReturn(UUID.randomUUID());
-        when(managed.persist(any(Object.class))).thenReturn(Uni.createFrom().voidItem());
         when(batch.insert(any(Object.class))).thenReturn(Uni.createFrom().voidItem());
-        doReturn(Uni.createFrom().item(flag)).when(active).getActiveFlag(eq(managed), eq(enterprise), any(UUID[].class));
         doReturn(Uni.createFrom().item(flag)).when(active).getActiveFlag(eq(batch), eq(enterprise), any(UUID[].class));
         doReturn(Uni.createFrom().item(folders())).when(tokens).resolveDefaultGroupFolderTokens(eq(batch), eq(system), any(UUID[].class));
-        doReturn(Uni.createFrom().item(identification)).when(service).findInvolvedPartyIdentificationType(eq(managed), anyString(), eq(system), any(UUID[].class));
         doReturn(Uni.createFrom().item(identification)).when(service).findInvolvedPartyIdentificationType(eq(batch), anyString(), eq(system), any(UUID[].class));
         MockedConstruction.MockInitializer<InvolvedParty> initializeParty = (party, ignored) -> {
             when(party.getId()).thenReturn(id);
-            doReturn(failParent ? Uni.createFrom().failure(failure) : Uni.createFrom().voidItem())
-                    .when(party).createScopeRestrictedSecurity(eq(managed), eq(system), eq(scope), any(UUID[].class));
             doReturn(failParent ? Uni.createFrom().failure(failure) : Uni.createFrom().item(5L))
                     .when(party).createScopeRestrictedSecurity(eq(batch), eq(system), eq(enterprise), eq(flag), anyMap(), eq(scope), any(UUID[].class));
-            doReturn(Uni.createFrom().nullItem()).when(party).addOrUpdateInvolvedPartyIdentificationType(
-                    eq(managed), anyString(), eq(identification), anyString(), anyString(), eq(system), any(UUID[].class));
             doReturn(Uni.createFrom().nullItem()).when(party).addOrReuseInvolvedPartyIdentificationType(
                     eq(batch), anyString(), eq(identification), anyString(), eq(system), any(UUID[].class));
         };
         try (var parties = mockConstruction(InvolvedParty.class, initializeParty);
              var people = mockConstruction(InvolvedPartyOrganic.class, (record, ignored) -> {
-                 doReturn(Uni.createFrom().failure(failure)).when(record).createScopeRestrictedSecurity(eq(managed), eq(system), eq(scope), any(UUID[].class));
                  doReturn(Uni.createFrom().failure(failure)).when(record).createScopeRestrictedSecurity(eq(batch), eq(system), eq(enterprise), eq(flag), anyMap(), eq(scope), any(UUID[].class));
              });
              var organizations = mockConstruction(InvolvedPartyNonOrganic.class, (record, ignored) -> {
-                 doReturn(Uni.createFrom().failure(failure)).when(record).createScopeRestrictedSecurity(eq(managed), eq(system), eq(scope), any(UUID[].class));
                  doReturn(Uni.createFrom().failure(failure)).when(record).createScopeRestrictedSecurity(eq(batch), eq(system), eq(enterprise), eq(flag), anyMap(), eq(scope), any(UUID[].class));
              })) {
             context.when(() -> IGuiceContext.get(IActiveFlagService.class)).thenReturn(active);
             context.when(() -> IGuiceContext.get(ISecurityTokenService.class)).thenReturn(tokens);
-            Uni<?> result = stateless ? service.createScopeRestricted(batch, system, id, new Pair<>("fixture", id.toString()), organic, scope, identity)
-                    : service.createScopeRestricted(managed, system, id, new Pair<>("fixture", id.toString()), organic, scope, identity);
+            Uni<?> result = service.createScopeRestricted(batch, system, id, new Pair<>("fixture", id.toString()), organic, scope, identity);
             assertSame(failure, assertThrows(IllegalStateException.class, () -> result.await().atMost(TIMEOUT)));
             assertEquals(failParent ? 0 : 1, people.constructed().size() + organizations.constructed().size());
         }

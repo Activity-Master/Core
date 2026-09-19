@@ -49,7 +49,7 @@ public class TestIManageInvolvedParties {
         .await().atMost(Duration.ofMinutes(2));
   }
 
-  private Uni<ISystems<?, ?>> getActivityMasterSystem(Mutiny.Session session) {
+  private Uni<ISystems<?, ?>> getActivityMasterSystem(Mutiny.StatelessSession session) {
     IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
     ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
     return enterpriseService.getEnterprise(session, TestEnterprise.name())
@@ -57,7 +57,7 @@ public class TestIManageInvolvedParties {
             .map(sys -> (ISystems<?, ?>) sys));
   }
 
-  private Uni<IInvolvedParty<?, ?>> createParty(Mutiny.Session session, ISystems<?, ?> sys, String idType, String idValue) {
+  private Uni<IInvolvedParty<?, ?>> createParty(Mutiny.StatelessSession session, ISystems<?, ?> sys, String idType, String idValue) {
     IInvolvedPartyService<?> partyService = IGuiceContext.get(IInvolvedPartyService.class);
     return partyService.createIdentificationType(session, sys, idType, "Test Identification")
         .chain(() -> partyService.createType(session, sys, "QA_ManageParty", "Party Type"))
@@ -66,7 +66,7 @@ public class TestIManageInvolvedParties {
         .map(p -> (IInvolvedParty<?, ?>) p);
   }
 
-  private Uni<IEvent<?, ?>> createEvent(Mutiny.Session session, ISystems<?, ?> sys, String eventTypeName) {
+  private Uni<IEvent<?, ?>> createEvent(Mutiny.StatelessSession session, ISystems<?, ?> sys, String eventTypeName) {
     IEventService<?> eventService = IGuiceContext.get(IEventService.class);
     return eventService.createEventType(session, eventTypeName, sys)
         .chain(t -> eventService.createEvent(session, eventTypeName, sys))
@@ -76,7 +76,7 @@ public class TestIManageInvolvedParties {
   @Test
   @Order(1)
   public void testAddInvolvedParty_CountHasFind() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       return getActivityMasterSystem(session)
           .chain(sys -> createEvent(session, sys, "EVT_Type_IMP_1")
               .chain(evt -> createParty(session, sys, "IMP_NationalID_1", "IMP-VAL-1")
@@ -112,7 +112,7 @@ public class TestIManageInvolvedParties {
   @Test
   @Order(2)
   public void testAddOrUpdateInvolvedParty_UpdatesValue() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       return getActivityMasterSystem(session)
           .chain(sys -> createEvent(session, sys, "EVT_Type_IMP_2")
               .chain(evt -> createParty(session, sys, "IMP_NationalID_2", "IMP-VAL-2")
@@ -145,7 +145,7 @@ public class TestIManageInvolvedParties {
   @Test
   @Order(3)
   public void testAddOrReuseInvolvedParty_NoDuplication() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       return getActivityMasterSystem(session)
           .chain(sys -> createEvent(session, sys, "EVT_Type_IMP_3")
               .chain(evt -> createParty(session, sys, "IMP_NationalID_3", "IMP-VAL-3")

@@ -56,7 +56,7 @@ public class TestActivityMasterManageResourceItems {
         .await().atMost(Duration.ofMinutes(2));
   }
 
-  private Uni<IResourceItem<?, ?>> createResource(Mutiny.Session session, ISystems<?, ?> sys, String typeName, String value) {
+  private Uni<IResourceItem<?, ?>> createResource(Mutiny.StatelessSession session, ISystems<?, ?> sys, String typeName, String value) {
     IResourceItemService<?> resourceService = IGuiceContext.get(IResourceItemService.class);
     return resourceService.createType(session, typeName, typeName, sys)
         .chain(t -> resourceService.create(session, typeName, value, sys))
@@ -65,7 +65,7 @@ public class TestActivityMasterManageResourceItems {
 
   @Test
   public void testClassification_AddResourceItem() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IClassificationService<?> classificationService = IGuiceContext.get(IClassificationService.class);
@@ -86,7 +86,7 @@ public class TestActivityMasterManageResourceItems {
 
   @Test
   public void testArrangements_AddResourceItem() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IArrangementsService<?> arrangementsService = IGuiceContext.get(IArrangementsService.class);
@@ -109,7 +109,7 @@ public class TestActivityMasterManageResourceItems {
 
   @Test
   public void testEvents_AddResourceItem() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IEventService<?> eventService = IGuiceContext.get(IEventService.class);
@@ -131,7 +131,7 @@ public class TestActivityMasterManageResourceItems {
 
   @Test
   public void testProducts_AddResourceItem() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IProductService<?> productService = IGuiceContext.get(IProductService.class);
@@ -153,7 +153,7 @@ public class TestActivityMasterManageResourceItems {
 
   @Test
   public void testRules_AddResourceItem() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IRulesService<?> rulesService = IGuiceContext.get(IRulesService.class);
@@ -174,7 +174,7 @@ public class TestActivityMasterManageResourceItems {
 
   @Test
   public void testParty_AddResourceItem() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IInvolvedPartyService<?> partyService = IGuiceContext.get(IInvolvedPartyService.class);
@@ -200,7 +200,7 @@ public class TestActivityMasterManageResourceItems {
 
   @Test
   public void testAddress_AddResourceItem() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IAddressService<?> addressService = IGuiceContext.get(IAddressService.class);
@@ -256,7 +256,7 @@ public class TestActivityMasterManageResourceItems {
     final String classyValue = "MRI-FIND-20";
 
     // TX1: commit the reference data (type + classification), exactly like a system install would.
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IClassificationService<?> classificationService = IGuiceContext.get(IClassificationService.class);
@@ -269,7 +269,7 @@ public class TestActivityMasterManageResourceItems {
     })).await().atMost(Duration.ofMinutes(2));
 
     // TX2: create and commit the resource item plus its classification value.
-    java.util.UUID resourceId = sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    java.util.UUID resourceId = sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
@@ -282,7 +282,7 @@ public class TestActivityMasterManageResourceItems {
     Assertions.assertNotNull(resourceId, "Setup should persist a resource item");
 
     // TX3: locate the committed resource item by type + classification + value.
-    IResourceItem<?, ?> found = sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    IResourceItem<?, ?> found = sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
@@ -304,7 +304,7 @@ public class TestActivityMasterManageResourceItems {
     final String typeName = "MRI_FindByTypeType";
 
     // TX1: commit the resource item type (reference data).
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
@@ -314,7 +314,7 @@ public class TestActivityMasterManageResourceItems {
     })).await().atMost(Duration.ofMinutes(2));
 
     // TX2: create and commit a resource item of the target type.
-    java.util.UUID resourceId = sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    java.util.UUID resourceId = sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);
@@ -326,7 +326,7 @@ public class TestActivityMasterManageResourceItems {
     Assertions.assertNotNull(resourceId, "Setup should persist a resource item");
 
     // TX3: list every committed resource item of the target type.
-    java.util.List<? extends IResourceItem<?, ?>> items = sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    java.util.List<? extends IResourceItem<?, ?>> items = sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IResourceItemService<?> resourceItemService = IGuiceContext.get(IResourceItemService.class);

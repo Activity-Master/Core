@@ -32,7 +32,7 @@ public class RulesSystem
   private Mutiny.SessionFactory sessionFactory;
 
   @Override
-  public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<ISystems<?, ?>> registerSystem(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Registering Rules System for enterprise: '{}'", enterprise.getName());
     log.debug("📋 Creating Rules System with session: {}", session.hashCode());
@@ -62,79 +62,8 @@ public class RulesSystem
   }
 
 
-  @Override
-  public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
-  {
-    logProgress("Rules System", "Creating rule classifications...");
-    log.info("🚀 Creating rules defaults in a new session and transaction");
-    log.debug("📋 Starting rule defaults creation for enterprise: '{}'", enterprise.getName());
-
-    // Use the passed-in session
-    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-                     .onItem()
-                     .invoke(activityMasterSystem ->
-                                 log.debug("✅ Found ActivityMaster system: '{}' with session: {}",
-                                     activityMasterSystem.getName(), session.hashCode()))
-                     .onFailure()
-                     .invoke(error ->
-                                 log.error("❌ Failed to find ActivityMaster system: {}", error.getMessage(), error))
-                     .chain(activityMasterSystem -> {
-                       logProgress("Rules System", "Creating rule classifications...");
-                       log.debug("🔍 Creating rule classifications");
-
-                       // Get system token once and reuse it
-                       return getSystemToken(session, enterprise)
-                                  .onItem()
-                                  .invoke(systemToken ->
-                                              log.debug("🔑 Retrieved system token for enterprise: '{}'", enterprise.getName()))
-                                  .onFailure()
-                                  .invoke(error ->
-                                              log.error("❌ Failed to retrieve system token: {}", error.getMessage(), error))
-                                  .chain(systemToken -> {
-                                    // Create rule-related classifications sequentially
-                                    log.debug("📋 Creating rule classifications sequentially");
-
-                                    // Create Rules classification first
-                                    return classificationService.create(session, "Rules", "The main rules concept", activityMasterSystem, systemToken)
-                                               .onItem()
-                                               .invoke(classification ->
-                                                           log.debug("✅ Created Rules classification: '{}'", classification.getName()))
-                                               .onFailure()
-                                               .invoke(error ->
-                                                           log.error("❌ Failed to create Rules classification: {}", error.getMessage(), error))
-
-                                               // Then create RulesType classification
-                                               .chain(rulesClassification ->
-                                                          classificationService.create(session, "RulesType", "The concept for rule types", activityMasterSystem, systemToken)
-                                                              .onItem()
-                                                              .invoke(classification ->
-                                                                          log.debug("✅ Created RulesType classification: '{}'", classification.getName()))
-                                                              .onFailure()
-                                                              .invoke(error ->
-                                                                          log.error("❌ Failed to create RulesType classification: {}", error.getMessage(), error))
-                                               )
-
-                                               // Complete the sequence
-                                               .onItem()
-                                               .invoke(() -> log.debug("✅ Successfully created all rule classifications sequentially"))
-                                               .onFailure()
-                                               .invoke(error ->
-                                                           log.error("❌ Error creating rule classifications: {}", error.getMessage(), error))
-                                               .invoke(v -> {
-                                                 logProgress("Rules System", "Loaded Rules Classifications...", 4);
-                                               });
-                                  });
-                     })
-                     .onItem()
-                     .invoke(() -> log.info("✅ Successfully created all rule defaults"))
-                     .onFailure()
-                     .invoke(error ->
-                                 log.error("❌ Failed to create rule defaults: {}", error.getMessage(), error))
-               .replaceWithVoid();
-  }
-
   /**
-   * Stateless end-to-end variant of {@link #createDefaults(Mutiny.Session, IEnterprise)} — provisions the
+   * Stateless end-to-end variant of {@link #createDefaults(Mutiny.StatelessSession, IEnterprise)} — provisions the
    * Rules / RulesType classifications entirely on a {@link Mutiny.StatelessSession}, composing the prepped
    * stateless system resolution, the stateless system-identity token, and the stateless
    * {@code IClassificationService.create} (which itself does the lean insert + stateless default security).
@@ -162,7 +91,7 @@ public class RulesSystem
   }
 
   @Override
-  public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<Void> postStartup(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Starting reactive postStartup for Rules System");
     log.debug("📋 Beginning postStartup operations for enterprise: '{}' with session: {}",

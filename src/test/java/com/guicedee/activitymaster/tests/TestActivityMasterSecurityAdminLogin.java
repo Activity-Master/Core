@@ -109,7 +109,7 @@ public class TestActivityMasterSecurityAdminLogin {
         final Ctx ctx = new Ctx();
 
         // Phase A — resolve context, create a record to secure, gather the canonical group/folder tokens.
-        sessionFactory.withTransaction(session -> {
+        sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
             ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
             IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
@@ -160,7 +160,7 @@ public class TestActivityMasterSecurityAdminLogin {
      * the {@code Administrators} folder by the enterprise install) into the UUID identity used by the
      * access APIs. Reactive — chain it; do not block inside a session callback.
      */
-    private Uni<UUID> loginAndResolveAdminIdentity(Mutiny.Session session, Ctx ctx) {
+    private Uni<UUID> loginAndResolveAdminIdentity(Mutiny.StatelessSession session, Ctx ctx) {
         IPasswordsService<?> passwords = IGuiceContext.get(IPasswordsService.class);
         return passwords
                 .findByUsernameAndPassword(session, ADMIN_USER, ADMIN_PASSWORD, ctx.system, true)
@@ -178,7 +178,7 @@ public class TestActivityMasterSecurityAdminLogin {
     @Order(1)
     public void testAdminAuthenticatesAndHasIdentityToken() {
         Ctx ctx = provision();
-        UUID adminIdentity = sessionFactory.withTransaction(session ->
+        UUID adminIdentity = sessionFactory.withStatelessTransaction(session ->
                 loginAndResolveAdminIdentity(session, ctx)
         ).await().atMost(Duration.ofMinutes(2));
         assertNotNull(adminIdentity, "Logging in as admin must resolve a non-null identity security token");
@@ -188,7 +188,7 @@ public class TestActivityMasterSecurityAdminLogin {
     @Order(2)
     public void testAdminIdentityExpandsToAdministratorsFolder() {
         Ctx ctx = provision();
-        var applicable = sessionFactory.withTransaction(session ->
+        var applicable = sessionFactory.withStatelessTransaction(session ->
                 loginAndResolveAdminIdentity(session, ctx)
                         .chain(adminIdentity -> {
                             ISecurityTokenService<?> sec = IGuiceContext.get(ISecurityTokenService.class);
@@ -205,7 +205,7 @@ public class TestActivityMasterSecurityAdminLogin {
     @Order(3)
     public void testAdminCanReadAndWriteAsLoggedInUser() {
         Ctx ctx = provision();
-        boolean[] access = sessionFactory.withTransaction(session ->
+        boolean[] access = sessionFactory.withStatelessTransaction(session ->
                 loginAndResolveAdminIdentity(session, ctx)
                         .chain(adminIdentity -> {
                             IWarehouseCoreTable<?, ?, ?, ?> rec = (IWarehouseCoreTable<?, ?, ?, ?>) ctx.securedRecord;

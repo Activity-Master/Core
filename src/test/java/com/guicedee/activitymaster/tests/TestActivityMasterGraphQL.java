@@ -157,9 +157,9 @@ public class TestActivityMasterGraphQL extends TestDatabaseSetup
      * Activity Master system first. Each domain is created in its own transaction so the session
      * stays clean between domains, while type and instance creation remain chained within it.
      */
-    private void inTx(BiFunction<Mutiny.Session, ISystems<?, ?>, Uni<?>> work)
+    private void inTx(BiFunction<Mutiny.StatelessSession, ISystems<?, ?>, Uni<?>> work)
     {
-        sessionFactory.withSession(session -> session.withTransaction(tx -> {
+        sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
             IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
             ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
             return enterpriseService.getEnterprise(session, ENTERPRISE)

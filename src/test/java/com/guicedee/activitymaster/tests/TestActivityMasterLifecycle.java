@@ -72,7 +72,7 @@ public class TestActivityMasterLifecycle {
         @Test
         @Order(1)
         public void testRemoveClassificationFromEnterprise() {
-            var uni = sessionFactory.withTransaction(session -> {
+            var uni = sessionFactory.withStatelessTransaction(session -> {
                 IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
                 ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
                 IClassificationService<?> classificationService = IGuiceContext.get(IClassificationService.class);
@@ -100,7 +100,7 @@ public class TestActivityMasterLifecycle {
         @Test
         @Order(2)
         public void testArchiveClassificationOnEnterprise() {
-            var uni = sessionFactory.withTransaction(session -> {
+            var uni = sessionFactory.withStatelessTransaction(session -> {
                 IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
                 ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
                 IClassificationService<?> classificationService = IGuiceContext.get(IClassificationService.class);
@@ -132,7 +132,7 @@ public class TestActivityMasterLifecycle {
         @Test
         @Order(1)
         public void testRemoveClassificationFromActiveFlag() {
-            var uni = sessionFactory.withTransaction(session -> {
+            var uni = sessionFactory.withStatelessTransaction(session -> {
                 IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
                 ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
                 IClassificationService<?> classificationService = IGuiceContext.get(IClassificationService.class);
@@ -163,7 +163,7 @@ public class TestActivityMasterLifecycle {
         @Test
         @Order(2)
         public void testArchiveClassificationOnActiveFlag() {
-            var uni = sessionFactory.withTransaction(session -> {
+            var uni = sessionFactory.withStatelessTransaction(session -> {
                 IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
                 ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
                 IClassificationService<?> classificationService = IGuiceContext.get(IClassificationService.class);
@@ -213,7 +213,7 @@ public class TestActivityMasterLifecycle {
         @Test
         @Order(1)
         public void testModernPasswordLoginAndFormat() {
-            var uni = sessionFactory.withTransaction(session -> {
+            var uni = sessionFactory.withStatelessTransaction(session -> {
                 IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
                 ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
                 IPasswordsService<?> passwordsService = IGuiceContext.get(IPasswordsService.class);
@@ -239,7 +239,7 @@ public class TestActivityMasterLifecycle {
         @Test
         @Order(2)
         public void testIncorrectPasswordRejected() {
-            var uni = sessionFactory.withTransaction(session -> {
+            var uni = sessionFactory.withStatelessTransaction(session -> {
                 IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
                 ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
                 IPasswordsService<?> passwordsService = IGuiceContext.get(IPasswordsService.class);
@@ -262,7 +262,7 @@ public class TestActivityMasterLifecycle {
         @Test
         @Order(3)
         public void testLegacyPasswordMigratedOnLogin() {
-            var uni = sessionFactory.withTransaction(session -> {
+            var uni = sessionFactory.withStatelessTransaction(session -> {
                 IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
                 ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
                 IPasswordsService<?> passwordsService = IGuiceContext.get(IPasswordsService.class);

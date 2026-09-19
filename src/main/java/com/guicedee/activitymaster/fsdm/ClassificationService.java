@@ -3,11 +3,11 @@ package com.guicedee.activitymaster.fsdm;
 /**
  * Reactivity Migration Checklist:
  * <p>
- * [✓] One action per Mutiny.Session at a time
+ * [✓] One action per Mutiny.StatelessSession at a time
  * - All operations on a session are sequential
  * - No parallel operations on the same session
  * <p>
- * [✓] Pass Mutiny.Session through the chain
+ * [✓] Pass Mutiny.StatelessSession through the chain
  * - All methods accept session as parameter
  * - Session is passed to all dependent operations
  * <p>
@@ -70,7 +70,7 @@ public class ClassificationService
     }
 
     @Override
-    public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts concept,
+    public Uni<IClassification<?, ?>> create(Mutiny.StatelessSession session, String name, String description, EnterpriseClassificationDataConcepts concept,
                                              ISystems<?, ?> system, Integer sequenceOrder, String parentName, UUID... identityToken) {
         // No parent supplied → create the classification unparented. (A null/blank parentName must NOT be
         // looked up — find(session, null, …) matches no row and throws NoResultException; this is exactly
@@ -83,59 +83,19 @@ public class ClassificationService
     }
 
     @Override
-    public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name,
+    public Uni<IClassification<?, ?>> create(Mutiny.StatelessSession session, String name,
                                              ISystems<?, ?> system, UUID... identityToken) {
         return create(session, name, name, null, system, 0, identityToken);
     }
 
     @Override
-    public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description,
-                                             ISystems<?, ?> system, UUID... identityToken) {
-        return create(session, name, description, null, system, 0, identityToken);
-    }
-
-    @Override
-    public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
-                                             ISystems<?, ?> system, UUID... identityToken) {
-        return create(session, name, description, conceptName, system, 0, identityToken);
-    }
-
-    @Override
-    public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
+    public Uni<IClassification<?, ?>> create(Mutiny.StatelessSession session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
                                              ISystems<?, ?> system,
                                              Integer sequenceNumber, UUID... identityToken) {
         return create(session, name, description, conceptName, system, sequenceNumber, (IClassification<?, ?>) null, identityToken);
     }
 
-    @Override
-    
-    public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
-                                             ISystems<?, ?> system,
-                                             Integer sequenceNumber, IClassification<?, ?> parent, UUID... identityToken) {
-        // Public create → world-readable (public/default security matrix).
-        return createWithSecurity(session, name, description, conceptName, system, sequenceNumber, parent,
-                rootCl -> rootCl.createDefaultSecurity(session, system, identityToken), identityToken);
-    }
-
-    /**
-     * Opt-in <strong>scope-restricted</strong> classification create. Identical to
-     * {@link #create(Mutiny.Session, String, String, EnterpriseClassificationDataConcepts, ISystems, Integer, IClassification, UUID...)}
-     * except the classification is secured with the <em>restricted</em> matrix (NOT world-readable): only
-     * Administrators / Systems / Applications / Plugins retain access, plus a <em>read</em> grant for
-     * {@code scopeToken}. Because the applicable-token climb is child&rarr;parent, only identity tokens at
-     * that scope node <em>or below it</em> may then read the classification.
-     */
-    @Override
-    public Uni<IClassification<?, ?>> createScopeRestricted(Mutiny.Session session, String name, String description,
-                                                            EnterpriseClassificationDataConcepts conceptName, ISystems<?, ?> system,
-                                                            Integer sequenceNumber, IClassification<?, ?> parent,
-                                                            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
-                                                            UUID... identityToken) {
-        return createWithSecurity(session, name, description, conceptName, system, sequenceNumber, parent,
-                rootCl -> rootCl.createScopeRestrictedSecurity(session, system, scopeToken, identityToken), identityToken);
-    }
-
-    private Uni<IClassification<?, ?>> createWithSecurity(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
+    private Uni<IClassification<?, ?>> createWithSecurity(Mutiny.StatelessSession session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
                                              ISystems<?, ?> system,
                                              Integer sequenceNumber, IClassification<?, ?> parent,
                                              java.util.function.Function<Classification, Uni<?>> securityFn, UUID... identityToken) {
@@ -269,18 +229,11 @@ public class ClassificationService
 
 
     //@CacheResult(cacheName = "ClassificationFindWithSimpleString")
-    @Override
-    public Uni<IClassification<?, ?>> find(Mutiny.Session session, String name, ISystems<?, ?> system, UUID... identityToken) {
-        log.trace("🔍 Finding classification '{}' for system: '{}' with session: {}",
-                name, system.getName(), session.hashCode());
-        return find(session, name, null, system, identityToken);
-    }
-
     
     //@CacheResult(cacheName = "ClassificationFindWithSimpleStringWithConceptValue")
     @Override
     @SuppressWarnings("unchecked")
-    public Uni<IClassification<?, ?>> find(Mutiny.Session session, String name, EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system, UUID... identityToken) {
+    public Uni<IClassification<?, ?>> find(Mutiny.StatelessSession session, String name, EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system, UUID... identityToken) {
         log.trace("🔍 Finding classification '{}' with concept: '{}' for system: '{}' with session: {}",
                 name, concept != null ? concept : "null", system.getName(), session.hashCode());
 
@@ -288,90 +241,33 @@ public class ClassificationService
 
         if (concept != null) {
             return dataConceptService.find(session, concept, system, identityToken)
-                    .chain(dc -> (Uni) new Classification()
+                    .chain(dc -> new Classification()
                             .builder(session)
                             .withEnterprise(enterprise)
                             .withName(name)
                             .where(Classification_.concept, Operand.Equals, (ClassificationDataConcept) dc)
                             .inActiveRange()
                             .inDateRange()
-                            .get());
+                            .selectColumn(Classification_.id)
+                            .selectColumn(Classification_.name)
+                            .selectColumn(Classification_.description)
+                            .selectColumn(Classification_.classificationSequenceNumber)
+                            .get(Object[].class)
+                            .map(row -> {
+                                Classification prepped = new Classification((UUID) row[0], (String) row[1],
+                                        (String) row[2], ((Number) row[3]).intValue());
+                                prepped.setEnterpriseID(enterprise);
+                                prepped.setConcept((ClassificationDataConcept) dc);
+                                prepped.setFake(false);
+                                return (IClassification<?, ?>) prepped;
+                            }));
         } else {
-            return (Uni) new Classification()
-                    .builder(session)
-                    .withEnterprise(enterprise)
-                    .withName(name)
-                    .inActiveRange()
-                    .inDateRange()
-                    .get();
+            return find(session, name, system, identityToken);
         }
-    }
-
-    @Override
-    public Uni<IClassification<?, ?>> getHierarchyType(Mutiny.Session session, ISystems<?, ?> system, UUID...
-            identityToken) {
-        log.trace("🔍 Getting hierarchy type classification for system: '{}' with session: {}",
-                system.getName(), session.hashCode());
-        return find(session,
-                HierarchyTypeClassification.toString(),
-                system, identityToken)
-                .onItem()
-                .invoke(result -> {
-                    if (result != null) {
-                        log.trace("✅ Found hierarchy type classification with ID: {}", result.getId());
-                    } else {
-                        log.warn("⚠️ Hierarchy type classification not found");
-                    }
-                })
-                .onFailure()
-                .invoke(error ->
-                        log.error("❌ Error finding hierarchy type classification: {}", error.getMessage(), error));
-    }
-
-    @Override
-    public Uni<IClassification<?, ?>> getNoClassification(Mutiny.Session session, ISystems<?, ?> system, UUID...
-            identityToken) {
-        log.trace("🔍 Getting 'NoClassification' for system: '{}' with session: {}",
-                system.getName(), session.hashCode());
-        return find(session,
-                NoClassification.toString(),
-                system, identityToken)
-                .onItem()
-                .invoke(result -> {
-                    if (result != null) {
-                        log.trace("✅ Found 'NoClassification' with ID: {}", result.getId());
-                    } else {
-                        log.debug("⚠️ 'NoClassification' not found");
-                    }
-                })
-                .onFailure()
-                .invoke(error ->
-                        log.error("❌ Error finding 'NoClassification': {}", error.getMessage(), error));
     }
 
     
     //@CacheResult(cacheName = "IdentityTypeClassification")
-    @Override
-    public Uni<IClassification<?, ?>> getIdentityType(Mutiny.Session session, ISystems<?, ?> system, UUID...
-            identityToken) {
-        log.trace("🔍 Getting identity type classification for system: '{}' with session: {}",
-                system.getName(), session.hashCode());
-        return find(session,
-                Identity.name(),
-                system, identityToken)
-                .onItem()
-                .invoke(result -> {
-                    if (result != null) {
-                        log.trace("✅ Found identity type classification with ID: {}", result.getId());
-                    } else {
-                        log.debug("⚠️ Identity type classification not found");
-                    }
-                })
-                .onFailure()
-                .invoke(error ->
-                        log.error("❌ Error finding identity type classification: {}", error.getMessage(), error));
-    }
-
     // ---------------------------------------------------------------------------------------------
     // Stateless "fetch ids/scalars + prep" resolvers. Classification is @Cacheable with an eager
     // @ManyToOne concept, so the managed entity cannot be hydrated on a Mutiny.StatelessSession.
@@ -514,7 +410,7 @@ public class ClassificationService
 
     /**
      * Stateless opt-in <strong>scope-restricted</strong> classification create — the stateless twin of
-     * {@link #createScopeRestricted(Mutiny.Session, String, String, EnterpriseClassificationDataConcepts, ISystems, Integer, IClassification, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}.
+     * {@link #createScopeRestricted(Mutiny.StatelessSession, String, String, EnterpriseClassificationDataConcepts, ISystems, Integer, IClassification, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken, UUID...)}.
      * Identical to the stateless {@code create} except the row is secured with the <em>restricted</em>
      * matrix (Administrators=CRUD, Systems/Applications/Plugins=create/update/read, <strong>no</strong>
      * Everyone/Everywhere/Guests, plus a <em>read</em> grant for {@code scopeToken}). Because each create

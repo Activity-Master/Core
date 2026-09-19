@@ -3,11 +3,11 @@ package com.guicedee.activitymaster.fsdm;
 /**
  * Reactivity Migration Checklist:
  * <p>
- * [✓] One action per Mutiny.Session at a time
+ * [✓] One action per Mutiny.StatelessSession at a time
  * - All operations on a session are sequential
  * - No parallel operations on the same session
  * <p>
- * [✓] Pass Mutiny.Session through the chain
+ * [✓] Pass Mutiny.StatelessSession through the chain
  * - All methods accept session as parameter
  * - Session is passed to all dependent operations
  * <p>
@@ -104,7 +104,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService> {
     }
 
     @Override
-    public Uni<IInvolvedParty<?, ?>> findByUsername(Mutiny.Session session, String username, ISystems<?, ?> system, UUID... identityToken) {
+    public Uni<IInvolvedParty<?, ?>> findByUsername(Mutiny.StatelessSession session, String username, ISystems<?, ?> system, UUID... identityToken) {
         log.debug("Finding involved party by username: {}", username);
         var enterprise = system.getEnterprise();
         return new InvolvedParty().builder(session)
@@ -116,7 +116,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public Uni<IInvolvedParty<?, ?>> findByUsernameAndPassword(Mutiny.Session session, String username, String password, ISystems<?, ?> system, boolean throwForNoUser, UUID... identityToken) {
+    public Uni<IInvolvedParty<?, ?>> findByUsernameAndPassword(Mutiny.StatelessSession session, String username, String password, ISystems<?, ?> system, boolean throwForNoUser, UUID... identityToken) {
         log.debug("Finding involved party by username and password: {}", username);
         return (Uni)doesUsernameExist(session, username, system, identityToken)
                 .chain(exists -> {
@@ -194,17 +194,6 @@ public class PasswordsService implements IPasswordsService<PasswordsService> {
                         : authBridge.login(session, found, username, system, identityToken).replaceWithVoid());
     }
 
-    @Override
-    public Uni<List<IInvolvedParty<?, ?>>> getAllUsers(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
-        log.debug("Getting all users for system: {}", system.getName());
-        return new InvolvedParty().builder(session)
-                .findByIdentificationType(IdentificationTypeUserName, null, system, identityToken)
-                .getAll()
-                .onFailure()
-                .invoke(error -> log.error("Error getting all users: {}", error.getMessage(), error))
-                .map(list -> (List<IInvolvedParty<?, ?>>) new ArrayList<IInvolvedParty<?, ?>>(list));
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public Uni<List<IInvolvedParty<?, ?>>> getAllUsers(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identityToken) {
@@ -228,33 +217,6 @@ public class PasswordsService implements IPasswordsService<PasswordsService> {
                 });
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Uni<IInvolvedParty<?, ?>> addUpdateUsernamePassword(Mutiny.Session session, String username, String password, IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, UUID... identityToken) {
-        log.debug("Adding/updating username and password for involved party: {}", involvedParty.getId());
-
-        // Hash with the modern, self-describing encoder. The salt and work factor are embedded in
-        // the stored value, so a separate SecurityPasswordSalt classification is no longer required.
-        String encoded = passwordEncoder.encode(password);
-
-        // Store the modern password credential
-        return (Uni) involvedParty.addOrUpdateClassification(session, SecurityPassword, (String) null, encoded, system, identityToken)
-                .chain(() -> {
-                    // Get identification type
-                    return involvedPartyService.findInvolvedPartyIdentificationType(
-                            session, IdentificationTypeUserName.toString(), system, identityToken);
-                })
-                .chain(identificationType -> {
-                    // Add identification type
-                    return involvedParty.addOrUpdateInvolvedPartyIdentificationType(
-                            session, NoClassification.toString(), identificationType,
-                            null, username, system, identityToken);
-                })
-                .map(result -> involvedParty)
-                .onFailure()
-                .invoke(error -> log.error("Error adding/updating username and password: {}", error.getMessage(), error));
-    }
-
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public Uni<IInvolvedParty<?, ?>> addUpdateUsernamePassword(Mutiny.StatelessSession session, String username, String password, IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, UUID... identityToken) {
@@ -273,7 +235,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService> {
     }
 
     @Override
-    public Uni<Boolean> doesUsernameExist(Mutiny.Session session, String username, ISystems<?, ?> system, UUID... identityToken) {
+    public Uni<Boolean> doesUsernameExist(Mutiny.StatelessSession session, String username, ISystems<?, ?> system, UUID... identityToken) {
         log.debug("Checking if username exists: {}", username);
         var enterprise = system.getEnterprise();
         return new InvolvedParty().builder(session)
@@ -285,118 +247,6 @@ public class PasswordsService implements IPasswordsService<PasswordsService> {
                 .onFailure()
                 .invoke(error -> log.error("Error checking if username exists: {}", error.getMessage(), error))
                 .map(count -> count > 0);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Uni<IInvolvedParty<?, ?>> createAdminAndCreatorUserForEnterprise(Mutiny.Session session, ISystems<?, ?> system, String adminUserName,
-                                                                            @NotNull String adminPassword, UUID existingLocalKey) {
-        log.debug("Creating admin and creator user for enterprise: {}", system.getEnterpriseID());
-        logProgress("Checking base administrator user", "The default user is being checked for compliance", 1);
-
-        // Resolve bootstrap context: identity token + administrators group (sequentially to avoid parallel session usage)
-        ISystemsService<?> systemsService = get(ISystemsService.class);
-        return (Uni) systemsService.getSecurityIdentityToken(session, system)
-                .chain(identityToken -> get(SecurityTokenService.class).getAdministratorsFolder(session, system)
-                        .chain(administratorsGroup -> {
-                            SecurityToken adminsGroup = (SecurityToken) administratorsGroup;
-
-                            // Check if user already exists
-                            return (Uni) new InvolvedParty().builder(session)
-                                    .findByIdentificationType(
-                                            IdentificationTypes.IdentificationTypeEnterpriseCreatorRole,
-                                            adminUserName, system)
-                                    .get()
-                                    .onItem()
-                                    .ifNotNull()
-                                    .transform(existingUser -> (IInvolvedParty<?, ?>) existingUser)
-                                    .onFailure()
-                                    .recoverWithUni(failure -> {
-                                        // Create new user
-                                        Pair<String, String> pair = new Pair<>(
-                                                IdentificationTypes.IdentificationTypeEnterpriseCreatorRole.toString(), adminUserName);
-                                        IInvolvedPartyService<?> service = get(IInvolvedPartyService.class);
-                                        return (Uni) service.create(session, system, pair, true)
-                                                .chain(adminUser -> adminUser.addOrReuseInvolvedPartyIdentificationType(
-                                                                session, NoClassification.toString(),
-                                                                IdentificationTypeUserName.toString(),
-                                                                adminUserName, system, identityToken)
-                                                        .replaceWith(adminUser))
-                                                .chain(adminUser -> {
-                                                    log.trace("Added username identification type");
-                                                    return adminUser.addOrReuseInvolvedPartyType(
-                                                                    session, NoClassification.toString(),
-                                                                    IPTypes.TypeIndividual.toString(),
-                                                                    "Creator Individual", system, identityToken)
-                                                            .replaceWith(adminUser);
-                                                })
-                                                .chain(adminUser -> {
-                                                    log.trace("Added party type");
-                                                    return adminUser.addOrReuseInvolvedPartyNameType(
-                                                                    session, NoClassification.toString(),
-                                                                    PreferredNameType.toString(),
-                                                                    "Enterprise Creator", system, identityToken)
-                                                            .replaceWith(adminUser);
-                                                })
-                                                .chain(adminUser -> {
-                                                    log.trace("Added preferred name type");
-                                                    return adminUser.addOrReuseInvolvedPartyNameType(
-                                                                    session, NoClassification.toString(),
-                                                                    CommonNameType.toString(),
-                                                                    "Enterprise Creator", system, identityToken)
-                                                            .replaceWith(adminUser);
-                                                })
-                                                .chain(adminUser -> {
-                                                    log.trace("Added common name type");
-                                                    return adminUser.addOrReuseInvolvedPartyNameType(
-                                                                    session, NoClassification.toString(),
-                                                                    FullNameType.toString(),
-                                                                    "Enterprise Creator", system, identityToken)
-                                                            .replaceWith(adminUser);
-                                                })
-                                                .chain(adminUser -> {
-                                                    log.trace("Added full name type");
-                                                    return adminUser.addOrReuseInvolvedPartyNameType(
-                                                                    session, NoClassification.toString(),
-                                                                    FirstNameType.toString(),
-                                                                    "Administrator", system, identityToken)
-                                                            .replaceWith(adminUser);
-                                                })
-                                                .chain(adminUser -> {
-                                                    log.trace("Added first name type");
-                                                    return get(SecurityTokenService.class).create(
-                                                                    session, SecurityTokenClassifications.Identity.toString(),
-                                                                    adminUserName,
-                                                                    "The creator of the enterprise",
-                                                                    system,
-                                                                    adminsGroup,
-                                                                    identityToken)
-                                                            .replaceWith(adminUser);
-                                                })
-                                                .chain(adminUser -> {
-                                                    log.trace("Created security token");
-                                                    return adminUser.addOrReuseInvolvedPartyIdentificationType(
-                                                                    session, NoClassification.toString(),
-                                                                    IdentificationTypeEnterpriseCreatorRole.toString(),
-                                                                    adminUserName, system, identityToken)
-                                                            .replaceWith(adminUser);
-                                                })
-                                                .chain(adminUser -> {
-                                                    log.trace("Added creator role identification type");
-                                                    return addUpdateUsernamePassword(
-                                                            session, adminUserName, adminPassword, adminUser, system, identityToken);
-                                                })
-                                                .chain(adminUser -> {
-                                                    log.trace("Added username and password");
-                                                    return ((InvolvedParty) adminUser).createDefaultSecurity(session, system, identityToken)
-                                                            .replaceWith(adminUser);
-                                                })
-                                                .map(result -> {
-                                                    log.trace("Created default security, admin user setup complete");
-                                                    return result;
-                                                });
-                                    });
-                        }));
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -462,6 +312,10 @@ public class PasswordsService implements IPasswordsService<PasswordsService> {
                                                             system,
                                                             (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?>) administratorsGroup,
                                                             identityToken)
+                                                    .chain(token -> adminUser.addOrReuseInvolvedPartyIdentificationType(
+                                                            session, NoClassification.toString(),
+                                                            IdentificationTypes.IdentificationTypeUUID.toString(),
+                                                            token.getSecurityToken(), system, identityToken))
                                                     .replaceWith(adminUser))
                                             .chain(adminUser -> adminUser.addOrReuseInvolvedPartyIdentificationType(
                                                             session, NoClassification.toString(),

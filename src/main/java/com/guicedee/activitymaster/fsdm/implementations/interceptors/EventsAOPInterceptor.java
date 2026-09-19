@@ -89,7 +89,7 @@ public class EventsAOPInterceptor implements MethodInterceptor
 		
 		if (methodInvocation.getMethod().getReturnType().isAssignableFrom(Uni.class)) {
 			return SessionUtils.<Object>withActivityMaster(enterpriseName, ActivityMasterSystemName, tuple -> {
-				Mutiny.Session session = tuple.getItem1();
+				Mutiny.StatelessSession session = tuple.getItem1();
 				ISystems<?, ?> activityMasterSystem = tuple.getItem3();
 				return setupEvent(session, eventAnnotation, system, activityMasterSystem, eventService)
 					.chain(event -> {
@@ -133,7 +133,7 @@ public class EventsAOPInterceptor implements MethodInterceptor
 		}
 	}
 
-	private Uni<IEvent<?, ?>> setupEvent(Mutiny.Session session, Event eventAnnotation, ISystems<?, ?> system, ISystems<?, ?> activityMasterSystem, IEventService<?> eventService) {
+	private Uni<IEvent<?, ?>> setupEvent(Mutiny.StatelessSession session, Event eventAnnotation, ISystems<?, ?> system, ISystems<?, ?> activityMasterSystem, IEventService<?> eventService) {
 		IEvent<?, ?> previousEvent = getCurrentEvent();
 		return eventService.findEventType(session, eventAnnotation.value(), system, identityToken)
 			.onFailure().recoverWithUni(() -> eventService.createEventType(session, eventAnnotation.value(), system, identityToken))
@@ -147,7 +147,7 @@ public class EventsAOPInterceptor implements MethodInterceptor
 			});
 	}
 
-	private Uni<Void> recordOutcome(Mutiny.Session session, IEvent<?, ?> event, ISystems<?, ?> activityMasterSystem, boolean success) {
+	private Uni<Void> recordOutcome(Mutiny.StatelessSession session, IEvent<?, ?> event, ISystems<?, ?> activityMasterSystem, boolean success) {
 		String status = success ? "Successful" : "Failure";
 		return event.addClassification(session, "EventStatus", status, activityMasterSystem, identityToken)
 			.replaceWith(Uni.createFrom().voidItem())

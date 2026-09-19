@@ -123,7 +123,7 @@ public class Classification
 		securityEntity.setBase(this);
 	}
 	
-	public void configureForClassification(Mutiny.Session session, ClassificationXClassification classificationLink, ISystems<?, ?> system)
+	public void configureForClassification(Mutiny.StatelessSession session, ClassificationXClassification classificationLink, ISystems<?, ?> system)
 	{
 		Classification hierarchyClassification = (Classification) get(ClassificationService.class)
 				.getHierarchyType(session, system);
@@ -266,28 +266,6 @@ public class Classification
 		
 	}
 	
-	/**
-	 * Reactive, non-blocking link configuration. Sets the parent/child synchronously and resolves
-	 * the NoClassification marker reactively via {@code map(...)}. The previous implementation
-	 * blocked the Vert.x event loop with {@code await().atMost(...)}, which deadlocks for
-	 * classification-&gt;classification links.
-	 */
-	@Override
-	public Uni<Void> configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
-	{
-		ClassificationXClassification c = (ClassificationXClassification) linkTable;
-
-		c.setParentClassificationID(this);
-		c.setChildClassificationID((Classification) classificationValue);
-
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		return classificationService.getNoClassification(session, system)
-				.map(noClassification -> {
-					c.setClassificationID(noClassification);
-					return (Void) null;
-				});
-	}
-
 	@Override
 	public Uni<Void> configureForClassification(Mutiny.StatelessSession session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{

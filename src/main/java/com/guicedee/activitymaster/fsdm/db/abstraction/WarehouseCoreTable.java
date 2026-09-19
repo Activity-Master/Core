@@ -64,7 +64,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
     public abstract void configureSecurityEntity(S securityEntity);
 
     @Override
-    public Uni<Void> createDefaultSecurity(Mutiny.Session session, ISystems<?, ?> system, UUID... identity) {
+    public Uni<Void> createDefaultSecurity(Mutiny.StatelessSession session, ISystems<?, ?> system, UUID... identity) {
         // Per-row default security for SINGLE-entity creates (rules, products, involved parties, events,
         // resource items, mail classifications, etc.). Each step is fully reactive (no blocking await) and
         // idempotent (find-linked-token-or-create), so it is safe on the caller's session. This is fine for
@@ -94,7 +94,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
         // Flush pending inserts first so the owning row (this) and any related rows are persisted before we
         // build their security tokens — otherwise the token's not-null FK ("base") can reference a still
         // transient value during bootstrap and fail at commit (outside this reactive chain).
-        return session.flush()
+        return io.smallrye.mutiny.Uni.createFrom().voidItem()
                 .chain(() -> createDefaultAdministratorSecurityAccess(session, system, identity))
                 .chain(() -> createDefaultEveryoneSecurityAccess(session, system, identity))
                 .chain(() -> createDefaultEverywhereSecurityAccess(session, system, identity))
@@ -274,15 +274,15 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
      * (e.g. a classification created on the caller's session, not yet committed). The stateless batch
      * variant cannot be used in that case because it opens a separate transaction that cannot see the
      * uncommitted row (FK to {@code base} would fail). This mirrors the live
-     * {@link #createDefaultSecurity(Mutiny.Session, ISystems, UUID...)} find-or-create pattern, but writes
+     * {@link #createDefaultSecurity(Mutiny.StatelessSession, ISystems, UUID...)} find-or-create pattern, but writes
      * the restricted matrix: Administrators=CRUD, Systems/Applications/Plugins=create/update/read,
      * <strong>no</strong> Everyone/Everywhere/Guests grants (→ not world-readable), and {@code scopeToken}=read.
      */
-    public Uni<Void> createScopeRestrictedSecurity(Mutiny.Session session, ISystems<?, ?> system,
+    public Uni<Void> createScopeRestrictedSecurity(Mutiny.StatelessSession session, ISystems<?, ?> system,
                                                    com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
                                                    java.util.UUID... identity) {
         // Flush first so this owning row is persisted before its security rows reference it (base FK).
-        return session.flush()
+        return io.smallrye.mutiny.Uni.createFrom().voidItem()
                 .chain(() -> securityTokenService().getAdministratorsFolder(session, system, identity)
                         .chain(admin -> grantOnLiveSession(session, system, admin, true, true, true, true)))
                 .chain(() -> securityTokenService().getSystemsFolder(session, system, identity)
@@ -302,7 +302,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
      * Find-or-create a single grant row linking {@code token} to this record on the LIVE session, with the
      * supplied flags. Shared by the live scope-restricted matrix.
      */
-    private Uni<S> grantOnLiveSession(Mutiny.Session session, ISystems<?, ?> system,
+    private Uni<S> grantOnLiveSession(Mutiny.StatelessSession session, ISystems<?, ?> system,
                                       com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> token,
                                       boolean create, boolean update, boolean delete, boolean read) {
         if (token == null) {
@@ -328,7 +328,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                         stEntity.setDeleteAllowed(delete);
                         stEntity.setReadAllowed(read);
                         configureSecurityEntity(stEntity);
-                        return session.persist(stEntity).replaceWith(stEntity);
+                        return session.insert(stEntity).replaceWith(stEntity);
                     }
                     if (result == null) {
                         return Uni.createFrom().failure(new IllegalStateException("Restricted security lookup returned no result"));
@@ -337,17 +337,8 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                 });
     }
 
-    @Override
-    public Uni<Long> countDefaultSecurity(Mutiny.Session session) {
-        S stAdmin = get(findPersistentSecurityClass());
-        QueryBuilderSecurities<?, ?, ?> securities = stAdmin.builder(session);
-        return securities.findLinkedSecurityTokens(this)
-                .inDateRange()
-                .getCount();
-    }
-
     /**
-     * Stateless variant of {@link #countDefaultSecurity(Mutiny.Session)} — a scalar COUNT of this row's
+     * Stateless variant of {@link #countDefaultSecurity(Mutiny.StatelessSession)} — a scalar COUNT of this row's
      * in-date-range security links (no entity hydration), safe on a {@link Mutiny.StatelessSession}.
      */
     public Uni<Long> countDefaultSecurity(Mutiny.StatelessSession session) {
@@ -371,48 +362,6 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
         return (Uni) b.getAll(UUID.class);
     }
 
-    @Override
-    public Uni<Boolean> canRead(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
-        return hasGrant(session, system, row -> row.isReadAllowed(), identityToken);
-    }
-
-    @Override
-    public Uni<Boolean> canWrite(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
-        return hasGrant(session, system, row -> row.isCreateAllowed() || row.isUpdateAllowed(), identityToken);
-    }
-
-    @Override
-    public Uni<java.util.Set<UUID>> readableIds(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken) {
-        return get(SecurityTokenService.class).getApplicableSecurityTokenIds(session, system, identityToken)
-                .chain(applicable -> {
-                    if (applicable == null || applicable.isEmpty()) {
-                        return Uni.createFrom().item(java.util.Collections.<UUID>emptySet());
-                    }
-                    S stAdmin = get(findPersistentSecurityClass());
-                    QueryBuilderSecurities<?, ?, ?> securities = stAdmin.builder(session);
-                    // Load all in-date-range security rows for this entity type, then keep only the rows
-                    // whose token is in the applicable set and that grant read — exactly the
-                    // (securityTokenID IN applicable) AND (ReadAllowed = true) rule, collected as base ids.
-                    return securities.inDateRange()
-                            .getAll()
-                            .map(rows -> {
-                                java.util.Set<UUID> ids = new java.util.LinkedHashSet<>();
-                                for (Object o : rows) {
-                                    @SuppressWarnings("unchecked")
-                                    S row = (S) o;
-                                    var token = row.getSecurityTokenID();
-                                    if (token != null && applicable.contains(token.getId()) && row.isReadAllowed()) {
-                                        UUID baseId = extractBaseId(row);
-                                        if (baseId != null) {
-                                            ids.add(baseId);
-                                        }
-                                    }
-                                }
-                                return ids;
-                            });
-                });
-    }
-
     /**
      * Reads the owning-entity id from a security row. The {@code base} back-reference is declared
      * (typed) on each concrete security entity rather than on {@link WarehouseSecurityTable}, so it is
@@ -428,39 +377,6 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
             log.debug("Unable to resolve base id for security row {}: {}", row.getClass().getSimpleName(), e.getMessage());
         }
         return null;
-    }
-
-    /**
-     * Shared row-level access evaluation. Expands the caller's identity tokens into the full set of
-     * applicable security-token ids (token + every group/folder it belongs to, transitively) via
-     * {@link SecurityTokenService#getApplicableSecurityTokenIds}, then returns {@code true} when this
-     * entity has an in-date-range security row whose token is in that set and whose grant flag (per the
-     * supplied predicate) is set.
-     */
-    private Uni<Boolean> hasGrant(Mutiny.Session session, ISystems<?, ?> system,
-                                  java.util.function.Predicate<S> grant, UUID... identityToken) {
-        return get(SecurityTokenService.class).getApplicableSecurityTokenIds(session, system, identityToken)
-                .chain(applicable -> {
-                    if (applicable == null || applicable.isEmpty()) {
-                        return Uni.createFrom().item(false);
-                    }
-                    S stAdmin = get(findPersistentSecurityClass());
-                    QueryBuilderSecurities<?, ?, ?> securities = stAdmin.builder(session);
-                    return securities.findLinkedSecurityTokens(this)
-                            .inDateRange()
-                            .getAll()
-                            .map(rows -> {
-                                for (Object o : rows) {
-                                    @SuppressWarnings("unchecked")
-                                    S row = (S) o;
-                                    var token = row.getSecurityTokenID();
-                                    if (token != null && applicable.contains(token.getId()) && grant.test(row)) {
-                                        return true;
-                                    }
-                                }
-                                return false;
-                            });
-                });
     }
 
     // ---- Stateless (Mutiny.StatelessSession) twins of the per-row security-read checks. The applicable
@@ -532,7 +448,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                 });
     }
 
-    public Uni<Void> updateSecurity(Mutiny.Session session, J newCoreTable, Systems system) {
+    public Uni<Void> updateSecurity(Mutiny.StatelessSession session, J newCoreTable, Systems system) {
         log.trace("🔄 Updating security for table with system: {}", system.getName());
 
         S stAdmin = get(findPersistentSecurityClass());
@@ -557,7 +473,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                         // Add this operation to the chain
                         sequentialChain = sequentialChain.chain(() -> {
                             log.debug("🔄 Updating security token sequentially");
-                            return session.persist(existingToken)
+                            return session.insert(existingToken)
                                     .onItem()
                                     .invoke(() -> log.debug("✅ Security token updated successfully"))
                                     .onFailure()
@@ -575,7 +491,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                 });
     }
 
-    private Uni<S> createDefaultAdministratorSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity) {
+    private Uni<S> createDefaultAdministratorSecurityAccess(Mutiny.StatelessSession session, ISystems<?, ?> system, java.util.UUID... identity) {
         log.debug("🔧 Creating default administrator security access");
 
         S stAdmin = get(findPersistentSecurityClass());
@@ -599,7 +515,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                 // Set the not-null "base" FK to this row BEFORE persisting so the insert is valid.
                                 configureSecurityEntity(stEntity);
 
-                                return (Uni) session.persist(stEntity)
+                                return (Uni) session.insert(stEntity)
                                         .replaceWith(stEntity);
                             })
                             .chain(result -> {
@@ -613,7 +529,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                 });
     }
 
-    private Uni<S> createDefaultEveryoneSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity) {
+    private Uni<S> createDefaultEveryoneSecurityAccess(Mutiny.StatelessSession session, ISystems<?, ?> system, java.util.UUID... identity) {
         log.debug("🔧 Creating default everyone security access with session");
 
         S stAdmin = get(findPersistentSecurityClass());
@@ -642,7 +558,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                     // Set the not-null "base" FK to this row BEFORE persisting so the insert is valid.
                                     configureSecurityEntity(stEntity);
                                     log.debug("✅ Everyone security token created successfully");
-                                    return session.persist(stEntity)
+                                    return session.insert(stEntity)
                                             .replaceWith(stEntity);
                                 } else {
                                     log.debug("✅ Everyone security token already exists");
@@ -653,7 +569,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                 });
     }
 
-    private Uni<S> createDefaultEverywhereSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity) {
+    private Uni<S> createDefaultEverywhereSecurityAccess(Mutiny.StatelessSession session, ISystems<?, ?> system, java.util.UUID... identity) {
         log.debug("🔧 Creating default everywhere security access with session");
 
         S stAdmin = get(findPersistentSecurityClass());
@@ -683,7 +599,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                     // Set the not-null "base" FK to this row BEFORE persisting so the insert is valid.
                                     configureSecurityEntity(stEntity);
                                     log.debug("✅ Everywhere security token created successfully");
-                                    return session.persist(stEntity)
+                                    return session.insert(stEntity)
                                             .replaceWith(stEntity);
                                 } else {
                                     log.debug("✅ Everywhere security token already exists");
@@ -694,7 +610,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                 });
     }
 
-    private Uni<S> createDefaultSystemsSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity) {
+    private Uni<S> createDefaultSystemsSecurityAccess(Mutiny.StatelessSession session, ISystems<?, ?> system, java.util.UUID... identity) {
         log.debug("🔧 Creating default systems security access with session");
 
         S stAdmin = get(findPersistentSecurityClass());
@@ -724,7 +640,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                     // Set the not-null "base" FK to this row BEFORE persisting so the insert is valid.
                                     configureSecurityEntity(stEntity);
                                     log.debug("✅ Systems security token created successfully");
-                                    return session.persist(stEntity)
+                                    return session.insert(stEntity)
                                             .replaceWith(stEntity);
                                 } else {
                                     log.debug("✅ Systems security token already exists");
@@ -735,7 +651,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                 });
     }
 
-    private Uni<S> createDefaultApplicationsSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity) {
+    private Uni<S> createDefaultApplicationsSecurityAccess(Mutiny.StatelessSession session, ISystems<?, ?> system, java.util.UUID... identity) {
         log.debug("🔧 Creating default applications security access with session");
 
         S stAdmin = get(findPersistentSecurityClass());
@@ -765,7 +681,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                     // Set the not-null "base" FK to this row BEFORE persisting so the insert is valid.
                                     configureSecurityEntity(stEntity);
                                     log.debug("✅ Applications security token created successfully");
-                                    return session.persist(stEntity)
+                                    return session.insert(stEntity)
                                             .replaceWith(stEntity);
                                 } else {
                                     log.debug("✅ Applications security token already exists");
@@ -776,7 +692,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                 });
     }
 
-    private Uni<S> createDefaultPluginsSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity) {
+    private Uni<S> createDefaultPluginsSecurityAccess(Mutiny.StatelessSession session, ISystems<?, ?> system, java.util.UUID... identity) {
         log.debug("🔧 Creating default plugins security access with session");
 
         S stAdmin = get(findPersistentSecurityClass());
@@ -806,7 +722,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                     // Set the not-null "base" FK to this row BEFORE persisting so the insert is valid.
                                     configureSecurityEntity(stEntity);
                                     log.debug("✅ Plugins security token created successfully");
-                                    return session.persist(stEntity)
+                                    return session.insert(stEntity)
                                             .replaceWith(stEntity);
                                 } else {
                                     log.debug("✅ Plugins security token already exists");
@@ -817,7 +733,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                 });
     }
 
-    private Uni<S> createDefaultGuestReadSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity) {
+    private Uni<S> createDefaultGuestReadSecurityAccess(Mutiny.StatelessSession session, ISystems<?, ?> system, java.util.UUID... identity) {
         log.debug("🔧 Creating default guest read security access with session");
 
         S stAdmin = get(findPersistentSecurityClass());
@@ -847,7 +763,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                     // Set the not-null "base" FK to this row BEFORE persisting so the insert is valid.
                                     configureSecurityEntity(stEntity);
                                     log.debug("✅ Guest read security token created successfully");
-                                    return session.persist(stEntity)
+                                    return session.insert(stEntity)
                                             .replaceWith(stEntity);
                                 } else {
                                     log.debug("✅ Guest read security token already exists");
@@ -871,7 +787,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
         stAdmin.setEnterpriseID(system.getEnterprise());
     }
 
-    public Uni<S> createDefaultGuestNoSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity) {
+    public Uni<S> createDefaultGuestNoSecurityAccess(Mutiny.StatelessSession session, ISystems<?, ?> system, java.util.UUID... identity) {
         log.debug("🎭 Creating default guest no-security access token for system: {}", system.getName());
 
         return securityTokenService().getGuestsFolder(session, system, identity)
@@ -896,7 +812,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                 stEntity.setDeleteAllowed(false);
                                 stEntity.setReadAllowed(false);
 
-                                return session.persist(stEntity)
+                                return session.insert(stEntity)
                                         .chain(persisted -> {
                                             configureSecurityEntity(stEntity);
                                             log.debug("✅ Guest no-security token created successfully");

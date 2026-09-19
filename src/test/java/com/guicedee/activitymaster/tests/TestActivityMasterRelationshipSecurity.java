@@ -108,7 +108,7 @@ public class TestActivityMasterRelationshipSecurity {
 
     private Ctx provision() {
         final Ctx ctx = new Ctx();
-        sessionFactory.withTransaction(session -> {
+        sessionFactory.withStatelessTransaction(session -> {
             IEnterpriseService<?> es = IGuiceContext.get(IEnterpriseService.class);
             ISystemsService<?> ss = IGuiceContext.get(ISystemsService.class);
             IActiveFlagService<?> afs = IGuiceContext.get(IActiveFlagService.class);
@@ -136,12 +136,12 @@ public class TestActivityMasterRelationshipSecurity {
     private void assertLinkSecured(Ctx ctx, IWarehouseCoreTable<?, ?, ?, ?> link, String what) {
         assertNotNull(link, what + " link must have been created");
 
-        Long count = sessionFactory.withTransaction(link::countDefaultSecurity
+        Long count = sessionFactory.withStatelessTransaction(link::countDefaultSecurity
         ).await().atMost(Duration.ofMinutes(1));
         assertEquals((long) RESTRICTED_SECURITY_ROWS_PER_RECORD, count,
                 what + " link must carry exactly " + RESTRICTED_SECURITY_ROWS_PER_RECORD + " secure-by-default (restricted) security rows");
 
-        Boolean canRead = sessionFactory.withTransaction(session ->
+        Boolean canRead = sessionFactory.withStatelessTransaction(session ->
                 link.canRead(session, ctx.system, ctx.systemToken)
         ).await().atMost(Duration.ofMinutes(1));
         assertTrue(canRead, what + " link must be READABLE by the system identity token once secured");
@@ -154,7 +154,7 @@ public class TestActivityMasterRelationshipSecurity {
         final String runId = Long.toHexString(System.nanoTime());
         final Object[] linkHolder = new Object[1];
 
-        sessionFactory.withTransaction(session -> {
+        sessionFactory.withStatelessTransaction(session -> {
             IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
             // primary owns the capability; secondary is the classification it links to (by name).
             return cs.create(session, "RelSecPrimary_" + runId, "relationship primary",
@@ -181,7 +181,7 @@ public class TestActivityMasterRelationshipSecurity {
         // Tx1: create the primary classification and a fully-persisted resource item (with its type).
         // Done in its own transaction so the link operation below starts from already-committed rows —
         // exactly how addResourceItem is used in practice (the secondary already exists).
-        sessionFactory.withTransaction(session -> {
+        sessionFactory.withStatelessTransaction(session -> {
             IClassificationService<?> cs = IGuiceContext.get(IClassificationService.class);
             IResourceItemService<?> ris = IGuiceContext.get(IResourceItemService.class);
             final String resTypeName = "RelSecResType_" + runId;
@@ -197,7 +197,7 @@ public class TestActivityMasterRelationshipSecurity {
         assertNotNull(refs[1], "resource item must be created");
 
         // Tx2: link the (committed) resource item via the previously-broken IManageResourceItems capability.
-        sessionFactory.withTransaction(session -> {
+        sessionFactory.withStatelessTransaction(session -> {
             Classification primary = (Classification) refs[0];
             var resourceItem = (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem<?, ?>) refs[1];
             return primary.addResourceItem(session, null, resourceItem, "ri-link-value", ctx.system, ctx.systemToken)

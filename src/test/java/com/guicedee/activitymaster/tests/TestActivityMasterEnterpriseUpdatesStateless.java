@@ -129,7 +129,7 @@ public class TestActivityMasterEnterpriseUpdatesStateless {
 
     /**
      * Regression for the original defect: on the stateless path {@code ResourceItemsBaseSetup} only overrode
-     * the managed {@code update(Mutiny.Session,…)}, so its stateless twin never ran and the {@code Icon}
+     * the managed {@code update(Mutiny.StatelessSession,…)}, so its stateless twin never ran and the {@code Icon}
      * classification was never seeded — the first stateless lookup of "Icon" then threw {@code NoResultException}.
      * After running the stateless {@code loadUpdates}, the "Icon" classification must resolve.
      */

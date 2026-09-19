@@ -43,7 +43,7 @@ public abstract class TestDatabaseSetup
                                           .toList()
                 ;
 
-        sessionFactory.withSession(session1 -> {
+        sessionFactory.withStatelessSession(session1 -> {
                     return session1.withTransaction(tx -> {
                         Uni<Void> chain = Uni.createFrom().voidItem();
                         for (String stmt : statements)

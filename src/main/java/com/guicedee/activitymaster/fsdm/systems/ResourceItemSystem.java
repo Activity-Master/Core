@@ -26,7 +26,7 @@ public class ResourceItemSystem
   private Mutiny.SessionFactory sessionFactory;
 
   @Override
-  public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<ISystems<?, ?>> registerSystem(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Registering Resource Item System for enterprise: '{}'", enterprise.getName());
     log.debug("📋 Creating Resource Item System with session: {}", session.hashCode());
@@ -54,34 +54,6 @@ public class ResourceItemSystem
                .map(result->result);
   }
 
-  @Override
-  public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
-  {
-    logProgress("Resource Item System", "Starting Resource Item Checks");
-    log.info("🚀 Creating resource item defaults for enterprise: '{}'", enterprise.getName());
-    log.debug("📋 Starting with session: {}", session.hashCode());
-    // Get the ActivityMaster system
-    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-               .onItem()
-               .invoke(activityMasterSystem ->
-                           log.debug("✅ Found ActivityMaster system: '{}' with session: {}",
-                               activityMasterSystem.getName(), session.hashCode()))
-               .onFailure()
-               .invoke(error ->
-                           log.error("❌ Failed to find ActivityMaster system: {}", error.getMessage(), error))
-               .invoke(activityMasterSystem -> {
-                 // Currently no default resource items to create
-                 // This method is kept for consistency with other system classes
-                 // and to provide a structure for future additions
-                 log.debug("✅ No specific defaults needed for Resource Item System");
-               })
-               .onItem()
-               .invoke(() -> log.info("🎉 Successfully completed Resource Item System defaults"))
-               .onFailure()
-               .invoke(error -> log.error("❌ Error in Resource Item System defaults: {}", error.getMessage(), error))
-               .replaceWithVoid();
-  }
-
   /** Stateless variant — the Resource Item System has no default data to provision. */
   @Override
   public Uni<Void> createDefaults(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
@@ -91,7 +63,7 @@ public class ResourceItemSystem
   }
 
   @Override
-  public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<Void> postStartup(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Starting reactive postStartup for Resource Item System");
     log.debug("📋 Beginning postStartup operations for enterprise: '{}' with session: {}",

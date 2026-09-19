@@ -57,7 +57,7 @@ public class TestActivityMasterManageClassifications {
         .await().atMost(Duration.ofMinutes(2));
   }
 
-  private Uni<Void> ensureClassification(Mutiny.Session session, ISystems<?, ?> sys, String name) {
+  private Uni<Void> ensureClassification(Mutiny.StatelessSession session, ISystems<?, ?> sys, String name) {
     IClassificationService<?> classificationService = IGuiceContext.get(IClassificationService.class);
     return classificationService.create(session, name, "mc", EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, sys)
         .replaceWithVoid();
@@ -65,7 +65,7 @@ public class TestActivityMasterManageClassifications {
 
   @Test
   public void testArrangements_AddClassification() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IArrangementsService<?> arrangementsService = IGuiceContext.get(IArrangementsService.class);
@@ -97,7 +97,7 @@ public class TestActivityMasterManageClassifications {
 
   @Test
   public void testEvents_AddClassification() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IEventService<?> eventService = IGuiceContext.get(IEventService.class);
@@ -127,7 +127,7 @@ public class TestActivityMasterManageClassifications {
 
   @Test
   public void testProducts_AddClassification() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IProductService<?> productService = IGuiceContext.get(IProductService.class);
@@ -157,7 +157,7 @@ public class TestActivityMasterManageClassifications {
 
   @Test
   public void testParty_AddClassification() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IInvolvedPartyService<?> partyService = IGuiceContext.get(IInvolvedPartyService.class);
@@ -191,7 +191,7 @@ public class TestActivityMasterManageClassifications {
 
   @Test
   public void testRules_AddClassification() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IRulesService<?> rulesService = IGuiceContext.get(IRulesService.class);
@@ -220,7 +220,7 @@ public class TestActivityMasterManageClassifications {
 
   @Test
   public void testAddress_AddClassification() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IAddressService<?> addressService = IGuiceContext.get(IAddressService.class);
@@ -275,7 +275,7 @@ public class TestActivityMasterManageClassifications {
 
   @Test
   public void testActiveFlag_AddClassification() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IActiveFlagService<?> activeFlagService = IGuiceContext.get(IActiveFlagService.class);
@@ -306,7 +306,7 @@ public class TestActivityMasterManageClassifications {
   
   @Test
   public void testClassification_CreateWithParent_AddsChildLink() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IClassificationService<?> classificationService = IGuiceContext.get(IClassificationService.class);
@@ -339,7 +339,7 @@ public class TestActivityMasterManageClassifications {
    */
   @Test
   public void testFindClassificationValues_BatchedReadMatchesPerFieldReads() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
       ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
       IArrangementsService<?> arrangementsService = IGuiceContext.get(IArrangementsService.class);

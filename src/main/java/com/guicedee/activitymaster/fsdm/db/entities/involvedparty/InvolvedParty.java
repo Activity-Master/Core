@@ -129,16 +129,6 @@ public class InvolvedParty
     private List<InvolvedPartyXInvolvedPartyIdentificationType> identities;
 
     @Override
-    public Uni<UUID> getSecurityIdentity(Mutiny.Session session)
-    {
-        IInvolvedPartyService<?> partyService = get(IInvolvedPartyService.class);
-        return this.findInvolvedPartyIdentificationType(session, NoClassification, IdentificationTypes.IdentificationTypeUUID, null, getSystemID(), true, true,
-                        get(InvolvedPartySystem.class).getSystemToken(session, getEnterprise()).await().atMost(Duration.ofSeconds(50)))
-                       .map(IRelationshipValue::getValue)
-                       .map(UUID::fromString);
-    }
-
-    @Override
     public Uni<UUID> getSecurityIdentity(Mutiny.StatelessSession session)
     {
         return this.findInvolvedPartyIdentificationType(session, NoClassification, IdentificationTypes.IdentificationTypeUUID, null, getSystemID(), true, true,
@@ -187,14 +177,6 @@ public class InvolvedParty
         i.setParentInvolvedPartyID(parent);
         i.setChildInvolvedPartyID(child);
         i.setValue(Strings.nullToEmpty(value));
-    }
-
-    @Override
-    public io.smallrye.mutiny.Uni<Void> configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
-    {
-        InvolvedPartyXClassification i = (InvolvedPartyXClassification) linkTable;
-        i.setInvolvedPartyID(this);
-        return io.smallrye.mutiny.Uni.createFrom().voidItem();
     }
 
     @Override
@@ -247,7 +229,7 @@ public class InvolvedParty
     }
 
     @Override
-    public void configureProductAddable(Mutiny.Session session, IWarehouseRelationshipTable linkTable, InvolvedParty primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    public void configureProductAddable(Mutiny.StatelessSession session, IWarehouseRelationshipTable linkTable, InvolvedParty primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
     {
         InvolvedPartyXProduct p = (InvolvedPartyXProduct) linkTable;
         p.setInvolvedPartyID(primary);

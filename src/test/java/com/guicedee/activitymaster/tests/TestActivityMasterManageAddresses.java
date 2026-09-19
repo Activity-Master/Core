@@ -51,7 +51,7 @@ public class TestActivityMasterManageAddresses {
         .await().atMost(Duration.ofMinutes(2));
   }
 
-  private Uni<ISystems<?, ?>> getActivityMasterSystem(Mutiny.Session session) {
+  private Uni<ISystems<?, ?>> getActivityMasterSystem(Mutiny.StatelessSession session) {
     IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
     ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
     return enterpriseService.getEnterprise(session, TestEnterprise.name())
@@ -59,7 +59,7 @@ public class TestActivityMasterManageAddresses {
             .map(sys -> (ISystems<?, ?>) sys));
   }
 
-  private Uni<Void> ensureAddressClassifications(Mutiny.Session session, ISystems<?, ?> sys) {
+  private Uni<Void> ensureAddressClassifications(Mutiny.StatelessSession session, ISystems<?, ?> sys) {
     IClassificationService<?> classificationService = IGuiceContext.get(IClassificationService.class);
     return classificationService.create(session,
             com.guicedee.activitymaster.fsdm.client.services.classifications.address.AddressClassifications.Address,
@@ -87,7 +87,7 @@ public class TestActivityMasterManageAddresses {
         .replaceWithVoid();
   }
 
-  private Uni<IInvolvedParty<?, ?>> createParty(Mutiny.Session session, ISystems<?, ?> sys, String idType, String idValue) {
+  private Uni<IInvolvedParty<?, ?>> createParty(Mutiny.StatelessSession session, ISystems<?, ?> sys, String idType, String idValue) {
     IInvolvedPartyService<?> partyService = IGuiceContext.get(IInvolvedPartyService.class);
     return partyService.createIdentificationType(session, sys, idType, "Test Identification")
         .chain(() -> partyService.createType(session, sys, "QA_ManageParty", "Party Type"))
@@ -96,21 +96,21 @@ public class TestActivityMasterManageAddresses {
         .map(p -> (IInvolvedParty<?, ?>) p);
   }
 
-  private Uni<IEvent<?, ?>> createEvent(Mutiny.Session session, ISystems<?, ?> sys, String eventTypeName) {
+  private Uni<IEvent<?, ?>> createEvent(Mutiny.StatelessSession session, ISystems<?, ?> sys, String eventTypeName) {
     IEventService<?> eventService = IGuiceContext.get(IEventService.class);
     return eventService.createEventType(session, eventTypeName, sys)
         .chain(t -> eventService.createEvent(session, eventTypeName, sys))
         .map(e -> (IEvent<?, ?>) e);
   }
 
-  private Uni<IAddress<?, ?>> ensureEmailAddress(Mutiny.Session session, ISystems<?, ?> sys, String email) {
+  private Uni<IAddress<?, ?>> ensureEmailAddress(Mutiny.StatelessSession session, ISystems<?, ?> sys, String email) {
     IAddressService<?> addressService = IGuiceContext.get(IAddressService.class);
     return ensureAddressClassifications(session, sys)
         .chain(() -> addressService.addOrFindEmailContact(session, email, sys))
         .map(a -> (IAddress<?, ?>) a);
   }
 
-  private Uni<Void> ensureRelationshipClassification(Mutiny.Session session, ISystems<?, ?> sys, String classyName) {
+  private Uni<Void> ensureRelationshipClassification(Mutiny.StatelessSession session, ISystems<?, ?> sys, String classyName) {
     IClassificationService<?> classificationService = IGuiceContext.get(IClassificationService.class);
     return classificationService.create(session, classyName, "desc", EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, sys)
         .replaceWithVoid();
@@ -119,7 +119,7 @@ public class TestActivityMasterManageAddresses {
   @Test
   @Order(1)
   public void testParty_AddAddress_Find() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       String relClassy = "AM_AddressRel";
       String email = "addresses_ip@test.local";
       String relValue = "PRIMARY";
@@ -149,7 +149,7 @@ public class TestActivityMasterManageAddresses {
   @Test
   @Order(2)
   public void testParty_AddOrUpdateAddress_ChangesValue() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       String relClassy = "AM_AddressRel_Update";
       String email = "addresses_ip_update@test.local";
       String searchValue = "PRIMARY";
@@ -184,7 +184,7 @@ public class TestActivityMasterManageAddresses {
   @Test
   @Order(3)
   public void testEvent_AddOrReuseAddress_NoDuplication() {
-    sessionFactory.withSession(session -> session.withTransaction(tx -> {
+    sessionFactory.withStatelessSession(session -> session.withTransaction(tx -> {
       String relClassy = "AM_AddressRel_EVT";
       String email = "addresses_evt@test.local";
       String relValue = "BILLING";

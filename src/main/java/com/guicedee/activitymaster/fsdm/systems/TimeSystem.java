@@ -104,13 +104,6 @@ public class TimeSystem extends MasterDefaultSystem<TimeSystem> implements IMast
         });
     }
 
-    @Override
-    public Uni<Void> createDefaults(Mutiny.Session session,
-                                    com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?> enterprise) {
-        log.info("Creating TimeSystem defaults");
-        return Uni.createFrom().voidItem();
-    }
-
     /**
      * Stateless variant — the Time System loads its dimension data via {@code loadTimeRange}, not {@code createDefaults}.
      */
@@ -821,20 +814,6 @@ public class TimeSystem extends MasterDefaultSystem<TimeSystem> implements IMast
             });
         });
     }
-
-    /**
-     * Gets a date without checking for any existance, load years in for that
-     *
-     * @param session
-     * @param date
-     * @return
-     */
-    @Override
-    public Uni<Days> getDay(Mutiny.Session session, Date date) {
-        log.debug("🔍 Getting day for date: {}", date);
-        return new Days().builder(session).find(Integer.valueOf(DayIDFormat.getSimpleDateFormat().format(date))).get();
-    }
-
 
     @Override
     public Uni<Days> getDay(Mutiny.StatelessSession session, Date date) {
