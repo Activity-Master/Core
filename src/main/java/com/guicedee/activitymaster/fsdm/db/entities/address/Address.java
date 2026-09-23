@@ -1,7 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.entities.address;
 
 import com.fasterxml.jackson.annotation.*;
-import com.guicedee.activitymaster.fsdm.api.Passwords;
+import com.guicedee.activitymaster.fsdm.api.ColumnEncryption;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.address.IAddress;
@@ -185,29 +185,16 @@ public class Address
 	
 	public @NotNull String getValue()
 	{
-		if ("true".equals(System.getProperty("encrypt", "true")))
-		{
-			Passwords pass = new Passwords();
-			byte[] valueDecrypted = pass.integerDecrypt(this.value);
-			return new String(valueDecrypted);
-		}
-		else
-		{
-			return this.value;
-		}
+		return ColumnEncryption.decrypt(this.value, ColumnEncryption.ADDRESS,
+				this.value != null && this.value.startsWith("amenc:2:") && getEnterpriseID() != null
+						? getEnterpriseID().getId() : null);
 	}
 	
 	@Override
 	public Address setValue(String value)
 	{
-		if ("true".equals(System.getProperty("encrypt", "true")))
-		{
-			this.value = new Passwords().integerEncrypt(value.getBytes());
-		}
-		else
-		{
-			this.value = value;
-		}
+		this.value = ColumnEncryption.encrypt(value, ColumnEncryption.ADDRESS,
+				ColumnEncryption.enterpriseWrites() && getEnterpriseID() != null ? getEnterpriseID().getId() : null);
 		return this;
 	}
 	

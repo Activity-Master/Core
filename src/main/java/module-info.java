@@ -12,6 +12,11 @@ import com.guicedee.client.services.lifecycle.IGuicePostStartup;
 import com.guicedee.client.services.config.IGuiceScanModuleInclusions;
 
 module com.guicedee.activitymaster.fsdm {
+    requires static com.azure.core;
+    requires static com.azure.identity;
+    requires static com.azure.security.keyvault.keys;
+    requires static reactor.core;
+    exports com.guicedee.activitymaster.fsdm.encryption;
     requires transitive com.guicedee.activitymaster.fsdm.client;
 
     requires transitive com.guicedee.rest;
@@ -22,33 +27,24 @@ module com.guicedee.activitymaster.fsdm {
     requires transitive com.guicedee.openapi;
 
 
-    requires transitive tools.jackson.databind;
 
     requires transitive io.vertx.sql.client.pg;
-    requires transitive com.guicedee.guicedinjection;
 
     // MongoDB document store for JSON resource-item payloads (ResourceItemJsonStore / ActivityMasterMongoModule)
     requires io.vertx.mongo.client;
 
-    requires com.guicedee.jsonrepresentation;
     requires com.guicedee.xmlrepresentation;
 
-    requires transitive com.entityassist;
 
-    requires transitive io.vertx.core;
-    requires transitive org.hibernate.reactive;
 
     // Vert.x auth model used by the ActivityMaster auth bridge (no MicroProfile dependency)
-    requires transitive io.vertx.auth.common;
 
     requires transitive com.ongres.scram.client;
 
-    requires com.google.common;
 
     requires static lombok;
 
     requires jakarta.activation;
-    requires jakarta.validation;
     requires jakarta.annotation;
 
     requires java.naming;
@@ -57,8 +53,6 @@ module com.guicedee.activitymaster.fsdm {
 
     requires java.logging;
 
-    requires com.google.guice;
-    requires org.hibernate.validator;
 
     requires org.apache.commons.compress;
     //requires tm.bitronix.btm;
@@ -132,8 +126,7 @@ module com.guicedee.activitymaster.fsdm {
     exports com.guicedee.activitymaster.fsdm.auth;
     opens com.guicedee.activitymaster.fsdm.auth to com.google.guice;
 
-    // Internal password hashing utilities — exported only to the test module so the lifecycle
-    // tests can seed legacy-format credentials and exercise the migration path.
+    // Internal password/column protection utilities — test-only export for compatibility tests.
     exports com.guicedee.activitymaster.fsdm.api to activity.master.test;
 
     exports com.guicedee.activitymaster.fsdm.services.system;
@@ -182,6 +175,7 @@ module com.guicedee.activitymaster.fsdm {
     opens com.guicedee.activitymaster.fsdm.db.entities.activeflag.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
     opens com.guicedee.activitymaster.fsdm.db.entities.address to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
+    exports com.guicedee.activitymaster.fsdm.db.entities.address to activity.master.test;
 
 
     exports com.guicedee.activitymaster.fsdm.db.entities.address.builders;

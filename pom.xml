@@ -20,13 +20,41 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+            <version>1.18.4</version>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.projectreactor</groupId>
+                    <artifactId>reactor-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.reactivestreams</groupId>
+                    <artifactId>reactive-streams</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-security-keyvault-keys</artifactId>
+            <version>4.10.6</version>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.projectreactor</groupId>
+                    <artifactId>reactor-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.reactivestreams</groupId>
+                    <artifactId>reactive-streams</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-sql-client</artifactId>
         </dependency>
 
 
@@ -45,15 +73,7 @@
                 <artifactId>scram-client</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.entityassist</groupId>
-            <artifactId>entity-assist-reactive</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>io.smallrye.reactive</groupId>
-            <artifactId>mutiny</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.guicedee.modules.services</groupId>
@@ -86,16 +106,8 @@
             <artifactId>jakarta.inject-api</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.guicedee.modules.services</groupId>
-            <artifactId>hibernate-core</artifactId>
-        </dependency>
 
 
-        <dependency>
-            <groupId>com.guicedee.modules.services</groupId>
-            <artifactId>hibernate-reactive</artifactId>
-        </dependency>
 
 
         <dependency>
@@ -103,30 +115,14 @@
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.guicedee.modules.services</groupId>
-            <artifactId>hibernate-validator</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>com.guicedee</groupId>
-            <artifactId>persistence</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>com.guicedee.modules.representations</groupId>
-            <artifactId>json-representation</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.guicedee.modules.representations</groupId>
             <artifactId>xml-representation</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-core</artifactId>
-        </dependency>
 
         <!-- MongoDB document store for JSON resource-item payloads -->
         <dependency>

@@ -724,6 +724,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                                    identityToken).chain(id -> {
             InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();
             return idType.builder(session)
+                         .withEnterprise(((SecurityToken) token).getSystemID().getEnterprise())
                          .findLink(null, (InvolvedPartyIdentificationType) id, token.getSecurityToken()).inActiveRange()
                          .inDateRange().canRead(((SecurityToken) token).getSystemID(), identityToken).get()
                          .onFailure(NoResultException.class).invoke(e -> log.warn(
@@ -789,6 +790,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                 .chain(id -> {
                     InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();
                     return idType.builder(session)
+                                 .withEnterprise(enterprise)
                                  .findLink(null, (InvolvedPartyIdentificationType) id, token.toString()).inActiveRange()
                                  .inDateRange().withEnterprise(enterprise).canRead(system, identityToken).get()
                                  .onFailure(NoResultException.class)
@@ -828,7 +830,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                                    IdentificationTypeUUID.toString(),
                                                    sys,
                                                    identityToken).chain(id -> new InvolvedPartyXInvolvedPartyIdentificationType()
-                .builder(session).findLink(null, (InvolvedPartyIdentificationType) id, token.getSecurityToken())
+                .builder(session).withEnterprise(sys.getEnterprise()).findLink(null, (InvolvedPartyIdentificationType) id, token.getSecurityToken())
                 .inActiveRange().inDateRange().canRead(sys, identityToken).get().onFailure(NoResultException.class)
                 .invoke(e -> log.warn("InvolvedParty by token (stateless) '{}' could not be found",
                                       token.getSecurityToken()))
@@ -860,7 +862,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
         }
 
         return findInvolvedPartyIdentificationType(session, identTypeName, system, identityToken)
-                .chain(id -> new InvolvedPartyXInvolvedPartyIdentificationType().builder(session).findLink(null,
+                .chain(id -> new InvolvedPartyXInvolvedPartyIdentificationType().builder(session).withEnterprise(enterprise).findLink(null,
                                                                                                            (InvolvedPartyIdentificationType) id,
                                                                                                            token.toString())
                                                                                 .inActiveRange().inDateRange()

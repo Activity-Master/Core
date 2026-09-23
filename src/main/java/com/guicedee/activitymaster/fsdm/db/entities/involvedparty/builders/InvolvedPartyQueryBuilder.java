@@ -41,7 +41,7 @@ public class InvolvedPartyQueryBuilder
 
     if (value != null)
     {
-      joinTableQueryBuilder.withValue(value);
+      joinTableQueryBuilder.withEnterprise(system.getEnterprise()).withValue(value);
     }
     joinTableQueryBuilder.inDateRange();
     joinTableQueryBuilder.inActiveRange();

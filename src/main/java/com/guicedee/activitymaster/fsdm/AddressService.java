@@ -87,8 +87,8 @@ public class AddressService
 			        .chain(classification -> {
 			            return addy.builder(session)
 			                    .withClassification(addressClassification, system)
-			                    .withValue(value)
 			                    .withEnterprise(enterprise)
+			                    .withValue(value)
 			                    .inDateRange()
 			                    .inActiveRange()
 			                    .getCount()
@@ -279,11 +279,11 @@ public class AddressService
 		return classificationServiceProvider.find(session, classificationName, system, identityToken)
 				.chain(cl -> acService.getActiveFlag(session, enterprise, identityToken)
 						.chain(af -> {
+							sub.setEnterpriseID(enterprise);
 							sub.setValue(value);
 							sub.setClassificationID((Classification) cl);
 							sub.setOriginalSourceSystemID(system.getId());
 							sub.setSystemID(system);
-							sub.setEnterpriseID(enterprise);
 							sub.setActiveFlagID(af);
 							return session.insert(sub).replaceWithVoid();
 						}));
@@ -301,8 +301,8 @@ public class AddressService
 		return classificationServiceProvider.find(session, addressClassification, system, identifyingToken)
 				.chain(classification -> addy.builder(session)
 						.withClassification(addressClassification, system)
-						.withValue(value)
 						.withEnterprise(enterprise)
+						.withValue(value)
 						.inDateRange()
 						.inActiveRange()
 						.getCount()

@@ -1,8 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.entities.involvedparty;
 
 import com.fasterxml.jackson.annotation.*;
-import com.google.common.base.Strings;
-import com.guicedee.activitymaster.fsdm.api.Passwords;
+import com.guicedee.activitymaster.fsdm.api.ColumnEncryption;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRelationshipTypesTable;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder;
 import jakarta.persistence.*;
@@ -17,7 +16,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -29,12 +27,12 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  * <ul>
  *     <li>{@link #setValue(String)} takes <b>plaintext</b> and stores <b>ciphertext</b>.</li>
  *     <li>{@link #getValue()} returns <b>plaintext</b>.</li>
- *     <li>The persisted {@code Value} column therefore always holds <b>ciphertext</b>
+ *     <li>The persisted {@code Value} column holds the configured storage representation
  *     (field access is used, so JPA reads/writes the raw column and never goes through these accessors).</li>
- *     <li>Any query builder that compares against this column <b>must encrypt the search term first</b> -
+ *     <li>Any query builder that compares against this column must use the format-aware lookup -
  *     see {@link InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder#withValue}.</li>
- *     <li>The whole scheme is gated by the {@code encrypt} system property (default {@code true});
- *     {@code -Dencrypt=false} is a plaintext passthrough on both accessors.</li>
+ *     <li>Legacy writes honour {@code encrypt} (default {@code true}); opt-in AES-GCM writes
+ *     override that gate. Strong envelopes are always authenticated and decrypted.</li>
  *     <li>Legacy rows holding plaintext in the column are returned verbatim by {@link #getValue()} -
  *     they are never decrypted and never blanked.</li>
  * </ul>
@@ -44,8 +42,8 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  * resolve-name consumer depends on it. Do not add encryption there, and do not remove encryption here.
  * The two links are intentionally asymmetric.
  *
- * <p>The cipher itself ({@link Passwords} - a fixed, keyless per-byte ASCII offset) is frozen; it is
- * obfuscation, not security.
+ * <p>The default ASCII-offset format remains frozen for compatibility. {@link ColumnEncryption}
+ * adds opt-in authenticated encryption without changing password hashing or party names.
  *
  * @author Marc Magon
  * @version 1.0
@@ -78,13 +76,6 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    /**
-     * The shape produced by {@link Passwords#integerEncrypt(byte[])} - one or more decimal groups, each
-     * terminated by a pipe. The groups may be negative because the cipher offsets <i>signed</i> bytes, so
-     * non-ASCII input yields values below zero. Anything else in the column is legacy plaintext.
-     */
-    private static final Pattern ENCRYPTED_VALUE = Pattern.compile("(-?\\d+\\|)+");
 
     @Id
 
@@ -191,10 +182,10 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
     }
 
     /**
-     * Stores the identification value in the frozen obfuscation format.
+     * Stores the identification value in the configured protection format.
      * <p>
      * Accepts <b>plaintext</b> and writes <b>ciphertext</b> to the {@code Value} column. When the
-     * {@code encrypt} system property is explicitly {@code false} the value is stored verbatim.
+     * legacy mode is active and {@code encrypt} is {@code false}, the value is stored verbatim.
      *
      * @param value the plaintext identification value
      *
@@ -203,27 +194,15 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
     @Override
     public void setValue(String value)
     {
-        if (!Strings.isNullOrEmpty(value) && "true".equals(System.getProperty("encrypt", "true")))
-        {
-            super.setValue(new Passwords().integerEncrypt(value.getBytes()));
-        }
-        else
-        {
-            super.setValue(value);
-        }
+        super.setValue(ColumnEncryption.encrypt(value, ColumnEncryption.IDENTIFICATION,
+                ColumnEncryption.enterpriseWrites() && getEnterpriseID() != null ? getEnterpriseID().getId() : null));
     }
 
     /**
      * Returns the identification value as <b>plaintext</b>, reversing {@link #setValue(String)}.
      * <p>
-     * Mirrors {@code Address#getValue()} - the same {@code encrypt} system-property gate and the same
-     * {@link Passwords#integerDecrypt(String)} round trip.
-     * <p>
-     * <b>Legacy tolerance:</b> rows written before the {@link #setValue(String)} encryption was introduced,
-     * rows written with {@code -Dencrypt=false}, and rows repaired by hand hold plaintext in the same column.
-     * {@link Passwords#integerDecrypt(String)} would throw {@link NumberFormatException} on those, so any stored
-     * value that is not in the {@code (\d+\|)+} cipher shape is returned unchanged rather than decrypted or
-     * blanked. Mixed-vintage data therefore still reads correctly.
+     * Accepts legacy plaintext, legacy obfuscation and authenticated AES-GCM envelopes.
+     * Strong-envelope failures propagate; they never fall back to plaintext or obfuscation.
      *
      * @return the plaintext identification value, or the stored value verbatim when it is not ciphertext
      */
@@ -231,24 +210,8 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
     public String getValue()
     {
         String stored = super.getValue();
-        if (Strings.isNullOrEmpty(stored) || !"true".equals(System.getProperty("encrypt", "true")))
-        {
-            return stored;
-        }
-        if (!ENCRYPTED_VALUE.matcher(stored)
-                            .matches())
-        {
-            //legacy / hand-repaired / -Dencrypt=false vintage row - already plaintext
-            return stored;
-        }
-        try
-        {
-            return new String(new Passwords().integerDecrypt(stored));
-        }
-        catch (NumberFormatException e)
-        {
-            //value only looked like ciphertext - never swallow the row contents
-            return stored;
-        }
+        return ColumnEncryption.decrypt(stored, ColumnEncryption.IDENTIFICATION,
+                stored != null && stored.startsWith("amenc:2:") && getEnterpriseID() != null
+                        ? getEnterpriseID().getId() : null);
     }
 }
