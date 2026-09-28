@@ -121,6 +121,11 @@ module com.guicedee.activitymaster.fsdm {
 
     exports com.guicedee.activitymaster.fsdm;
     exports com.guicedee.activitymaster.fsdm.services;
+    exports com.guicedee.activitymaster.fsdm.db.abstraction to com.guicedee.activitymaster.wallet, com.guicedee.activitymaster.payments, com.guicedee.activitymaster.marketplace;
+    exports com.guicedee.activitymaster.fsdm.db.entities.arrangement to com.guicedee.activitymaster.wallet, com.guicedee.activitymaster.payments, com.guicedee.activitymaster.marketplace;
+    exports com.guicedee.activitymaster.fsdm.db.entities.events to com.guicedee.activitymaster.wallet, com.guicedee.activitymaster.payments, com.guicedee.activitymaster.marketplace;
+    exports com.guicedee.activitymaster.fsdm.transactions;
+    opens com.guicedee.activitymaster.fsdm.transactions to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, net.bytebuddy;
 
     // ActivityMaster-native Vert.x auth bridge
     exports com.guicedee.activitymaster.fsdm.auth;
@@ -206,14 +211,14 @@ module com.guicedee.activitymaster.fsdm {
 
 
     opens com.guicedee.activitymaster.fsdm.db.entities.involvedparty to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
-    // Exported only to the test module so the identification-value encryption round-trip
-    // (InvolvedPartyXInvolvedPartyIdentificationType set/get) can be asserted directly on the entity.
-    exports com.guicedee.activitymaster.fsdm.db.entities.involvedparty to activity.master.test;
+    // Qualified access for encryption round-trip tests and Wallet Master's FSDM row checks.
+    exports com.guicedee.activitymaster.fsdm.db.entities.involvedparty to activity.master.test, com.guicedee.activitymaster.wallet, com.guicedee.activitymaster.payments, com.guicedee.activitymaster.marketplace;
     exports com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders;
     opens com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
 
 
     opens com.guicedee.activitymaster.fsdm.db.entities.product to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, com.guicedee.guicedinjection, com.guicedee.client, tools.jackson.databind, net.bytebuddy;
+    exports com.guicedee.activitymaster.fsdm.db.entities.product to com.guicedee.activitymaster.marketplace;
 
 
     exports com.guicedee.activitymaster.fsdm.db.entities.product.builders;
@@ -256,13 +261,13 @@ module com.guicedee.activitymaster.fsdm {
     exports com.guicedee.activitymaster.fsdm.systems;
     opens com.guicedee.activitymaster.fsdm.systems to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy;
 
-    exports com.guicedee.activitymaster.fsdm.db.entities.systems to com.guicedee.activitymaster.geography, activity.master.test;
+    exports com.guicedee.activitymaster.fsdm.db.entities.systems to com.guicedee.activitymaster.geography, activity.master.test, com.guicedee.activitymaster.payments;
     exports com.guicedee.activitymaster.fsdm.db.entities.enterprise to com.guicedee.activitymaster.geography;
-    exports com.guicedee.activitymaster.fsdm.db.entities.classifications to com.guicedee.activitymaster.geography, activity.master.test;
+    exports com.guicedee.activitymaster.fsdm.db.entities.classifications to com.guicedee.activitymaster.geography, activity.master.test, com.guicedee.activitymaster.wallet, com.guicedee.activitymaster.payments;
 
     //exports com.guicedee.activitymaster.fsdm.db.entities.geography to com.guicedee.activitymaster.geography;
     exports com.guicedee.activitymaster.fsdm.db.entities.rules to com.guicedee.activitymaster.geography;
-    exports com.guicedee.activitymaster.fsdm.db.entities.resourceitem to com.guicedee.activitymaster.geography, activity.master.test;
+    exports com.guicedee.activitymaster.fsdm.db.entities.resourceitem to com.guicedee.activitymaster.geography, activity.master.test, com.guicedee.activitymaster.marketplace;
     exports com.guicedee.activitymaster.fsdm.implementations to com.guicedee.activitymaster.geography;
 
     exports com.guicedee.activitymaster.fsdm.db;

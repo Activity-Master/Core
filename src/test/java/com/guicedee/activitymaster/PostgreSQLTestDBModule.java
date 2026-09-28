@@ -22,7 +22,8 @@ public class PostgreSQLTestDBModule
     private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest")
             .withDatabaseName("fsdm")
             .withUsername("postgres")
-            .withPassword("postgres");
+            .withPassword("postgres")
+            .withCommand("postgres", "-c", "shared_preload_libraries=pg_stat_statements");
 
     static {
         postgresContainer.start();

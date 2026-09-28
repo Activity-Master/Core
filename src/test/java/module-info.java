@@ -3,6 +3,7 @@ import com.guicedee.activitymaster.MongoTestDBModule;
 import com.guicedee.client.services.lifecycle.IGuiceModule;
 
 open module activity.master.test {
+    exports com.guicedee.activitymaster;
     requires transitive com.entityassist;
     requires transitive com.guicedee.persistence;
 

@@ -4,6 +4,34 @@
 
         <provider>org.hibernate.reactive.provider.ReactivePersistenceProvider</provider>
 
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionType</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.Transaction</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXInvolvedParty</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXInvolvedPartySecurityToken</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXResourceItem</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXResourceItemSecurityToken</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXArrangement</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXArrangementSecurityToken</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXEvent</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXEventSecurityToken</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXProduct</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXProductSecurityToken</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXAddress</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXAddressSecurityToken</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXGeography</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXGeographySecurityToken</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXRules</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXRulesSecurityToken</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXTransaction</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXTransactionSecurityToken</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXClassification</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXClassificationSecurityToken</class>
+
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionSecurityToken</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionTypeSecurityToken</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXTransactionType</class>
+        <class>com.guicedee.activitymaster.fsdm.transactions.TransactionXTransactionTypeSecurityToken</class>
+
         <class>com.entityassist.converters.LocalDateAttributeConverter</class>
         <class>com.entityassist.converters.LocalDateTimeAttributeConverter</class>
         <class>com.entityassist.converters.LocalDateTimestampAttributeConverter</class>
