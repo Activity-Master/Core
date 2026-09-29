@@ -2,52 +2,52 @@ CREATE SCHEMA party;
 CREATE TABLE party.involvedparty
 (
     involvedpartyid               UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000'
 );
 CREATE TABLE party.involvedpartyidentificationtype
 (
     involvedpartyidentificationtypeid UUID                        NOT NULL primary key,
-    effectivefromdate                 timestamp(6) with time zone NOT NULL,
-    effectivetodate                   timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp         timestamp(6) with time zone NOT NULL,
-    warehousefromdate                 DATE                        NOT NULL,
+    effectivefromdate                 timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                   timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp         timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                 DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp     timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid      UUID                        NOT NULL,
+    warehouselastupdatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid      UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     involvedpartyidentificationdesc   character varying(500)      NOT NULL,
     involvedpartyidentificationname   character varying(150)      NOT NULL,
     activeflagid                      UUID                        NOT NULL,
     enterpriseid                      UUID                        NOT NULL,
     systemid                          UUID                        NOT NULL,
-    originalsourcesystemid            UUID                        NOT NULL
+    originalsourcesystemid            UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000'
 );
 CREATE TABLE party.involvedpartyidentificationtypesecuritytoken
 (
     involvedpartyidentificationtypesecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                              timestamp(6) with time zone NOT NULL,
-    effectivetodate                                timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                      timestamp(6) with time zone NOT NULL,
-    warehousefromdate                              DATE                        NOT NULL,
+    effectivefromdate                              timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                                timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                      timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                              DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp                  timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp                  timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                                  INTEGER                     NOT NULL,
     deleteallowed                                  INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid                   UUID                        NOT NULL,
+    originalsourcesystemuniqueid                   UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                                    INTEGER                     NOT NULL,
     updateallowed                                  INTEGER                     NOT NULL,
     activeflagid                                   UUID                        NOT NULL,
     enterpriseid                                   UUID                        NOT NULL,
-    originalsourcesystemid                         UUID                        NOT NULL,
+    originalsourcesystemid                         UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                                UUID                        NOT NULL,
     systemid                                       UUID                        NOT NULL,
     involvedpartyidentificationtypeid              UUID                        NOT NULL
@@ -55,257 +55,246 @@ CREATE TABLE party.involvedpartyidentificationtypesecuritytoken
 CREATE TABLE party.involvedpartynametype
 (
     involvedpartynametypeid       UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     involvedpartynametypedescr    character varying(500)      NOT NULL,
     involvedpartynametypename     character varying(500)      NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000'
 );
 CREATE TABLE party.involvedpartynametypesecuritytoken
 (
     involvedpartynametypesecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                    timestamp(6) with time zone NOT NULL,
-    effectivetodate                      timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp            timestamp(6) with time zone NOT NULL,
-    warehousefromdate                    DATE                        NOT NULL,
+    effectivefromdate                    timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                      timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp            timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                    DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp        timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp        timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                        INTEGER                     NOT NULL,
     deleteallowed                        INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid         UUID                        NOT NULL,
+    originalsourcesystemuniqueid         UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                          INTEGER                     NOT NULL,
     updateallowed                        INTEGER                     NOT NULL,
     activeflagid                         UUID                        NOT NULL,
     enterpriseid                         UUID                        NOT NULL,
-    originalsourcesystemid               UUID                        NOT NULL,
+    originalsourcesystemid               UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                      UUID                        NOT NULL,
     systemid                             UUID                        NOT NULL,
     involvedpartynametypeid              UUID                        NOT NULL
 );
-
 CREATE TABLE party.involvedpartynonorganic
 (
     involvedpartynonorganicid     UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000'
 );
-
 CREATE TABLE party.involvedpartynonorganicsecuritytoken
 (
     involvedpartynonorganicsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                      timestamp(6) with time zone NOT NULL,
-    effectivetodate                        timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp              timestamp(6) with time zone NOT NULL,
-    warehousefromdate                      DATE                        NOT NULL,
+    effectivefromdate                      timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                        timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp              timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                      DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp          timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp          timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                          INTEGER                     NOT NULL,
     deleteallowed                          INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid           UUID                        NOT NULL,
+    originalsourcesystemuniqueid           UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                            INTEGER                     NOT NULL,
     updateallowed                          INTEGER                     NOT NULL,
     activeflagid                           UUID                        NOT NULL,
     enterpriseid                           UUID                        NOT NULL,
-    originalsourcesystemid                 UUID                        NOT NULL,
+    originalsourcesystemid                 UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                        UUID                        NOT NULL,
     systemid                               UUID                        NOT NULL,
     involvedpartynonorganicid              UUID                        NOT NULL
 );
-
 CREATE TABLE party.involvedpartyorganic
 (
     involvedpartyorganicid        UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000'
 );
-
 CREATE TABLE party.involvedpartyorganicsecuritytoken
 (
     involvedpartyorganicsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                   timestamp(6) with time zone NOT NULL,
-    effectivetodate                     timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp           timestamp(6) with time zone NOT NULL,
-    warehousefromdate                   DATE                        NOT NULL,
+    effectivefromdate                   timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                     timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp           timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                   DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp       timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp       timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                       INTEGER                     NOT NULL,
     deleteallowed                       INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid        UUID                        NOT NULL,
+    originalsourcesystemuniqueid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                         INTEGER                     NOT NULL,
     updateallowed                       INTEGER                     NOT NULL,
     activeflagid                        UUID                        NOT NULL,
     enterpriseid                        UUID                        NOT NULL,
-    originalsourcesystemid              UUID                        NOT NULL,
+    originalsourcesystemid              UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                     UUID                        NOT NULL,
     systemid                            UUID                        NOT NULL,
     involvedpartyorganicid              UUID                        NOT NULL
 );
-
 CREATE TABLE party.involvedpartyorganictype
 (
     involvedpartyorganictypeid    UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     involvedpartytypedesc         character varying(500)      NOT NULL,
     involvedpartytypename         character varying(200)      NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000'
 );
-
 CREATE TABLE party.involvedpartyorganictypesecuritytoken
 (
     involvedpartyorganictypesecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                       timestamp(6) with time zone NOT NULL,
-    effectivetodate                         timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp               timestamp(6) with time zone NOT NULL,
-    warehousefromdate                       DATE                        NOT NULL,
+    effectivefromdate                       timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                         timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp               timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                       DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp           timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp           timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                           INTEGER                     NOT NULL,
     deleteallowed                           INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid            UUID                        NOT NULL,
+    originalsourcesystemuniqueid            UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                             INTEGER                     NOT NULL,
     updateallowed                           INTEGER                     NOT NULL,
     activeflagid                            UUID                        NOT NULL,
     enterpriseid                            UUID                        NOT NULL,
-    originalsourcesystemid                  UUID                        NOT NULL,
+    originalsourcesystemid                  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                         UUID                        NOT NULL,
     systemid                                UUID                        NOT NULL,
     involvedpartyorganictypeid              UUID                        NOT NULL
 );
-
 CREATE TABLE party.involvedpartysecuritytoken
 (
     involvedpartysecuritytokenid  UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                 INTEGER                     NOT NULL,
     deleteallowed                 INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                   INTEGER                     NOT NULL,
     updateallowed                 INTEGER                     NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     involvedpartyid               UUID                        NOT NULL
 );
-
 CREATE TABLE party.involvedpartytype
 (
     involvedpartytypeid           UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     involvedpartytypedesc         character varying(255)      NOT NULL,
     involvedpartytypename         character varying(100)      NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000'
 );
-
 CREATE TABLE party.involvedpartytypesecuritytoken
 (
     involvedpartytypesecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                timestamp(6) with time zone NOT NULL,
-    effectivetodate                  timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp        timestamp(6) with time zone NOT NULL,
-    warehousefromdate                DATE                        NOT NULL,
+    effectivefromdate                timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                  timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp        timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp    timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp    timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                    INTEGER                     NOT NULL,
     deleteallowed                    INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid     UUID                        NOT NULL,
+    originalsourcesystemuniqueid     UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                      INTEGER                     NOT NULL,
     updateallowed                    INTEGER                     NOT NULL,
     activeflagid                     UUID                        NOT NULL,
     enterpriseid                     UUID                        NOT NULL,
-    originalsourcesystemid           UUID                        NOT NULL,
+    originalsourcesystemid           UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                  UUID                        NOT NULL,
     systemid                         UUID                        NOT NULL,
     involvedpartytypeid              UUID                        NOT NULL
 );
-
 CREATE TABLE party.involvedpartyxaddress
 (
     involvedpartyxaddressid       UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     addressid                     UUID                        NOT NULL,
     involvedpartyid               UUID                        NOT NULL
 );
-
 CREATE TABLE party.involvedpartyxaddresssecuritytoken
 (
     involvedpartyxaddresssecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                    timestamp(6) with time zone NOT NULL,
-    effectivetodate                      timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp            timestamp(6) with time zone NOT NULL,
-    warehousefromdate                    DATE                        NOT NULL,
+    effectivefromdate                    timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                      timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp            timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                    DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp        timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp        timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                        INTEGER                     NOT NULL,
     deleteallowed                        INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid         UUID                        NOT NULL,
+    originalsourcesystemuniqueid         UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                          INTEGER                     NOT NULL,
     updateallowed                        INTEGER                     NOT NULL,
     activeflagid                         UUID                        NOT NULL,
     enterpriseid                         UUID                        NOT NULL,
-    originalsourcesystemid               UUID                        NOT NULL,
+    originalsourcesystemid               UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                      UUID                        NOT NULL,
     systemid                             UUID                        NOT NULL,
     involvedpartyxaddressid              UUID                        NOT NULL
@@ -313,38 +302,38 @@ CREATE TABLE party.involvedpartyxaddresssecuritytoken
 CREATE TABLE party.involvedpartyxclassification
 (
     involvedpartyxclassificationid UUID                        NOT NULL primary key,
-    effectivefromdate              timestamp(6) with time zone NOT NULL,
-    effectivetodate                timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp      timestamp(6) with time zone NOT NULL,
-    warehousefromdate              DATE                        NOT NULL,
+    effectivefromdate              timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp      timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate              DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp  timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid   UUID                        NOT NULL,
-    value                          text                        NOT NULL,
+    warehouselastupdatedtimestamp  timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid   UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                          text                        NOT NULL ,
     activeflagid                   UUID                        NOT NULL,
     enterpriseid                   UUID                        NOT NULL,
     systemid                       UUID                        NOT NULL,
-    originalsourcesystemid         UUID                        NOT NULL,
+    originalsourcesystemid         UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid               UUID                        NOT NULL,
     involvedpartyid                UUID                        NOT NULL
 );
 CREATE TABLE party.involvedpartyxclassificationsecuritytoken
 (
     involvedpartyxclassificationsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                           timestamp(6) with time zone NOT NULL,
-    effectivetodate                             timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                   timestamp(6) with time zone NOT NULL,
-    warehousefromdate                           DATE                        NOT NULL,
+    effectivefromdate                           timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                             timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                   timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                           DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp               timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp               timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                               INTEGER                     NOT NULL,
     deleteallowed                               INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid                UUID                        NOT NULL,
+    originalsourcesystemuniqueid                UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                                 INTEGER                     NOT NULL,
     updateallowed                               INTEGER                     NOT NULL,
     activeflagid                                UUID                        NOT NULL,
     enterpriseid                                UUID                        NOT NULL,
-    originalsourcesystemid                      UUID                        NOT NULL,
+    originalsourcesystemid                      UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                             UUID                        NOT NULL,
     systemid                                    UUID                        NOT NULL,
     involvedpartyxclassificationid              UUID                        NOT NULL
@@ -352,38 +341,37 @@ CREATE TABLE party.involvedpartyxclassificationsecuritytoken
 CREATE TABLE party.involvedpartyxinvolvedparty
 (
     involvedpartyxinvolvedpartyid UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     childinvolvedpartyid          UUID                        NOT NULL,
     parentinvolvedpartyid         UUID                        NOT NULL
 );
-
 CREATE TABLE party.involvedpartyxinvolvedpartyidentificationtype
 (
     involvedpartyxinvolvedpartyidentificationtypeid UUID                        NOT NULL primary key,
-    effectivefromdate                               timestamp(6) with time zone NOT NULL,
-    effectivetodate                                 timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                       timestamp(6) with time zone NOT NULL,
-    warehousefromdate                               DATE                        NOT NULL,
+    effectivefromdate                               timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                                 timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                       timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                               DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp                   timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid                    UUID                        NOT NULL,
-    value                                           text                        NOT NULL,
+    warehouselastupdatedtimestamp                   timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid                    UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                                           text                        NOT NULL ,
     activeflagid                                    UUID                        NOT NULL,
     enterpriseid                                    UUID                        NOT NULL,
     systemid                                        UUID                        NOT NULL,
-    originalsourcesystemid                          UUID                        NOT NULL,
+    originalsourcesystemid                          UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid                                UUID                        NOT NULL,
     involvedpartyid                                 UUID                        NOT NULL,
     involvedpartyidentificationtypeid               UUID                        NOT NULL
@@ -391,20 +379,20 @@ CREATE TABLE party.involvedpartyxinvolvedpartyidentificationtype
 CREATE TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
 (
     involvedpartyxinvolvedpartyidentificationtypesecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                                            timestamp(6) with time zone NOT NULL,
-    effectivetodate                                              timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                                    timestamp(6) with time zone NOT NULL,
-    warehousefromdate                                            DATE                        NOT NULL,
+    effectivefromdate                                            timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                                              timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                                    timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                                            DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp                                timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp                                timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                                                INTEGER                     NOT NULL,
     deleteallowed                                                INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid                                 UUID                        NOT NULL,
+    originalsourcesystemuniqueid                                 UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                                                  INTEGER                     NOT NULL,
     updateallowed                                                INTEGER                     NOT NULL,
     activeflagid                                                 UUID                        NOT NULL,
     enterpriseid                                                 UUID                        NOT NULL,
-    originalsourcesystemid                                       UUID                        NOT NULL,
+    originalsourcesystemid                                       UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                                              UUID                        NOT NULL,
     systemid                                                     UUID                        NOT NULL,
     involvedpartyxinvolvedpartyidentificationtypeid              UUID                        NOT NULL
@@ -412,18 +400,18 @@ CREATE TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
 CREATE TABLE party.involvedpartyxinvolvedpartynametype
 (
     involvedpartyxinvolvedpartynametypeid UUID                        NOT NULL primary key,
-    effectivefromdate                     timestamp(6) with time zone NOT NULL,
-    effectivetodate                       timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp             timestamp(6) with time zone NOT NULL,
-    warehousefromdate                     DATE                        NOT NULL,
+    effectivefromdate                     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                       timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                     DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp         timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid          UUID                        NOT NULL,
-    value                                 text                        NOT NULL,
+    warehouselastupdatedtimestamp         timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid          UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                                 text                        NOT NULL ,
     activeflagid                          UUID                        NOT NULL,
     enterpriseid                          UUID                        NOT NULL,
     systemid                              UUID                        NOT NULL,
-    originalsourcesystemid                UUID                        NOT NULL,
+    originalsourcesystemid                UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid                      UUID                        NOT NULL,
     involvedpartyid                       UUID                        NOT NULL,
     involvedpartynametypeid               UUID                        NOT NULL
@@ -431,20 +419,20 @@ CREATE TABLE party.involvedpartyxinvolvedpartynametype
 CREATE TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
 (
     involvedpartyxinvolvedpartynametypesecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                                  timestamp(6) with time zone NOT NULL,
-    effectivetodate                                    timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                          timestamp(6) with time zone NOT NULL,
-    warehousefromdate                                  DATE                        NOT NULL,
+    effectivefromdate                                  timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                                    timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                          timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                                  DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp                      timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp                      timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                                      INTEGER                     NOT NULL,
     deleteallowed                                      INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid                       UUID                        NOT NULL,
+    originalsourcesystemuniqueid                       UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                                        INTEGER                     NOT NULL,
     updateallowed                                      INTEGER                     NOT NULL,
     activeflagid                                       UUID                        NOT NULL,
     enterpriseid                                       UUID                        NOT NULL,
-    originalsourcesystemid                             UUID                        NOT NULL,
+    originalsourcesystemid                             UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                                    UUID                        NOT NULL,
     systemid                                           UUID                        NOT NULL,
     involvedpartyxinvolvedpartynametypeid              UUID                        NOT NULL
@@ -452,20 +440,20 @@ CREATE TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
 CREATE TABLE party.involvedpartyxinvolvedpartysecuritytoken
 (
     involvedpartyxinvolvedpartysecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                          timestamp(6) with time zone NOT NULL,
-    effectivetodate                            timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                  timestamp(6) with time zone NOT NULL,
-    warehousefromdate                          DATE                        NOT NULL,
+    effectivefromdate                          timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                            timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                  timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                          DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp              timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp              timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                              INTEGER                     NOT NULL,
     deleteallowed                              INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid               UUID                        NOT NULL,
+    originalsourcesystemuniqueid               UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                                INTEGER                     NOT NULL,
     updateallowed                              INTEGER                     NOT NULL,
     activeflagid                               UUID                        NOT NULL,
     enterpriseid                               UUID                        NOT NULL,
-    originalsourcesystemid                     UUID                        NOT NULL,
+    originalsourcesystemid                     UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                            UUID                        NOT NULL,
     systemid                                   UUID                        NOT NULL,
     involvedpartyxinvolvedpartyid              UUID                        NOT NULL
@@ -473,18 +461,18 @@ CREATE TABLE party.involvedpartyxinvolvedpartysecuritytoken
 CREATE TABLE party.involvedpartyxinvolvedpartytype
 (
     involvedpartyxinvolvedpartytypeid UUID                        NOT NULL primary key,
-    effectivefromdate                 timestamp(6) with time zone NOT NULL,
-    effectivetodate                   timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp         timestamp(6) with time zone NOT NULL,
-    warehousefromdate                 DATE                        NOT NULL,
+    effectivefromdate                 timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                   timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp         timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                 DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp     timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid      UUID                        NOT NULL,
-    value                             text                        NOT NULL,
+    warehouselastupdatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid      UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                             text                        NOT NULL ,
     activeflagid                      UUID                        NOT NULL,
     enterpriseid                      UUID                        NOT NULL,
     systemid                          UUID                        NOT NULL,
-    originalsourcesystemid            UUID                        NOT NULL,
+    originalsourcesystemid            UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid                  UUID                        NOT NULL,
     involvedpartyid                   UUID                        NOT NULL,
     involvedpartytypeid               UUID                        NOT NULL
@@ -492,20 +480,20 @@ CREATE TABLE party.involvedpartyxinvolvedpartytype
 CREATE TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
 (
     involvedpartyxinvolvedpartytypesecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                              timestamp(6) with time zone NOT NULL,
-    effectivetodate                                timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                      timestamp(6) with time zone NOT NULL,
-    warehousefromdate                              DATE                        NOT NULL,
+    effectivefromdate                              timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                                timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                      timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                              DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp                  timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp                  timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                                  INTEGER                     NOT NULL,
     deleteallowed                                  INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid                   UUID                        NOT NULL,
+    originalsourcesystemuniqueid                   UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                                    INTEGER                     NOT NULL,
     updateallowed                                  INTEGER                     NOT NULL,
     activeflagid                                   UUID                        NOT NULL,
     enterpriseid                                   UUID                        NOT NULL,
-    originalsourcesystemid                         UUID                        NOT NULL,
+    originalsourcesystemid                         UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                                UUID                        NOT NULL,
     systemid                                       UUID                        NOT NULL,
     involvedpartyxinvolvedpartytypeid              UUID                        NOT NULL
@@ -513,18 +501,18 @@ CREATE TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
 CREATE TABLE party.involvedpartyxproduct
 (
     involvedpartyxproductid       UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     involvedpartyid               UUID                        NOT NULL,
     productid                     UUID                        NOT NULL
@@ -532,20 +520,20 @@ CREATE TABLE party.involvedpartyxproduct
 CREATE TABLE party.involvedpartyxproductsecuritytoken
 (
     involvedpartyxproductsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                    timestamp(6) with time zone NOT NULL,
-    effectivetodate                      timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp            timestamp(6) with time zone NOT NULL,
-    warehousefromdate                    DATE                        NOT NULL,
+    effectivefromdate                    timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                      timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp            timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                    DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp        timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp        timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                        INTEGER                     NOT NULL,
     deleteallowed                        INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid         UUID                        NOT NULL,
+    originalsourcesystemuniqueid         UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                          INTEGER                     NOT NULL,
     updateallowed                        INTEGER                     NOT NULL,
     activeflagid                         UUID                        NOT NULL,
     enterpriseid                         UUID                        NOT NULL,
-    originalsourcesystemid               UUID                        NOT NULL,
+    originalsourcesystemid               UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                      UUID                        NOT NULL,
     systemid                             UUID                        NOT NULL,
     involvedpartyxproductid              UUID                        NOT NULL
@@ -553,18 +541,18 @@ CREATE TABLE party.involvedpartyxproductsecuritytoken
 CREATE TABLE party.involvedpartyxproducttype
 (
     involvedpartyxproducttypeid   UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     value                         text                        NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     involvedpartyid               UUID                        NOT NULL,
     producttypeid                 UUID                        NOT NULL
@@ -572,20 +560,20 @@ CREATE TABLE party.involvedpartyxproducttype
 CREATE TABLE party.involvedpartyxproducttypesecuritytoken
 (
     involvedpartyxproducttypesecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                        timestamp(6) with time zone NOT NULL,
-    effectivetodate                          timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                timestamp(6) with time zone NOT NULL,
-    warehousefromdate                        DATE                        NOT NULL,
+    effectivefromdate                        timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                          timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                        DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp            timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp            timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                            INTEGER                     NOT NULL,
     deleteallowed                            INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid             UUID                        NOT NULL,
+    originalsourcesystemuniqueid             UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                              INTEGER                     NOT NULL,
     updateallowed                            INTEGER                     NOT NULL,
     activeflagid                             UUID                        NOT NULL,
     enterpriseid                             UUID                        NOT NULL,
-    originalsourcesystemid                   UUID                        NOT NULL,
+    originalsourcesystemid                   UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                          UUID                        NOT NULL,
     systemid                                 UUID                        NOT NULL,
     involvedpartyxproducttypeid              UUID                        NOT NULL
@@ -593,18 +581,18 @@ CREATE TABLE party.involvedpartyxproducttypesecuritytoken
 CREATE TABLE party.involvedpartyxresourceitem
 (
     involvedpartyxresourceitemid  UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     involvedpartyid               UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL
@@ -612,20 +600,20 @@ CREATE TABLE party.involvedpartyxresourceitem
 CREATE TABLE party.involvedpartyxresourceitemsecuritytoken
 (
     involvedpartyxresourceitemsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                         timestamp(6) with time zone NOT NULL,
-    effectivetodate                           timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                 timestamp(6) with time zone NOT NULL,
-    warehousefromdate                         DATE                        NOT NULL,
+    effectivefromdate                         timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                           timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                 timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                         DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp             timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp             timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                             INTEGER                     NOT NULL,
     deleteallowed                             INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid              UUID                        NOT NULL,
+    originalsourcesystemuniqueid              UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                               INTEGER                     NOT NULL,
     updateallowed                             INTEGER                     NOT NULL,
     activeflagid                              UUID                        NOT NULL,
     enterpriseid                              UUID                        NOT NULL,
-    originalsourcesystemid                    UUID                        NOT NULL,
+    originalsourcesystemid                    UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                           UUID                        NOT NULL,
     systemid                                  UUID                        NOT NULL,
     involvedpartyxresourceitemid              UUID                        NOT NULL
@@ -633,18 +621,18 @@ CREATE TABLE party.involvedpartyxresourceitemsecuritytoken
 CREATE TABLE party.involvedpartyxrules
 (
     involvedpartyxrulesid         UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     involvedpartyid               UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL
@@ -652,20 +640,20 @@ CREATE TABLE party.involvedpartyxrules
 CREATE TABLE party.involvedpartyxrulessecuritytoken
 (
     involvedpartyxrulessecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                  timestamp(6) with time zone NOT NULL,
-    effectivetodate                    timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp          timestamp(6) with time zone NOT NULL,
-    warehousefromdate                  DATE                        NOT NULL,
+    effectivefromdate                  timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                    timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp          timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                  DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp      timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp      timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                      INTEGER                     NOT NULL,
     deleteallowed                      INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid       UUID                        NOT NULL,
+    originalsourcesystemuniqueid       UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                        INTEGER                     NOT NULL,
     updateallowed                      INTEGER                     NOT NULL,
     activeflagid                       UUID                        NOT NULL,
     enterpriseid                       UUID                        NOT NULL,
-    originalsourcesystemid             UUID                        NOT NULL,
+    originalsourcesystemid             UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                    UUID                        NOT NULL,
     systemid                           UUID                        NOT NULL,
     involvedpartyxrulesid              UUID                        NOT NULL

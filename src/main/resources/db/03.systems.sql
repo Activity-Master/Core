@@ -1,75 +1,72 @@
 CREATE TABLE dbo.systems
 (
     systemid                      UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     systemdesc                    character varying(250)      NOT NULL,
     systemname                    character varying(150)      NOT NULL,
     systemhistoryname             character varying(250)      NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL
 );
-
 CREATE TABLE dbo.systemssecuritytoken
 (
     systemssecuritytokenid        UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                 INTEGER                     NOT NULL,
     deleteallowed                 INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                   INTEGER                     NOT NULL,
     updateallowed                 INTEGER                     NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL
 );
-
 CREATE TABLE dbo.systemxclassification
 (
     systemxclassificationid       UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     value                         text                        NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL
 );
-
 CREATE TABLE dbo.systemxclassificationsecuritytoken
 (
     systemxclassificationsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                    timestamp(6) with time zone NOT NULL,
-    effectivetodate                      timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp            timestamp(6) with time zone NOT NULL,
-    warehousefromdate                    DATE                        NOT NULL,
+    effectivefromdate                    timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                      timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp            timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                    DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp        timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp        timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                        INTEGER                     NOT NULL,
     deleteallowed                        INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid         UUID                        NOT NULL,
+    originalsourcesystemuniqueid         UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                          INTEGER                     NOT NULL,
     updateallowed                        INTEGER                     NOT NULL,
     activeflagid                         UUID                        NOT NULL,
     enterpriseid                         UUID                        NOT NULL,
-    originalsourcesystemid               UUID                        NOT NULL,
+    originalsourcesystemid               UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                      UUID                        NOT NULL,
     systemid                             UUID                        NOT NULL,
     systemxclassificationid              UUID                        NOT NULL

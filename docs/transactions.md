@@ -50,7 +50,7 @@ explicit typed FSDM relationship. Each has a corresponding Warehouse security
 entity (`TransactionSecurityToken`, `TransactionTypeSecurityToken`, and
 `TransactionXTransactionTypeSecurityToken`). They are registered in the core
 persistence unit; their tables and warehouse columns remain in the managed
-`transactions.sql` migration. Wallet installation persists its debit/credit
+`16.transactions.sql` migration. Wallet installation persists its debit/credit
 types through the stateless EntityAssist builder and seeds the relationship
 classification/data concept.
 The core data-concept system provisions `Transaction`, `TransactionType`, and

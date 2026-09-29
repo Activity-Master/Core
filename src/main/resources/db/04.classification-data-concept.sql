@@ -2,37 +2,37 @@ CREATE SCHEMA classification;
 CREATE TABLE classification.classificationdataconcept
 (
     classificationdataconceptid   UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationdataconceptdesc character varying(1500)     NOT NULL,
     classificationdataconceptname character varying(100)      NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000'
 );
 CREATE TABLE classification.classificationdataconceptsecuritytoken
 (
     classificationdataconceptsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                        timestamp(6) with time zone NOT NULL,
-    effectivetodate                          timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                timestamp(6) with time zone NOT NULL,
-    warehousefromdate                        DATE                        NOT NULL,
+    effectivefromdate                        timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                          timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                        DATE                        NOT NULL DEFAULT current_date,
 
     warehouselastupdatedtimestamp            timestamp(6) with time zone NOT NULL,
     createallowed                            INTEGER                     NOT NULL,
     deleteallowed                            INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid             UUID                        NOT NULL,
+    originalsourcesystemuniqueid             UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                              INTEGER                     NOT NULL,
     updateallowed                            INTEGER                     NOT NULL,
     activeflagid                             UUID                        NOT NULL,
     enterpriseid                             UUID                        NOT NULL,
-    originalsourcesystemid                   UUID                        NOT NULL,
+    originalsourcesystemid                   UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                          UUID                        NOT NULL,
     systemid                                 UUID                        NOT NULL,
     classificationdataconceptid              UUID                        NOT NULL
@@ -40,19 +40,18 @@ CREATE TABLE classification.classificationdataconceptsecuritytoken
 CREATE TABLE classification.classificationdataconceptxclassification
 (
     classificationdataconceptxclassificationid UUID                        NOT NULL primary key,
-    effectivefromdate                          timestamp(6) with time zone NOT NULL,
-    effectivetodate                            timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                  timestamp(6) with time zone NOT NULL,
-
-    warehousefromdate                          DATE                        NOT NULL,
+    effectivefromdate                          timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                            timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                  timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                          DATE                        NOT NULL DEFAULT current_date,
 
     warehouselastupdatedtimestamp              timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid               UUID                        NOT NULL,
+    originalsourcesystemuniqueid               UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     value                                      text                        NOT NULL,
     activeflagid                               UUID                        NOT NULL,
     enterpriseid                               UUID                        NOT NULL,
     systemid                                   UUID                        NOT NULL,
-    originalsourcesystemid                     UUID                        NOT NULL,
+    originalsourcesystemid                     UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid                           UUID                        NOT NULL,
     classificationdataconceptid                UUID                        NOT NULL
 );
@@ -80,39 +79,40 @@ CREATE TABLE classification.classificationdataconceptxclassificationsecuritytoke
 CREATE TABLE classification.classificationdataconceptxresourceitem
 (
     classificationdataconceptxresourceitemid UUID                        NOT NULL primary key,
-    effectivefromdate                        timestamp(6) with time zone NOT NULL,
-    effectivetodate                          timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                timestamp(6) with time zone NOT NULL,
-    warehousefromdate                        DATE                        NOT NULL,
+    effectivefromdate                        timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                          timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                        DATE                        NOT NULL DEFAULT current_date,
 
     warehouselastupdatedtimestamp            timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid             UUID                        NOT NULL,
+    originalsourcesystemuniqueid             UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     value                                    text                        NOT NULL,
     activeflagid                             UUID                        NOT NULL,
     enterpriseid                             UUID                        NOT NULL,
     systemid                                 UUID                        NOT NULL,
-    originalsourcesystemid                   UUID                        NOT NULL,
+    originalsourcesystemid                   UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid                         UUID                        NOT NULL,
     classificationdataconceptid              UUID                        NOT NULL,
     resourceitemid                           UUID                        NOT NULL
 );
+
 CREATE TABLE classification.classificationdataconceptxresourceitemsecuritytoken
 (
     classificationdataconceptxresourceitemsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                                     timestamp(6) with time zone NOT NULL,
-    effectivetodate                                       timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                             timestamp(6) with time zone NOT NULL,
-    warehousefromdate                                     DATE                        NOT NULL,
+    effectivefromdate                                     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                                       timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                                     DATE                        NOT NULL DEFAULT current_date,
 
     warehouselastupdatedtimestamp                         timestamp(6) with time zone NOT NULL,
     createallowed                                         INTEGER                     NOT NULL,
     deleteallowed                                         INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid                          UUID                        NOT NULL,
+    originalsourcesystemuniqueid                          UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                                           INTEGER                     NOT NULL,
     updateallowed                                         INTEGER                     NOT NULL,
     activeflagid                                          UUID                        NOT NULL,
     enterpriseid                                          UUID                        NOT NULL,
-    originalsourcesystemid                                UUID                        NOT NULL,
+    originalsourcesystemid                                UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                                       UUID                        NOT NULL,
     systemid                                              UUID                        NOT NULL,
     classificationdataconceptxresourceitemid              UUID                        NOT NULL

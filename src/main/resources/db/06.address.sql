@@ -2,37 +2,36 @@ CREATE SCHEMA address;
 CREATE TABLE address.address
 (
     addressid                     UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     value                         text                        NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL
 );
-
 CREATE TABLE address.addresssecuritytoken
 (
     addresssecuritytokenid        UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
     createallowed                 INTEGER                     NOT NULL,
     deleteallowed                 INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                   INTEGER                     NOT NULL,
     updateallowed                 INTEGER                     NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     addressid                     UUID                        NOT NULL
@@ -40,39 +39,38 @@ CREATE TABLE address.addresssecuritytoken
 CREATE TABLE address.addressxclassification
 (
     addressxclassificationid      UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     addressid                     UUID                        NOT NULL
 );
 CREATE TABLE address.addressxclassificationsecuritytoken
 (
     addressxclassificationsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                     timestamp(6) with time zone NOT NULL,
-    effectivetodate                       timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp             timestamp(6) with time zone NOT NULL,
-
-    warehousefromdate                     DATE                        NOT NULL,
+    effectivefromdate                     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                       timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                     DATE                        NOT NULL DEFAULT current_date,
 
     warehouselastupdatedtimestamp         timestamp(6) with time zone NOT NULL,
     createallowed                         INTEGER                     NOT NULL,
     deleteallowed                         INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid          UUID                        NOT NULL,
+    originalsourcesystemuniqueid          UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                           INTEGER                     NOT NULL,
     updateallowed                         INTEGER                     NOT NULL,
     activeflagid                          UUID                        NOT NULL,
     enterpriseid                          UUID                        NOT NULL,
-    originalsourcesystemid                UUID                        NOT NULL,
+    originalsourcesystemid                UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                       UUID                        NOT NULL,
     systemid                              UUID                        NOT NULL,
     addressxclassificationid              UUID                        NOT NULL
@@ -80,19 +78,18 @@ CREATE TABLE address.addressxclassificationsecuritytoken
 CREATE TABLE address.addressxgeography
 (
     addressxgeographyid           UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     addressid                     UUID                        NOT NULL,
     geographyid                   UUID                        NOT NULL
@@ -100,21 +97,20 @@ CREATE TABLE address.addressxgeography
 CREATE TABLE address.addressxgeographysecuritytoken
 (
     addressxgeographysecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                timestamp(6) with time zone NOT NULL,
-    effectivetodate                  timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp        timestamp(6) with time zone NOT NULL,
-
-    warehousefromdate                DATE                        NOT NULL,
+    effectivefromdate                timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                  timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp        timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                DATE                        NOT NULL DEFAULT current_date,
 
     warehouselastupdatedtimestamp    timestamp(6) with time zone NOT NULL,
     createallowed                    INTEGER                     NOT NULL,
     deleteallowed                    INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid     UUID                        NOT NULL,
+    originalsourcesystemuniqueid     UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                      INTEGER                     NOT NULL,
     updateallowed                    INTEGER                     NOT NULL,
     activeflagid                     UUID                        NOT NULL,
     enterpriseid                     UUID                        NOT NULL,
-    originalsourcesystemid           UUID                        NOT NULL,
+    originalsourcesystemid           UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                  UUID                        NOT NULL,
     systemid                         UUID                        NOT NULL,
     addressxgeographyid              UUID                        NOT NULL
@@ -122,18 +118,18 @@ CREATE TABLE address.addressxgeographysecuritytoken
 CREATE TABLE address.addressxresourceitem
 (
     addressxresourceitemid        UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     addressid                     UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL
@@ -141,20 +137,20 @@ CREATE TABLE address.addressxresourceitem
 CREATE TABLE address.addressxresourceitemsecuritytoken
 (
     addressxresourceitemsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                   timestamp(6) with time zone NOT NULL,
-    effectivetodate                     timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp           timestamp(6) with time zone NOT NULL,
-    warehousefromdate                   DATE                        NOT NULL,
+    effectivefromdate                   timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                     timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp           timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                   DATE                        NOT NULL DEFAULT current_date,
 
     warehouselastupdatedtimestamp       timestamp(6) with time zone NOT NULL,
     createallowed                       INTEGER                     NOT NULL,
     deleteallowed                       INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid        UUID                        NOT NULL,
+    originalsourcesystemuniqueid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                         INTEGER                     NOT NULL,
     updateallowed                       INTEGER                     NOT NULL,
     activeflagid                        UUID                        NOT NULL,
     enterpriseid                        UUID                        NOT NULL,
-    originalsourcesystemid              UUID                        NOT NULL,
+    originalsourcesystemid              UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                     UUID                        NOT NULL,
     systemid                            UUID                        NOT NULL,
     addressxresourceitemid              UUID                        NOT NULL

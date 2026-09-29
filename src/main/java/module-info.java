@@ -121,9 +121,9 @@ module com.guicedee.activitymaster.fsdm {
 
     exports com.guicedee.activitymaster.fsdm;
     exports com.guicedee.activitymaster.fsdm.services;
-    exports com.guicedee.activitymaster.fsdm.db.abstraction to com.guicedee.activitymaster.wallet, com.guicedee.activitymaster.payments, com.guicedee.activitymaster.marketplace;
+    exports com.guicedee.activitymaster.fsdm.db.abstraction to com.guicedee.activitymaster.wallet, com.guicedee.activitymaster.payments, com.guicedee.activitymaster.marketplace, com.guicedee.activitymaster.notifications;
     exports com.guicedee.activitymaster.fsdm.db.entities.arrangement to com.guicedee.activitymaster.wallet, com.guicedee.activitymaster.payments, com.guicedee.activitymaster.marketplace;
-    exports com.guicedee.activitymaster.fsdm.db.entities.events to com.guicedee.activitymaster.wallet, com.guicedee.activitymaster.payments, com.guicedee.activitymaster.marketplace;
+    exports com.guicedee.activitymaster.fsdm.db.entities.events to com.guicedee.activitymaster.wallet, com.guicedee.activitymaster.payments, com.guicedee.activitymaster.marketplace, com.guicedee.activitymaster.notifications;
     exports com.guicedee.activitymaster.fsdm.transactions;
     opens com.guicedee.activitymaster.fsdm.transactions to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, net.bytebuddy;
 
@@ -267,7 +267,7 @@ module com.guicedee.activitymaster.fsdm {
 
     //exports com.guicedee.activitymaster.fsdm.db.entities.geography to com.guicedee.activitymaster.geography;
     exports com.guicedee.activitymaster.fsdm.db.entities.rules to com.guicedee.activitymaster.geography;
-    exports com.guicedee.activitymaster.fsdm.db.entities.resourceitem to com.guicedee.activitymaster.geography, activity.master.test, com.guicedee.activitymaster.marketplace;
+    exports com.guicedee.activitymaster.fsdm.db.entities.resourceitem to com.guicedee.activitymaster.geography, activity.master.test, com.guicedee.activitymaster.marketplace, com.guicedee.activitymaster.notifications;
     exports com.guicedee.activitymaster.fsdm.implementations to com.guicedee.activitymaster.geography;
 
     exports com.guicedee.activitymaster.fsdm.db;
@@ -285,4 +285,6 @@ module com.guicedee.activitymaster.fsdm {
     // App-level @OpenAPIDefinition holder — scanned for the global API document
     exports com.guicedee.activitymaster.fsdm.rest;
     opens com.guicedee.activitymaster.fsdm.rest to com.google.guice, tools.jackson.databind, com.guicedee.rest;
+
+    opens db;
 }

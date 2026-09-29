@@ -2,202 +2,194 @@ CREATE SCHEMA rules;
 CREATE TABLE rules.rules
 (
     rulesid                       UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     rulesetdescription            character varying(250)      NOT NULL,
     rulesetname                   character varying(150)      NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000'
 );
-
 CREATE TABLE rules.rulessecuritytoken
 (
     rulessecuritytokenid          UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                 INTEGER                     NOT NULL,
     deleteallowed                 INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                   INTEGER                     NOT NULL,
     updateallowed                 INTEGER                     NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL
 );
-
 CREATE TABLE rules.rulestype
 (
     rulestypeid                   UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     rulestypedesc                 character varying(200)      NOT NULL,
     rulestypename                 character varying(200)      NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000'
 );
 CREATE TABLE rules.rulestypessecuritytoken
 (
     rulestypessecuritytokenid     UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                 INTEGER                     NOT NULL,
     deleteallowed                 INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                   INTEGER                     NOT NULL,
     updateallowed                 INTEGER                     NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     rulestypesid                  UUID                        NOT NULL
 );
-
 CREATE TABLE rules.rulestypexclassification
 (
     rulestypexclassificationid    UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     rulestypeid                   UUID                        NOT NULL
 );
-
 CREATE TABLE rules.rulestypexclassificationsecuritytoken
 (
     rulestypexclassificationsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                       timestamp(6) with time zone NOT NULL,
-    effectivetodate                         timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp               timestamp(6) with time zone NOT NULL,
-    warehousefromdate                       DATE                        NOT NULL,
+    effectivefromdate                         timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                           timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                 timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                         DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp           timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp           timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                           INTEGER                     NOT NULL,
     deleteallowed                           INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid            UUID                        NOT NULL,
+    originalsourcesystemuniqueid            UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                             INTEGER                     NOT NULL,
     updateallowed                           INTEGER                     NOT NULL,
     activeflagid                            UUID                        NOT NULL,
     enterpriseid                            UUID                        NOT NULL,
-    originalsourcesystemid                  UUID                        NOT NULL,
+    originalsourcesystemid                   UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                         UUID                        NOT NULL,
     systemid                                UUID                        NOT NULL,
     rulestypexclassificationid              UUID                        NOT NULL
 );
-
 CREATE TABLE rules.rulestypexresourceitem
 (
     rulestypexresourceitemid      UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL,
     rulestypeid                   UUID                        NOT NULL
 );
-
 CREATE TABLE rules.rulestypexresourceitemsecuritytoken
 (
     rulestypexresourceitemsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                     timestamp(6) with time zone NOT NULL,
-    effectivetodate                       timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp             timestamp(6) with time zone NOT NULL,
-    warehousefromdate                     DATE                        NOT NULL,
+    effectivefromdate                     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                       timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                     DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp         timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp         timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                         INTEGER                     NOT NULL,
     deleteallowed                         INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid          UUID                        NOT NULL,
+    originalsourcesystemuniqueid          UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                           INTEGER                     NOT NULL,
     updateallowed                         INTEGER                     NOT NULL,
     activeflagid                          UUID                        NOT NULL,
     enterpriseid                          UUID                        NOT NULL,
-    originalsourcesystemid                UUID                        NOT NULL,
-    securitytokenid                       UUID                        NOT NULL,
+    originalsourcesystemid                UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    securitytokenid                      UUID                        NOT NULL,
     systemid                              UUID                        NOT NULL,
     rulestypexresourceitemid              UUID                        NOT NULL
 );
-
 CREATE TABLE rules.rulesxarrangement
 (
     rulesxarrangementsid          UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     arrangementid                 UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL
 );
-
 CREATE TABLE rules.rulesxarrangementssecuritytoken
 (
     rulesxarrangementssecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                 timestamp(6) with time zone NOT NULL,
-    effectivetodate                   timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp         timestamp(6) with time zone NOT NULL,
-    warehousefromdate                 DATE                        NOT NULL,
+    effectivefromdate                 timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                   timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp         timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                 DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp     timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                     INTEGER                     NOT NULL,
     deleteallowed                     INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid      UUID                        NOT NULL,
+    originalsourcesystemuniqueid      UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                       INTEGER                     NOT NULL,
     updateallowed                     INTEGER                     NOT NULL,
     activeflagid                      UUID                        NOT NULL,
     enterpriseid                      UUID                        NOT NULL,
-    originalsourcesystemid            UUID                        NOT NULL,
+    originalsourcesystemid            UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                   UUID                        NOT NULL,
     systemid                          UUID                        NOT NULL,
     rulesxarrangementsid              UUID                        NOT NULL
@@ -205,38 +197,38 @@ CREATE TABLE rules.rulesxarrangementssecuritytoken
 CREATE TABLE rules.rulesxclassification
 (
     rulesxclassificationid        UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL
 );
 CREATE TABLE rules.rulesxclassificationsecuritytoken
 (
     rulesxclassificationsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                   timestamp(6) with time zone NOT NULL,
-    effectivetodate                     timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp           timestamp(6) with time zone NOT NULL,
-    warehousefromdate                   DATE                        NOT NULL,
+    effectivefromdate                   timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                     timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp           timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                   DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp       timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp       timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                       INTEGER                     NOT NULL,
     deleteallowed                       INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid        UUID                        NOT NULL,
+    originalsourcesystemuniqueid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                         INTEGER                     NOT NULL,
     updateallowed                       INTEGER                     NOT NULL,
     activeflagid                        UUID                        NOT NULL,
     enterpriseid                        UUID                        NOT NULL,
-    originalsourcesystemid              UUID                        NOT NULL,
+    originalsourcesystemid              UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                     UUID                        NOT NULL,
     systemid                            UUID                        NOT NULL,
     rulesxclassificationid              UUID                        NOT NULL
@@ -244,18 +236,18 @@ CREATE TABLE rules.rulesxclassificationsecuritytoken
 CREATE TABLE rules.rulesxinvolvedparty
 (
     rulesxinvolvedpartyid         UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     involvedpartyid               UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL
@@ -263,20 +255,20 @@ CREATE TABLE rules.rulesxinvolvedparty
 CREATE TABLE rules.rulesxinvolvedpartysecuritytoken
 (
     rulesxinvolvedpartysecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                  timestamp(6) with time zone NOT NULL,
-    effectivetodate                    timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp          timestamp(6) with time zone NOT NULL,
-    warehousefromdate                  DATE                        NOT NULL,
+    effectivefromdate                  timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                    timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp          timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                  DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp      timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp      timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                      INTEGER                     NOT NULL,
     deleteallowed                      INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid       UUID                        NOT NULL,
+    originalsourcesystemuniqueid       UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                        INTEGER                     NOT NULL,
     updateallowed                      INTEGER                     NOT NULL,
     activeflagid                       UUID                        NOT NULL,
     enterpriseid                       UUID                        NOT NULL,
-    originalsourcesystemid             UUID                        NOT NULL,
+    originalsourcesystemid             UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                    UUID                        NOT NULL,
     systemid                           UUID                        NOT NULL,
     rulesxinvolvedpartyid              UUID                        NOT NULL
@@ -284,18 +276,18 @@ CREATE TABLE rules.rulesxinvolvedpartysecuritytoken
 CREATE TABLE rules.rulesxproduct
 (
     rulesxproductid               UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     productid                     UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL
@@ -303,20 +295,20 @@ CREATE TABLE rules.rulesxproduct
 CREATE TABLE rules.rulesxproductsecuritytoken
 (
     rulesxproductsecuritytokenid  UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                 INTEGER                     NOT NULL,
     deleteallowed                 INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                   INTEGER                     NOT NULL,
     updateallowed                 INTEGER                     NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     rulesxproductid               UUID                        NOT NULL
@@ -324,18 +316,18 @@ CREATE TABLE rules.rulesxproductsecuritytoken
 CREATE TABLE rules.rulesxresourceitem
 (
     rulesxresourceitemid          UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL
@@ -343,39 +335,39 @@ CREATE TABLE rules.rulesxresourceitem
 CREATE TABLE rules.rulesxresourceitemsecuritytoken
 (
     rulesxresourceitemsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                 timestamp(6) with time zone NOT NULL,
-    effectivetodate                   timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp         timestamp(6) with time zone NOT NULL,
-    warehousefromdate                 DATE                        NOT NULL,
+    effectivefromdate                 timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                   timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp           timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                 DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp     timestamp(6) with time zone NOT NULL,
-    createallowed                     INTEGER                     NOT NULL,
-    deleteallowed                     INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid      UUID                        NOT NULL,
-    readallowed                       INTEGER                     NOT NULL,
-    updateallowed                     INTEGER                     NOT NULL,
-    activeflagid                      UUID                        NOT NULL,
-    enterpriseid                      UUID                        NOT NULL,
-    originalsourcesystemid            UUID                        NOT NULL,
-    securitytokenid                   UUID                        NOT NULL,
-    systemid                          UUID                        NOT NULL,
+    warehouselastupdatedtimestamp       timestamp(6) with time zone NOT NULL DEFAULT now(),
+    createallowed                       INTEGER                     NOT NULL,
+    deleteallowed                       INTEGER                     NOT NULL,
+    originalsourcesystemuniqueid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    readallowed                         INTEGER                     NOT NULL,
+    updateallowed                       INTEGER                     NOT NULL,
+    activeflagid                        UUID                        NOT NULL,
+    enterpriseid                        UUID                        NOT NULL,
+    originalsourcesystemid              UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    securitytokenid                     UUID                        NOT NULL,
+    systemid                            UUID                        NOT NULL,
     rulesxresourceitemid              UUID                        NOT NULL
 );
 CREATE TABLE rules.rulesxrules
 (
     rulesxrulesid                 UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     childrulesid                  UUID                        NOT NULL,
     parentrulesid                 UUID                        NOT NULL
@@ -383,20 +375,20 @@ CREATE TABLE rules.rulesxrules
 CREATE TABLE rules.rulesxrulessecuritytoken
 (
     rulesxrulessecuritytokenid    UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                 INTEGER                     NOT NULL,
     deleteallowed                 INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                   INTEGER                     NOT NULL,
     updateallowed                 INTEGER                     NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     rulesxrulesid                 UUID                        NOT NULL
@@ -404,18 +396,18 @@ CREATE TABLE rules.rulesxrulessecuritytoken
 CREATE TABLE rules.rulesxrulestype
 (
     rulesxrulestypeid             UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL,
     rulestypeid                   UUID                        NOT NULL
@@ -423,24 +415,27 @@ CREATE TABLE rules.rulesxrulestype
 CREATE TABLE rules.rulesxrulestypessecuritytoken
 (
     rulesxrulestypessecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate              timestamp(6) with time zone NOT NULL,
-    effectivetodate                timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp      timestamp(6) with time zone NOT NULL,
-    warehousefromdate              DATE                        NOT NULL,
+    effectivefromdate                    timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                      timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp            timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                    DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp  timestamp(6) with time zone NOT NULL,
-    createallowed                  INTEGER                     NOT NULL,
-    deleteallowed                  INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid   UUID                        NOT NULL,
-    readallowed                    INTEGER                     NOT NULL,
-    updateallowed                  INTEGER                     NOT NULL,
-    activeflagid                   UUID                        NOT NULL,
-    enterpriseid                   UUID                        NOT NULL,
-    originalsourcesystemid         UUID                        NOT NULL,
-    securitytokenid                UUID                        NOT NULL,
-    systemid                       UUID                        NOT NULL,
-    rulesxrulestypeid              UUID                        NOT NULL
+    warehouselastupdatedtimestamp        timestamp(6) with time zone NOT NULL DEFAULT now(),
+    createallowed                        INTEGER                     NOT NULL,
+    deleteallowed                        INTEGER                     NOT NULL,
+    originalsourcesystemuniqueid         UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    readallowed                          INTEGER                     NOT NULL,
+    updateallowed                        INTEGER                     NOT NULL,
+    activeflagid                         UUID                        NOT NULL,
+    enterpriseid                         UUID                        NOT NULL,
+    originalsourcesystemid               UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    securitytokenid                      UUID                        NOT NULL,
+    systemid                             UUID                        NOT NULL,
+    rulesxrulestypeid                    UUID                        NOT NULL
 );
+
+
+
 -- Indexes for rules.rules
 CREATE INDEX idx_rul_eff_from ON rules.rules (effectivefromdate);
 CREATE INDEX idx_rul_eff_to ON rules.rules (effectivetodate);

@@ -33,6 +33,10 @@
                     <groupId>org.reactivestreams</groupId>
                     <artifactId>reactive-streams</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>net.java.dev.jna</groupId>
+                    <artifactId>jna-platform</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>

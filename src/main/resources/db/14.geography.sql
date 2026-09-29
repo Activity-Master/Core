@@ -2,38 +2,38 @@ CREATE SCHEMA geography;
 CREATE TABLE geography.geography
 (
     geographyid                   UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     geographydesc                 character varying(500)      NOT NULL,
     geographyname                 character varying(500)      NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL
 );
 CREATE TABLE geography.geographysecuritytoken
 (
     geographysecuritytokenid      UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                 INTEGER                     NOT NULL,
     deleteallowed                 INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                   INTEGER                     NOT NULL,
     updateallowed                 INTEGER                     NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     geographyid                   UUID                        NOT NULL
@@ -41,38 +41,38 @@ CREATE TABLE geography.geographysecuritytoken
 CREATE TABLE geography.geographyxclassification
 (
     geographyxclassificationid    UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     geographyid                   UUID                        NOT NULL
 );
 CREATE TABLE geography.geographyxclassificationsecuritytoken
 (
     geographyxclassificationsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                       timestamp(6) with time zone NOT NULL,
-    effectivetodate                         timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp               timestamp(6) with time zone NOT NULL,
-    warehousefromdate                       DATE                        NOT NULL,
+    effectivefromdate                       timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                         timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp               timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                       DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp           timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp           timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                           INTEGER                     NOT NULL,
     deleteallowed                           INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid            UUID                        NOT NULL,
+    originalsourcesystemuniqueid            UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                             INTEGER                     NOT NULL,
     updateallowed                           INTEGER                     NOT NULL,
     activeflagid                            UUID                        NOT NULL,
     enterpriseid                            UUID                        NOT NULL,
-    originalsourcesystemid                  UUID                        NOT NULL,
+    originalsourcesystemid                   UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                         UUID                        NOT NULL,
     systemid                                UUID                        NOT NULL,
     geographyxclassificationid              UUID                        NOT NULL
@@ -80,18 +80,18 @@ CREATE TABLE geography.geographyxclassificationsecuritytoken
 CREATE TABLE geography.geographyxgeography
 (
     geographyxgeographyid         UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     childgeographyid              UUID                        NOT NULL,
     parentgeographyid             UUID                        NOT NULL
@@ -99,20 +99,20 @@ CREATE TABLE geography.geographyxgeography
 CREATE TABLE geography.geographyxgeographysecuritytoken
 (
     geographyxgeographysecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                  timestamp(6) with time zone NOT NULL,
-    effectivetodate                    timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp          timestamp(6) with time zone NOT NULL,
-    warehousefromdate                  DATE                        NOT NULL,
+    effectivefromdate                  timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                    timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp          timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                  DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp      timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp      timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                      INTEGER                     NOT NULL,
     deleteallowed                      INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid       UUID                        NOT NULL,
+    originalsourcesystemuniqueid       UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-0000-000000000000',
     readallowed                        INTEGER                     NOT NULL,
     updateallowed                      INTEGER                     NOT NULL,
     activeflagid                       UUID                        NOT NULL,
     enterpriseid                       UUID                        NOT NULL,
-    originalsourcesystemid             UUID                        NOT NULL,
+    originalsourcesystemid             UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-0000-000000000000',
     securitytokenid                    UUID                        NOT NULL,
     systemid                           UUID                        NOT NULL,
     geographyxgeographyid              UUID                        NOT NULL
@@ -120,18 +120,18 @@ CREATE TABLE geography.geographyxgeographysecuritytoken
 CREATE TABLE geography.geographyxresourceitem
 (
     geographyxresourceitemid      UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     geographyid                   UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL
@@ -139,24 +139,26 @@ CREATE TABLE geography.geographyxresourceitem
 CREATE TABLE geography.geographyxresourceitemsecuritytoken
 (
     geographyxresourceitemsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                     timestamp(6) with time zone NOT NULL,
-    effectivetodate                       timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp             timestamp(6) with time zone NOT NULL,
-    warehousefromdate                     DATE                        NOT NULL,
+    effectivefromdate                     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                       timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                     DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp         timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp         timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                         INTEGER                     NOT NULL,
     deleteallowed                         INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid          UUID                        NOT NULL,
+    originalsourcesystemuniqueid          UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-0000-000000000000',
     readallowed                           INTEGER                     NOT NULL,
     updateallowed                         INTEGER                     NOT NULL,
     activeflagid                          UUID                        NOT NULL,
     enterpriseid                          UUID                        NOT NULL,
-    originalsourcesystemid                UUID                        NOT NULL,
+    originalsourcesystemid                UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                       UUID                        NOT NULL,
     systemid                              UUID                        NOT NULL,
     geographyxresourceitemid              UUID                        NOT NULL
 );
+
+
 -- Indexes for geography.geography
 CREATE INDEX idx_geo_eff_from ON geography.geography (effectivefromdate);
 CREATE INDEX idx_geo_eff_to ON geography.geography (effectivetodate);

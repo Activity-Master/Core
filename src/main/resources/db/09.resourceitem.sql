@@ -2,53 +2,53 @@ CREATE SCHEMA resource;
 CREATE TABLE resource.resourceitem
 (
     resourceitemid                UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     resourceitemdatatype          character varying(150)      NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000'
 );
 CREATE TABLE resource.resourceitemdata
 (
     resourceitemdataid            UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     resourceitemdata              bytea                       NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     resourceitemid                UUID                        NOT NULL
 );
 CREATE TABLE resource.resourceitemdatasecuritytoken
 (
     resourceitemdatasecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate               timestamp(6) with time zone NOT NULL,
-    effectivetodate                 timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp       timestamp(6) with time zone NOT NULL,
-    warehousefromdate               DATE                        NOT NULL,
+    effectivefromdate               timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                 timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp       timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate               DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp   timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp   timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                   INTEGER                     NOT NULL,
     deleteallowed                   INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid    UUID                        NOT NULL,
+    originalsourcesystemuniqueid    UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                     INTEGER                     NOT NULL,
     updateallowed                   INTEGER                     NOT NULL,
     activeflagid                    UUID                        NOT NULL,
     enterpriseid                    UUID                        NOT NULL,
-    originalsourcesystemid          UUID                        NOT NULL,
+    originalsourcesystemid          UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                 UUID                        NOT NULL,
     systemid                        UUID                        NOT NULL,
     resourceitemdataid              UUID                        NOT NULL
@@ -56,38 +56,38 @@ CREATE TABLE resource.resourceitemdatasecuritytoken
 CREATE TABLE resource.resourceitemdataxclassification
 (
     resourceitemdataxclassificationid UUID                        NOT NULL primary key,
-    effectivefromdate                 timestamp(6) with time zone NOT NULL,
-    effectivetodate                   timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp         timestamp(6) with time zone NOT NULL,
-    warehousefromdate                 DATE                        NOT NULL,
+    effectivefromdate                 timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                   timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp         timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                 DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp     timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid      UUID                        NOT NULL,
-    value                             text                        NOT NULL,
+    warehouselastupdatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid      UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                             text                        NOT NULL ,
     activeflagid                      UUID                        NOT NULL,
     enterpriseid                      UUID                        NOT NULL,
     systemid                          UUID                        NOT NULL,
-    originalsourcesystemid            UUID                        NOT NULL,
+    originalsourcesystemid            UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid                  UUID                        NOT NULL,
     resourceitemdataid                UUID                        NOT NULL
 );
 CREATE TABLE resource.resourceitemdataxclassificationsecuritytoken
 (
     resourceitemdataxclassificationsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                              timestamp(6) with time zone NOT NULL,
-    effectivetodate                                timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                      timestamp(6) with time zone NOT NULL,
-    warehousefromdate                              DATE                        NOT NULL,
+    effectivefromdate                              timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                                timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                      timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                              DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp                  timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp                  timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                                  INTEGER                     NOT NULL,
     deleteallowed                                  INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid                   UUID                        NOT NULL,
+    originalsourcesystemuniqueid                   UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-0000-000000000000',
     readallowed                                    INTEGER                     NOT NULL,
     updateallowed                                  INTEGER                     NOT NULL,
     activeflagid                                   UUID                        NOT NULL,
     enterpriseid                                   UUID                        NOT NULL,
-    originalsourcesystemid                         UUID                        NOT NULL,
+    originalsourcesystemid                         UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                                UUID                        NOT NULL,
     systemid                                       UUID                        NOT NULL,
     resourceitemdataxclassificationid              UUID                        NOT NULL
@@ -95,20 +95,20 @@ CREATE TABLE resource.resourceitemdataxclassificationsecuritytoken
 CREATE TABLE resource.resourceitemsecuritytoken
 (
     resourceitemsecuritytokenid   UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                 INTEGER                     NOT NULL,
     deleteallowed                 INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                   INTEGER                     NOT NULL,
     updateallowed                 INTEGER                     NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL
@@ -116,37 +116,37 @@ CREATE TABLE resource.resourceitemsecuritytoken
 CREATE TABLE resource.resourceitemtype
 (
     resourceitemtypeid            UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     resourceitemtypedesc          character varying(255)      NOT NULL,
     resourceitemtypename          character varying(100)      NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000'
 );
 CREATE TABLE resource.resourceitemtypesecuritytoken
 (
     resourceitemtypesecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate               timestamp(6) with time zone NOT NULL,
-    effectivetodate                 timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp       timestamp(6) with time zone NOT NULL,
-    warehousefromdate               DATE                        NOT NULL,
+    effectivefromdate               timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                 timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp       timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate               DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp   timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp   timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                   INTEGER                     NOT NULL,
     deleteallowed                   INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid    UUID                        NOT NULL,
+    originalsourcesystemuniqueid    UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                     INTEGER                     NOT NULL,
     updateallowed                   INTEGER                     NOT NULL,
     activeflagid                    UUID                        NOT NULL,
     enterpriseid                    UUID                        NOT NULL,
-    originalsourcesystemid          UUID                        NOT NULL,
+    originalsourcesystemid          UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                 UUID                        NOT NULL,
     systemid                        UUID                        NOT NULL,
     resourceitemtypeid              UUID                        NOT NULL
@@ -154,38 +154,38 @@ CREATE TABLE resource.resourceitemtypesecuritytoken
 CREATE TABLE resource.resourceitemxclassification
 (
     resourceitemxclassificationid UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL
 );
 CREATE TABLE resource.resourceitemxclassificationsecuritytoken
 (
     resourceitemxclassificationsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                          timestamp(6) with time zone NOT NULL,
-    effectivetodate                            timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                  timestamp(6) with time zone NOT NULL,
-    warehousefromdate                          DATE                        NOT NULL,
+    effectivefromdate                          timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                            timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                  timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                          DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp              timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp              timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                              INTEGER                     NOT NULL,
     deleteallowed                              INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid               UUID                        NOT NULL,
+    originalsourcesystemuniqueid               UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                                INTEGER                     NOT NULL,
     updateallowed                              INTEGER                     NOT NULL,
     activeflagid                               UUID                        NOT NULL,
     enterpriseid                               UUID                        NOT NULL,
-    originalsourcesystemid                     UUID                        NOT NULL,
+    originalsourcesystemid                     UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                            UUID                        NOT NULL,
     systemid                                   UUID                        NOT NULL,
     resourceitemxclassificationid              UUID                        NOT NULL
@@ -193,18 +193,18 @@ CREATE TABLE resource.resourceitemxclassificationsecuritytoken
 CREATE TABLE resource.resourceitemxresourceitem
 (
     resourceitemxresourceitemid   UUID                        NOT NULL primary key,
-    effectivefromdate             timestamp(6) with time zone NOT NULL,
-    effectivetodate               timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL,
-    warehousefromdate             DATE                        NOT NULL,
+    effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate               timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate             DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                         text                        NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
-    originalsourcesystemid        UUID                        NOT NULL,
+    originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL,
     childresourceitemid           UUID                        NOT NULL,
     parentresourceitemid          UUID                        NOT NULL
@@ -212,20 +212,20 @@ CREATE TABLE resource.resourceitemxresourceitem
 CREATE TABLE resource.resourceitemxresourceitemsecuritytoken
 (
     resourceitemxresourceitemsecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                        timestamp(6) with time zone NOT NULL,
-    effectivetodate                          timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                timestamp(6) with time zone NOT NULL,
-    warehousefromdate                        DATE                        NOT NULL,
+    effectivefromdate                        timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                          timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                        DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp            timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp            timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                            INTEGER                     NOT NULL,
     deleteallowed                            INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid             UUID                        NOT NULL,
+    originalsourcesystemuniqueid             UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                              INTEGER                     NOT NULL,
     updateallowed                            INTEGER                     NOT NULL,
     activeflagid                             UUID                        NOT NULL,
     enterpriseid                             UUID                        NOT NULL,
-    originalsourcesystemid                   UUID                        NOT NULL,
+    originalsourcesystemid                   UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                          UUID                        NOT NULL,
     systemid                                 UUID                        NOT NULL,
     resourceitemxresourceitemid              UUID                        NOT NULL
@@ -233,18 +233,18 @@ CREATE TABLE resource.resourceitemxresourceitemsecuritytoken
 CREATE TABLE resource.resourceitemxresourceitemtype
 (
     resourceitemxresourceitemtypeid UUID                        NOT NULL primary key,
-    effectivefromdate               timestamp(6) with time zone NOT NULL,
-    effectivetodate                 timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp       timestamp(6) with time zone NOT NULL,
-    warehousefromdate               DATE                        NOT NULL,
+    effectivefromdate               timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                 timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp       timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate               DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp   timestamp(6) with time zone NOT NULL,
-    originalsourcesystemuniqueid    UUID                        NOT NULL,
-    value                           text                        NOT NULL,
+    warehouselastupdatedtimestamp   timestamp(6) with time zone NOT NULL DEFAULT now(),
+    originalsourcesystemuniqueid    UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+    value                           text                        NOT NULL ,
     activeflagid                    UUID                        NOT NULL,
     enterpriseid                    UUID                        NOT NULL,
     systemid                        UUID                        NOT NULL,
-    originalsourcesystemid          UUID                        NOT NULL,
+    originalsourcesystemid          UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid                UUID                        NOT NULL,
     resourceitemid                  UUID                        NOT NULL,
     resourceitemtypeid              UUID                        NOT NULL
@@ -252,20 +252,20 @@ CREATE TABLE resource.resourceitemxresourceitemtype
 CREATE TABLE resource.resourceitemxresourceitemtypesecuritytoken
 (
     resourceitemxresourceitemtypesecuritytokenid UUID                        NOT NULL primary key,
-    effectivefromdate                            timestamp(6) with time zone NOT NULL,
-    effectivetodate                              timestamp(6) with time zone NOT NULL,
-    warehousecreatedtimestamp                    timestamp(6) with time zone NOT NULL,
-    warehousefromdate                            DATE                        NOT NULL,
+    effectivefromdate                            timestamp(6) with time zone NOT NULL DEFAULT now(),
+    effectivetodate                              timestamp(6) with time zone NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
+    warehousecreatedtimestamp                    timestamp(6) with time zone NOT NULL DEFAULT now(),
+    warehousefromdate                            DATE                        NOT NULL DEFAULT current_date,
 
-    warehouselastupdatedtimestamp                timestamp(6) with time zone NOT NULL,
+    warehouselastupdatedtimestamp                timestamp(6) with time zone NOT NULL DEFAULT now(),
     createallowed                                INTEGER                     NOT NULL,
     deleteallowed                                INTEGER                     NOT NULL,
-    originalsourcesystemuniqueid                 UUID                        NOT NULL,
+    originalsourcesystemuniqueid                 UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     readallowed                                  INTEGER                     NOT NULL,
     updateallowed                                INTEGER                     NOT NULL,
     activeflagid                                 UUID                        NOT NULL,
     enterpriseid                                 UUID                        NOT NULL,
-    originalsourcesystemid                       UUID                        NOT NULL,
+    originalsourcesystemid                       UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     securitytokenid                              UUID                        NOT NULL,
     systemid                                     UUID                        NOT NULL,
     resourceitemxresourceitemtypeid              UUID                        NOT NULL
@@ -407,9 +407,6 @@ CREATE INDEX idx_rixrit_af_wh ON resource.resourceitemxresourceitemtype (activef
 CREATE INDEX idx_rixrit_sys_wh ON resource.resourceitemxresourceitemtype (systemid, warehousefromdate);
 CREATE INDEX idx_rixrit_cl_wh ON resource.resourceitemxresourceitemtype (classificationid, warehousefromdate);
 CREATE INDEX idx_rixrit_rid_wh ON resource.resourceitemxresourceitemtype (resourceitemid, warehousefromdate);
-
-
-
 
 
 drop table if exists resource.resourceitemdatavalue;

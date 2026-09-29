@@ -1,13 +1,4 @@
 CREATE SCHEMA security;
-CREATE TABLE security.securityhierarchy
-(
-    id       UUID NOT NULL,
-    name     character varying(255),
-    one      integer,
-    parentid character varying(36),
-    path     character varying(255),
-    pather   character varying(255)
-);
 CREATE TABLE security.securitytoken
 (
     securitytokenid                  UUID                        NOT NULL primary key,

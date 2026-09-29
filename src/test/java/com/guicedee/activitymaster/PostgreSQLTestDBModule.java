@@ -29,33 +29,83 @@ public class PostgreSQLTestDBModule
         postgresContainer.start();
         try {
             // Prefer classpath resources so scripts work when consumed via test-jar
-            String fsdmResource = "postgres_fsdm.sql";
-            String structureResource = "postgres_structure.sql";
+            //String fsdmResource = "postgres_fsdm.sql";
+            System.setProperty("FSDM_DBSERVER", postgresContainer.getHost());
+            System.setProperty("FSDM_DBPORT", String.valueOf(postgresContainer.getFirstMappedPort()));
+            System.setProperty("FSDM_DBNAME", postgresContainer.getDatabaseName());
+            System.setProperty("FSDM_USER", postgresContainer.getUsername());
+            System.setProperty("FSDM_PASSWORD", postgresContainer.getPassword());
+
+            String[] fsdmScripts = {
+                        "00.1.setup.sql",
+                        "01.enterprise.sql",
+                        "02.activeflag.sql",
+                        "03.systems.sql",
+                        "04.classification-data-concept.sql",
+                        "05.classification.sql",
+                        "06.address.sql",
+                        "07.arrangement.sql",
+                        "08.product.sql",
+                        "09.resourceitem.sql",
+                        "10.party.sql",
+                        "11.rules.sql",
+                        "12.securitytoken.sql",
+                        "13.event.sql",
+                        "14.geography.sql",
+                        "15.time.sql",
+                        "16.transactions.sql",
+                        "20.1.setup.sql"
+                };
+
+            // Copy and execute FSDM scripts in order
+            Container.ExecResult fsdmResult = null;
+                for (String script : fsdmScripts) {
+                    postgresContainer.copyFileToContainer(
+                            MountableFile.forClasspathResource("db/"+script),
+                            "/tmp/" + script
+                    );
+
+                    fsdmResult = postgresContainer.execInContainer(
+                            "psql",
+                            "-v", "ON_ERROR_STOP=1",
+                            "-U", postgresContainer.getUsername(),
+                            "-d", postgresContainer.getDatabaseName(),
+                            "-f", "/tmp/" + script
+                    );
+
+                    if (fsdmResult.getExitCode() != 0) {
+                        System.err.println("[FSDM STDERR] " + fsdmResult.getStderr());
+                        System.err.println("[FSDM STDOUT] " + fsdmResult.getStdout());
+                        throw new RuntimeException("psql fsdm script execution failed: " + script);
+                    }
+                    System.out.println("✅ DB Script Executed Successfully: " + script);
+                }
+          //  String structureResource = "postgres_structure.sql";
 
             // Copy FSDM script from classpath into container and execute with ON_ERROR_STOP
-            postgresContainer.copyFileToContainer(
+          /*  postgresContainer.copyFileToContainer(
                     MountableFile.forClasspathResource(fsdmResource),
                     "/tmp/init_fsdm.sql"
-            );
+            );*/
 
-            Container.ExecResult fsdmResult = postgresContainer.execInContainer(
+      /*      Container.ExecResult fsdmResult = postgresContainer.execInContainer(
                     "psql",
                     "-v", "ON_ERROR_STOP=1",
                     "-U", postgresContainer.getUsername(),
                     "-d", postgresContainer.getDatabaseName(),
                     "-f", "/tmp/init_fsdm.sql"
-            );
+            );*/
 
-            if (fsdmResult.getExitCode() != 0) {
+          /*  if (fsdmResult.getExitCode() != 0) {
                 System.err.println("[FSDM STDERR] " + fsdmResult.getStderr());
                 System.err.println("[FSDM STDOUT] " + fsdmResult.getStdout());
                 throw new RuntimeException("psql fsdm script execution failed: " + fsdmResult.getStderr());
             }
-
-            System.out.println("✅ DB FSDM Script Executed Successfully:\n" + fsdmResult.getStdout());
+*/
+            System.out.println("✅ DB FSDM Script Executed Successfully");
 
             // Copy Structure script from classpath into container and execute with ON_ERROR_STOP
-            postgresContainer.copyFileToContainer(
+          /*  postgresContainer.copyFileToContainer(
                     MountableFile.forClasspathResource(structureResource),
                     "/tmp/init_structure.sql"
             );
@@ -72,9 +122,9 @@ public class PostgreSQLTestDBModule
                 System.err.println("[STRUCTURE STDERR] " + structureResult.getStderr());
                 System.err.println("[STRUCTURE STDOUT] " + structureResult.getStdout());
                 throw new RuntimeException("psql structure script execution failed: " + structureResult.getStderr());
-            }
+            }*/
 
-            System.out.println("✅ DB Structure Script Executed Successfully:\n" + structureResult.getStdout());
+            //System.out.println("✅ DB Structure Script Executed Successfully:\n" + structureResult.getStdout());
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to execute SQL initialization scripts", e);
