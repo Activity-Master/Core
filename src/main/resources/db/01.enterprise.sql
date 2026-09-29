@@ -71,62 +71,40 @@ CREATE TABLE dbo.enterprisexclassificationsecuritytoken
     enterprisexclassificationid              UUID                        NOT NULL
 );
 
-create index fk3604iuvyi4psepv3rdn69jf76_systemid on dbo.enterprisesecuritytoken (systemid);
-create index fkcja1yq5j2ywm4mearg7gfbeg8_activeflagid on dbo.enterprisesecuritytoken (activeflagid);
-create index fki2166mtej2yhf4qeegbrtwsom_securitytokenid on dbo.enterprisesecuritytoken (securitytokenid);
-create index fki27vhcoq25358slocd9mn9481_originalsourcesystemid on dbo.enterprisesecuritytoken (originalsourcesystemid);
-create index fkkfbukc1416acs2qhjduyaslun_enterpriseid on dbo.enterprisesecuritytoken (enterpriseid);
-create index fk7dcbw0medved7abfmh1y0btj_enterpriseid on dbo.enterprisexclassification (enterpriseid);
-create index fk9wfebpqldiybaphp969e7vu9q_activeflagid on dbo.enterprisexclassification (activeflagid);
-create index fkd8u5qov86csi5bmvn97648jyq_originalsourcesystemid on dbo.enterprisexclassification (originalsourcesystemid);
-create index fkmt4djrkvv0w1ef778yy01fone_systemid on dbo.enterprisexclassification (systemid);
-create index fkpubcpyc3hm0x9l70u19lj96r0_classificationid on dbo.enterprisexclassification (classificationid);
-create index fk5l36jvcvedgw6gaa8301xjr62_securitytokenid on dbo.enterprisexclassificationsecuritytoken (securitytokenid);
-create index fk75tx4r7sp36qtylr8r888gbkr_activeflagid on dbo.enterprisexclassificationsecuritytoken (activeflagid);
-create index fk7jfxn7qp93vt98lob9q7g5exc_enterpriseid on dbo.enterprisexclassificationsecuritytoken (enterpriseid);
-create index fklojg3xmk98ghle10liw96742m_systemid on dbo.enterprisexclassificationsecuritytoken (systemid);
-create index fkp7wseksjtv3n3vok7qm68dmdb_originalsourcesystemid on dbo.enterprisexclassificationsecuritytoken (originalsourcesystemid);
-create index fkr6xvbr7r4rmk73etcyyx887ao_enterprisexclassificationid on dbo.enterprisexclassificationsecuritytoken (enterprisexclassificationid);
+-- Indexes for dbo.enterprise
+CREATE INDEX idx_ent_eff_from ON dbo.enterprise (effectivefromdate);
+CREATE INDEX idx_ent_eff_to ON dbo.enterprise (effectivetodate);
+CREATE INDEX idx_ent_wh_created ON dbo.enterprise (warehousecreatedtimestamp);
+CREATE INDEX idx_ent_wh_updated ON dbo.enterprise (warehouselastupdatedtimestamp);
 
-CREATE INDEX idx_enterprise_effectivefromdate ON dbo.enterprise (effectivefromdate);
-CREATE INDEX idx_enterprise_effectivetodate ON dbo.enterprise (effectivetodate);
-CREATE INDEX idx_enterprise_warehousecreatedtimestamp ON dbo.enterprise (warehousecreatedtimestamp);
-CREATE INDEX idx_enterprise_warehouselastupdatedtimestamp ON dbo.enterprise (warehouselastupdatedtimestamp);
+-- Indexes for dbo.enterprisesecuritytoken
+CREATE INDEX idx_est_eff_from ON dbo.enterprisesecuritytoken (effectivefromdate);
+CREATE INDEX idx_est_eff_to ON dbo.enterprisesecuritytoken (effectivetodate);
+CREATE INDEX idx_est_wh_created ON dbo.enterprisesecuritytoken (warehousecreatedtimestamp);
+CREATE INDEX idx_est_wh_updated ON dbo.enterprisesecuritytoken (warehouselastupdatedtimestamp);
+CREATE INDEX idx_est_sys_wh ON dbo.enterprisesecuritytoken (systemid, warehousefromdate);
+CREATE INDEX idx_est_af_wh ON dbo.enterprisesecuritytoken (activeflagid, warehousefromdate);
+CREATE INDEX idx_est_st_wh ON dbo.enterprisesecuritytoken (securitytokenid, warehousefromdate);
+CREATE INDEX idx_est_ei_wh ON dbo.enterprisesecuritytoken (enterpriseid, warehousefromdate);
 
-CREATE INDEX idx_enterprisesecuritytoken_effectivefromdate ON dbo.enterprisesecuritytoken (effectivefromdate);
-CREATE INDEX idx_enterprisesecuritytoken_effectivetodate ON dbo.enterprisesecuritytoken (effectivetodate);
-CREATE INDEX idx_enterprisesecuritytoken_warehousecreatedtimestamp ON dbo.enterprisesecuritytoken (warehousecreatedtimestamp);
-CREATE INDEX idx_enterprisesecuritytoken_warehouselastupdatedtimestamp ON dbo.enterprisesecuritytoken (warehouselastupdatedtimestamp);
-CREATE INDEX idx_enterprisexclassification_effectivefromdate ON dbo.enterprisexclassification (effectivefromdate);
-CREATE INDEX idx_enterprisexclassification_effectivetodate ON dbo.enterprisexclassification (effectivetodate);
-CREATE INDEX idx_enterprisexclassification_warehousecreatedtimestamp ON dbo.enterprisexclassification (warehousecreatedtimestamp);
-CREATE INDEX idx_enterprisexclassification_warehouselastupdatedtimestamp ON dbo.enterprisexclassification (warehouselastupdatedtimestamp);
+-- Indexes for dbo.enterprisexclassification
+CREATE INDEX idx_excl_eff_from ON dbo.enterprisexclassification (effectivefromdate);
+CREATE INDEX idx_excl_eff_to ON dbo.enterprisexclassification (effectivetodate);
+CREATE INDEX idx_excl_wh_created ON dbo.enterprisexclassification (warehousecreatedtimestamp);
+CREATE INDEX idx_excl_wh_updated ON dbo.enterprisexclassification (warehouselastupdatedtimestamp);
+CREATE INDEX idx_excl_val ON dbo.enterprisexclassification (value);
+CREATE INDEX idx_excl_ei_wh ON dbo.enterprisexclassification (enterpriseid, warehousefromdate);
+CREATE INDEX idx_excl_af_wh ON dbo.enterprisexclassification (activeflagid, warehousefromdate);
+CREATE INDEX idx_excl_sys_wh ON dbo.enterprisexclassification (systemid, warehousefromdate);
+CREATE INDEX idx_excl_cl_wh ON dbo.enterprisexclassification (classificationid, warehousefromdate);
 
-CREATE INDEX idx_enterprisexclassificationsecuritytoken_effectivefromdate ON dbo.enterprisexclassificationsecuritytoken (effectivefromdate);
-CREATE INDEX idx_enterprisexclassificationsecuritytoken_effectivetodate ON dbo.enterprisexclassificationsecuritytoken (effectivetodate);
-CREATE INDEX idx_enterprisexclassificationsecuritytoken_warehousecreatedtim ON dbo.enterprisexclassificationsecuritytoken (warehousecreatedtimestamp);
-CREATE INDEX idx_enterprisexclassificationsecuritytoken_warehouselastupdate ON dbo.enterprisexclassificationsecuritytoken (warehouselastupdatedtimestamp);
-
-CREATE INDEX idx_enterprisexclassification_value ON dbo.enterprisexclassification (value);
-
-CREATE INDEX idx_enterprise_enterprisedesc ON dbo.enterprise (enterprisedesc);
-CREATE INDEX idx_enterprise_enterprisename ON dbo.enterprise (enterprisename);
-
-
-create index fk3604iuvyi4psepv3rdn69jf76_systemidwhcd on dbo.enterprisesecuritytoken (systemid, warehousefromdate);
-create index fkcja1yq5j2ywm4mearg7gfbeg8_activeflagidwhcd on dbo.enterprisesecuritytoken (activeflagid, warehousefromdate);
-create index fki2166mtej2yhf4qeegbrtwsom_securitytokenidwhcd on dbo.enterprisesecuritytoken (securitytokenid, warehousefromdate);
-create index fki27vhcoq25358slocd9mn9481_originalsourcesystemidwhcd on dbo.enterprisesecuritytoken (originalsourcesystemid, warehousefromdate);
-create index fkkfbukc1416acs2qhjduyaslun_enterpriseidwhcd on dbo.enterprisesecuritytoken (enterpriseid, warehousefromdate);
-create index fk7dcbw0medved7abfmh1y0btj_enterpriseidwhcd on dbo.enterprisexclassification (enterpriseid, warehousefromdate);
-create index fk9wfebpqldiybaphp969e7vu9q_activeflagidwhcd on dbo.enterprisexclassification (activeflagid, warehousefromdate);
-create index fkd8u5qov86csi5bmvn97648jyq_originalsourcesystemidwhcd on dbo.enterprisexclassification (originalsourcesystemid, warehousefromdate);
-create index fkmt4djrkvv0w1ef778yy01fone_systemidwhcd on dbo.enterprisexclassification (systemid, warehousefromdate);
-create index fkpubcpyc3hm0x9l70u19lj96r0_classificationidwhcd on dbo.enterprisexclassification (classificationid, warehousefromdate);
-create index fk5l36jvcvedgw6gaa8301xjr62_securitytokenidwhcd on dbo.enterprisexclassificationsecuritytoken (securitytokenid, warehousefromdate);
-create index fk75tx4r7sp36qtylr8r888gbkr_activeflagidwhcd on dbo.enterprisexclassificationsecuritytoken (activeflagid, warehousefromdate);
-create index fk7jfxn7qp93vt98lob9q7g5exc_enterpriseidwhcd on dbo.enterprisexclassificationsecuritytoken (enterpriseid, warehousefromdate);
-create index fklojg3xmk98ghle10liw96742m_systemidwhcd on dbo.enterprisexclassificationsecuritytoken (systemid, warehousefromdate);
-create index fkp7wseksjtv3n3vok7qm68dmdb_originalsourcesystemidwhcd on dbo.enterprisexclassificationsecuritytoken (originalsourcesystemid, warehousefromdate);
-create index fkr6xvbr7r4rmk73etcyyx887ao_enterprisexclassificationidwhcd on dbo.enterprisexclassificationsecuritytoken (enterprisexclassificationid, warehousefromdate);
-
+-- Indexes for dbo.enterprisexclassificationsecuritytoken
+CREATE INDEX idx_exclst_eff_from ON dbo.enterprisexclassificationsecuritytoken (effectivefromdate);
+CREATE INDEX idx_exclst_eff_to ON dbo.enterprisexclassificationsecuritytoken (effectivetodate);
+CREATE INDEX idx_exclst_wh_created ON dbo.enterprisexclassificationsecuritytoken (warehousecreatedtimestamp);
+CREATE INDEX idx_exclst_wh_updated ON dbo.enterprisexclassificationsecuritytoken (warehouselastupdatedtimestamp);
+CREATE INDEX idx_exclst_st_wh ON dbo.enterprisexclassificationsecuritytoken (securitytokenid, warehousefromdate);
+CREATE INDEX idx_exclst_af_wh ON dbo.enterprisexclassificationsecuritytoken (activeflagid, warehousefromdate);
+CREATE INDEX idx_exclst_ei_wh ON dbo.enterprisexclassificationsecuritytoken (enterpriseid, warehousefromdate);
+CREATE INDEX idx_exclst_sys_wh ON dbo.enterprisexclassificationsecuritytoken (systemid, warehousefromdate);
+CREATE INDEX idx_exclst_excl_id_wh ON dbo.enterprisexclassificationsecuritytoken (enterprisexclassificationid, warehousefromdate);

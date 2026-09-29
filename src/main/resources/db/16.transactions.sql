@@ -5,7 +5,7 @@ CREATE SCHEMA IF NOT EXISTS transactions;
 CREATE TABLE IF NOT EXISTS transactions.transaction_type
 (
     transaction_type_id uuid PRIMARY KEY,
-    enterprise_id       uuid     NOT NULL REFERENCES dbo.enterprise (enterpriseid),
+    enterprise_id       uuid     NOT NULL,
     code                text     NOT NULL CHECK (code ~ '^[a-z][a-z0-9_.-]{0,79}$'),
     direction           smallint NOT NULL CHECK (direction IN (-1, 1)),
     active              boolean  NOT NULL DEFAULT true,
@@ -18,11 +18,11 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_type
 CREATE TABLE IF NOT EXISTS transactions.entry
 (
     entry_id            uuid PRIMARY KEY,
-    event_id            uuid           NOT NULL REFERENCES event.event (eventid),
-    enterprise_id       uuid           NOT NULL REFERENCES dbo.enterprise (enterpriseid),
+    event_id            uuid           NOT NULL,
+    enterprise_id       uuid           NOT NULL,
     operation_key       uuid           NOT NULL,
     line_no             integer        NOT NULL CHECK (line_no > 0),
-    arrangement_id      uuid           NOT NULL REFERENCES arrangement.arrangement (arrangementid),
+    arrangement_id      uuid           NOT NULL ,
     transaction_type_id uuid           NOT NULL,
     direction           smallint       NOT NULL,
     amount              numeric(38, 8) NOT NULL CHECK (amount > 0),
@@ -68,10 +68,10 @@ CREATE INDEX IF NOT EXISTS transaction_entry_history
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_transaction_type
 (
     transaction_x_transaction_type_id uuid PRIMARY KEY,
-    entry_id                          uuid        NOT NULL REFERENCES transactions.entry (entry_id),
-    transaction_type_id               uuid        NOT NULL REFERENCES transactions.transaction_type (transaction_type_id),
-    classificationid                  uuid        NOT NULL REFERENCES classification.classification (classificationid),
-    enterprise_id                     uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
+    entry_id                          uuid        NOT NULL,
+    transaction_type_id               uuid        NOT NULL,
+    classificationid                  uuid        NOT NULL,
+    enterprise_id                     uuid        NOT NULL,
     value                             text        NOT NULL DEFAULT '1',
     effectivefromdate                 timestamptz NOT NULL DEFAULT now(),
     effectivetodate                   timestamptz NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
@@ -80,17 +80,17 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_transaction_type
     warehousefromdate                 date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid      uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid            uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                      uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                          uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                      uuid        NOT NULL,
+    systemid                          uuid        NOT NULL,
     UNIQUE (entry_id, transaction_type_id)
 );
 
 CREATE TABLE IF NOT EXISTS transactions.transaction_type_security_token
 (
     transaction_type_security_token_id uuid PRIMARY KEY,
-    transaction_type_id                uuid        NOT NULL REFERENCES transactions.transaction_type (transaction_type_id),
-    enterprise_id                      uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
-    securitytokenid                    uuid        NOT NULL REFERENCES security.securitytoken (securitytokenid),
+    transaction_type_id                uuid        NOT NULL,
+    enterprise_id                      uuid        NOT NULL,
+    securitytokenid                    uuid        NOT NULL,
     createallowed                      integer     NOT NULL CHECK (createallowed IN (0, 1)),
     updateallowed                      integer     NOT NULL CHECK (updateallowed IN (0, 1)),
     deleteallowed                      integer     NOT NULL CHECK (deleteallowed IN (0, 1)),
@@ -102,17 +102,17 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_type_security_token
     warehousefromdate                  date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid       uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid             uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                       uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                           uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                       uuid        NOT NULL,
+    systemid                           uuid        NOT NULL,
     UNIQUE (transaction_type_id, securitytokenid)
 );
 
 CREATE TABLE IF NOT EXISTS transactions.entry_security_token
 (
     entry_security_token_id       uuid PRIMARY KEY,
-    entry_id                      uuid        NOT NULL REFERENCES transactions.entry (entry_id),
-    enterprise_id                 uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
-    securitytokenid               uuid        NOT NULL REFERENCES security.securitytoken (securitytokenid),
+    entry_id                      uuid        NOT NULL,
+    enterprise_id                 uuid        NOT NULL,
+    securitytokenid               uuid        NOT NULL,
     createallowed                 integer     NOT NULL CHECK (createallowed IN (0, 1)),
     updateallowed                 integer     NOT NULL CHECK (updateallowed IN (0, 1)),
     deleteallowed                 integer     NOT NULL CHECK (deleteallowed IN (0, 1)),
@@ -124,8 +124,8 @@ CREATE TABLE IF NOT EXISTS transactions.entry_security_token
     warehousefromdate             date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid  uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid        uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                  uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                      uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                  uuid        NOT NULL,
+    systemid                      uuid        NOT NULL,
     UNIQUE (entry_id, securitytokenid)
 );
 
@@ -133,8 +133,8 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_transaction_type_security_
 (
     transaction_x_transaction_type_security_token_id uuid PRIMARY KEY,
     transaction_x_transaction_type_id                uuid        NOT NULL REFERENCES transactions.transaction_x_transaction_type (transaction_x_transaction_type_id),
-    enterprise_id                                    uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
-    securitytokenid                                  uuid        NOT NULL REFERENCES security.securitytoken (securitytokenid),
+    enterprise_id                                    uuid        NOT NULL,
+    securitytokenid                                  uuid        NOT NULL,
     createallowed                                    integer     NOT NULL CHECK (createallowed IN (0, 1)),
     updateallowed                                    integer     NOT NULL CHECK (updateallowed IN (0, 1)),
     deleteallowed                                    integer     NOT NULL CHECK (deleteallowed IN (0, 1)),
@@ -146,8 +146,8 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_transaction_type_security_
     warehousefromdate                                date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid                     uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid                           uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                                     uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                                         uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                                     uuid        NOT NULL,
+    systemid                                         uuid        NOT NULL,
     UNIQUE (transaction_x_transaction_type_id, securitytokenid)
 );
 
@@ -290,10 +290,10 @@ REVOKE ALL ON FUNCTION transactions.validate_posting(),transactions.check_balanc
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_involved_party
 (
     transaction_x_involved_party_id uuid PRIMARY KEY,
-    entry_id                        uuid        NOT NULL REFERENCES transactions.entry (entry_id),
-    involved_party_id               uuid        NOT NULL REFERENCES party.involvedparty (involvedpartyid),
-    classificationid                uuid        NOT NULL REFERENCES classification.classification (classificationid),
-    enterprise_id                   uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
+    entry_id                        uuid        NOT NULL,
+    involved_party_id               uuid        NOT NULL,
+    classificationid                uuid        NOT NULL,
+    enterprise_id                   uuid        NOT NULL,
     value                           text        NOT NULL DEFAULT '1',
     effectivefromdate               timestamptz NOT NULL DEFAULT now(),
     effectivetodate                 timestamptz NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
@@ -302,17 +302,17 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_involved_party
     warehousefromdate               date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid    uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid          uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                    uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                        uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                    uuid        NOT NULL,
+    systemid                        uuid        NOT NULL,
     UNIQUE (entry_id, involved_party_id, classificationid, effectivefromdate)
 );
 CREATE INDEX IF NOT EXISTS transaction_x_involved_party_entry ON transactions.transaction_x_involved_party (entry_id);
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_involved_party_security_token
 (
     transaction_x_involved_party_security_token_id uuid PRIMARY KEY,
-    transaction_x_involved_party_id                uuid        NOT NULL REFERENCES transactions.transaction_x_involved_party (transaction_x_involved_party_id),
-    enterprise_id                                  uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
-    securitytokenid                                uuid        NOT NULL REFERENCES security.securitytoken (securitytokenid),
+    transaction_x_involved_party_id                uuid        NOT NULL,
+    enterprise_id                                  uuid        NOT NULL,
+    securitytokenid                                uuid        NOT NULL,
     createallowed                                  integer     NOT NULL CHECK (createallowed IN (0, 1)),
     updateallowed                                  integer     NOT NULL CHECK (updateallowed IN (0, 1)),
     deleteallowed                                  integer     NOT NULL CHECK (deleteallowed IN (0, 1)),
@@ -324,8 +324,8 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_involved_party_security_to
     warehousefromdate                              date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid                   uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid                         uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                                   uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                                       uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                                   uuid        NOT NULL,
+    systemid                                       uuid        NOT NULL,
     UNIQUE (transaction_x_involved_party_id, securitytokenid)
 );
 
@@ -334,10 +334,10 @@ REVOKE ALL ON transactions.transaction_x_involved_party, transactions.transactio
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_resource_item
 (
     transaction_x_resource_item_id uuid PRIMARY KEY,
-    entry_id                       uuid        NOT NULL REFERENCES transactions.entry (entry_id),
-    resource_item_id               uuid        NOT NULL REFERENCES resource.resourceitem (resourceitemid),
-    classificationid               uuid        NOT NULL REFERENCES classification.classification (classificationid),
-    enterprise_id                  uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
+    entry_id                       uuid        NOT NULL,
+    resource_item_id               uuid        NOT NULL,
+    classificationid               uuid        NOT NULL,
+    enterprise_id                  uuid        NOT NULL,
     value                          text        NOT NULL DEFAULT '1',
     effectivefromdate              timestamptz NOT NULL DEFAULT now(),
     effectivetodate                timestamptz NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
@@ -346,17 +346,17 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_resource_item
     warehousefromdate              date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid   uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid         uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                   uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                       uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                   uuid        NOT NULL,
+    systemid                       uuid        NOT NULL,
     UNIQUE (entry_id, resource_item_id, classificationid, effectivefromdate)
 );
 CREATE INDEX IF NOT EXISTS transaction_x_resource_item_entry ON transactions.transaction_x_resource_item (entry_id);
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_resource_item_security_token
 (
     transaction_x_resource_item_security_token_id uuid PRIMARY KEY,
-    transaction_x_resource_item_id                uuid        NOT NULL REFERENCES transactions.transaction_x_resource_item (transaction_x_resource_item_id),
-    enterprise_id                                 uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
-    securitytokenid                               uuid        NOT NULL REFERENCES security.securitytoken (securitytokenid),
+    transaction_x_resource_item_id                uuid        NOT NULL,
+    enterprise_id                                 uuid        NOT NULL,
+    securitytokenid                               uuid        NOT NULL,
     createallowed                                 integer     NOT NULL CHECK (createallowed IN (0, 1)),
     updateallowed                                 integer     NOT NULL CHECK (updateallowed IN (0, 1)),
     deleteallowed                                 integer     NOT NULL CHECK (deleteallowed IN (0, 1)),
@@ -368,8 +368,8 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_resource_item_security_tok
     warehousefromdate                             date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid                  uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid                        uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                                  uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                                      uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                                  uuid        NOT NULL,
+    systemid                                      uuid        NOT NULL,
     UNIQUE (transaction_x_resource_item_id, securitytokenid)
 );
 
@@ -378,10 +378,10 @@ REVOKE ALL ON transactions.transaction_x_resource_item, transactions.transaction
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_arrangement
 (
     transaction_x_arrangement_id  uuid PRIMARY KEY,
-    entry_id                      uuid        NOT NULL REFERENCES transactions.entry (entry_id),
-    arrangement_id                uuid        NOT NULL REFERENCES arrangement.arrangement (arrangementid),
-    classificationid              uuid        NOT NULL REFERENCES classification.classification (classificationid),
-    enterprise_id                 uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
+    entry_id                      uuid        NOT NULL,
+    arrangement_id                uuid        NOT NULL,
+    classificationid              uuid        NOT NULL,
+    enterprise_id                 uuid        NOT NULL,
     value                         text        NOT NULL DEFAULT '1',
     effectivefromdate             timestamptz NOT NULL DEFAULT now(),
     effectivetodate               timestamptz NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
@@ -390,17 +390,17 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_arrangement
     warehousefromdate             date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid  uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid        uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                  uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                      uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                  uuid        NOT NULL,
+    systemid                      uuid        NOT NULL,
     UNIQUE (entry_id, arrangement_id, classificationid, effectivefromdate)
 );
 CREATE INDEX IF NOT EXISTS transaction_x_arrangement_entry ON transactions.transaction_x_arrangement (entry_id);
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_arrangement_security_token
 (
     transaction_x_arrangement_security_token_id uuid PRIMARY KEY,
-    transaction_x_arrangement_id                uuid        NOT NULL REFERENCES transactions.transaction_x_arrangement (transaction_x_arrangement_id),
-    enterprise_id                               uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
-    securitytokenid                             uuid        NOT NULL REFERENCES security.securitytoken (securitytokenid),
+    transaction_x_arrangement_id                uuid        NOT NULL,
+    enterprise_id                               uuid        NOT NULL,
+    securitytokenid                             uuid        NOT NULL,
     createallowed                               integer     NOT NULL CHECK (createallowed IN (0, 1)),
     updateallowed                               integer     NOT NULL CHECK (updateallowed IN (0, 1)),
     deleteallowed                               integer     NOT NULL CHECK (deleteallowed IN (0, 1)),
@@ -412,8 +412,8 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_arrangement_security_token
     warehousefromdate                           date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid                uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid                      uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                                uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                                    uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                                uuid        NOT NULL,
+    systemid                                    uuid        NOT NULL,
     UNIQUE (transaction_x_arrangement_id, securitytokenid)
 );
 
@@ -422,10 +422,10 @@ REVOKE ALL ON transactions.transaction_x_arrangement, transactions.transaction_x
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_event
 (
     transaction_x_event_id        uuid PRIMARY KEY,
-    entry_id                      uuid        NOT NULL REFERENCES transactions.entry (entry_id),
-    event_id                      uuid        NOT NULL REFERENCES event.event (eventid),
-    classificationid              uuid        NOT NULL REFERENCES classification.classification (classificationid),
-    enterprise_id                 uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
+    entry_id                      uuid        NOT NULL,
+    event_id                      uuid        NOT NULL,
+    classificationid              uuid        NOT NULL,
+    enterprise_id                 uuid        NOT NULL,
     value                         text        NOT NULL DEFAULT '1',
     effectivefromdate             timestamptz NOT NULL DEFAULT now(),
     effectivetodate               timestamptz NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
@@ -434,17 +434,17 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_event
     warehousefromdate             date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid  uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid        uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                  uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                      uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                  uuid        NOT NULL,
+    systemid                      uuid        NOT NULL,
     UNIQUE (entry_id, event_id, classificationid, effectivefromdate)
 );
 CREATE INDEX IF NOT EXISTS transaction_x_event_entry ON transactions.transaction_x_event (entry_id);
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_event_security_token
 (
     transaction_x_event_security_token_id uuid PRIMARY KEY,
-    transaction_x_event_id                uuid        NOT NULL REFERENCES transactions.transaction_x_event (transaction_x_event_id),
-    enterprise_id                         uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
-    securitytokenid                       uuid        NOT NULL REFERENCES security.securitytoken (securitytokenid),
+    transaction_x_event_id                uuid        NOT NULL,
+    enterprise_id                         uuid        NOT NULL,
+    securitytokenid                       uuid        NOT NULL,
     createallowed                         integer     NOT NULL CHECK (createallowed IN (0, 1)),
     updateallowed                         integer     NOT NULL CHECK (updateallowed IN (0, 1)),
     deleteallowed                         integer     NOT NULL CHECK (deleteallowed IN (0, 1)),
@@ -456,8 +456,8 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_event_security_token
     warehousefromdate                     date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid          uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid                uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                          uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                              uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                          uuid        NOT NULL,
+    systemid                              uuid        NOT NULL,
     UNIQUE (transaction_x_event_id, securitytokenid)
 );
 
@@ -466,10 +466,10 @@ REVOKE ALL ON transactions.transaction_x_event, transactions.transaction_x_event
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_product
 (
     transaction_x_product_id      uuid PRIMARY KEY,
-    entry_id                      uuid        NOT NULL REFERENCES transactions.entry (entry_id),
-    product_id                    uuid        NOT NULL REFERENCES product.product (productid),
-    classificationid              uuid        NOT NULL REFERENCES classification.classification (classificationid),
-    enterprise_id                 uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
+    entry_id                      uuid        NOT NULL,
+    product_id                    uuid        NOT NULL,
+    classificationid              uuid        NOT NULL,
+    enterprise_id                 uuid        NOT NULL,
     value                         text        NOT NULL DEFAULT '1',
     effectivefromdate             timestamptz NOT NULL DEFAULT now(),
     effectivetodate               timestamptz NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
@@ -478,17 +478,17 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_product
     warehousefromdate             date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid  uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid        uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                  uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                      uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                  uuid        NOT NULL,
+    systemid                      uuid        NOT NULL,
     UNIQUE (entry_id, product_id, classificationid, effectivefromdate)
 );
 CREATE INDEX IF NOT EXISTS transaction_x_product_entry ON transactions.transaction_x_product (entry_id);
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_product_security_token
 (
     transaction_x_product_security_token_id uuid PRIMARY KEY,
-    transaction_x_product_id                uuid        NOT NULL REFERENCES transactions.transaction_x_product (transaction_x_product_id),
-    enterprise_id                           uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
-    securitytokenid                         uuid        NOT NULL REFERENCES security.securitytoken (securitytokenid),
+    transaction_x_product_id                uuid        NOT NULL,
+    enterprise_id                           uuid        NOT NULL,
+    securitytokenid                         uuid        NOT NULL,
     createallowed                           integer     NOT NULL CHECK (createallowed IN (0, 1)),
     updateallowed                           integer     NOT NULL CHECK (updateallowed IN (0, 1)),
     deleteallowed                           integer     NOT NULL CHECK (deleteallowed IN (0, 1)),
@@ -500,8 +500,8 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_product_security_token
     warehousefromdate                       date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid            uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid                  uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                            uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                                uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                            uuid        NOT NULL,
+    systemid                                uuid        NOT NULL,
     UNIQUE (transaction_x_product_id, securitytokenid)
 );
 
@@ -510,10 +510,10 @@ REVOKE ALL ON transactions.transaction_x_product, transactions.transaction_x_pro
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_address
 (
     transaction_x_address_id      uuid PRIMARY KEY,
-    entry_id                      uuid        NOT NULL REFERENCES transactions.entry (entry_id),
-    address_id                    uuid        NOT NULL REFERENCES address.address (addressid),
-    classificationid              uuid        NOT NULL REFERENCES classification.classification (classificationid),
-    enterprise_id                 uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
+    entry_id                      uuid        NOT NULL,
+    address_id                    uuid        NOT NULL,
+    classificationid              uuid        NOT NULL,
+    enterprise_id                 uuid        NOT NULL,
     value                         text        NOT NULL DEFAULT '1',
     effectivefromdate             timestamptz NOT NULL DEFAULT now(),
     effectivetodate               timestamptz NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
@@ -522,17 +522,17 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_address
     warehousefromdate             date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid  uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid        uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                  uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                      uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                  uuid        NOT NULL,
+    systemid                      uuid        NOT NULL,
     UNIQUE (entry_id, address_id, classificationid, effectivefromdate)
 );
 CREATE INDEX IF NOT EXISTS transaction_x_address_entry ON transactions.transaction_x_address (entry_id);
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_address_security_token
 (
     transaction_x_address_security_token_id uuid PRIMARY KEY,
-    transaction_x_address_id                uuid        NOT NULL REFERENCES transactions.transaction_x_address (transaction_x_address_id),
-    enterprise_id                           uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
-    securitytokenid                         uuid        NOT NULL REFERENCES security.securitytoken (securitytokenid),
+    transaction_x_address_id                uuid        NOT NULL,
+    enterprise_id                           uuid        NOT NULL,
+    securitytokenid                         uuid        NOT NULL,
     createallowed                           integer     NOT NULL CHECK (createallowed IN (0, 1)),
     updateallowed                           integer     NOT NULL CHECK (updateallowed IN (0, 1)),
     deleteallowed                           integer     NOT NULL CHECK (deleteallowed IN (0, 1)),
@@ -544,8 +544,8 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_address_security_token
     warehousefromdate                       date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid            uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid                  uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                            uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                                uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                            uuid        NOT NULL,
+    systemid                                uuid        NOT NULL,
     UNIQUE (transaction_x_address_id, securitytokenid)
 );
 
@@ -554,10 +554,10 @@ REVOKE ALL ON transactions.transaction_x_address, transactions.transaction_x_add
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_geography
 (
     transaction_x_geography_id    uuid PRIMARY KEY,
-    entry_id                      uuid        NOT NULL REFERENCES transactions.entry (entry_id),
-    geography_id                  uuid        NOT NULL REFERENCES geography.geography (geographyid),
-    classificationid              uuid        NOT NULL REFERENCES classification.classification (classificationid),
-    enterprise_id                 uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
+    entry_id                      uuid        NOT NULL,
+    geography_id                  uuid        NOT NULL,
+    classificationid              uuid        NOT NULL,
+    enterprise_id                 uuid        NOT NULL,
     value                         text        NOT NULL DEFAULT '1',
     effectivefromdate             timestamptz NOT NULL DEFAULT now(),
     effectivetodate               timestamptz NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
@@ -566,17 +566,17 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_geography
     warehousefromdate             date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid  uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid        uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                  uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                      uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                  uuid        NOT NULL,
+    systemid                      uuid        NOT NULL,
     UNIQUE (entry_id, geography_id, classificationid, effectivefromdate)
 );
 CREATE INDEX IF NOT EXISTS transaction_x_geography_entry ON transactions.transaction_x_geography (entry_id);
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_geography_security_token
 (
     transaction_x_geography_security_token_id uuid PRIMARY KEY,
-    transaction_x_geography_id                uuid        NOT NULL REFERENCES transactions.transaction_x_geography (transaction_x_geography_id),
-    enterprise_id                             uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
-    securitytokenid                           uuid        NOT NULL REFERENCES security.securitytoken (securitytokenid),
+    transaction_x_geography_id                uuid        NOT NULL,
+    enterprise_id                             uuid        NOT NULL,
+    securitytokenid                           uuid        NOT NULL,
     createallowed                             integer     NOT NULL CHECK (createallowed IN (0, 1)),
     updateallowed                             integer     NOT NULL CHECK (updateallowed IN (0, 1)),
     deleteallowed                             integer     NOT NULL CHECK (deleteallowed IN (0, 1)),
@@ -588,8 +588,8 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_geography_security_token
     warehousefromdate                         date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid              uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid                    uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                              uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                                  uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                              uuid        NOT NULL,
+    systemid                                  uuid        NOT NULL,
     UNIQUE (transaction_x_geography_id, securitytokenid)
 );
 
@@ -598,10 +598,10 @@ REVOKE ALL ON transactions.transaction_x_geography, transactions.transaction_x_g
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_rules
 (
     transaction_x_rules_id        uuid PRIMARY KEY,
-    entry_id                      uuid        NOT NULL REFERENCES transactions.entry (entry_id),
-    rules_id                      uuid        NOT NULL REFERENCES rules.rules (rulesid),
-    classificationid              uuid        NOT NULL REFERENCES classification.classification (classificationid),
-    enterprise_id                 uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
+    entry_id                      uuid        NOT NULL,
+    rules_id                      uuid        NOT NULL,
+    classificationid              uuid        NOT NULL,
+    enterprise_id                 uuid        NOT NULL,
     value                         text        NOT NULL DEFAULT '1',
     effectivefromdate             timestamptz NOT NULL DEFAULT now(),
     effectivetodate               timestamptz NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
@@ -610,17 +610,17 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_rules
     warehousefromdate             date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid  uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid        uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                  uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                      uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                  uuid        NOT NULL,
+    systemid                      uuid        NOT NULL,
     UNIQUE (entry_id, rules_id, classificationid, effectivefromdate)
 );
 CREATE INDEX IF NOT EXISTS transaction_x_rules_entry ON transactions.transaction_x_rules (entry_id);
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_rules_security_token
 (
     transaction_x_rules_security_token_id uuid PRIMARY KEY,
-    transaction_x_rules_id                uuid        NOT NULL REFERENCES transactions.transaction_x_rules (transaction_x_rules_id),
-    enterprise_id                         uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
-    securitytokenid                       uuid        NOT NULL REFERENCES security.securitytoken (securitytokenid),
+    transaction_x_rules_id                uuid        NOT NULL,
+    enterprise_id                         uuid        NOT NULL,
+    securitytokenid                       uuid        NOT NULL,
     createallowed                         integer     NOT NULL CHECK (createallowed IN (0, 1)),
     updateallowed                         integer     NOT NULL CHECK (updateallowed IN (0, 1)),
     deleteallowed                         integer     NOT NULL CHECK (deleteallowed IN (0, 1)),
@@ -632,8 +632,8 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_rules_security_token
     warehousefromdate                     date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid          uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid                uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                          uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                              uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                          uuid        NOT NULL,
+    systemid                              uuid        NOT NULL,
     UNIQUE (transaction_x_rules_id, securitytokenid)
 );
 
@@ -642,10 +642,10 @@ REVOKE ALL ON transactions.transaction_x_rules, transactions.transaction_x_rules
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_transaction
 (
     transaction_x_transaction_id  uuid PRIMARY KEY,
-    entry_id                      uuid        NOT NULL REFERENCES transactions.entry (entry_id),
-    transaction_id                uuid        NOT NULL REFERENCES transactions.entry (entry_id),
-    classificationid              uuid        NOT NULL REFERENCES classification.classification (classificationid),
-    enterprise_id                 uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
+    entry_id                      uuid        NOT NULL,
+    transaction_id                uuid        NOT NULL,
+    classificationid              uuid        NOT NULL,
+    enterprise_id                 uuid        NOT NULL,
     value                         text        NOT NULL DEFAULT '1',
     effectivefromdate             timestamptz NOT NULL DEFAULT now(),
     effectivetodate               timestamptz NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
@@ -654,17 +654,17 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_transaction
     warehousefromdate             date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid  uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid        uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                  uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                      uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                  uuid        NOT NULL,
+    systemid                      uuid        NOT NULL,
     UNIQUE (entry_id, transaction_id, classificationid, effectivefromdate)
 );
 CREATE INDEX IF NOT EXISTS transaction_x_transaction_entry ON transactions.transaction_x_transaction (entry_id);
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_transaction_security_token
 (
     transaction_x_transaction_security_token_id uuid PRIMARY KEY,
-    transaction_x_transaction_id                uuid        NOT NULL REFERENCES transactions.transaction_x_transaction (transaction_x_transaction_id),
-    enterprise_id                               uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
-    securitytokenid                             uuid        NOT NULL REFERENCES security.securitytoken (securitytokenid),
+    transaction_x_transaction_id                uuid        NOT NULL,
+    enterprise_id                               uuid        NOT NULL,
+    securitytokenid                             uuid        NOT NULL,
     createallowed                               integer     NOT NULL CHECK (createallowed IN (0, 1)),
     updateallowed                               integer     NOT NULL CHECK (updateallowed IN (0, 1)),
     deleteallowed                               integer     NOT NULL CHECK (deleteallowed IN (0, 1)),
@@ -676,8 +676,8 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_transaction_security_token
     warehousefromdate                           date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid                uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid                      uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                                uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                                    uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                                uuid        NOT NULL,
+    systemid                                    uuid        NOT NULL,
     UNIQUE (transaction_x_transaction_id, securitytokenid)
 );
 
@@ -686,9 +686,9 @@ REVOKE ALL ON transactions.transaction_x_transaction, transactions.transaction_x
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_classification
 (
     transaction_x_classification_id uuid PRIMARY KEY,
-    entry_id                        uuid        NOT NULL REFERENCES transactions.entry (entry_id),
-    classificationid                uuid        NOT NULL REFERENCES classification.classification (classificationid),
-    enterprise_id                   uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
+    entry_id                        uuid        NOT NULL,
+    classificationid                uuid        NOT NULL,
+    enterprise_id                   uuid        NOT NULL,
     value                           text        NOT NULL DEFAULT '1',
     effectivefromdate               timestamptz NOT NULL DEFAULT now(),
     effectivetodate                 timestamptz NOT NULL DEFAULT '2999-12-31 23:59:59.999+00',
@@ -697,17 +697,17 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_classification
     warehousefromdate               date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid    uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid          uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                    uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                        uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                    uuid        NOT NULL,
+    systemid                        uuid        NOT NULL,
     UNIQUE (entry_id, classificationid, effectivefromdate)
 );
 CREATE INDEX IF NOT EXISTS transaction_x_classification_entry ON transactions.transaction_x_classification (entry_id);
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_classification_security_token
 (
     transaction_x_classification_security_token_id uuid PRIMARY KEY,
-    transaction_x_classification_id                uuid        NOT NULL REFERENCES transactions.transaction_x_classification (transaction_x_classification_id),
-    enterprise_id                                  uuid        NOT NULL REFERENCES dbo.enterprise (enterpriseid),
-    securitytokenid                                uuid        NOT NULL REFERENCES security.securitytoken (securitytokenid),
+    transaction_x_classification_id                uuid        NOT NULL,
+    enterprise_id                                  uuid        NOT NULL,
+    securitytokenid                                uuid        NOT NULL,
     createallowed                                  integer     NOT NULL CHECK (createallowed IN (0, 1)),
     updateallowed                                  integer     NOT NULL CHECK (updateallowed IN (0, 1)),
     deleteallowed                                  integer     NOT NULL CHECK (deleteallowed IN (0, 1)),
@@ -719,8 +719,8 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_x_classification_security_to
     warehousefromdate                              date        NOT NULL DEFAULT current_date,
     originalsourcesystemuniqueid                   uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     originalsourcesystemid                         uuid        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    activeflagid                                   uuid        NOT NULL REFERENCES dbo.activeflag (activeflagid),
-    systemid                                       uuid        NOT NULL REFERENCES dbo.systems (systemid),
+    activeflagid                                   uuid        NOT NULL,
+    systemid                                       uuid        NOT NULL,
     UNIQUE (transaction_x_classification_id, securitytokenid)
 );
 

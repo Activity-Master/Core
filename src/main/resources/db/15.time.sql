@@ -215,32 +215,29 @@ VALUES (1, 'S', 'Weekend', 0, 'Su', 'Sunday', 'Sun', 0),
 
 
 
-create index fk4g0xilxoif8vy1brjn2vpdpcw_daynameid on "time".days (daynameid);
-create index fkcnplvut6yx0iu2itr0q11oa6l_weekid on "time".days (weekid);
-create index fkgbuiu0f44kxjymtkhyj4vlgc2_monthid on "time".days (monthid);
-create index fk8n2nuitlg5wf0pb64jbncrdfa_daypartid on "time".halfhourdayparts (daypartid);
-create index fk6sf1pjb60myyfca1rj11q2l9r_monthofyearid on "time".months (monthofyearid);
-create index fka234h7trk9pm9pqry7hc2dfac_quarterid on "time".months (quarterid);
-create index fkhb7po9kbr3vc89jkxgy4ik2e5_yearid on "time".quarters (yearid);
+CREATE INDEX idx_td_daynameid ON "time".days (daynameid);
+CREATE INDEX idx_td_weekid ON "time".days (weekid);
+CREATE INDEX idx_td_monthid ON "time".days (monthid);
+CREATE INDEX idx_hd_daypartid ON "time".halfhourdayparts (daypartid);
+CREATE INDEX idx_md_monthofyearid ON "time".months (monthofyearid);
+CREATE INDEX idx_md_quarterid ON "time".months (quarterid);
+CREATE INDEX idx_qd_yearid ON "time".quarters (yearid);
 
-CREATE INDEX idx_daynames_dayname ON time.daynames (dayname);
-CREATE INDEX idx_daynames_dayshortname ON time.daynames (dayshortname);
-CREATE INDEX idx_publicholidays_publicholidayname ON time.publicholidays (publicholidayname);
-
-CREATE INDEX idx_monthofyear_monthofyearname ON time.monthofyear (monthofyearname);
-CREATE INDEX idx_monthofyear_monthofyearshortname ON time.monthofyear (monthofyearshortname);
-CREATE INDEX idx_dayparts_daypartname ON time.dayparts (daypartname);
-CREATE INDEX idx_hours_ampmdesc ON time.hours (ampmdesc);
-CREATE INDEX idx_hours_twelvehourclockdesc ON time.hours (twelvehourclockdesc);
-CREATE INDEX idx_hours_twentyfourhourclockdesc ON time.hours (twentyfourhourclockdesc);
-CREATE INDEX idx_time_ampmdesc ON time.time (ampmdesc);
-CREATE INDEX idx_time_twelvehourclockdesc ON time.time (twelvehourclockdesc);
-CREATE INDEX idx_time_twentyfourhourclockdesc ON time.time (twentyfourhourclockdesc);
-CREATE INDEX idx_halfhours_ampmdesc ON time.halfhours (ampmdesc);
-CREATE INDEX idx_halfhours_twelvehourclockdesc ON time.halfhours (twelvehourclockdesc);
-CREATE INDEX idx_halfhours_twentyfourhourclockdesc ON time.halfhours (twentyfourhourclockdesc);
-CREATE INDEX idx_years_yyname ON time.years (yyname);
-CREATE INDEX idx_years_yyyname ON time.years (yyyname);
-CREATE INDEX idx_years_yearfullname ON time.years (yearfullname);
-CREATE INDEX idx_years_yearname ON time.years (yearname);
-CREATE INDEX idx_days_daydatetime ON time.days (daydatetime);
+CREATE INDEX idx_pd_daypartname ON "time".dayparts (daypartname);
+CREATE INDEX idx_ph_publicholidayname ON "time".publicholidays (publicholidayname);
+CREATE INDEX idx_my_monthofyearname ON "time".monthofyear (monthofyearname);
+CREATE INDEX idx_my_monthofyearshortname ON "time".monthofyear (monthofyearshortname);
+CREATE INDEX idx_h_ampmdesc ON "time".hours (ampmdesc);
+CREATE INDEX idx_h_twelvehourclockdesc ON "time".hours (twelvehourclockdesc);
+CREATE INDEX idx_h_twentyfourhourclockdesc ON "time".hours (twentyfourhourclockdesc);
+CREATE INDEX idx_t_ampmdesc ON "time".time (ampmdesc);
+CREATE INDEX idx_t_twelvehourclockdesc ON "time".time (twelvehourclockdesc);
+CREATE INDEX idx_t_twentyfourhourclockdesc ON "time".time (twentyfourhourclockdesc);
+CREATE INDEX idx_hd_ampmdesc ON "time".halfhours (ampmdesc);
+CREATE INDEX idx_hd_twelvehourclockdesc ON "time".halfhours (twelvehourclockdesc);
+CREATE INDEX idx_hd_twentyfourhourclockdesc ON "time".halfhours (twentyfourhourclockdesc);
+CREATE INDEX idx_y_yyname ON "time".years (yyname);
+CREATE INDEX idx_y_yyyname ON "time".years (yyyname);
+CREATE INDEX idx_y_yearfullname ON "time".years (yearfullname);
+CREATE INDEX idx_y_yearname ON "time".years (yearname);
+CREATE INDEX idx_d_daydatetime ON "time".days (daydatetime);

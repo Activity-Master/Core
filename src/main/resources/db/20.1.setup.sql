@@ -1,105 +1,30 @@
 SET search_path TO address,arrangement,classification,"dbo","event",geography,party,product,resource,rules,"security","time";
 
---
--- function:    missing_fk_indexes
--- purpose:     List all foreing keys in the database without and index in the referencing table.
--- author:      Based on the work of Laurenz Albe
--- see:         https://www.cybertec-postgresql.com/en/index-your-foreign-key/
---
-create or replace function dbo.missing_fk_indexes()
-    returns table
-            (
-                referencing_table regclass,
-                fk_columns        varchar,
-                table_size        varchar,
-                fk_constraint     name,
-                referenced_table  regclass
-            )
-    language sql
-as
+
+CREATE OR REPLACE FUNCTION public.create_event_types_view(event_type_desc TEXT)
+    RETURNS VOID AS
 $$
-select
-    -- referencing table having ta foreign key declaration
-    tc.conrelid::regclass                      as referencing_table,
+DECLARE
+    view_name TEXT;
+    query     TEXT;
+BEGIN
+    -- Generate the view name dynamically by replacing spaces with underscores and appending '_received_barcodes'
+    view_name := LOWER(REPLACE(event_type_desc, ' ', '_'));
 
-    -- ordered list of foreign key columns
-    string_agg(ta.attname, ', ' order by tx.n) as fk_columns,
+    -- Build the query to create or replace the view
+    query := FORMAT($f$
+        CREATE OR REPLACE VIEW public.%I AS
+        SELECT DISTINCT exet.value
+        FROM event.event e
+                 JOIN event.eventxeventtype exet ON e.eventid::text = exet.eventid::text
+                 JOIN event.eventtype et ON et.eventtypeid::text = exet.eventtypeid::text
+        WHERE et.eventtypedesc::text = %L
+    $f$, view_name, event_type_desc);
 
-    -- referencing table size
-    pg_catalog.pg_size_pretty(
-            pg_catalog.pg_relation_size(tc.conrelid)
-    )                                          as table_size,
+    -- Execute the query
+    EXECUTE query;
 
-    -- name of the foreign key constraint
-    tc.conname                                 as fk_constraint,
+    RAISE NOTICE 'View % created successfully.', view_name;
+END;
+$$ LANGUAGE plpgsql;
 
-    -- name of the target or destination table
-    tc.confrelid::regclass                     as referenced_table
-
-from pg_catalog.pg_constraint tc
-
-         -- enumerated key column numbers per foreign key
-         cross join lateral unnest(tc.conkey) with ordinality as tx(attnum, n)
-
-    -- name for each key column
-         join pg_catalog.pg_attribute ta on ta.attnum = tx.attnum and ta.attrelid = tc.conrelid
-
-where not exists (
--- is there ta matching index for the constraint?
-    select 1
-    from pg_catalog.pg_index i
-    where i.indrelid = tc.conrelid
-      and
--- the first index columns must be the same as the key columns, but order doesn't matter
-        (i.indkey::smallint[])[0:cardinality(tc.conkey) - 1] @> tc.conkey)
-  and tc.contype = 'f'
-group by tc.conrelid,
-         tc.conname,
-         tc.confrelid
-order by pg_catalog.pg_relation_size(tc.conrelid) desc
-$$;
-
-
---
--- function:    missing_fk_indexes2
--- purpose:     List all foreing keys in the database without and index in the referencing table.
---              The listing contains create index sentences
--- author:      Based on the work of Laurenz Albe
--- see:         https://www.cybertec-postgresql.com/en/index-your-foreign-key/
---
-create or replace function dbo.missing_fk_indexes2()
-    returns setof varchar
-    language sql as
-$$
-select
-    -- create index sentence
-    'create index ' ||
-    tc.conname || '_' || string_agg(ta.attname, ', ' order by tx.n) ||
-    ' on ' ||
-    tc.conrelid::regclass ||
-    '(' ||
-    string_agg(ta.attname, ', ' order by tx.n) ||
-    '); ' as create_index
-
-from pg_catalog.pg_constraint tc
-
-         -- enumerated key column numbers per foreign key
-         cross join lateral unnest(tc.conkey) with ordinality as tx(attnum, n)
-
-    -- name for each key column
-         join pg_catalog.pg_attribute ta on ta.attnum = tx.attnum and ta.attrelid = tc.conrelid
-
-where not exists (
--- is there ta matching index for the constraint?
-    select 1
-    from pg_catalog.pg_index i
-    where i.indrelid = tc.conrelid
-      and
--- the first index columns must be the same as the key columns, but order doesn't matter
-        (i.indkey::smallint[])[0:cardinality(tc.conkey) - 1] @> tc.conkey)
-  and tc.contype = 'f'
-group by tc.conrelid,
-         tc.conname,
-         tc.confrelid
-order by pg_catalog.pg_relation_size(tc.conrelid) desc
-$$;
