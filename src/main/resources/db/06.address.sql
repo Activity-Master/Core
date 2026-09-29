@@ -46,7 +46,7 @@ CREATE TABLE address.addressxclassification
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -85,7 +85,7 @@ CREATE TABLE address.addressxgeography
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -125,7 +125,7 @@ CREATE TABLE address.addressxresourceitem
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,

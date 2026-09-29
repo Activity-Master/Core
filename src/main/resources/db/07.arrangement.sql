@@ -83,7 +83,7 @@ CREATE TABLE arrangement.arrangementtypexclassification
 
     warehouselastupdatedtimestamp    timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid     UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                            text                        NOT NULL ,
+    value                            varchar(150)                NOT NULL ,
     activeflagid                     UUID                        NOT NULL,
     enterpriseid                     UUID                        NOT NULL,
     systemid                         UUID                        NOT NULL,
@@ -122,7 +122,7 @@ CREATE TABLE arrangement.arrangementxarrangement
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -162,7 +162,7 @@ CREATE TABLE arrangement.arrangementxarrangementtype
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -202,7 +202,7 @@ CREATE TABLE arrangement.arrangementxclassification
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -241,7 +241,7 @@ CREATE TABLE arrangement.arrangementxinvolvedparty
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -281,7 +281,7 @@ CREATE TABLE arrangement.arrangementxproduct
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -321,7 +321,7 @@ CREATE TABLE arrangement.arrangementxresourceitem
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -361,7 +361,7 @@ CREATE TABLE arrangement.arrangementxrules
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -401,7 +401,7 @@ CREATE TABLE arrangement.arrangementxrulestype
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,

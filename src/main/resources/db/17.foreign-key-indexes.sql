@@ -1,0 +1,392 @@
+-- Foreign-key indexes for the FSDM warehouse.
+--
+-- Every warehouse link table is joined by its target id, and every *securitytoken table is joined
+-- by the row it secures and by the token it grants. The per-table scripts index the warehouse
+-- metadata columns compositely with warehousefromdate, which serves the enterprise, system,
+-- activeflag and classification lookups as leading columns, but leaves the join targets themselves
+-- unindexed. Without these, a read that starts from a party, a resource item or a parent event
+-- degrades to a sequential scan of the whole link table.
+--
+-- These were previously created by the generated postgres_structure.sql dump. They are reproduced
+-- here so the ordered scripts are a complete definition of the schema on their own.
+--
+-- Scope: identifier columns, on tables these scripts create. Two entries were dropped after
+-- 18.query-indexes.sql added (enterpriseid, <name>, effectivetodate) composites that lead with
+-- the same column, making the single-column enterpriseid indexes on classification and
+-- classificationdataconcept redundant.
+-- Scope note: originalsourcesystemid is excluded
+-- because nothing filters on it, and indexing it across 173 tables would cost writes and buy no
+-- reads. The hierarchy tables and views the old dump carried are gone from the schema, so nothing
+-- here refers to them.
+
+
+CREATE INDEX IF NOT EXISTS idx_addressxclassificationsecuritytoken_activeflagid ON address.addressxclassificationsecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_addressxclassificationsecuritytoken_addressxclassifi_6e4ba4 ON address.addressxclassificationsecuritytoken (addressxclassificationid);
+CREATE INDEX IF NOT EXISTS idx_addressxclassificationsecuritytoken_enterpriseid ON address.addressxclassificationsecuritytoken (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_addressxclassificationsecuritytoken_securitytokenid ON address.addressxclassificationsecuritytoken (securitytokenid);
+CREATE INDEX IF NOT EXISTS idx_addressxclassificationsecuritytoken_systemid ON address.addressxclassificationsecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_arrangementtypexclassification_classificationid ON arrangement.arrangementtypexclassification (classificationid);
+
+CREATE INDEX IF NOT EXISTS idx_arrangementxarrangement_childarrangementid ON arrangement.arrangementxarrangement (childarrangementid);
+CREATE INDEX IF NOT EXISTS idx_arrangementxarrangement_parentarrangementid ON arrangement.arrangementxarrangement (parentarrangementid);
+
+CREATE INDEX IF NOT EXISTS idx_arrangementxarrangementsecuritytoken_arrangementxarr_adefdf ON arrangement.arrangementxarrangementsecuritytoken (arrangementxarrangementid);
+
+CREATE INDEX IF NOT EXISTS idx_arrangementxarrangementtype_arrangementid ON arrangement.arrangementxarrangementtype (arrangementid);
+CREATE INDEX IF NOT EXISTS idx_arrangementxarrangementtype_arrangementtypeid ON arrangement.arrangementxarrangementtype (arrangementtypeid);
+
+CREATE INDEX IF NOT EXISTS idx_arrangementxarrangementtypesecuritytoken_activeflagid ON arrangement.arrangementxarrangementtypesecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_arrangementxarrangementtypesecuritytoken_arrangement_427d2d ON arrangement.arrangementxarrangementtypesecuritytoken (arrangementxarrangementtypeid);
+CREATE INDEX IF NOT EXISTS idx_arrangementxarrangementtypesecuritytoken_enterpriseid ON arrangement.arrangementxarrangementtypesecuritytoken (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_arrangementxarrangementtypesecuritytoken_securitytokenid ON arrangement.arrangementxarrangementtypesecuritytoken (securitytokenid);
+CREATE INDEX IF NOT EXISTS idx_arrangementxarrangementtypesecuritytoken_systemid ON arrangement.arrangementxarrangementtypesecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_arrangementxclassificationsecuritytoken_arrangementx_c5cb2e ON arrangement.arrangementxclassificationsecuritytoken (arrangementxclassificationid);
+
+CREATE INDEX IF NOT EXISTS idx_arrangementxinvolvedparty_classificationid ON arrangement.arrangementxinvolvedparty (classificationid);
+CREATE INDEX IF NOT EXISTS idx_arrangementxinvolvedparty_involvedpartyid ON arrangement.arrangementxinvolvedparty (involvedpartyid);
+
+CREATE INDEX IF NOT EXISTS idx_arrangementxinvolvedpartysecuritytoken_arrangementxi_dd86e5 ON arrangement.arrangementxinvolvedpartysecuritytoken (arrangementxinvolvedpartyid);
+
+CREATE INDEX IF NOT EXISTS idx_arrangementxproduct_productid ON arrangement.arrangementxproduct (productid);
+
+CREATE INDEX IF NOT EXISTS idx_arrangementxproductsecuritytoken_arrangementxproductid ON arrangement.arrangementxproductsecuritytoken (arrangementxproductid);
+
+CREATE INDEX IF NOT EXISTS idx_arrangementxrulessecuritytoken_arrangementxrulesid ON arrangement.arrangementxrulessecuritytoken (arrangementxrulesid);
+
+CREATE INDEX IF NOT EXISTS idx_classification_activeflagid ON classification.classification (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_classification_classificationdataconceptid ON classification.classification (classificationdataconceptid);
+CREATE INDEX IF NOT EXISTS idx_classification_enterpriseid ON classification.classification (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_classification_systemid ON classification.classification (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_classificationdataconcept_activeflagid ON classification.classificationdataconcept (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconcept_enterpriseid ON classification.classificationdataconcept (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconcept_systemid ON classification.classificationdataconcept (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptsecuritytoken_activeflagid ON classification.classificationdataconceptsecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptsecuritytoken_classificatio_e90f10 ON classification.classificationdataconceptsecuritytoken (classificationdataconceptid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptsecuritytoken_enterpriseid ON classification.classificationdataconceptsecuritytoken (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptsecuritytoken_securitytokenid ON classification.classificationdataconceptsecuritytoken (securitytokenid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptsecuritytoken_systemid ON classification.classificationdataconceptsecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxclassification_activeflagid ON classification.classificationdataconceptxclassification (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxclassification_classificat_d31d6d ON classification.classificationdataconceptxclassification (classificationdataconceptid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxclassification_classificationid ON classification.classificationdataconceptxclassification (classificationid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxclassification_enterpriseid ON classification.classificationdataconceptxclassification (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxclassification_systemid ON classification.classificationdataconceptxclassification (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxclassificationsecuritytoke_e2cef2 ON classification.classificationdataconceptxclassificationsecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxclassificationsecuritytoke_9cf6bf ON classification.classificationdataconceptxclassificationsecuritytoken (classificationdataconceptxclassificationid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxclassificationsecuritytoke_c0661c ON classification.classificationdataconceptxclassificationsecuritytoken (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxclassificationsecuritytoke_ec89b0 ON classification.classificationdataconceptxclassificationsecuritytoken (securitytokenid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxclassificationsecuritytoke_cacf5b ON classification.classificationdataconceptxclassificationsecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxresourceitem_activeflagid ON classification.classificationdataconceptxresourceitem (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxresourceitem_classificatio_8f732d ON classification.classificationdataconceptxresourceitem (classificationdataconceptid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxresourceitem_classificationid ON classification.classificationdataconceptxresourceitem (classificationid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxresourceitem_enterpriseid ON classification.classificationdataconceptxresourceitem (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxresourceitem_resourceitemid ON classification.classificationdataconceptxresourceitem (resourceitemid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxresourceitem_systemid ON classification.classificationdataconceptxresourceitem (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxresourceitemsecuritytoken__2d068f ON classification.classificationdataconceptxresourceitemsecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxresourceitemsecuritytoken__1f2e2e ON classification.classificationdataconceptxresourceitemsecuritytoken (classificationdataconceptxresourceitemid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxresourceitemsecuritytoken__74870e ON classification.classificationdataconceptxresourceitemsecuritytoken (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxresourceitemsecuritytoken__5ace3c ON classification.classificationdataconceptxresourceitemsecuritytoken (securitytokenid);
+CREATE INDEX IF NOT EXISTS idx_classificationdataconceptxresourceitemsecuritytoken__2e50da ON classification.classificationdataconceptxresourceitemsecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_classificationsecuritytoken_activeflagid ON classification.classificationsecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_classificationsecuritytoken_classificationid ON classification.classificationsecuritytoken (classificationid);
+CREATE INDEX IF NOT EXISTS idx_classificationsecuritytoken_enterpriseid ON classification.classificationsecuritytoken (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_classificationsecuritytoken_securitytokenid ON classification.classificationsecuritytoken (securitytokenid);
+CREATE INDEX IF NOT EXISTS idx_classificationsecuritytoken_systemid ON classification.classificationsecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_classificationxclassification_activeflagid ON classification.classificationxclassification (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_classificationxclassification_childclassificationid ON classification.classificationxclassification (childclassificationid);
+CREATE INDEX IF NOT EXISTS idx_classificationxclassification_classificationid ON classification.classificationxclassification (classificationid);
+CREATE INDEX IF NOT EXISTS idx_classificationxclassification_enterpriseid ON classification.classificationxclassification (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_classificationxclassification_parentclassificationid ON classification.classificationxclassification (parentclassificationid);
+CREATE INDEX IF NOT EXISTS idx_classificationxclassification_systemid ON classification.classificationxclassification (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_classificationxclassificationsecuritytoken_activeflagid ON classification.classificationxclassificationsecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_classificationxclassificationsecuritytoken_classific_910a99 ON classification.classificationxclassificationsecuritytoken (classificationxclassificationid);
+CREATE INDEX IF NOT EXISTS idx_classificationxclassificationsecuritytoken_enterpriseid ON classification.classificationxclassificationsecuritytoken (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_classificationxclassificationsecuritytoken_securitytokenid ON classification.classificationxclassificationsecuritytoken (securitytokenid);
+CREATE INDEX IF NOT EXISTS idx_classificationxclassificationsecuritytoken_systemid ON classification.classificationxclassificationsecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_classificationxresourceitem_activeflagid ON classification.classificationxresourceitem (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_classificationxresourceitem_classificationid ON classification.classificationxresourceitem (classificationid);
+CREATE INDEX IF NOT EXISTS idx_classificationxresourceitem_enterpriseid ON classification.classificationxresourceitem (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_classificationxresourceitem_resourceitemid ON classification.classificationxresourceitem (resourceitemid);
+CREATE INDEX IF NOT EXISTS idx_classificationxresourceitem_systemid ON classification.classificationxresourceitem (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_classificationxresourceitemsecuritytoken_activeflagid ON classification.classificationxresourceitemsecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_classificationxresourceitemsecuritytoken_classificat_2ee7a4 ON classification.classificationxresourceitemsecuritytoken (classificationxresourceitemid);
+CREATE INDEX IF NOT EXISTS idx_classificationxresourceitemsecuritytoken_enterpriseid ON classification.classificationxresourceitemsecuritytoken (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_classificationxresourceitemsecuritytoken_securitytokenid ON classification.classificationxresourceitemsecuritytoken (securitytokenid);
+CREATE INDEX IF NOT EXISTS idx_classificationxresourceitemsecuritytoken_systemid ON classification.classificationxresourceitemsecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_eventsecuritytoken_securitytokenid ON event.eventsecuritytoken (securitytokenid);
+CREATE INDEX IF NOT EXISTS idx_eventsecuritytoken_systemid ON event.eventsecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_eventtypessecuritytoken_securitytokenid ON event.eventtypessecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxaddress_addressid ON event.eventxaddress (addressid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxaddresssecuritytoken_securitytokenid ON event.eventxaddresssecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxarrangement_arrangementid ON event.eventxarrangement (arrangementid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxarrangementssecuritytoken_securitytokenid ON event.eventxarrangementssecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxclassificationsecuritytoken_securitytokenid ON event.eventxclassificationsecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxevent_childeventid ON event.eventxevent (childeventid);
+CREATE INDEX IF NOT EXISTS idx_eventxevent_parenteventid ON event.eventxevent (parenteventid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxeventsecuritytoken_eventxeventid ON event.eventxeventsecuritytoken (eventxeventid);
+CREATE INDEX IF NOT EXISTS idx_eventxeventsecuritytoken_securitytokenid ON event.eventxeventsecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxeventtype_eventtypeid ON event.eventxeventtype (eventtypeid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxeventtypesecuritytoken_activeflagid ON event.eventxeventtypesecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_eventxeventtypesecuritytoken_enterpriseid ON event.eventxeventtypesecuritytoken (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_eventxeventtypesecuritytoken_eventxeventtypeid ON event.eventxeventtypesecuritytoken (eventxeventtypeid);
+CREATE INDEX IF NOT EXISTS idx_eventxeventtypesecuritytoken_securitytokenid ON event.eventxeventtypesecuritytoken (securitytokenid);
+CREATE INDEX IF NOT EXISTS idx_eventxeventtypesecuritytoken_systemid ON event.eventxeventtypesecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxgeography_geographyid ON event.eventxgeography (geographyid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxgeographysecuritytoken_eventxgeographyid ON event.eventxgeographysecuritytoken (eventxgeographyid);
+CREATE INDEX IF NOT EXISTS idx_eventxgeographysecuritytoken_securitytokenid ON event.eventxgeographysecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxinvolvedparty_involvedpartyid ON event.eventxinvolvedparty (involvedpartyid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxinvolvedpartysecuritytoken_eventxinvolvedpartyid ON event.eventxinvolvedpartysecuritytoken (eventxinvolvedpartyid);
+CREATE INDEX IF NOT EXISTS idx_eventxinvolvedpartysecuritytoken_securitytokenid ON event.eventxinvolvedpartysecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxproduct_productid ON event.eventxproduct (productid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxproductsecuritytoken_eventxproductid ON event.eventxproductsecuritytoken (eventxproductid);
+CREATE INDEX IF NOT EXISTS idx_eventxproductsecuritytoken_securitytokenid ON event.eventxproductsecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxresourceitem_resourceitemid ON event.eventxresourceitem (resourceitemid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxresourceitemsecuritytoken_eventxresourceitemid ON event.eventxresourceitemsecuritytoken (eventxresourceitemid);
+CREATE INDEX IF NOT EXISTS idx_eventxresourceitemsecuritytoken_securitytokenid ON event.eventxresourceitemsecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxrules_rulesid ON event.eventxrules (rulesid);
+
+CREATE INDEX IF NOT EXISTS idx_eventxrulessecuritytoken_eventxrulesid ON event.eventxrulessecuritytoken (eventxrulesid);
+CREATE INDEX IF NOT EXISTS idx_eventxrulessecuritytoken_securitytokenid ON event.eventxrulessecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_geographyxclassificationsecuritytoken_geographyxclas_c8314e ON geography.geographyxclassificationsecuritytoken (geographyxclassificationid);
+CREATE INDEX IF NOT EXISTS idx_geographyxclassificationsecuritytoken_securitytokenid ON geography.geographyxclassificationsecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_geographyxgeography_childgeographyid ON geography.geographyxgeography (childgeographyid);
+CREATE INDEX IF NOT EXISTS idx_geographyxgeography_parentgeographyid ON geography.geographyxgeography (parentgeographyid);
+
+CREATE INDEX IF NOT EXISTS idx_geographyxgeographysecuritytoken_securitytokenid ON geography.geographyxgeographysecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_geographyxresourceitem_resourceitemid ON geography.geographyxresourceitem (resourceitemid);
+
+CREATE INDEX IF NOT EXISTS idx_geographyxresourceitemsecuritytoken_securitytokenid ON geography.geographyxresourceitemsecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyidentificationtypesecuritytoken_securit_77ff1f ON party.involvedpartyidentificationtypesecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartynametypesecuritytoken_securitytokenid ON party.involvedpartynametypesecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartynonorganicsecuritytoken_involvedpartyno_917783 ON party.involvedpartynonorganicsecuritytoken (involvedpartynonorganicid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartynonorganicsecuritytoken_securitytokenid ON party.involvedpartynonorganicsecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyorganicsecuritytoken_involvedpartyorganicid ON party.involvedpartyorganicsecuritytoken (involvedpartyorganicid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyorganicsecuritytoken_securitytokenid ON party.involvedpartyorganicsecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyorganictypesecuritytoken_securitytokenid ON party.involvedpartyorganictypesecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartysecuritytoken_involvedpartyid ON party.involvedpartysecuritytoken (involvedpartyid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartysecuritytoken_securitytokenid ON party.involvedpartysecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartytypesecuritytoken_involvedpartytypeid ON party.involvedpartytypesecuritytoken (involvedpartytypeid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartytypesecuritytoken_securitytokenid ON party.involvedpartytypesecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxaddress_addressid ON party.involvedpartyxaddress (addressid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxaddress_involvedpartyid ON party.involvedpartyxaddress (involvedpartyid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxaddresssecuritytoken_involvedpartyxaddressid ON party.involvedpartyxaddresssecuritytoken (involvedpartyxaddressid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxaddresssecuritytoken_securitytokenid ON party.involvedpartyxaddresssecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxclassification_involvedpartyid ON party.involvedpartyxclassification (involvedpartyid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxclassificationsecuritytoken_involvedpa_59655e ON party.involvedpartyxclassificationsecuritytoken (involvedpartyxclassificationid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxclassificationsecuritytoken_securitytokenid ON party.involvedpartyxclassificationsecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedparty_childinvolvedpartyid ON party.involvedpartyxinvolvedparty (childinvolvedpartyid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedparty_parentinvolvedpartyid ON party.involvedpartyxinvolvedparty (parentinvolvedpartyid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartyidentificationtype_activeflagid ON party.involvedpartyxinvolvedpartyidentificationtype (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartyidentificationtype_classi_b45782 ON party.involvedpartyxinvolvedpartyidentificationtype (classificationid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartyidentificationtype_enterpriseid ON party.involvedpartyxinvolvedpartyidentificationtype (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartyidentificationtype_involv_e7de69 ON party.involvedpartyxinvolvedpartyidentificationtype (involvedpartyid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartyidentificationtype_involv_060973 ON party.involvedpartyxinvolvedpartyidentificationtype (involvedpartyidentificationtypeid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartyidentificationtype_systemid ON party.involvedpartyxinvolvedpartyidentificationtype (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartyidentificationtypesecurit_a4634a ON party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartyidentificationtypesecurit_a5c8b8 ON party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartyidentificationtypesecurit_b5b4af ON party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken (involvedpartyxinvolvedpartyidentificationtypeid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartyidentificationtypesecurit_639edf ON party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken (securitytokenid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartyidentificationtypesecurit_6a0624 ON party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartynametype_activeflagid ON party.involvedpartyxinvolvedpartynametype (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartynametype_classificationid ON party.involvedpartyxinvolvedpartynametype (classificationid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartynametype_enterpriseid ON party.involvedpartyxinvolvedpartynametype (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartynametype_involvedpartyid ON party.involvedpartyxinvolvedpartynametype (involvedpartyid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartynametype_involvedpartynametypeid ON party.involvedpartyxinvolvedpartynametype (involvedpartynametypeid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartynametype_systemid ON party.involvedpartyxinvolvedpartynametype (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartynametypesecuritytoken_act_26064a ON party.involvedpartyxinvolvedpartynametypesecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartynametypesecuritytoken_ent_edf5dd ON party.involvedpartyxinvolvedpartynametypesecuritytoken (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartynametypesecuritytoken_inv_47c966 ON party.involvedpartyxinvolvedpartynametypesecuritytoken (involvedpartyxinvolvedpartynametypeid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartynametypesecuritytoken_sec_7757a9 ON party.involvedpartyxinvolvedpartynametypesecuritytoken (securitytokenid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartynametypesecuritytoken_systemid ON party.involvedpartyxinvolvedpartynametypesecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartysecuritytoken_involvedpar_47cc8c ON party.involvedpartyxinvolvedpartysecuritytoken (involvedpartyxinvolvedpartyid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartysecuritytoken_securitytokenid ON party.involvedpartyxinvolvedpartysecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartytype_activeflagid ON party.involvedpartyxinvolvedpartytype (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartytype_classificationid ON party.involvedpartyxinvolvedpartytype (classificationid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartytype_enterpriseid ON party.involvedpartyxinvolvedpartytype (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartytype_involvedpartyid ON party.involvedpartyxinvolvedpartytype (involvedpartyid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartytype_involvedpartytypeid ON party.involvedpartyxinvolvedpartytype (involvedpartytypeid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartytype_systemid ON party.involvedpartyxinvolvedpartytype (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartytypesecuritytoken_activeflagid ON party.involvedpartyxinvolvedpartytypesecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartytypesecuritytoken_enterpriseid ON party.involvedpartyxinvolvedpartytypesecuritytoken (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartytypesecuritytoken_involve_e7936e ON party.involvedpartyxinvolvedpartytypesecuritytoken (involvedpartyxinvolvedpartytypeid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartytypesecuritytoken_securit_04ea3e ON party.involvedpartyxinvolvedpartytypesecuritytoken (securitytokenid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxinvolvedpartytypesecuritytoken_systemid ON party.involvedpartyxinvolvedpartytypesecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxproduct_involvedpartyid ON party.involvedpartyxproduct (involvedpartyid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxproduct_productid ON party.involvedpartyxproduct (productid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxproductsecuritytoken_involvedpartyxproductid ON party.involvedpartyxproductsecuritytoken (involvedpartyxproductid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxproductsecuritytoken_securitytokenid ON party.involvedpartyxproductsecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxproducttype_involvedpartyid ON party.involvedpartyxproducttype (involvedpartyid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxproducttype_producttypeid ON party.involvedpartyxproducttype (producttypeid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxproducttypesecuritytoken_activeflagid ON party.involvedpartyxproducttypesecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxproducttypesecuritytoken_enterpriseid ON party.involvedpartyxproducttypesecuritytoken (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxproducttypesecuritytoken_involvedparty_d69826 ON party.involvedpartyxproducttypesecuritytoken (involvedpartyxproducttypeid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxproducttypesecuritytoken_securitytokenid ON party.involvedpartyxproducttypesecuritytoken (securitytokenid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxproducttypesecuritytoken_systemid ON party.involvedpartyxproducttypesecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxresourceitem_involvedpartyid ON party.involvedpartyxresourceitem (involvedpartyid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxresourceitem_resourceitemid ON party.involvedpartyxresourceitem (resourceitemid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxresourceitemsecuritytoken_involvedpart_7a2f9d ON party.involvedpartyxresourceitemsecuritytoken (involvedpartyxresourceitemid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxresourceitemsecuritytoken_securitytokenid ON party.involvedpartyxresourceitemsecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxrules_involvedpartyid ON party.involvedpartyxrules (involvedpartyid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxrules_rulesid ON party.involvedpartyxrules (rulesid);
+
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxrulessecuritytoken_involvedpartyxrulesid ON party.involvedpartyxrulessecuritytoken (involvedpartyxrulesid);
+CREATE INDEX IF NOT EXISTS idx_involvedpartyxrulessecuritytoken_securitytokenid ON party.involvedpartyxrulessecuritytoken (securitytokenid);
+
+CREATE INDEX IF NOT EXISTS idx_producttypexclassification_classificationid ON product.producttypexclassification (classificationid);
+
+CREATE INDEX IF NOT EXISTS idx_productxclassification_classificationid ON product.productxclassification (classificationid);
+
+CREATE INDEX IF NOT EXISTS idx_productxclassificationsecuritytoken_productxclassifi_0a9d28 ON product.productxclassificationsecuritytoken (productxclassificationid);
+
+CREATE INDEX IF NOT EXISTS idx_productxproduct_childproductid ON product.productxproduct (childproductid);
+CREATE INDEX IF NOT EXISTS idx_productxproduct_parentproductid ON product.productxproduct (parentproductid);
+
+CREATE INDEX IF NOT EXISTS idx_productxproductsecuritytoken_productxproductid ON product.productxproductsecuritytoken (productxproductid);
+
+CREATE INDEX IF NOT EXISTS idx_productxproducttype_productid ON product.productxproducttype (productid);
+
+CREATE INDEX IF NOT EXISTS idx_productxproducttypesecuritytoken_productxproducttypeid ON product.productxproducttypesecuritytoken (productxproducttypeid);
+
+CREATE INDEX IF NOT EXISTS idx_productxresourceitem_productid ON product.productxresourceitem (productid);
+
+CREATE INDEX IF NOT EXISTS idx_resourceitemdatasecuritytoken_resourceitemdataid ON resource.resourceitemdatasecuritytoken (resourceitemdataid);
+
+CREATE INDEX IF NOT EXISTS idx_resourceitemdataxclassification_classificationid ON resource.resourceitemdataxclassification (classificationid);
+
+CREATE INDEX IF NOT EXISTS idx_resourceitemdataxclassificationsecuritytoken_activeflagid ON resource.resourceitemdataxclassificationsecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_resourceitemdataxclassificationsecuritytoken_resourc_29ab2f ON resource.resourceitemdataxclassificationsecuritytoken (resourceitemdataxclassificationid);
+
+CREATE INDEX IF NOT EXISTS idx_resourceitemtypesecuritytoken_activeflagid ON resource.resourceitemtypesecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_resourceitemtypesecuritytoken_resourceitemtypeid ON resource.resourceitemtypesecuritytoken (resourceitemtypeid);
+
+CREATE INDEX IF NOT EXISTS idx_resourceitemxclassificationsecuritytoken_activeflagid ON resource.resourceitemxclassificationsecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_resourceitemxclassificationsecuritytoken_resourceite_b3b0f1 ON resource.resourceitemxclassificationsecuritytoken (resourceitemxclassificationid);
+
+CREATE INDEX IF NOT EXISTS idx_resourceitemxresourceitem_childresourceitemid ON resource.resourceitemxresourceitem (childresourceitemid);
+CREATE INDEX IF NOT EXISTS idx_resourceitemxresourceitem_parentresourceitemid ON resource.resourceitemxresourceitem (parentresourceitemid);
+
+CREATE INDEX IF NOT EXISTS idx_resourceitemxresourceitemsecuritytoken_resourceitemx_58d826 ON resource.resourceitemxresourceitemsecuritytoken (resourceitemxresourceitemid);
+
+CREATE INDEX IF NOT EXISTS idx_resourceitemxresourceitemtype_resourceitemtypeid ON resource.resourceitemxresourceitemtype (resourceitemtypeid);
+
+CREATE INDEX IF NOT EXISTS idx_resourceitemxresourceitemtypesecuritytoken_activeflagid ON resource.resourceitemxresourceitemtypesecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_resourceitemxresourceitemtypesecuritytoken_enterpriseid ON resource.resourceitemxresourceitemtypesecuritytoken (enterpriseid);
+CREATE INDEX IF NOT EXISTS idx_resourceitemxresourceitemtypesecuritytoken_resourcei_f0bf10 ON resource.resourceitemxresourceitemtypesecuritytoken (resourceitemxresourceitemtypeid);
+CREATE INDEX IF NOT EXISTS idx_resourceitemxresourceitemtypesecuritytoken_securitytokenid ON resource.resourceitemxresourceitemtypesecuritytoken (securitytokenid);
+CREATE INDEX IF NOT EXISTS idx_resourceitemxresourceitemtypesecuritytoken_systemid ON resource.resourceitemxresourceitemtypesecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_rulestypexclassification_classificationid ON rules.rulestypexclassification (classificationid);
+
+CREATE INDEX IF NOT EXISTS idx_rulestypexclassificationsecuritytoken_activeflagid ON rules.rulestypexclassificationsecuritytoken (activeflagid);
+
+CREATE INDEX IF NOT EXISTS idx_rulestypexresourceitem_classificationid ON rules.rulestypexresourceitem (classificationid);
+CREATE INDEX IF NOT EXISTS idx_rulestypexresourceitem_resourceitemid ON rules.rulestypexresourceitem (resourceitemid);
+
+CREATE INDEX IF NOT EXISTS idx_rulestypexresourceitemsecuritytoken_activeflagid ON rules.rulestypexresourceitemsecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_rulestypexresourceitemsecuritytoken_rulestypexresour_3f03d1 ON rules.rulestypexresourceitemsecuritytoken (rulestypexresourceitemid);
+
+CREATE INDEX IF NOT EXISTS idx_rulesxarrangement_arrangementid ON rules.rulesxarrangement (arrangementid);
+CREATE INDEX IF NOT EXISTS idx_rulesxarrangement_classificationid ON rules.rulesxarrangement (classificationid);
+
+CREATE INDEX IF NOT EXISTS idx_rulesxarrangementssecuritytoken_rulesxarrangementsid ON rules.rulesxarrangementssecuritytoken (rulesxarrangementsid);
+
+CREATE INDEX IF NOT EXISTS idx_rulesxclassification_classificationid ON rules.rulesxclassification (classificationid);
+
+CREATE INDEX IF NOT EXISTS idx_rulesxclassificationsecuritytoken_activeflagid ON rules.rulesxclassificationsecuritytoken (activeflagid);
+CREATE INDEX IF NOT EXISTS idx_rulesxclassificationsecuritytoken_rulesxclassificationid ON rules.rulesxclassificationsecuritytoken (rulesxclassificationid);
+
+CREATE INDEX IF NOT EXISTS idx_rulesxinvolvedparty_classificationid ON rules.rulesxinvolvedparty (classificationid);
+CREATE INDEX IF NOT EXISTS idx_rulesxinvolvedparty_involvedpartyid ON rules.rulesxinvolvedparty (involvedpartyid);
+
+CREATE INDEX IF NOT EXISTS idx_rulesxinvolvedpartysecuritytoken_rulesxinvolvedpartyid ON rules.rulesxinvolvedpartysecuritytoken (rulesxinvolvedpartyid);
+
+CREATE INDEX IF NOT EXISTS idx_rulesxproduct_classificationid ON rules.rulesxproduct (classificationid);
+CREATE INDEX IF NOT EXISTS idx_rulesxproduct_productid ON rules.rulesxproduct (productid);
+
+CREATE INDEX IF NOT EXISTS idx_rulesxproductsecuritytoken_rulesxproductid ON rules.rulesxproductsecuritytoken (rulesxproductid);
+
+CREATE INDEX IF NOT EXISTS idx_rulesxresourceitem_classificationid ON rules.rulesxresourceitem (classificationid);
+CREATE INDEX IF NOT EXISTS idx_rulesxresourceitem_resourceitemid ON rules.rulesxresourceitem (resourceitemid);
+
+CREATE INDEX IF NOT EXISTS idx_rulesxresourceitemsecuritytoken_rulesxresourceitemid ON rules.rulesxresourceitemsecuritytoken (rulesxresourceitemid);
+
+CREATE INDEX IF NOT EXISTS idx_rulesxrules_classificationid ON rules.rulesxrules (classificationid);
+
+CREATE INDEX IF NOT EXISTS idx_rulesxrulessecuritytoken_rulesxrulesid ON rules.rulesxrulessecuritytoken (rulesxrulesid);
+
+CREATE INDEX IF NOT EXISTS idx_rulesxrulestype_classificationid ON rules.rulesxrulestype (classificationid);
+CREATE INDEX IF NOT EXISTS idx_rulesxrulestype_rulestypeid ON rules.rulesxrulestype (rulestypeid);
+
+CREATE INDEX IF NOT EXISTS idx_securitytokenssecuritytoken_systemid ON security.securitytokenssecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_securitytokensxsecuritytokensecuritytoken_securityto_6b74fc ON security.securitytokensxsecuritytokensecuritytoken (securitytokenxsecuritytokenid);
+CREATE INDEX IF NOT EXISTS idx_securitytokensxsecuritytokensecuritytoken_systemid ON security.securitytokensxsecuritytokensecuritytoken (systemid);
+
+CREATE INDEX IF NOT EXISTS idx_securitytokenxclassification_classificationid ON security.securitytokenxclassification (classificationid);
+
+CREATE INDEX IF NOT EXISTS idx_securitytokenxclassificationsecuritytoken_securitytokenid ON security.securitytokenxclassificationsecuritytoken (securitytokenid);
+CREATE INDEX IF NOT EXISTS idx_securitytokenxclassificationsecuritytoken_securityto_d8edbf ON security.securitytokenxclassificationsecuritytoken (securitytokenxclassificationid);
+
+CREATE INDEX IF NOT EXISTS idx_securitytokenxsecuritytoken_childsecuritytokenid ON security.securitytokenxsecuritytoken (childsecuritytokenid);
+CREATE INDEX IF NOT EXISTS idx_securitytokenxsecuritytoken_parentsecuritytokenid ON security.securitytokenxsecuritytoken (parentsecuritytokenid);

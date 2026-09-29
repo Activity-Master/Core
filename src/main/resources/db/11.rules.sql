@@ -85,7 +85,7 @@ CREATE TABLE rules.rulestypexclassification
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -124,7 +124,7 @@ CREATE TABLE rules.rulestypexresourceitem
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -164,7 +164,7 @@ CREATE TABLE rules.rulesxarrangement
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -204,7 +204,7 @@ CREATE TABLE rules.rulesxclassification
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -243,7 +243,7 @@ CREATE TABLE rules.rulesxinvolvedparty
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -283,7 +283,7 @@ CREATE TABLE rules.rulesxproduct
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -323,7 +323,7 @@ CREATE TABLE rules.rulesxresourceitem
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -363,7 +363,7 @@ CREATE TABLE rules.rulesxrules
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -403,7 +403,7 @@ CREATE TABLE rules.rulesxrulestype
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,

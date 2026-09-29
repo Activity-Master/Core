@@ -70,7 +70,7 @@ CREATE TABLE security.securitytokenxclassification
 
     warehouselastupdatedtimestamp  timestamp(6) with time zone NOT NULL,
     originalsourcesystemuniqueid   UUID                        NOT NULL,
-    value                          text                        NOT NULL,
+    value                          varchar(150)                NOT NULL,
     activeflagid                   UUID                        NOT NULL,
     enterpriseid                   UUID                        NOT NULL,
     systemid                       UUID                        NOT NULL,
@@ -109,7 +109,7 @@ CREATE TABLE security.securitytokenxsecuritytoken
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
     originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         text                        NOT NULL,
+    value                         varchar(150)                NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -118,9 +118,6 @@ CREATE TABLE security.securitytokenxsecuritytoken
     childsecuritytokenid          UUID                        NOT NULL,
     parentsecuritytokenid         UUID                        NOT NULL
 );
--- Indexes for security.securityhierarchy
-CREATE INDEX idx_sh_parent_id ON security.securityhierarchy (parentid);
-
 -- Indexes for security.securitytoken
 CREATE INDEX idx_st_eff_from ON security.securitytoken (effectivefromdate);
 CREATE INDEX idx_st_eff_to ON security.securitytoken (effectivetodate);

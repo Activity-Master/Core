@@ -269,7 +269,7 @@ CREATE TABLE party.involvedpartyxaddress
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -309,7 +309,7 @@ CREATE TABLE party.involvedpartyxclassification
 
     warehouselastupdatedtimestamp  timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid   UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                          text                        NOT NULL ,
+    value                          varchar(150)                NOT NULL ,
     activeflagid                   UUID                        NOT NULL,
     enterpriseid                   UUID                        NOT NULL,
     systemid                       UUID                        NOT NULL,
@@ -348,7 +348,7 @@ CREATE TABLE party.involvedpartyxinvolvedparty
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -367,7 +367,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartyidentificationtype
 
     warehouselastupdatedtimestamp                   timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid                    UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                                           text                        NOT NULL ,
+    value                                           varchar(150)                NOT NULL ,
     activeflagid                                    UUID                        NOT NULL,
     enterpriseid                                    UUID                        NOT NULL,
     systemid                                        UUID                        NOT NULL,
@@ -407,7 +407,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartynametype
 
     warehouselastupdatedtimestamp         timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid          UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                                 text                        NOT NULL ,
+    value                                 varchar(150)                NOT NULL ,
     activeflagid                          UUID                        NOT NULL,
     enterpriseid                          UUID                        NOT NULL,
     systemid                              UUID                        NOT NULL,
@@ -468,7 +468,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartytype
 
     warehouselastupdatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid      UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                             text                        NOT NULL ,
+    value                             varchar(150)                NOT NULL ,
     activeflagid                      UUID                        NOT NULL,
     enterpriseid                      UUID                        NOT NULL,
     systemid                          UUID                        NOT NULL,
@@ -508,7 +508,7 @@ CREATE TABLE party.involvedpartyxproduct
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -548,7 +548,7 @@ CREATE TABLE party.involvedpartyxproducttype
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL,
+    value                         varchar(150)                NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -588,7 +588,7 @@ CREATE TABLE party.involvedpartyxresourceitem
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -628,7 +628,7 @@ CREATE TABLE party.involvedpartyxrules
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         text                        NOT NULL ,
+    value                         varchar(150)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,

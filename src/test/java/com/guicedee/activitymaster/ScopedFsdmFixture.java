@@ -40,8 +40,8 @@ public final class ScopedFsdmFixture {
                     (eventxinvolvedpartyid,effectivefromdate,effectivetodate,warehousecreatedtimestamp,
                      warehousefromdate,warehouselastupdatedtimestamp,originalsourcesystemuniqueid,value,
                      activeflagid,enterpriseid,systemid,originalsourcesystemid,classificationid,eventid,involvedpartyid)
-                select '%s',clock_timestamp()-interval '1 minute','9999-12-31',clock_timestamp(),current_date,
-                       clock_timestamp(),'%s','1',f.activeflagid,'%s','%s','%s',c.classificationid,'%s','%s'
+                select '%s',statement_timestamp()-interval '1 minute','9999-12-31',statement_timestamp(),current_date,
+                       statement_timestamp(),'%s','1',f.activeflagid,'%s','%s','%s',c.classificationid,'%s','%s'
                 from classification.classification c
                 join classification.classificationdataconcept d on d.classificationdataconceptid=c.classificationdataconceptid
                 cross join lateral (select activeflagid from dbo.activeflag where enterpriseid='%s' and allowaccess=1 limit 1) f
@@ -75,8 +75,8 @@ public final class ScopedFsdmFixture {
                     (eventid,effectivefromdate,effectivetodate,warehousecreatedtimestamp,warehousefromdate,
                      warehouselastupdatedtimestamp,originalsourcesystemuniqueid,dayid,hourid,minuteid,
                      activeflagid,enterpriseid,systemid,originalsourcesystemid)
-                select '%s',clock_timestamp()-interval '1 minute','9999-12-31',clock_timestamp(),current_date,
-                       clock_timestamp(),'%s',0,0,0,f.activeflagid,'%s','%s','%s'
+                select '%s',statement_timestamp()-interval '1 minute','9999-12-31',statement_timestamp(),current_date,
+                       statement_timestamp(),'%s',0,0,0,f.activeflagid,'%s','%s','%s'
                 from dbo.activeflag f where f.enterpriseid='%s' and f.allowaccess=1 limit 1
                 """.formatted(id, id, enterprise, system, system, enterprise));
         sql.run("""
@@ -84,8 +84,8 @@ public final class ScopedFsdmFixture {
                     (eventxeventtypeid,effectivefromdate,effectivetodate,warehousecreatedtimestamp,warehousefromdate,
                      warehouselastupdatedtimestamp,originalsourcesystemuniqueid,value,activeflagid,enterpriseid,
                      systemid,originalsourcesystemid,classificationid,eventid,eventtypeid)
-                select '%s',clock_timestamp()-interval '1 minute','9999-12-31',clock_timestamp(),current_date,
-                       clock_timestamp(),'%s','1',f.activeflagid,'%s','%s','%s',c.classificationid,'%s',t.eventtypeid
+                select '%s',statement_timestamp()-interval '1 minute','9999-12-31',statement_timestamp(),current_date,
+                       statement_timestamp(),'%s','1',f.activeflagid,'%s','%s','%s',c.classificationid,'%s',t.eventtypeid
                 from event.eventtype t
                 join classification.classification c on c.classificationname='%s'
                     and c.enterpriseid=t.enterpriseid and c.systemid=t.systemid
@@ -102,8 +102,8 @@ public final class ScopedFsdmFixture {
                      warehouselastupdatedtimestamp,createallowed,deleteallowed,originalsourcesystemuniqueid,
                      readallowed,updateallowed,activeflagid,enterpriseid,originalsourcesystemid,
                      securitytokenid,systemid,eventsid)
-                select '%s',clock_timestamp()-interval '1 minute','9999-12-31',clock_timestamp(),current_date,
-                       clock_timestamp(),0,0,'%s',1,0,f.activeflagid,'%s','%s',st.securitytokenid,'%s','%s'
+                select '%s',statement_timestamp()-interval '1 minute','9999-12-31',statement_timestamp(),current_date,
+                       statement_timestamp(),0,0,'%s',1,0,f.activeflagid,'%s','%s',st.securitytokenid,'%s','%s'
                 from security.securitytoken st
                 cross join lateral (select activeflagid from dbo.activeflag where enterpriseid='%s' and allowaccess=1 limit 1) f
                 where st.securitytoken='%s' and st.enterpriseid='%s' limit 1
@@ -118,8 +118,8 @@ public final class ScopedFsdmFixture {
                     (eventxclassificationid,effectivefromdate,effectivetodate,warehousecreatedtimestamp,warehousefromdate,
                      warehouselastupdatedtimestamp,originalsourcesystemuniqueid,value,activeflagid,enterpriseid,
                      systemid,originalsourcesystemid,classificationid,eventid)
-                select '%s',clock_timestamp()-interval '1 minute','9999-12-31',clock_timestamp(),current_date,
-                       clock_timestamp(),'%s','%s',f.activeflagid,'%s','%s','%s',c.classificationid,'%s'
+                select '%s',statement_timestamp()-interval '1 minute','9999-12-31',statement_timestamp(),current_date,
+                       statement_timestamp(),'%s','%s',f.activeflagid,'%s','%s','%s',c.classificationid,'%s'
                 from classification.classification c
                 join classification.classificationdataconcept d on d.classificationdataconceptid=c.classificationdataconceptid
                     and d.classificationdataconceptname='EventXClassification'

@@ -180,7 +180,7 @@ public final class TransactionService {
                   and e.effectivefromdate<=statement_timestamp() and e.effectivetodate>statement_timestamp()
                   and t.eventtypename='Transaction Event' and x.effectivefromdate<=statement_timestamp()
                   and x.effectivetodate>statement_timestamp()
-                for update of e for share of x,t
+                for update of e
                 """, UUID.class).setParameter("event", eventId).getResultList()
                 .chain(rows -> {
                     if (rows.isEmpty()) return denied();
