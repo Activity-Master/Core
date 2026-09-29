@@ -87,7 +87,7 @@ CREATE TABLE event.eventxaddress
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL ,
+    value                         varchar(200)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -127,7 +127,7 @@ CREATE TABLE event.eventxarrangement
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL ,
+    value                         varchar(200)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -167,7 +167,7 @@ CREATE TABLE event.eventxclassification
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL ,
+    value                         varchar(200)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -206,7 +206,7 @@ CREATE TABLE event.eventxevent
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL ,
+    value                         varchar(200)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -246,7 +246,7 @@ CREATE TABLE event.eventxeventtype
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL ,
+    value                         varchar(200)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -286,7 +286,7 @@ CREATE TABLE event.eventxgeography
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL ,
+    value                         varchar(200)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -326,7 +326,7 @@ CREATE TABLE event.eventxinvolvedparty
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL ,
+    value                         varchar(200)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -366,7 +366,7 @@ CREATE TABLE event.eventxproduct
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL ,
+    value                         varchar(200)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -406,7 +406,7 @@ CREATE TABLE event.eventxresourceitem
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL,
+    value                         varchar(200)                NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -446,7 +446,7 @@ CREATE TABLE event.eventxrules
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL ,
+    value                         varchar(200)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,

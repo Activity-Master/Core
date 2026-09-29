@@ -70,7 +70,7 @@ CREATE TABLE security.securitytokenxclassification
 
     warehouselastupdatedtimestamp  timestamp(6) with time zone NOT NULL,
     originalsourcesystemuniqueid   UUID                        NOT NULL,
-    value                          varchar(150)                NOT NULL,
+    value                          varchar(200)                NOT NULL,
     activeflagid                   UUID                        NOT NULL,
     enterpriseid                   UUID                        NOT NULL,
     systemid                       UUID                        NOT NULL,
@@ -109,7 +109,7 @@ CREATE TABLE security.securitytokenxsecuritytoken
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
     originalsourcesystemuniqueid  UUID                        NOT NULL,
-    value                         varchar(150)                NOT NULL,
+    value                         varchar(200)                NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,

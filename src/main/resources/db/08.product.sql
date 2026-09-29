@@ -86,7 +86,7 @@ CREATE TABLE product.producttypexclassification
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL ,
+    value                         varchar(200)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -125,7 +125,7 @@ CREATE TABLE product.productxclassification
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL ,
+    value                         varchar(200)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -164,7 +164,7 @@ CREATE TABLE product.productxproduct
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL ,
+    value                         varchar(200)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -204,7 +204,7 @@ CREATE TABLE product.productxproducttype
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL ,
+    value                         varchar(200)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -244,7 +244,7 @@ CREATE TABLE product.productxresourceitem
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL ,
+    value                         varchar(200)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,

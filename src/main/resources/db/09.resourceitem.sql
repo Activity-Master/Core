@@ -63,7 +63,7 @@ CREATE TABLE resource.resourceitemdataxclassification
 
     warehouselastupdatedtimestamp     timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid      UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                             varchar(150)                NOT NULL ,
+    value                             varchar(200)                NOT NULL ,
     activeflagid                      UUID                        NOT NULL,
     enterpriseid                      UUID                        NOT NULL,
     systemid                          UUID                        NOT NULL,
@@ -161,7 +161,7 @@ CREATE TABLE resource.resourceitemxclassification
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL ,
+    value                         varchar(200)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -200,7 +200,7 @@ CREATE TABLE resource.resourceitemxresourceitem
 
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid  UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                         varchar(150)                NOT NULL ,
+    value                         varchar(200)                NOT NULL ,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
@@ -240,7 +240,7 @@ CREATE TABLE resource.resourceitemxresourceitemtype
 
     warehouselastupdatedtimestamp   timestamp(6) with time zone NOT NULL DEFAULT now(),
     originalsourcesystemuniqueid    UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-    value                           varchar(150)                NOT NULL ,
+    value                           varchar(200)                NOT NULL ,
     activeflagid                    UUID                        NOT NULL,
     enterpriseid                    UUID                        NOT NULL,
     systemid                        UUID                        NOT NULL,
