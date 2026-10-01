@@ -28,7 +28,7 @@ public final class ActivityMasterPoolConfiguration {
     public static ActivityMasterPoolConfiguration resolve(Function<String,String> settings) {
         try {
             String host=value(settings,"FSDM_DBSERVER","localhost");
-            String mode=value(settings,"FSDM_SSL_MODE","disable");
+            String mode=value(settings,"FSDM_SSL_MODE","verify-full");
             int maximum=integer(settings,"FSDM_POOL_MAX_SIZE",16,1,500);
             var connection=new PgConnectOptions().setHost(host)
                     .setPort(integer(settings,"FSDM_DBPORT",5432,1,65535))
@@ -52,10 +52,8 @@ public final class ActivityMasterPoolConfiguration {
                         .setSslHandshakeTimeoutUnit(TimeUnit.MILLISECONDS)
                         .setTrustOptions(new PemTrustOptions().addCertValue(Buffer.buffer(ca))));
             } else if("disable".equals(mode)
-                    //todo enable local safety?
-                    //&& Set.of("local","development","test").contains(value(settings,"ENVIRONMENT",""))
-                    //&& Set.of("127.0.0.1","::1").contains(host)
-            ) {
+                    && Set.of("local","development","test").contains(value(settings,"ENVIRONMENT",""))
+                    && Set.of("127.0.0.1","::1").contains(host)) {
                 connection.setSslMode(SslMode.DISABLE);
             } else throw invalid();
             var pool=new PoolOptions().setShared(false).setName("activity-master-pool")

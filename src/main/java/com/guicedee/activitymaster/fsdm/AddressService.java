@@ -70,6 +70,26 @@ public class AddressService
 	@Inject
 	private IClassificationService<?> classificationServiceProvider;
 
+    @Inject private StructuredPartyAddressService structuredAddresses;
+
+    @Override
+    public Uni<com.guicedee.activitymaster.fsdm.client.services.dto.PartyAddressDTO> savePartyAddress(
+            Mutiny.StatelessSession session, IInvolvedParty<?, ?> party,
+            com.guicedee.activitymaster.fsdm.client.services.dto.PartyAddressDTO address, ISystems<?, ?> system, UUID... tokens) {
+        return structuredAddresses.save(session, party, address, system, tokens);
+    }
+
+    @Override
+    public Uni<java.util.List<com.guicedee.activitymaster.fsdm.client.services.dto.PartyAddressDTO>> findPartyAddresses(
+            Mutiny.StatelessSession session, IInvolvedParty<?, ?> party, ISystems<?, ?> system, UUID... tokens) {
+        return structuredAddresses.find(session, party, system, tokens);
+    }
+
+    @Override
+    public Uni<Void> endPartyAddress(Mutiny.StatelessSession session, IInvolvedParty<?, ?> party, UUID id, ISystems<?, ?> system, UUID... tokens) {
+        return structuredAddresses.end(session, party, id, system, tokens);
+    }
+
 	@Override
 	public IAddress<?, ?> get()
 	{
@@ -152,6 +172,8 @@ public class AddressService
 	@Override
 	public Uni<IAddress<?, ?>> create(Mutiny.StatelessSession session, String addressClassification, UUID key, ISystems<?, ?> system, String value, UUID... identifyingToken)
 	{
+        if (addressClassification != null && java.util.Set.of("BuildingAddress", "BoxAddress", "PostalAddress", "LocationAddress").contains(addressClassification))
+            return Uni.createFrom().failure(new AddressException("Physical and postal addresses require savePartyAddress with separate components"));
 		return createWithSecurityStateless(session, addressClassification, key, system, value, false, null, null, identifyingToken);
 	}
 
@@ -161,6 +183,8 @@ public class AddressService
 	                                                 com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
 	                                                 UUID... identifyingToken)
 	{
+        if (addressClassification != null && java.util.Set.of("BuildingAddress", "BoxAddress", "PostalAddress", "LocationAddress").contains(addressClassification))
+            return Uni.createFrom().failure(new AddressException("Physical and postal addresses require savePartyAddress with separate components"));
 		return createWithSecurityStateless(session, addressClassification, key, system, value, true, scopeToken, null, identifyingToken);
 	}
 
@@ -243,20 +267,13 @@ public class AddressService
 	@Override
 	public Uni<IAddress<?, ?>> addOrFindStreetAddress(Mutiny.StatelessSession session, String number, String street, String streetType, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
-		return createWithSecurityStateless(session, AddressBuildingClassifications.BuildingAddress.name(), null, system, number + " " + street + " " + streetType, false, null,
-				addy -> addy.addClassification(session, AddressBuildingClassifications.BuildingNumber.name(), number, system, identityToken)
-						.chain(() -> addy.addClassification(session, AddressBuildingClassifications.BuildingStreet.name(), street, system, identityToken))
-						.chain(() -> addy.addClassification(session, AddressBuildingClassifications.BuildingStreetType.name(), streetType, system, identityToken)),
-				identityToken);
+        return Uni.createFrom().failure(new AddressException("Use savePartyAddress with an owning party and separate address components"));
 	}
 
 	@Override
 	public Uni<IAddress<?, ?>> addOrFindPostalAddress(Mutiny.StatelessSession session, String boxIdentifier, String boxNumber, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
-		return createWithSecurityStateless(session, BoxAddress.name(), null, system, boxIdentifier + " " + boxNumber, false, null,
-				addy -> addy.addClassification(session, BoxNumber.name(), boxNumber, system, identityToken)
-						.chain(() -> addy.addClassification(session, BoxIdentifier.name(), boxIdentifier, system, identityToken)),
-				identityToken);
+        return Uni.createFrom().failure(new AddressException("Use savePartyAddress with an owning party and separate postal components"));
 	}
 
 	@Override
@@ -352,4 +369,3 @@ public class AddressService
 	
 	
 }
-

@@ -1,5 +1,11 @@
-CREATE SCHEMA "time";
-CREATE TABLE "time".daynames
+DO $fsdm_schema$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_catalog.pg_namespace WHERE nspname = 'time') THEN
+        CREATE SCHEMA IF NOT EXISTS "time";
+    END IF;
+END;
+$fsdm_schema$;
+CREATE TABLE IF NOT EXISTS "time".daynames
 (
     daynameid                    integer                NOT NULL primary key,
     dayabbreviation              character varying(50)  NOT NULL,
@@ -10,14 +16,14 @@ CREATE TABLE "time".daynames
     dayshortname                 character varying(200) NOT NULL,
     daysortorder                 integer                NOT NULL
 );
-CREATE TABLE "time".dayparts
+CREATE TABLE IF NOT EXISTS "time".dayparts
 (
     daypartid          integer                NOT NULL primary key,
     daypartdescription character varying(100) NOT NULL,
     daypartname        character varying(100) NOT NULL,
     daypartsortorder   integer                NOT NULL
 );
-CREATE TABLE "time".days
+CREATE TABLE IF NOT EXISTS "time".days
 (
     dayid                        integer                     NOT NULL primary key,
     dayddmmyyyydescription       character varying(50)       NOT NULL,
@@ -43,14 +49,14 @@ CREATE TABLE "time".days
     monthid                      integer                     NOT NULL,
     weekid                       integer                     NOT NULL
 );
-CREATE TABLE "time".halfhourdayparts
+CREATE TABLE IF NOT EXISTS "time".halfhourdayparts
 (
     halfhourdaypartid integer NOT NULL primary key,
     hourid            integer NOT NULL,
     minuteid          integer NOT NULL,
     daypartid         integer NOT NULL
 );
-CREATE TABLE "time".halfhours
+CREATE TABLE IF NOT EXISTS "time".halfhours
 (
     hourid                   integer               NOT NULL,
     minuteid                 integer               NOT NULL,
@@ -60,7 +66,7 @@ CREATE TABLE "time".halfhours
     twelvehourclockdesc      character varying(10) NOT NULL,
     twentyfourhourclockdesc  character varying(10) NOT NULL
 );
-CREATE TABLE "time".hours
+CREATE TABLE IF NOT EXISTS "time".hours
 (
     hourid                  integer               NOT NULL primary key,
     ampmdesc                character varying(5)  NOT NULL,
@@ -68,7 +74,7 @@ CREATE TABLE "time".hours
     twelvehourclockdesc     character varying(10) NOT NULL,
     twentyfourhourclockdesc character varying(10) NOT NULL
 );
-CREATE TABLE "time".monthofyear
+CREATE TABLE IF NOT EXISTS "time".monthofyear
 (
     monthofyearid           integer               NOT NULL primary key,
     monthofyearabbreviation character varying(50) NOT NULL,
@@ -76,7 +82,7 @@ CREATE TABLE "time".monthofyear
     monthofyearshortname    character varying(50) NOT NULL,
     monthinyearnumber       integer               NOT NULL
 );
-CREATE TABLE "time".months
+CREATE TABLE IF NOT EXISTS "time".months
 (
     monthid                  integer               NOT NULL primary key,
     lastmonthid              integer               NOT NULL,
@@ -93,14 +99,14 @@ CREATE TABLE "time".months
     monthofyearid            integer               NOT NULL,
     quarterid                integer               NOT NULL
 );
-CREATE TABLE "time".publicholidays
+CREATE TABLE IF NOT EXISTS "time".publicholidays
 (
     publicholidayid   integer                NOT NULL primary key,
     dayid             integer                NOT NULL,
     publicholidayname character varying(250) NOT NULL,
     publicholidaytype character varying(250) NOT NULL
 );
-CREATE TABLE "time".quarters
+CREATE TABLE IF NOT EXISTS "time".quarters
 (
     quarterid               integer               NOT NULL primary key,
     lastquarterid           smallint              NOT NULL,
@@ -115,7 +121,7 @@ CREATE TABLE "time".quarters
     quarteryeardescription  character varying(50) NOT NULL,
     yearid                  smallint              NOT NULL
 );
-CREATE TABLE "time"."time"
+CREATE TABLE IF NOT EXISTS "time"."time"
 (
     hourid                  integer               NOT NULL,
     minuteid                integer               NOT NULL,
@@ -125,32 +131,32 @@ CREATE TABLE "time"."time"
     twelvehourclockdesc     character varying(10) NOT NULL,
     twentyfourhourclockdesc character varying(10) NOT NULL
 );
-CREATE TABLE "time".trans_fiscal
+CREATE TABLE IF NOT EXISTS "time".trans_fiscal
 (
     dayid       integer NOT NULL,
     fiscaldayid integer NOT NULL
 );
-CREATE TABLE "time".trans_mtd
+CREATE TABLE IF NOT EXISTS "time".trans_mtd
 (
     dayid    integer NOT NULL,
     mtddayid integer NOT NULL
 );
-CREATE TABLE "time".trans_qtd
+CREATE TABLE IF NOT EXISTS "time".trans_qtd
 (
     dayid    integer NOT NULL,
     qtddayid integer NOT NULL
 );
-CREATE TABLE "time".trans_qtm
+CREATE TABLE IF NOT EXISTS "time".trans_qtm
 (
     monthid     integer NOT NULL,
     qtm_monthid integer NOT NULL
 );
-CREATE TABLE "time".trans_ytd
+CREATE TABLE IF NOT EXISTS "time".trans_ytd
 (
     dayid    integer NOT NULL,
     ytddayid integer NOT NULL
 );
-CREATE TABLE "time".weeks
+CREATE TABLE IF NOT EXISTS "time".weeks
 (
     weekid               integer               NOT NULL primary key,
     monthid              integer               NOT NULL,
@@ -161,7 +167,7 @@ CREATE TABLE "time".weeks
     weekshortdescription character varying(50) NOT NULL,
     yearid               integer               NOT NULL
 );
-CREATE TABLE "time".years
+CREATE TABLE IF NOT EXISTS "time".years
 (
     yearid       smallint               NOT NULL primary key,
     century      smallint               NOT NULL,
@@ -186,7 +192,8 @@ VALUES (1, 'J', 'January', 'Jan', 0),
        (9, 'S', 'September', 'Sep', 8),
        (10, 'O', 'October', 'Oct', 9),
        (11, 'N', 'November', 'Nov', 10),
-       (12, 'D', 'December', 'Dec', 11);
+       (12, 'D', 'December', 'Dec', 11)
+ON CONFLICT (monthofyearid) DO NOTHING;
 
 -- Batch insert data into the "time".dayparts table
 INSERT INTO "time".dayparts (daypartid, daypartdescription, daypartname, daypartsortorder)
@@ -200,7 +207,8 @@ VALUES (2, 'Between 3.30am and 6.30 am', 'Early Morning', 2),
        (9, 'Between 4.30pm and 7pm', 'Evening', 9),
        (10, 'Between 7pm and 9.30pm', 'Late Evening', 10),
        (11, 'Between 9.30pm and 12am', 'Midnight Evening', 11),
-       (12, 'Between 12am and 3.30am', 'Midnight Morning', 1);
+       (12, 'Between 12am and 3.30am', 'Midnight Morning', 1)
+ON CONFLICT (daypartid) DO NOTHING;
 
 -- Batch insert data into the "time".daynames table
 INSERT INTO "time".daynames (daynameid, dayabbreviation, daybusinessdayclassification, dayisbusinessday,
@@ -211,33 +219,34 @@ VALUES (1, 'S', 'Weekend', 0, 'Su', 'Sunday', 'Sun', 0),
        (4, 'W', 'Weekday', 1, 'We', 'Wednesday', 'Wed', 3),
        (5, 'T', 'Weekday', 1, 'Th', 'Thursday', 'Thur', 4),
        (6, 'F', 'Weekday', 1, 'Fr', 'Friday', 'Fri', 5),
-       (7, 'S', 'Weekend', 0, 'Sa', 'Saturday', 'Sat', 6);
+       (7, 'S', 'Weekend', 0, 'Sa', 'Saturday', 'Sat', 6)
+ON CONFLICT (daynameid) DO NOTHING;
 
 
 
-CREATE INDEX idx_td_daynameid ON "time".days (daynameid);
-CREATE INDEX idx_td_weekid ON "time".days (weekid);
-CREATE INDEX idx_td_monthid ON "time".days (monthid);
-CREATE INDEX idx_hd_daypartid ON "time".halfhourdayparts (daypartid);
-CREATE INDEX idx_md_monthofyearid ON "time".months (monthofyearid);
-CREATE INDEX idx_md_quarterid ON "time".months (quarterid);
-CREATE INDEX idx_qd_yearid ON "time".quarters (yearid);
+CREATE INDEX IF NOT EXISTS idx_td_daynameid ON "time".days (daynameid);
+CREATE INDEX IF NOT EXISTS idx_td_weekid ON "time".days (weekid);
+CREATE INDEX IF NOT EXISTS idx_td_monthid ON "time".days (monthid);
+CREATE INDEX IF NOT EXISTS idx_hd_daypartid ON "time".halfhourdayparts (daypartid);
+CREATE INDEX IF NOT EXISTS idx_md_monthofyearid ON "time".months (monthofyearid);
+CREATE INDEX IF NOT EXISTS idx_md_quarterid ON "time".months (quarterid);
+CREATE INDEX IF NOT EXISTS idx_qd_yearid ON "time".quarters (yearid);
 
-CREATE INDEX idx_pd_daypartname ON "time".dayparts (daypartname);
-CREATE INDEX idx_ph_publicholidayname ON "time".publicholidays (publicholidayname);
-CREATE INDEX idx_my_monthofyearname ON "time".monthofyear (monthofyearname);
-CREATE INDEX idx_my_monthofyearshortname ON "time".monthofyear (monthofyearshortname);
-CREATE INDEX idx_h_ampmdesc ON "time".hours (ampmdesc);
-CREATE INDEX idx_h_twelvehourclockdesc ON "time".hours (twelvehourclockdesc);
-CREATE INDEX idx_h_twentyfourhourclockdesc ON "time".hours (twentyfourhourclockdesc);
-CREATE INDEX idx_t_ampmdesc ON "time".time (ampmdesc);
-CREATE INDEX idx_t_twelvehourclockdesc ON "time".time (twelvehourclockdesc);
-CREATE INDEX idx_t_twentyfourhourclockdesc ON "time".time (twentyfourhourclockdesc);
-CREATE INDEX idx_hd_ampmdesc ON "time".halfhours (ampmdesc);
-CREATE INDEX idx_hd_twelvehourclockdesc ON "time".halfhours (twelvehourclockdesc);
-CREATE INDEX idx_hd_twentyfourhourclockdesc ON "time".halfhours (twentyfourhourclockdesc);
-CREATE INDEX idx_y_yyname ON "time".years (yyname);
-CREATE INDEX idx_y_yyyname ON "time".years (yyyname);
-CREATE INDEX idx_y_yearfullname ON "time".years (yearfullname);
-CREATE INDEX idx_y_yearname ON "time".years (yearname);
-CREATE INDEX idx_d_daydatetime ON "time".days (daydatetime);
+CREATE INDEX IF NOT EXISTS idx_pd_daypartname ON "time".dayparts (daypartname);
+CREATE INDEX IF NOT EXISTS idx_ph_publicholidayname ON "time".publicholidays (publicholidayname);
+CREATE INDEX IF NOT EXISTS idx_my_monthofyearname ON "time".monthofyear (monthofyearname);
+CREATE INDEX IF NOT EXISTS idx_my_monthofyearshortname ON "time".monthofyear (monthofyearshortname);
+CREATE INDEX IF NOT EXISTS idx_h_ampmdesc ON "time".hours (ampmdesc);
+CREATE INDEX IF NOT EXISTS idx_h_twelvehourclockdesc ON "time".hours (twelvehourclockdesc);
+CREATE INDEX IF NOT EXISTS idx_h_twentyfourhourclockdesc ON "time".hours (twentyfourhourclockdesc);
+CREATE INDEX IF NOT EXISTS idx_t_ampmdesc ON "time".time (ampmdesc);
+CREATE INDEX IF NOT EXISTS idx_t_twelvehourclockdesc ON "time".time (twelvehourclockdesc);
+CREATE INDEX IF NOT EXISTS idx_t_twentyfourhourclockdesc ON "time".time (twentyfourhourclockdesc);
+CREATE INDEX IF NOT EXISTS idx_hd_ampmdesc ON "time".halfhours (ampmdesc);
+CREATE INDEX IF NOT EXISTS idx_hd_twelvehourclockdesc ON "time".halfhours (twelvehourclockdesc);
+CREATE INDEX IF NOT EXISTS idx_hd_twentyfourhourclockdesc ON "time".halfhours (twentyfourhourclockdesc);
+CREATE INDEX IF NOT EXISTS idx_y_yyname ON "time".years (yyname);
+CREATE INDEX IF NOT EXISTS idx_y_yyyname ON "time".years (yyyname);
+CREATE INDEX IF NOT EXISTS idx_y_yearfullname ON "time".years (yearfullname);
+CREATE INDEX IF NOT EXISTS idx_y_yearname ON "time".years (yearname);
+CREATE INDEX IF NOT EXISTS idx_d_daydatetime ON "time".days (daydatetime);

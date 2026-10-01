@@ -192,6 +192,8 @@ public class TestColumnEncryption
         set(CONFIG + "mode", "aes-gcm");
         assertTrue(encrypt("x".repeat(101), ADDRESS).length() <= 255);
         assertThrows(IllegalArgumentException.class, () -> encrypt("x".repeat(102), ADDRESS));
+        String profileText = "Private medical information ".repeat(32);
+        assertThrows(IllegalArgumentException.class, () -> encrypt(profileText, IDENTIFICATION));
         assertThrows(IllegalArgumentException.class, () -> encrypt("東".repeat(34), ADDRESS));
     }
 
@@ -205,14 +207,19 @@ public class TestColumnEncryption
         Predicate clause = mock(Predicate.class);
         Predicate group = mock(Predicate.class);
         Predicate negated = mock(Predicate.class);
+        Expression<String> extracted = mock(Expression.class);
+        Expression<String> lookupHeader = mock(Expression.class);
+        when(builder.function(eq("regexp_substr"), eq(String.class), any(Expression[].class))).thenReturn(extracted);
+        when(builder.coalesce(extracted, "")).thenReturn(lookupHeader);
         when(builder.equal(eq(column), anyString())).thenReturn(clause);
-        when(builder.like(eq(column), anyString())).thenReturn(clause);
+        when(builder.equal(eq(lookupHeader), anyString())).thenReturn(clause);
         when(builder.or(any(Predicate[].class))).thenReturn(group);
         when(builder.not(group)).thenReturn(negated);
         assertSame(group, EncryptedValuePredicate.create(builder, column, Operand.Equals, "same", ADDRESS));
         verify(builder).equal(column, "same");
         verify(builder).equal(column, legacyObfuscatedValue("same"));
-        verify(builder).like(column, searchPrefixes("same", ADDRESS).getFirst() + "%");
+        verify(builder).equal(lookupHeader, searchPrefixes("same", ADDRESS).getFirst());
+        verify(builder, never()).like(any(Expression.class), anyString());
         ArgumentCaptor<Predicate[]> captured = ArgumentCaptor.forClass(Predicate[].class);
         verify(builder).or(captured.capture());
         assertEquals(3, captured.getValue().length);

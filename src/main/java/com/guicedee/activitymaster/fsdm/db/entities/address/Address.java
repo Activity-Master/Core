@@ -59,6 +59,12 @@ public class Address
 		implements IAddress<Address, AddressQueryBuilder>
 {
 	
+    /** Component role; identifying values remain in the party-identification row. */
+    @JoinColumn(name = "AddressTypeID", referencedColumnName = "AddressTypeID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private com.guicedee.activitymaster.fsdm.db.entities.address.AddressType addressTypeID;
+
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -185,14 +191,28 @@ public class Address
 	
 	public @NotNull String getValue()
 	{
+		// Typed public components are canonical text, including numeric street names.
+		if (addressTypeID != null && (this.value == null || !this.value.startsWith("amenc:"))) return this.value;
 		return ColumnEncryption.decrypt(this.value, ColumnEncryption.ADDRESS,
 				this.value != null && this.value.startsWith("amenc:2:") && getEnterpriseID() != null
 						? getEnterpriseID().getId() : null);
 	}
 	
+    /** Public dimensional component text, never party-specific identifiers or a full address. */
+    public Address setComponentValue(String value) {
+        if (addressTypeID == null || !java.util.Set.of("Street", "StreetType", "BoxKind").contains(addressTypeID.getName()))
+            throw new IllegalArgumentException("Only public address components can have dimensional values");
+        this.value = value;
+        return this;
+    }
+
 	@Override
 	public Address setValue(String value)
 	{
+		if (value == null || value.isEmpty()) {
+			this.value = value;
+			return this;
+		}
 		this.value = ColumnEncryption.encrypt(value, ColumnEncryption.ADDRESS,
 				ColumnEncryption.enterpriseWrites() && getEnterpriseID() != null ? getEnterpriseID().getId() : null);
 		return this;

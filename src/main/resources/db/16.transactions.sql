@@ -1,6 +1,12 @@
 -- Managed migration after the canonical FSDM schema. PostgreSQL identifiers
 -- below match the existing lowercase ActivityMaster/NE1 database.
-CREATE SCHEMA IF NOT EXISTS transactions;
+DO $fsdm_schema$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_catalog.pg_namespace WHERE nspname = 'transactions') THEN
+        CREATE SCHEMA IF NOT EXISTS transactions;
+    END IF;
+END;
+$fsdm_schema$;
 
 CREATE TABLE IF NOT EXISTS transactions.transaction_type
 (
@@ -30,9 +36,7 @@ CREATE TABLE IF NOT EXISTS transactions.entry
     signed_amount       numeric(39, 8) GENERATED ALWAYS AS (amount * direction) STORED,
     created_at          timestamptz    NOT NULL DEFAULT now(),
     UNIQUE (event_id, line_no),
-    UNIQUE (enterprise_id, operation_key, line_no),
-    FOREIGN KEY (transaction_type_id, direction)
-        REFERENCES transactions.transaction_type (transaction_type_id, direction)
+    UNIQUE (enterprise_id, operation_key, line_no)
 );
 CREATE INDEX IF NOT EXISTS transaction_entry_arrangement_unit
     ON transactions.entry (arrangement_id, unit, event_id);
@@ -132,7 +136,7 @@ CREATE TABLE IF NOT EXISTS transactions.entry_security_token
 CREATE TABLE IF NOT EXISTS transactions.transaction_x_transaction_type_security_token
 (
     transaction_x_transaction_type_security_token_id uuid PRIMARY KEY,
-    transaction_x_transaction_type_id                uuid        NOT NULL REFERENCES transactions.transaction_x_transaction_type (transaction_x_transaction_type_id),
+    transaction_x_transaction_type_id                uuid        NOT NULL,
     enterprise_id                                    uuid        NOT NULL,
     securitytokenid                                  uuid        NOT NULL,
     createallowed                                    integer     NOT NULL CHECK (createallowed IN (0, 1)),
@@ -817,3 +821,7 @@ CREATE TRIGGER relationship_validate
 EXECUTE FUNCTION transactions.validate_relationship('classification', 'classification', 'classificationid',
                                                     'classificationid', 'enterpriseid');
 REVOKE ALL ON FUNCTION transactions.validate_relationship() FROM PUBLIC;
+
+-- Join coverage without foreign-key constraints.
+CREATE INDEX IF NOT EXISTS transaction_entry_type_direction ON transactions.entry(transaction_type_id, direction);
+CREATE INDEX IF NOT EXISTS transaction_type_security_owner ON transactions.transaction_x_transaction_type_security_token(transaction_x_transaction_type_id);

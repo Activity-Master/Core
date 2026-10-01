@@ -167,11 +167,26 @@ public class ResourceItem
 
   private Uni<byte[]> relationalGetData(Mutiny.StatelessSession session)
   {
-    return session.get(ResourceItemDataValue.class, getId())
-               .onItem()
-               .transform(data -> unzip(data == null ? new byte[]{} : data.getData()))
-               .onFailure()
-               .recoverWithItem(new byte[]{});
+    if (!"Document".equals(resourceItemDataType)) {
+      return session.get(ResourceItemDataValue.class, getId())
+              .map(value -> unzip(value == null ? new byte[0] : value.getData()))
+              .onFailure().recoverWithItem(new byte[0]);
+    }
+    // Document revisions use an SCD classification pointing directly at an immutable data value.
+    return session.createNativeQuery("select cast(x.value as uuid) from resource.resourceitemxclassification x"
+            + " join classification.classification c on c.classificationid=x.classificationid"
+            + " where x.resourceitemid=:id and x.enterpriseid=:enterprise and x.systemid=:system"
+            + " and c.enterpriseid=x.enterpriseid and c.systemid=x.systemid and c.classificationname='DocumentVersion'"
+            + " and x.effectivefromdate<=statement_timestamp() and x.effectivetodate>statement_timestamp()"
+            + " and c.effectivefromdate<=statement_timestamp() and c.effectivetodate>statement_timestamp()"
+            + " and exists (select 1 from dbo.activeflag f where f.activeflagid=x.activeflagid and f.allowaccess=1)"
+            + " and exists (select 1 from dbo.activeflag f where f.activeflagid=c.activeflagid and f.allowaccess=1)", UUID.class)
+            .setParameter("id", getId()).setParameter("enterprise", getEnterpriseID().getId()).setParameter("system", getSystemID().getId())
+            .getResultList().chain(rows -> {
+              if (rows.size() > 1) throw new IllegalStateException("Multiple current document revisions");
+              return session.get(ResourceItemDataValue.class, rows.isEmpty() ? getId() : rows.getFirst())
+                      .map(value -> unzip(value == null ? new byte[0] : value.getData()));
+            });
   }
 
   @Override

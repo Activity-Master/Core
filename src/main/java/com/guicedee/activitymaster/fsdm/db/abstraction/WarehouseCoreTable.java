@@ -154,6 +154,18 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag<?, ?> activeFlag,
                                            java.util.Map<String, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?>> groupFolderTokens,
                                            UUID... identityToken) {
+        return Uni.createFrom().deferred(() -> {
+            List<S> rows = prepareDefaultSecurityRows(system, enterprise, activeFlag, groupFolderTokens);
+            return rows.isEmpty() ? Uni.createFrom().item(0L)
+                    : session.insertAll(128, rows.toArray()).replaceWith((long) rows.size());
+        });
+    }
+
+    /** Prepares the canonical default grants without I/O for ordered bulk insertion. */
+    public List<S> prepareDefaultSecurityRows(ISystems<?, ?> system,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?> enterprise,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag<?, ?> activeFlag,
+            java.util.Map<String, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?>> groupFolderTokens) {
         // Standard access policy per token key: {create, update, delete, read}
         record Grant(String key, boolean create, boolean update, boolean delete, boolean read) {
         }
@@ -167,33 +179,29 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                 new Grant(SECURITY_GUESTS, false, false, false, true)
         );
 
-        long[] inserted = {0L};
-        Uni<Void> chain = Uni.createFrom().voidItem();
+        List<S> rows = new ArrayList<>();
         for (Grant grant : grants) {
             com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> token =
                     groupFolderTokens.get(grant.key());
             if (token == null) {
                 continue;
             }
-            chain = chain.chain(() -> {
-                S st = get(findPersistentSecurityClass());
-                st.setSystemID(system);
-                st.setOriginalSourceSystemID(system.getId());
-                st.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
-                st.setEnterpriseID(enterprise);
-                st.setActiveFlagID(activeFlag);
-                st.setSecurityTokenID(token);
-                st.setCreateAllowed(grant.create());
-                st.setUpdateAllowed(grant.update());
-                st.setDeleteAllowed(grant.delete());
-                st.setReadAllowed(grant.read());
-                // Links the security row back to this owning entity (sets the base FK).
-                configureSecurityEntity(st);
-                inserted[0]++;
-                return st.builder(session).persist().replaceWithVoid();
-            });
+            S st = get(findPersistentSecurityClass());
+            st.setSystemID(system);
+            st.setOriginalSourceSystemID(system.getId());
+            st.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
+            st.setEnterpriseID(enterprise);
+            st.setActiveFlagID(activeFlag);
+            st.setSecurityTokenID(token);
+            st.setCreateAllowed(grant.create());
+            st.setUpdateAllowed(grant.update());
+            st.setDeleteAllowed(grant.delete());
+            st.setReadAllowed(grant.read());
+            // Links the security row back to this owning entity (sets the base FK).
+            configureSecurityEntity(st);
+            rows.add(st);
         }
-        return chain.replaceWith(() -> inserted[0]);
+        return rows;
     }
 
     @Override

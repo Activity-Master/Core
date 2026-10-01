@@ -1,6 +1,12 @@
-CREATE SCHEMA dbo;
+DO $fsdm_schema$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_catalog.pg_namespace WHERE nspname = 'dbo') THEN
+        CREATE SCHEMA IF NOT EXISTS dbo;
+    END IF;
+END;
+$fsdm_schema$;
 
-CREATE TABLE dbo.enterprise
+CREATE TABLE IF NOT EXISTS dbo.enterprise
 (
     enterpriseid                  UUID                        NOT NULL primary key,
     effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
@@ -12,7 +18,7 @@ CREATE TABLE dbo.enterprise
     enterprisedesc                character varying(255)      NOT NULL,
     enterprisename                character varying(255)      NOT NULL
 );
-CREATE TABLE dbo.enterprisesecuritytoken
+CREATE TABLE IF NOT EXISTS dbo.enterprisesecuritytoken
 (
     enterprisesecuritytokenid     UUID                        NOT NULL primary key,
     effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
@@ -32,7 +38,7 @@ CREATE TABLE dbo.enterprisesecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL
 );
-CREATE TABLE dbo.enterprisexclassification
+CREATE TABLE IF NOT EXISTS dbo.enterprisexclassification
 (
     enterprisexclassificationid   UUID                        NOT NULL primary key,
     effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
@@ -49,7 +55,7 @@ CREATE TABLE dbo.enterprisexclassification
     originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL
 );
-CREATE TABLE dbo.enterprisexclassificationsecuritytoken
+CREATE TABLE IF NOT EXISTS dbo.enterprisexclassificationsecuritytoken
 (
     enterprisexclassificationsecuritytokenid UUID                        NOT NULL primary key,
     effectivefromdate                        timestamp(6) with time zone NOT NULL DEFAULT now(),
@@ -72,39 +78,39 @@ CREATE TABLE dbo.enterprisexclassificationsecuritytoken
 );
 
 -- Indexes for dbo.enterprise
-CREATE INDEX idx_ent_eff_from ON dbo.enterprise (effectivefromdate);
-CREATE INDEX idx_ent_eff_to ON dbo.enterprise (effectivetodate);
-CREATE INDEX idx_ent_wh_created ON dbo.enterprise (warehousecreatedtimestamp);
-CREATE INDEX idx_ent_wh_updated ON dbo.enterprise (warehouselastupdatedtimestamp);
+CREATE INDEX IF NOT EXISTS idx_ent_eff_from ON dbo.enterprise (effectivefromdate);
+CREATE INDEX IF NOT EXISTS idx_ent_eff_to ON dbo.enterprise (effectivetodate);
+CREATE INDEX IF NOT EXISTS idx_ent_wh_created ON dbo.enterprise (warehousecreatedtimestamp);
+CREATE INDEX IF NOT EXISTS idx_ent_wh_updated ON dbo.enterprise (warehouselastupdatedtimestamp);
 
 -- Indexes for dbo.enterprisesecuritytoken
-CREATE INDEX idx_est_eff_from ON dbo.enterprisesecuritytoken (effectivefromdate);
-CREATE INDEX idx_est_eff_to ON dbo.enterprisesecuritytoken (effectivetodate);
-CREATE INDEX idx_est_wh_created ON dbo.enterprisesecuritytoken (warehousecreatedtimestamp);
-CREATE INDEX idx_est_wh_updated ON dbo.enterprisesecuritytoken (warehouselastupdatedtimestamp);
-CREATE INDEX idx_est_sys_wh ON dbo.enterprisesecuritytoken (systemid, warehousefromdate);
-CREATE INDEX idx_est_af_wh ON dbo.enterprisesecuritytoken (activeflagid, warehousefromdate);
-CREATE INDEX idx_est_st_wh ON dbo.enterprisesecuritytoken (securitytokenid, warehousefromdate);
-CREATE INDEX idx_est_ei_wh ON dbo.enterprisesecuritytoken (enterpriseid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_est_eff_from ON dbo.enterprisesecuritytoken (effectivefromdate);
+CREATE INDEX IF NOT EXISTS idx_est_eff_to ON dbo.enterprisesecuritytoken (effectivetodate);
+CREATE INDEX IF NOT EXISTS idx_est_wh_created ON dbo.enterprisesecuritytoken (warehousecreatedtimestamp);
+CREATE INDEX IF NOT EXISTS idx_est_wh_updated ON dbo.enterprisesecuritytoken (warehouselastupdatedtimestamp);
+CREATE INDEX IF NOT EXISTS idx_est_sys_wh ON dbo.enterprisesecuritytoken (systemid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_est_af_wh ON dbo.enterprisesecuritytoken (activeflagid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_est_st_wh ON dbo.enterprisesecuritytoken (securitytokenid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_est_ei_wh ON dbo.enterprisesecuritytoken (enterpriseid, warehousefromdate);
 
 -- Indexes for dbo.enterprisexclassification
-CREATE INDEX idx_excl_eff_from ON dbo.enterprisexclassification (effectivefromdate);
-CREATE INDEX idx_excl_eff_to ON dbo.enterprisexclassification (effectivetodate);
-CREATE INDEX idx_excl_wh_created ON dbo.enterprisexclassification (warehousecreatedtimestamp);
-CREATE INDEX idx_excl_wh_updated ON dbo.enterprisexclassification (warehouselastupdatedtimestamp);
-CREATE INDEX idx_excl_val ON dbo.enterprisexclassification (value);
-CREATE INDEX idx_excl_ei_wh ON dbo.enterprisexclassification (enterpriseid, warehousefromdate);
-CREATE INDEX idx_excl_af_wh ON dbo.enterprisexclassification (activeflagid, warehousefromdate);
-CREATE INDEX idx_excl_sys_wh ON dbo.enterprisexclassification (systemid, warehousefromdate);
-CREATE INDEX idx_excl_cl_wh ON dbo.enterprisexclassification (classificationid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_excl_eff_from ON dbo.enterprisexclassification (effectivefromdate);
+CREATE INDEX IF NOT EXISTS idx_excl_eff_to ON dbo.enterprisexclassification (effectivetodate);
+CREATE INDEX IF NOT EXISTS idx_excl_wh_created ON dbo.enterprisexclassification (warehousecreatedtimestamp);
+CREATE INDEX IF NOT EXISTS idx_excl_wh_updated ON dbo.enterprisexclassification (warehouselastupdatedtimestamp);
+CREATE INDEX IF NOT EXISTS idx_excl_val ON dbo.enterprisexclassification (value);
+CREATE INDEX IF NOT EXISTS idx_excl_ei_wh ON dbo.enterprisexclassification (enterpriseid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_excl_af_wh ON dbo.enterprisexclassification (activeflagid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_excl_sys_wh ON dbo.enterprisexclassification (systemid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_excl_cl_wh ON dbo.enterprisexclassification (classificationid, warehousefromdate);
 
 -- Indexes for dbo.enterprisexclassificationsecuritytoken
-CREATE INDEX idx_exclst_eff_from ON dbo.enterprisexclassificationsecuritytoken (effectivefromdate);
-CREATE INDEX idx_exclst_eff_to ON dbo.enterprisexclassificationsecuritytoken (effectivetodate);
-CREATE INDEX idx_exclst_wh_created ON dbo.enterprisexclassificationsecuritytoken (warehousecreatedtimestamp);
-CREATE INDEX idx_exclst_wh_updated ON dbo.enterprisexclassificationsecuritytoken (warehouselastupdatedtimestamp);
-CREATE INDEX idx_exclst_st_wh ON dbo.enterprisexclassificationsecuritytoken (securitytokenid, warehousefromdate);
-CREATE INDEX idx_exclst_af_wh ON dbo.enterprisexclassificationsecuritytoken (activeflagid, warehousefromdate);
-CREATE INDEX idx_exclst_ei_wh ON dbo.enterprisexclassificationsecuritytoken (enterpriseid, warehousefromdate);
-CREATE INDEX idx_exclst_sys_wh ON dbo.enterprisexclassificationsecuritytoken (systemid, warehousefromdate);
-CREATE INDEX idx_exclst_excl_id_wh ON dbo.enterprisexclassificationsecuritytoken (enterprisexclassificationid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_exclst_eff_from ON dbo.enterprisexclassificationsecuritytoken (effectivefromdate);
+CREATE INDEX IF NOT EXISTS idx_exclst_eff_to ON dbo.enterprisexclassificationsecuritytoken (effectivetodate);
+CREATE INDEX IF NOT EXISTS idx_exclst_wh_created ON dbo.enterprisexclassificationsecuritytoken (warehousecreatedtimestamp);
+CREATE INDEX IF NOT EXISTS idx_exclst_wh_updated ON dbo.enterprisexclassificationsecuritytoken (warehouselastupdatedtimestamp);
+CREATE INDEX IF NOT EXISTS idx_exclst_st_wh ON dbo.enterprisexclassificationsecuritytoken (securitytokenid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_exclst_af_wh ON dbo.enterprisexclassificationsecuritytoken (activeflagid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_exclst_ei_wh ON dbo.enterprisexclassificationsecuritytoken (enterpriseid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_exclst_sys_wh ON dbo.enterprisexclassificationsecuritytoken (systemid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_exclst_excl_id_wh ON dbo.enterprisexclassificationsecuritytoken (enterprisexclassificationid, warehousefromdate);

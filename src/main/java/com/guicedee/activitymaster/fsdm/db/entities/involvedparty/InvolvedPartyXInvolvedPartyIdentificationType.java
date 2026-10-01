@@ -74,6 +74,12 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
         implements Serializable
 {
 
+    /** Component role; identifying values remain in the party-identification row. */
+    @JoinColumn(name = "AddressTypeID", referencedColumnName = "AddressTypeID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private com.guicedee.activitymaster.fsdm.db.entities.address.AddressType addressTypeID;
+
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -102,6 +108,12 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
     @ManyToOne(optional = false,
             fetch = FetchType.LAZY)
     private InvolvedPartyIdentificationType involvedPartyIdentificationTypeID;
+
+    /** Optional physical/postal address scope; ordinary party identities remain unscoped. */
+    @JoinColumn(name = "AddressID", referencedColumnName = "AddressID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private com.guicedee.activitymaster.fsdm.db.entities.address.Address addressID;
 
     public InvolvedPartyXInvolvedPartyIdentificationType(UUID involvedPartyXInvolvedPartyIdentificationTypeID, String value)
     {

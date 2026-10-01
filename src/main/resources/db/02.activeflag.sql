@@ -1,4 +1,4 @@
-CREATE TABLE dbo.activeflag
+CREATE TABLE IF NOT EXISTS dbo.activeflag
 (
     activeflagid                  UUID                        NOT NULL primary key,
     effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
@@ -12,7 +12,7 @@ CREATE TABLE dbo.activeflag
     activeflagname                character varying(100)      NOT NULL,
     enterpriseid                  UUID                        NOT NULL
 );
-CREATE TABLE dbo.activeflagsecuritytoken
+CREATE TABLE IF NOT EXISTS dbo.activeflagsecuritytoken
 (
     activeflagsecuritytokenid     UUID                        NOT NULL primary key,
     effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
@@ -33,7 +33,7 @@ CREATE TABLE dbo.activeflagsecuritytoken
     systemid                      UUID                        NOT NULL,
     securitytokenactiveflagid     UUID                        NOT NULL
 );
-CREATE TABLE dbo.activeflagxclassification
+CREATE TABLE IF NOT EXISTS dbo.activeflagxclassification
 (
     activeflagxclassificationid   UUID                        NOT NULL primary key,
     effectivefromdate             timestamp(6) with time zone NOT NULL DEFAULT now(),
@@ -50,7 +50,7 @@ CREATE TABLE dbo.activeflagxclassification
     originalsourcesystemid        UUID                        NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
     classificationid              UUID                        NOT NULL
 );
-CREATE TABLE dbo.activeflagxclassificationsecuritytoken
+CREATE TABLE IF NOT EXISTS dbo.activeflagxclassificationsecuritytoken
 (
     activeflagxclassificationsecuritytokenid UUID                        NOT NULL primary key,
     effectivefromdate                        timestamp(6) with time zone NOT NULL DEFAULT now(),
@@ -72,43 +72,43 @@ CREATE TABLE dbo.activeflagxclassificationsecuritytoken
     activeflagxclassificationid              UUID                        NOT NULL
 );
 -- Indexes for dbo.activeflag
-CREATE INDEX idx_af_eff_from ON dbo.activeflag (effectivefromdate);
-CREATE INDEX idx_af_eff_to ON dbo.activeflag (effectivetodate);
-CREATE INDEX idx_af_wh_created ON dbo.activeflag (warehousecreatedtimestamp);
-CREATE INDEX idx_af_wh_updated ON dbo.activeflag (warehouselastupdatedtimestamp);
-CREATE INDEX idx_af_ei_wh ON dbo.activeflag (enterpriseid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_af_eff_from ON dbo.activeflag (effectivefromdate);
+CREATE INDEX IF NOT EXISTS idx_af_eff_to ON dbo.activeflag (effectivetodate);
+CREATE INDEX IF NOT EXISTS idx_af_wh_created ON dbo.activeflag (warehousecreatedtimestamp);
+CREATE INDEX IF NOT EXISTS idx_af_wh_updated ON dbo.activeflag (warehouselastupdatedtimestamp);
+CREATE INDEX IF NOT EXISTS idx_af_ei_wh ON dbo.activeflag (enterpriseid, warehousefromdate);
 
 -- Indexes for dbo.activeflagsecuritytoken
-CREATE INDEX idx_afst_eff_from ON dbo.activeflagsecuritytoken (effectivefromdate);
-CREATE INDEX idx_afst_eff_to ON dbo.activeflagsecuritytoken (effectivetodate);
-CREATE INDEX idx_afst_wh_created ON dbo.activeflagsecuritytoken (warehousecreatedtimestamp);
-CREATE INDEX idx_afst_wh_updated ON dbo.activeflagsecuritytoken (warehouselastupdatedtimestamp);
-CREATE INDEX idx_afst_sys_wh ON dbo.activeflagsecuritytoken (systemid, warehousefromdate);
-CREATE INDEX idx_afst_st_wh ON dbo.activeflagsecuritytoken (securitytokenid, warehousefromdate);
-CREATE INDEX idx_afst_af_wh ON dbo.activeflagsecuritytoken (activeflagid, warehousefromdate);
-CREATE INDEX idx_afst_saf_wh ON dbo.activeflagsecuritytoken (securitytokenactiveflagid, warehousefromdate);
-CREATE INDEX idx_afst_ei_wh ON dbo.activeflagsecuritytoken (enterpriseid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_afst_eff_from ON dbo.activeflagsecuritytoken (effectivefromdate);
+CREATE INDEX IF NOT EXISTS idx_afst_eff_to ON dbo.activeflagsecuritytoken (effectivetodate);
+CREATE INDEX IF NOT EXISTS idx_afst_wh_created ON dbo.activeflagsecuritytoken (warehousecreatedtimestamp);
+CREATE INDEX IF NOT EXISTS idx_afst_wh_updated ON dbo.activeflagsecuritytoken (warehouselastupdatedtimestamp);
+CREATE INDEX IF NOT EXISTS idx_afst_sys_wh ON dbo.activeflagsecuritytoken (systemid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_afst_st_wh ON dbo.activeflagsecuritytoken (securitytokenid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_afst_af_wh ON dbo.activeflagsecuritytoken (activeflagid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_afst_saf_wh ON dbo.activeflagsecuritytoken (securitytokenactiveflagid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_afst_ei_wh ON dbo.activeflagsecuritytoken (enterpriseid, warehousefromdate);
 
 -- Indexes for dbo.activeflagxclassification
-CREATE INDEX idx_afxc_eff_from ON dbo.activeflagxclassification (effectivefromdate);
-CREATE INDEX idx_afxc_eff_to ON dbo.activeflagxclassification (effectivetodate);
-CREATE INDEX idx_afxc_wh_created ON dbo.activeflagxclassification (warehousecreatedtimestamp);
-CREATE INDEX idx_afxc_wh_updated ON dbo.activeflagxclassification (warehouselastupdatedtimestamp);
-CREATE INDEX idx_afxc_val ON dbo.activeflagxclassification (value);
-CREATE INDEX idx_afxc_ei_wh ON dbo.activeflagxclassification (enterpriseid, warehousefromdate);
-CREATE INDEX idx_afxc_af_wh ON dbo.activeflagxclassification (activeflagid, warehousefromdate);
-CREATE INDEX idx_afxc_sys_wh ON dbo.activeflagxclassification (systemid, warehousefromdate);
-CREATE INDEX idx_afxc_cl_wh ON dbo.activeflagxclassification (classificationid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_afxc_eff_from ON dbo.activeflagxclassification (effectivefromdate);
+CREATE INDEX IF NOT EXISTS idx_afxc_eff_to ON dbo.activeflagxclassification (effectivetodate);
+CREATE INDEX IF NOT EXISTS idx_afxc_wh_created ON dbo.activeflagxclassification (warehousecreatedtimestamp);
+CREATE INDEX IF NOT EXISTS idx_afxc_wh_updated ON dbo.activeflagxclassification (warehouselastupdatedtimestamp);
+CREATE INDEX IF NOT EXISTS idx_afxc_val ON dbo.activeflagxclassification (value);
+CREATE INDEX IF NOT EXISTS idx_afxc_ei_wh ON dbo.activeflagxclassification (enterpriseid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_afxc_af_wh ON dbo.activeflagxclassification (activeflagid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_afxc_sys_wh ON dbo.activeflagxclassification (systemid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_afxc_cl_wh ON dbo.activeflagxclassification (classificationid, warehousefromdate);
 
 -- Indexes for dbo.activeflagxclassificationsecuritytoken
-CREATE INDEX idx_afxcst_eff_from ON dbo.activeflagxclassificationsecuritytoken (effectivefromdate);
-CREATE INDEX idx_afxcst_eff_to ON dbo.activeflagxclassificationsecuritytoken (effectivetodate);
-CREATE INDEX idx_afxcst_wh_created ON dbo.activeflagxclassificationsecuritytoken (warehousecreatedtimestamp);
-CREATE INDEX idx_afxcst_wh_updated ON dbo.activeflagxclassificationsecuritytoken (warehouselastupdatedtimestamp);
-CREATE INDEX idx_afxcst_st_wh ON dbo.activeflagxclassificationsecuritytoken (securitytokenid, warehousefromdate);
-CREATE INDEX idx_afxcst_sys_wh ON dbo.activeflagxclassificationsecuritytoken (systemid, warehousefromdate);
-CREATE INDEX idx_afxcst_ei_wh ON dbo.activeflagxclassificationsecuritytoken (enterpriseid, warehousefromdate);
-CREATE INDEX idx_afxcst_afxc_wh ON dbo.activeflagxclassificationsecuritytoken (activeflagxclassificationid, warehousefromdate);
-CREATE INDEX idx_afxcst_af_wh ON dbo.activeflagxclassificationsecuritytoken (activeflagid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_afxcst_eff_from ON dbo.activeflagxclassificationsecuritytoken (effectivefromdate);
+CREATE INDEX IF NOT EXISTS idx_afxcst_eff_to ON dbo.activeflagxclassificationsecuritytoken (effectivetodate);
+CREATE INDEX IF NOT EXISTS idx_afxcst_wh_created ON dbo.activeflagxclassificationsecuritytoken (warehousecreatedtimestamp);
+CREATE INDEX IF NOT EXISTS idx_afxcst_wh_updated ON dbo.activeflagxclassificationsecuritytoken (warehouselastupdatedtimestamp);
+CREATE INDEX IF NOT EXISTS idx_afxcst_st_wh ON dbo.activeflagxclassificationsecuritytoken (securitytokenid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_afxcst_sys_wh ON dbo.activeflagxclassificationsecuritytoken (systemid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_afxcst_ei_wh ON dbo.activeflagxclassificationsecuritytoken (enterpriseid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_afxcst_afxc_wh ON dbo.activeflagxclassificationsecuritytoken (activeflagxclassificationid, warehousefromdate);
+CREATE INDEX IF NOT EXISTS idx_afxcst_af_wh ON dbo.activeflagxclassificationsecuritytoken (activeflagid, warehousefromdate);
 
 

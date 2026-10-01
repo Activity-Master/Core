@@ -121,7 +121,7 @@ module com.guicedee.activitymaster.fsdm {
 
     exports com.guicedee.activitymaster.fsdm;
     exports com.guicedee.activitymaster.fsdm.services;
-    exports com.guicedee.activitymaster.fsdm.db.abstraction to com.guicedee.activitymaster.wallet, com.guicedee.activitymaster.payments, com.guicedee.activitymaster.marketplace, com.guicedee.activitymaster.notifications;
+    exports com.guicedee.activitymaster.fsdm.db.abstraction to com.guicedee.activitymaster.geography, com.guicedee.activitymaster.wallet, com.guicedee.activitymaster.payments, com.guicedee.activitymaster.marketplace, com.guicedee.activitymaster.notifications;
     exports com.guicedee.activitymaster.fsdm.db.entities.arrangement to com.guicedee.activitymaster.wallet, com.guicedee.activitymaster.payments, com.guicedee.activitymaster.marketplace;
     exports com.guicedee.activitymaster.fsdm.db.entities.events to com.guicedee.activitymaster.wallet, com.guicedee.activitymaster.payments, com.guicedee.activitymaster.marketplace, com.guicedee.activitymaster.notifications;
     exports com.guicedee.activitymaster.fsdm.transactions;

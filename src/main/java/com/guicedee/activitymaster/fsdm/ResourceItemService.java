@@ -9,6 +9,7 @@ import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IRelationshipValue;
 import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
+import com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService;
 import com.guicedee.activitymaster.fsdm.client.services.SessionUtils;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
@@ -42,6 +43,7 @@ import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
@@ -215,192 +217,6 @@ public class ResourceItemService
                                                 .replaceWith((IResourceItemType<?, ?>) xr));
                             });
                 });
-    }
-
-
-    private Uni<IResourceItemType<?, ?>> createTypeInternal(Mutiny.StatelessSession session, String value, UUID key, String description, ISystems<?, ?> system,
-                                                            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
-                                                            UUID... identityToken) {
-        log.debug("Creating resource type with value: {}, key: {}, description: {}", value, key, description);
-
-        var enterprise = system.getEnterprise();
-
-        ResourceItemType xr = new ResourceItemType();
-        // First check if the resource type already exists
-        return xr
-                .builder(session)
-                .withName(value)
-                .inActiveRange()
-                .inDateRange()
-                .withEnterprise(enterprise)
-                .getCount()
-                .chain(count -> {
-                    if (count <= 0) {
-                        // Resource type doesn't exist, create a new one
-                        xr.setId(key == null ? UUID.randomUUID() : key);
-                        xr.setName(value);
-                        xr.setDescription(value);
-                        xr.setOriginalSourceSystemID(system.getId());
-                        xr.setSystemID(system);
-                        xr.setEnterpriseID(enterprise);
-                        IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-
-                        return acService
-                                .getActiveFlag(session, enterprise, identityToken)
-                                .chain(activeFlag -> {
-                                    xr.setActiveFlagID(activeFlag);
-                                    return session
-                                            .insert(xr)
-                                            .replaceWith(Uni
-                                                    .createFrom()
-                                                    .item(xr));
-                                })
-                                .call(persisted ->
-                                        // Apply the chosen security matrix (subscribed via call so it runs)
-                                        scopeToken == null
-                                                ? xr.createDefaultSecurity(session, system, identityToken)
-                                                : xr.createScopeRestrictedSecurity(session, system, scopeToken, identityToken));
-                    } else {
-                        // Resource type exists, find it
-                        ResourceItemType resourceItemType = new ResourceItemType();
-                        return resourceItemType
-                                .builder(session)
-                                .withEnterprise(enterprise)
-                                .withName(value)
-                                .inActiveRange()
-                                .inDateRange()
-                                .get()
-                                .map(existingType -> {
-                                    if (existingType == null) {
-                                        throw new ResourceItemException("Cannot find resource item type [%s]".formatted(value));
-                                    }
-                                    return (IResourceItemType<?, ?>) existingType;
-                                });
-                    }
-                });
-    }
-
-
-    private Uni<IResourceItem<?, ?>> createInternal(Mutiny.StatelessSession session, String identityResourceType, UUID key, String resourceItemDataValue,
-                                                    UUID originalSourceSystemUniqueID,
-                                                    LocalDateTime effectiveFromDate, byte[] data,
-                                                    ISystems<?, ?> system,
-                                                    com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
-                                                    UUID... identityToken) {
-        log.debug("Creating resource item - type: {}, value: {}", identityResourceType, resourceItemDataValue);
-
-        var enterprise = system.getEnterprise();
-
-        return findByUUID(session, key)
-                .onFailure(NoResultException.class)
-                .recoverWithUni(e -> {
-                    // Step 1: Create the resource item
-                    ResourceItem xr = new ResourceItem();
-                    xr.setId(key);
-                    xr.setOriginalSourceSystemID(system.getId());
-                    xr.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
-                    xr.setEffectiveFromDate(convertToUTCDateTime(effectiveFromDate));
-                    xr.setSystemID(system);
-                    xr.setEnterpriseID(enterprise);
-                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-
-                    return acService
-                            .getActiveFlag(session, enterprise, identityToken)
-                            .chain(activeFlag -> {
-                                xr.setActiveFlagID(activeFlag);
-                                xr.setResourceItemDataType(resourceItemDataValue);
-
-                                // Persist the resource item
-                                return session
-                                        .insert(xr)
-                                        .replaceWith(Uni
-                                                .createFrom()
-                                                .item(xr))
-                                        .chain(persisted -> {
-                                            // Create resource item data
-                                            ResourceItemData rid = new ResourceItemData();
-                                            rid.setResource(persisted);
-                                            LocalDateTime now = RootEntity.getNow();
-                                            rid.setEffectiveFromDate(convertToUTCDateTime(now));
-                                            rid.setWarehouseCreatedTimestamp(convertToUTCDateTime(now));
-                                            rid.setEffectiveToDate(EndOfTime.atOffset(ZoneOffset.UTC));
-                                            rid.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(now));
-                                            rid.setActiveFlagID(activeFlag);
-                                            rid.setOriginalSourceSystemID(system.getId());
-                                            rid.setSystemID(system);
-                                            rid.setEnterpriseID(enterprise);
-
-                                            // When the type is a JSON type and MongoDB is configured, the payload is
-                                            // stored as a document in MongoDB; the relational value row is kept (empty)
-                                            // so the FSDM security/SCD structure stays intact.
-                                            boolean jsonRoute = jsonStore.shouldStoreJson(identityResourceType, data);
-
-                                            ResourceItemDataValue dataValue = new ResourceItemDataValue();
-                                            dataValue.setId(persisted.getId());
-                                            dataValue.setData(jsonRoute || data == null ? new byte[0] : data);
-                                            rid.setDataValue(dataValue);
-
-                                            // Persist the resource item data
-                                            return session
-                                                    .insert(rid)
-                                                    .chain(() -> {
-                                                        return session.insert(rid.getDataValue());
-                                                    })
-                                                    .replaceWith(Uni
-                                                            .createFrom()
-                                                            .item(rid))
-                                                    .call(persistedData ->
-                                                            // Apply the chosen security matrix (subscribed via call so it runs)
-                                                            scopeToken == null
-                                                                    ? persistedData.createDefaultSecurity(session, system, identityToken)
-                                                                    : persistedData.createScopeRestrictedSecurity(session, system, scopeToken, identityToken))
-                                                    .chain(_ -> {
-                                                        // Step 3: Add resource item types
-                                                        log.trace("Adding resource item type: {}", identityResourceType);
-                                                        return addResourceItemTypeRelationshipInternal(session, persisted, identityResourceType, resourceItemDataValue, system, enterprise, scopeToken, identityToken);
-                                                    })
-                                                    .call(() ->
-                                                            // Step 4: Store the JSON payload in MongoDB when this is a JSON type
-                                                            // (routed to the collection configured for the type)
-                                                            jsonRoute
-                                                                    ? jsonStore.store(identityResourceType, persisted.getId(), data)
-                                                                    : Uni.createFrom().voidItem())
-                                                    .replaceWith(persisted);
-                                        });
-                            })
-                            .onFailure()
-                            .invoke(cause -> {
-                                log.error("Failed to create resource item", cause);
-                            });
-                });
-    }
-
-    Uni<Integer> tryUpdate(Mutiny.StatelessSession session, UUID id, byte[] value, String systemName) {
-        // First resolve the actual resourceitemdatavalueid via the entity graph
-        return session.createQuery(
-                        "SELECT dv.id FROM ResourceItemData rd JOIN rd.dataValue dv WHERE rd.id = :id OR rd.resource.id = :id", UUID.class)
-                .setParameter("id", id)
-                .getSingleResultOrNull()
-                .onItem().ifNotNull().transformToUni(dataValueId -> {
-                    // Use native SQL with FOR UPDATE SKIP LOCKED to perform a safe concurrent update
-                    String sql = """
-                            WITH tgt AS (
-                              SELECT resourceitemdatavalueid
-                              FROM resource.resourceitemdatavalue
-                              WHERE resourceitemdatavalueid = :id
-                              FOR UPDATE SKIP LOCKED
-                            )
-                            UPDATE resource.resourceitemdatavalue v
-                            SET resourceitemdatavalue = :val
-                            FROM tgt
-                            WHERE v.resourceitemdatavalueid = tgt.resourceitemdatavalueid
-                            """;
-                    return session.createNativeQuery(sql)
-                            .setParameter("id", dataValueId)
-                            .setParameter("val", value)
-                            .executeUpdate();
-                })
-                .onItem().ifNull().switchTo(() -> createMissingResourceDataForUpdate(session, id, value, systemName));
     }
 
     /**
@@ -829,6 +645,58 @@ public class ResourceItemService
     }
 
     @Override
+    public Uni<Void> storeResourceDataValue(Mutiny.StatelessSession session, UUID valueId, byte[] data) {
+        requireBinaryTransaction(session);
+        ResourceItemDataValue value = new ResourceItemDataValue();
+        value.setId(java.util.Objects.requireNonNull(valueId, "Binary value ID required"));
+        value.setData(java.util.Objects.requireNonNull(data, "Binary data required").clone());
+        return session.insert(value);
+    }
+
+    @Override
+    public Uni<byte[]> getResourceDataValue(Mutiny.StatelessSession session, UUID valueId) {
+        java.util.Objects.requireNonNull(valueId, "Binary value ID required");
+        return session.createNativeQuery("select resourceitemdatavalue from resource.resourceitemdatavalue where resourceitemdatavalueid=:id", byte[].class)
+                .setParameter("id", valueId).getSingleResultOrNull()
+                .map(value -> value == null ? null : value.clone());
+    }
+
+    private static void requireBinaryTransaction(Mutiny.StatelessSession session) {
+        if (session == null || session.currentTransaction() == null)
+            throw new IllegalStateException("Binary resource writes require a caller-owned stateless transaction");
+    }
+
+    @Override
+    public Uni<IResourceItem<?, ?>> createBinaryScopeRestricted(Mutiny.StatelessSession session, String type,
+            UUID resourceId, String dataType, byte[] data, OffsetDateTime effectiveFrom,
+            String typeClassification, ISystems<?, ?> system,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+            UUID... identityToken) {
+        requireBinaryTransaction(session);
+        java.util.Objects.requireNonNull(scopeToken, "Private resource scope token required");
+        java.util.Objects.requireNonNull(effectiveFrom, "Effective date required");
+        byte[] binary = java.util.Objects.requireNonNull(data, "Binary data required").clone();
+        var enterprise = system.getEnterprise();
+        IActiveFlagService<?> afs = IGuiceContext.get(IActiveFlagService.class);
+        ISecurityTokenService<?> sts = IGuiceContext.get(ISecurityTokenService.class);
+        return afs.getActiveFlag(session, enterprise, identityToken).chain(activeFlag -> {
+            ResourceItem item = new ResourceItem();
+            item.setId(java.util.Objects.requireNonNull(resourceId, "Resource ID required"));
+            item.setResourceItemDataType(java.util.Objects.requireNonNull(dataType, "Resource data type required"));
+            item.setSystemID(system); item.setEnterpriseID(enterprise); item.setActiveFlagID(activeFlag);
+            item.setOriginalSourceSystemID(system.getId()); item.setOriginalSourceSystemUniqueID(ZERO_UUID);
+            item.setEffectiveFromDate(effectiveFrom); item.setEffectiveToDate(EndOfTime.atOffset(ZoneOffset.UTC));
+            item.setWarehouseCreatedTimestamp(effectiveFrom); item.setWarehouseLastUpdatedTimestamp(effectiveFrom);
+            return session.insert(item)
+                    .chain(() -> storeResourceDataValue(session, resourceId, binary))
+                    .chain(() -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                            .chain(tokens -> item.createScopeRestrictedSecurity(session, system, enterprise, activeFlag, tokens, scopeToken, identityToken)))
+                    .chain(() -> addResourceItemTypeRelationshipStateless(session, item, type, dataType, system, scopeToken, typeClassification, true, identityToken))
+                    .replaceWith((IResourceItem<?, ?>) item);
+        });
+    }
+
+    @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Uni<Void> updateResourceData(Mutiny.StatelessSession session, byte[] data, UUID resourceItemId) {
         // Relational stateless update: resolve the data-value id (HQL select), then native UPDATE.
@@ -931,12 +799,19 @@ public class ResourceItemService
      */
     private Uni<Void> addResourceItemTypeRelationshipStateless(Mutiny.StatelessSession session, IResourceItem<?, ?> resourceItem, String typeName, String value, ISystems<?, ?> system,
                                                                com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken, UUID... identityToken) {
+        return addResourceItemTypeRelationshipStateless(session, resourceItem, typeName, value, system, scopeToken,
+                DefaultClassifications.NoClassification.toString(), false, identityToken);
+    }
+
+    private Uni<Void> addResourceItemTypeRelationshipStateless(Mutiny.StatelessSession session, IResourceItem<?, ?> resourceItem, String typeName, String value, ISystems<?, ?> system,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+            String classificationName, boolean strictSecurity, UUID... identityToken) {
         log.trace("Adding resource item type relationship (stateless): {} for item: {}", typeName, resourceItem.getId());
         final var enterprise = system.getEnterprise();
         com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService<?> sts =
                 IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.class);
         return findResourceItemType(session, typeName, system, identityToken)
-                .chain(resourceItemType -> classificationService.find(session, DefaultClassifications.NoClassification.toString(), system, identityToken)
+                .chain(resourceItemType -> classificationService.find(session, classificationName, system, identityToken)
                         .chain(classification -> {
                             ResourceItemXResourceItemType relationship = new ResourceItemXResourceItemType();
                             relationship.setResourceItemID((ResourceItem) resourceItem);
@@ -959,12 +834,13 @@ public class ResourceItemService
                                         com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseCoreTable core =
                                                 (com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseCoreTable) relationship;
                                         return session.insert(relationship)
-                                                .chain(() -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
+                                                .chain(() -> {
+                                                    Uni<Long> grants = sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
                                                         .chain(tokens -> scopeToken == null
-                                                                ? core.createDefaultSecurity(session, system, enterprise, activeFlag, tokens, identityToken)
-                                                                : core.createScopeRestrictedSecurity(session, system, enterprise, activeFlag, tokens, scopeToken, identityToken))
-                                                        .onFailure().recoverWithItem(0L)
-                                                        .replaceWithVoid());
+                                                                    ? core.createDefaultSecurity(session, system, enterprise, activeFlag, tokens, identityToken)
+                                                                    : core.createScopeRestrictedSecurity(session, system, enterprise, activeFlag, tokens, scopeToken, identityToken));
+                                                    return (strictSecurity ? grants : grants.onFailure().recoverWithItem(0L)).replaceWithVoid();
+                                                });
                                     });
                         }));
     }
@@ -1023,4 +899,3 @@ public class ResourceItemService
     }
 
 }
-

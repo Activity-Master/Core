@@ -61,6 +61,11 @@ but does not expose the old obfuscation or an unkeyed hash alongside new ciphert
 `withValue(Equals/NotEquals, ...)` in strong/read-key mode combines legacy obfuscated,
 legacy plaintext and all configured key-token matches in **one grouped SQL predicate**,
 preserving existing security/tenant filters. GCM ciphertext itself is randomized.
+Encrypted matches use exact equality on `coalesce(regexp_substr(value,
+'^amenc:[12]:[A-Za-z0-9_-]+:[0-9a-f]{64}:'), '')`, not SQL `LIKE`.
+Apply `docs/sql/encrypted-value-lookup-indexes.sql` on PostgreSQL 15+ for the scoped
+expression and legacy-value indexes. Existing ciphertext needs no rewrite. Indexes
+are deliberately non-unique so historical links and shared identification values remain valid.
 Null predicates are supported. Pattern, range and list operands are rejected in this
 mode; use exact equality, not wildcard searches. Direct SQL/`where(value, ...)` bypasses
 this contract and must be updated by applications to use `withValue`.

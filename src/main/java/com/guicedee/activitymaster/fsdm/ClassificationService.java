@@ -234,13 +234,19 @@ public class ClassificationService
     @Override
     @SuppressWarnings("unchecked")
     public Uni<IClassification<?, ?>> find(Mutiny.StatelessSession session, String name, EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system, UUID... identityToken) {
+        return findInConcept(session, name, concept == null ? null : concept.classificationValue(), system, identityToken);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Uni<IClassification<?, ?>> findInConcept(Mutiny.StatelessSession session, String name, String conceptName, ISystems<?, ?> system, UUID... identityToken) {
         log.trace("🔍 Finding classification '{}' with concept: '{}' for system: '{}' with session: {}",
-                name, concept != null ? concept : "null", system.getName(), session.hashCode());
+                name, conceptName != null ? conceptName : "null", system.getName(), session.hashCode());
 
         var enterprise = system.getEnterprise();
 
-        if (concept != null) {
-            return dataConceptService.find(session, concept, system, identityToken)
+        if (conceptName != null) {
+            return dataConceptService.find(session, conceptName, system, identityToken)
                     .chain(dc -> new Classification()
                             .builder(session)
                             .withEnterprise(enterprise)
@@ -404,7 +410,14 @@ public class ClassificationService
     public Uni<IClassification<?, ?>> create(Mutiny.StatelessSession session, String name, String description,
                                              EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system,
                                              Integer sequenceNumber, IClassification<?, ?> parent, UUID... identityToken) {
-        return createStatelessInternal(session, name, description, concept, system, sequenceNumber, parent, null, false, identityToken);
+        return createStatelessInternal(session, name, description, concept == null ? null : concept.classificationValue(), system, sequenceNumber, parent, null, false, identityToken);
+    }
+
+    @Override
+    public Uni<IClassification<?, ?>> createInConcept(Mutiny.StatelessSession session, String name, String description,
+                                                      String conceptName, ISystems<?, ?> system, Integer sequenceNumber,
+                                                      IClassification<?, ?> parent, UUID... identityToken) {
+        return createStatelessInternal(session, name, description, conceptName, system, sequenceNumber, parent, null, false, identityToken);
     }
 
 
@@ -424,19 +437,19 @@ public class ClassificationService
                                                             Integer sequenceNumber, IClassification<?, ?> parent,
                                                             com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
                                                             UUID... identityToken) {
-        return createStatelessInternal(session, name, description, conceptName, system, sequenceNumber, parent, scopeToken, true, identityToken);
+        return createStatelessInternal(session, name, description, conceptName == null ? null : conceptName.classificationValue(), system, sequenceNumber, parent, scopeToken, true, identityToken);
     }
 
     @SuppressWarnings("unchecked")
     private Uni<IClassification<?, ?>> createStatelessInternal(Mutiny.StatelessSession session, String name, String description,
-                                             EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system,
+                                             String concept, ISystems<?, ?> system,
                                              Integer sequenceNumber, IClassification<?, ?> parent,
                                              com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
                                              boolean restricted, UUID... identityToken) {
         var enterprise = system.getEnterprise();
         // Resolve the data-concept name to project/prep: the supplied concept, or the default "NoClassification".
-        String conceptName = concept != null ? concept.classificationValue() : "NoClassification";
-        return find(session, name, system, identityToken)
+        String conceptName = concept != null ? concept : "NoClassification";
+        return findInConcept(session, name, conceptName, system, identityToken)
                 .onFailure()
                 .recoverWithUni(err -> {
                     Classification rootCl = new Classification();

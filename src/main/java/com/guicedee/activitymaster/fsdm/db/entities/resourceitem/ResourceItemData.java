@@ -20,11 +20,14 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
+ * Store binaries in ResourceItemDataValue;
+ * use effective-dated resource classifications for document versions.
  * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
 @Entity
+
 @Table(schema = "resource",
         name = "resourceitemdata")
 @XmlRootElement
@@ -37,7 +40,6 @@ public class ResourceItemData
         extends WarehouseSCDTable<ResourceItemData, ResourceItemDataQueryBuilder, UUID, ResourceItemDataSecurityToken>
         implements IResourceData<ResourceItemData, ResourceItemDataQueryBuilder, ResourceItemDataSecurityToken>
 {
-
     @Serial
     private static final long serialVersionUID = 1L;
     @Id

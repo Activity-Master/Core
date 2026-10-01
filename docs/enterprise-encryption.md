@@ -116,8 +116,10 @@ The enterprise UUID participates in key derivation and authenticated column cont
 Copying ciphertext to another enterprise fails authentication/key lookup. Same-column,
 same-enterprise row substitution is not prevented; row authorization still applies.
 Equality/frequency is visible only within an enterprise/column/key version.
-The unchanged varchar(255) capacity permits 83 UTF-8 bytes with these IDs; larger writes
-are rejected. Wildcard/range/list searches remain unsupported.
+With 32-hex key IDs, the 255-character address capacity permits 83 UTF-8 payload bytes;
+the existing 200-character identification capacity permits 41 bytes. Larger writes are
+rejected. Encrypted equality uses the indexed complete lookup header, not SQL LIKE;
+apply `docs/sql/encrypted-value-lookup-indexes.sql`. Wildcard/range/list searches remain unsupported.
 
 Rings expire after 15 minutes and the process cache holds at most 256 enterprises;
 eviction wipes stored key arrays. Prepare before work; very long jobs must prepare

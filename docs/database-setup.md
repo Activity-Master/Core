@@ -17,13 +17,150 @@ so any module that depends on core already has them.
 
 | Script | Contents |
 |--------|----------|
+| `00.0.schema-update-history.sql` | `dbo.fsdmschemaupdate` success history |
 | `00.1.setup.sql` | extensions, operators, session setup |
 | `01`–`16` | one schema area each: enterprise, activeflag, systems, classification, address, arrangement, product, resourceitem, party, rules, securitytoken, event, geography, time, transactions |
 | `17.foreign-key-indexes.sql` | join-key indexes across the warehouse |
+| `18.query-indexes.sql` | measured credential and current taxonomy lookups |
+| `19.structured-party-addresses.sql` | structured address taxonomy and party links |
 | `20.1.setup.sql` | views and helper functions |
+| `21.uwe-query-indexes.sql` | UWE measurement replay, description, typed resource and encrypted identification lookups |
+| `22.relationship-indexes.sql` | index coverage and removal of existing FSDM foreign-key constraints |
+| `23.document-query-indexes.sql` | measured Document Master current membership and bucket contents |
+| `24.domain-query-indexes.sql` | shared classification, type, current relationship and encrypted address lookup coverage across FSDM domains; see [domain index audit](domain-query-index-audit.md) |
+| `25.forum-notification-query-indexes.sql` | current subscriber/recipient reverse traversal, forum posts and scoped classification pivots; see [forum and notification index audit](forum-notification-query-index-audit.md) |
 
 Adding a script means adding the file **and** registering it in `FsdmSchema.ORDERED`. Nothing scans
 the directory, because resource enumeration is not reliable once the module is packaged.
+
+The UWE query coverage, isolated PostgreSQL measurements, deployment notes and
+remaining query correctness issues are recorded in [the UWE index audit](uwe-query-index-audit.md).
+
+## Updating a running database
+
+`ActivityMasterDBModule` checks and applies pending schema updates on every startup by default,
+before starting Hibernate or enterprise services. It awaits the tracked SQL through the existing
+owned Vert.x pool; a migration failure stops persistence startup. Completed scripts remain skipped
+according to the history table. Set `FSDM_INSTALL_UPDATES=false` explicitly when a separate
+migration process manages the database (for example, when the application database user cannot
+change schema objects). This setting controls SQL migration checks, not the `@SortedUpdate.force`
+policy for enterprise Java taxonomy updates.
+
+GuicedEE may construct a separate module instance for the post-startup hook. The
+hook resolves the owned pool by persistence-unit name when its instance was not
+used to configure Guice; it must not create another pool or read an uninitialized
+instance field.
+
+The canonical scripts run as the database installation owner, without superuser
+privileges. They do not enable privileged statement logging or impersonate
+`postgres`; those dump metadata settings are not schema definitions.
+
+`FsdmSchema.forEachScript` supplies tracked updates. Each update uses its own transaction,
+takes a database advisory lock, runs only if not recorded, and records success in
+`dbo.fsdmschemaupdate`. Failed SQL rolls back its schema changes and history entry together;
+rerunning resumes at the first pending update. Concurrent updaters serialize on the same lock.
+Each SQL file checks `pg_catalog.pg_namespace` in a small `DO` block surrounding only its
+`CREATE SCHEMA` statement. An existing schema skips that statement; the following tables,
+indexes and other statements still execute. Schema existence never determines whether an
+update file is pending: the recorded update history does. `FsdmSchema` reads and executes the
+file contents without rewriting schema commands or skipping files based on schema existence.
+The history bootstrap SQL separately guards only its `CREATE TABLE` statement, allowing an
+already installed database to check history without database/schema `CREATE` privileges.
+Missing objects still require their creation privileges. The inner `IF NOT EXISTS` remains
+as a safeguard against concurrent object creation. Editing these SQL files changes their
+checksums; a database that recorded earlier contents will reject them until its migration
+history is deliberately reconciled with the installation's actual state.
+Use an executor with autocommit enabled and no surrounding transaction. It must propagate SQL
+errors; for `psql`, use `-X -v ON_ERROR_STOP=1`. `FsdmSchema.read(script)` remains available for
+raw SQL, but raw execution does not record progress.
+
+Each history row stores the script name, sequence, SHA-256 checksum, completion timestamp, and
+whether it was applied or declared as a legacy baseline. To see the last completed update:
+
+```sql
+SELECT scriptname, appliedat, executionmode
+FROM dbo.fsdmschemaupdate
+ORDER BY scriptsequence DESC
+LIMIT 1;
+```
+
+Append future SQL files to the end of `ORDERED`. Changing an already recorded file or its
+sequence stops the runner. Checksums normalize Windows/Linux line endings. `IF NOT EXISTS`
+makes table, schema and index creation repeatable; it does not alter an existing definition.
+Use a new update with explicit `ALTER` statements for definition changes.
+
+The Java entry point writes SQL bundles that can be applied while the application and database
+continue running. From core, after compiling/package-building the module, use the classes and
+resources in `target/classes` (or the packaged jar as the classpath):
+
+```powershell
+java -cp target/classes com.guicedee.activitymaster.fsdm.db.FsdmSchema --updates C:/Temp/fsdm-updates.sql
+psql -X -v ON_ERROR_STOP=1 -h localhost -U postgres -d activitymaster -f C:/Temp/fsdm-updates.sql
+```
+
+Use the actual output directory, database host, user and database name for the installation.
+The Java command only writes a file; the `psql` command applies it. No application or database
+restart is required. Ordinary index builds and schema changes take PostgreSQL locks, so choose
+an appropriate execution window for a busy database.
+
+Without update history, the runner executes every ordered SQL file, even when schemas or
+business tables already exist. Each file handles its existing objects; only successful execution
+records completion. A one-time baseline is an optional way to adopt a known installation without
+replaying its old files. Identify the last script that was actually installed; the runner never
+infers completion from table names. For example, if the installation is known to include
+everything through `20.1.setup.sql`:
+
+```powershell
+java -cp target/classes com.guicedee.activitymaster.fsdm.db.FsdmSchema --baseline 20.1.setup.sql C:/Temp/fsdm-baseline.sql
+psql -X -v ON_ERROR_STOP=1 -h localhost -U postgres -d activitymaster -f C:/Temp/fsdm-baseline.sql
+psql -X -v ON_ERROR_STOP=1 -h localhost -U postgres -d activitymaster -f C:/Temp/fsdm-updates.sql
+```
+
+Baselining records an administrator's assertion, not proof that historical definitions match
+the current files. It does not execute their SQL and cannot replace existing history. Later
+updates run normally. Script 22 explicitly installs the relationship indexes from corrected
+scripts 16/19 even when those older scripts were baselined.
+
+## Relationship indexes and repeatable creation
+
+`resource.resourceitemdata` is deprecated and retained for legacy payload migration;
+new binary storage uses `resource.resourceitemdatavalue`. Legacy payload IDs equal
+the resource item ID, while immutable revisions may use independent payload IDs.
+These storage notes belong here rather than in previously recorded migration SQL,
+because even a comment change alters the migration checksum.
+
+FSDM uses relationship indexes rather than foreign-key constraints. Scripts 16 and 19 no
+longer create FKs; main/test persistence units also set
+`hibernate.hbm2ddl.default_constraint_mode=NO_CONSTRAINT` to suppress default Hibernate FKs.
+Primary keys, unique constraints and checks remain. Script 17's historical filename describes
+join columns; it creates indexes, not FK constraints.
+
+Script 22 corrects databases that already have FKs in the FSDM schemas. It ensures a valid,
+unconditional B-tree index with the referencing columns first, creating one where necessary,
+then drops the FK. It leaves constraints in unrelated schemas untouched.
+
+All ordered `CREATE TABLE`, `CREATE INDEX` and `CREATE SCHEMA` statements use `IF NOT EXISTS`.
+The custom UUID comparison operator is guarded via `pg_operator`; PostgreSQL has no
+`CREATE OPERATOR IF NOT EXISTS` syntax. Script 09 skips an already migrated legacy payload
+column, and script 15 uses `ON CONFLICT DO NOTHING` for calendar seeds. Raw reruns therefore
+preserve existing rows and avoid duplicate tables/indexes.
+
+Run the isolated verification from core:
+
+```powershell
+python src/test/scripts/fsdm_schema_update_audit.py
+```
+
+It compiles the actual runner and executes its generated SQL against a disposable PostgreSQL
+17 container with no published ports. It verifies fresh creation, raw and tracked reruns,
+checksum rejection, ordering, failure rollback/resume, simultaneous updaters, legacy baselines,
+and conversion of existing FKs to indexes. It does not connect to an application database.
+
+`python src/test/scripts/fsdm_schema_startup_audit.py` additionally compiles core and exercises
+the actual reactive updater and owned-pool configuration against a disposable PostgreSQL 17
+container. Its randomly assigned port binds only to loopback. It checks the default and opt-out,
+completed-update skipping, error propagation, rollback, connection release and restoration of
+session settings before runtime reuse.
 
 ## What this replaced
 

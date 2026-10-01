@@ -102,13 +102,20 @@ public class ClassificationsDataConceptService
     public Uni<IClassificationDataConcept<?, ?>> createDataConcept(Mutiny.StatelessSession session,
                                                                    EnterpriseClassificationDataConcepts name,
                                                                    String description, ISystems<?, ?> system, UUID... identityToken) {
+        return createNamedDataConcept(session, name.classificationValue(), description, system, identityToken);
+    }
+
+    @Override
+    public Uni<IClassificationDataConcept<?, ?>> createNamedDataConcept(Mutiny.StatelessSession session,
+                                                                       String name, String description,
+                                                                       ISystems<?, ?> system, UUID... identityToken) {
         var enterprise = system.getEnterprise();
-        return find(session, name.classificationValue(), system, identityToken)
+        return find(session, name, system, identityToken)
                 .onFailure()
                 .recoverWithUni(err -> {
                     ClassificationDataConcept newConcept = new ClassificationDataConcept();
                     newConcept.setDescription(description);
-                    newConcept.setName(name.classificationValue());
+                    newConcept.setName(name);
                     newConcept.setSystemID(system);
                     newConcept.setOriginalSourceSystemID(system.getId());
                     newConcept.setEnterpriseID(enterprise);

@@ -1,21 +1,28 @@
 SET client_min_messages = NOTICE;
-SET log_statement = 'all';
-CREATE OR REPLACE FUNCTION uuid_equal_varchar(text, uuid)
+CREATE OR REPLACE FUNCTION public.uuid_equal_varchar(text, uuid)
     RETURNS boolean AS
 'SELECT $1::text = $2::text;' LANGUAGE sql IMMUTABLE;
 
-CREATE OPERATOR = (
+DO $fsdm_operator$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_operator o JOIN pg_namespace n ON n.oid = o.oprnamespace
+        WHERE n.nspname = 'public' AND o.oprname = '='
+          AND o.oprleft = 'text'::regtype AND o.oprright = 'uuid'::regtype
+    ) THEN
+CREATE OPERATOR public.= (
     leftarg = text,
     rightarg = uuid,
-    procedure = uuid_equal_varchar,
+    procedure = public.uuid_equal_varchar,
     commutator = =
     );
+    END IF;
+END;
+$fsdm_operator$;
 CREATE
     EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA public;
 COMMENT
     ON EXTENSION tablefunc IS 'functions that manipulate whole tables, including crosstab';
-
-SET SESSION AUTHORIZATION 'postgres';
 
 SET
     default_tablespace = '';

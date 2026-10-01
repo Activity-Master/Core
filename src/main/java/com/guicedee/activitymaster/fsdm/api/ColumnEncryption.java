@@ -134,6 +134,7 @@ public final class ColumnEncryption
 
     public static String encrypt(String value, String context, UUID enterpriseId)
     {
+        boolean identification = IDENTIFICATION.equals(context);
         boolean strong = strongWrites();
         if (value == null) return null;
         if (!strong) return legacySearchValue(value);
@@ -156,8 +157,9 @@ public final class ColumnEncryption
             byte[] payload = Arrays.copyOf(nonce, nonce.length + encrypted.length);
             System.arraycopy(encrypted, 0, payload, nonce.length, encrypted.length);
             String stored = header + Base64.getEncoder().encodeToString(payload);
-            if (stored.length() > 255)
-                throw new IllegalArgumentException("Encrypted value exceeds the existing 255-character column capacity");
+            int capacity = identification ? 200 : 255;
+            if (stored.length() > capacity)
+                throw new IllegalArgumentException("Encrypted value exceeds the existing " + capacity + "-character column capacity");
             return stored;
         }
         catch (GeneralSecurityException e) { throw new IllegalStateException("Column encryption failed", e); }
@@ -220,7 +222,7 @@ public final class ColumnEncryption
         return new Passwords().integerEncrypt(value.getBytes());
     }
 
-    /** Hex tokens and restricted IDs contain no SQL LIKE wildcards. */
+    /** Complete format/key/HMAC headers for exact indexed equality, across retained read keys. */
     public static List<String> searchPrefixes(String value, String context)
     {
         return searchPrefixes(value, context, null);
