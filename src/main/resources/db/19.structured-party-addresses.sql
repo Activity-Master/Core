@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS address.addressxaddresssecuritytoken
     systemid                         UUID                        NOT NULL,
     addressxaddressid              UUID                        NOT NULL
 );
-ALTER TABLE address.address ADD COLUMN IF NOT EXISTS addresstypeid uuid;
+ALTER TABLE address.address ADD COLUMN IF NOT EXISTS addresstypeid uuid NOT NULL;
 ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype ADD COLUMN IF NOT EXISTS addresstypeid uuid;
 CREATE INDEX IF NOT EXISTS am_address_type_value ON address.address(enterpriseid, addresstypeid, value);
 CREATE INDEX IF NOT EXISTS am_address_type_name ON address.addresstype(enterpriseid, addresstypename);

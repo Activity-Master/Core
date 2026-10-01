@@ -18,7 +18,7 @@ so any module that depends on core already has them.
 | Script | Contents |
 |--------|----------|
 | `00.0.schema-update-history.sql` | `dbo.fsdmschemaupdate` success history |
-| `00.1.setup.sql` | extensions, operators, session setup |
+| `00.1.setup.sql` | remove ordinary database indexes, then extensions, operators and session setup |
 | `01`–`16` | one schema area each: enterprise, activeflag, systems, classification, address, arrangement, product, resourceitem, party, rules, securitytoken, event, geography, time, transactions |
 | `17.foreign-key-indexes.sql` | join-key indexes across the warehouse |
 | `18.query-indexes.sql` | measured credential and current taxonomy lookups |
@@ -29,6 +29,7 @@ so any module that depends on core already has them.
 | `23.document-query-indexes.sql` | measured Document Master current membership and bucket contents |
 | `24.domain-query-indexes.sql` | shared classification, type, current relationship and encrypted address lookup coverage across FSDM domains; see [domain index audit](domain-query-index-audit.md) |
 | `25.forum-notification-query-indexes.sql` | current subscriber/recipient reverse traversal, forum posts and scoped classification pivots; see [forum and notification index audit](forum-notification-query-index-audit.md) |
+| `26.reset-query-indexes.sql` | one-time removal of ordinary database indexes and atomic rebuild of the canonical index definitions from scripts 01 through 25 |
 
 Adding a script means adding the file **and** registering it in `FsdmSchema.ORDERED`. Nothing scans
 the directory, because resource enumeration is not reliable once the module is packaged.
@@ -59,6 +60,31 @@ privileges. They do not enable privileged statement logging or impersonate
 takes a database advisory lock, runs only if not recorded, and records success in
 `dbo.fsdmschemaupdate`. Failed SQL rolls back its schema changes and history entry together;
 rerunning resumes at the first pending update. Concurrent updaters serialize on the same lock.
+Each generated update sets `statement_timeout` and `lock_timeout` to zero with
+`SET LOCAL` immediately after `BEGIN`, before acquiring the advisory lock. This
+allows index creation and migration lock waits on large existing databases to
+outlive the runtime pool's 30-second statement and one-second lock limits, even
+when setup was already recorded and skipped. PostgreSQL restores the transaction-local
+settings at commit or rollback; the reactive updater also resets setup's session
+settings before returning its connection. The SQL file contents and recorded
+checksums are unchanged. Run these updates in a maintenance window: ordinary
+index builds can block writes, and startup waits for completion.
+
+```mermaid
+sequenceDiagram
+  participant Runner as FsdmSchemaUpdates or SQL tool
+  participant DB as PostgreSQL
+  Runner->>DB: BEGIN; SET LOCAL statement_timeout = 0; SET LOCAL lock_timeout = 0
+  Runner->>DB: Acquire migration advisory lock
+  Runner->>DB: Check history; execute pending SQL; record completion
+  alt success
+    Runner->>DB: COMMIT (restore local settings)
+  else failure
+    Runner->>DB: ROLLBACK (restore local settings)
+  end
+  Runner->>DB: Reactive updater resets session settings and releases connection
+```
+
 Each SQL file checks `pg_catalog.pg_namespace` in a small `DO` block surrounding only its
 `CREATE SCHEMA` statement. An existing schema skips that statement; the following tables,
 indexes and other statements still execute. Schema existence never determines whether an
@@ -88,6 +114,26 @@ Append future SQL files to the end of `ORDERED`. Changing an already recorded fi
 sequence stops the runner. Checksums normalize Windows/Linux line endings. `IF NOT EXISTS`
 makes table, schema and index creation repeatable; it does not alter an existing definition.
 Use a new update with explicit `ALTER` statements for definition changes.
+
+### Index reset
+
+Setup removes ordinary indexes in every non-system database schema before the
+remaining scripts create the canonical indexes. It preserves indexes supporting
+primary-key, unique, exclusion and foreign-key constraints, as well as extension-owned
+indexes. Partitioned parent indexes are dropped with their ordinary child indexes;
+identifiers are quoted and PostgreSQL catalogs remain untouched.
+
+Existing installations already skipped setup. Update 26 therefore performs the
+same removal and recreates the fixed index definitions from scripts 01 through 25
+in one tracked transaction. A failed rebuild restores the previous indexes; a
+successful update is skipped on later startups. Indexes outside those canonical
+definitions are removed. The original setup checksum is accepted only with this
+specific revised setup version; its historical row is preserved. Other changes,
+including further changes to setup, still fail checksum validation.
+
+Validate the reset, preserved constraints, legacy checksum compatibility, rollback
+and subsequent startup with `python src/test/scripts/fsdm_index_reset_audit.py`.
+This uses isolated PostgreSQL 17 through Docker and never accesses the application DB.
 
 The Java entry point writes SQL bundles that can be applied while the application and database
 continue running. From core, after compiling/package-building the module, use the classes and
@@ -161,6 +207,9 @@ the actual reactive updater and owned-pool configuration against a disposable Po
 container. Its randomly assigned port binds only to loopback. It checks the default and opt-out,
 completed-update skipping, error propagation, rollback, connection release and restoration of
 session settings before runtime reuse.
+It also resumes pending index updates after setup is skipped, using a migration
+fixture that exceeds the pool's statement limit, and verifies that runtime
+statements still time out after the connection is returned.
 
 ## What this replaced
 

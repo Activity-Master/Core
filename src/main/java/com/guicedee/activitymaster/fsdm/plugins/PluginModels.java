@@ -26,8 +26,9 @@ public final class PluginModels {
         }
     }
 
+    /** {@code ageRating} is an {@link AgeRating} code; null means {@link AgeRating#ALL}. */
     public record Registration(String name, String title, String description, String version,
-                               UUID icon, List<UUID> screenshots, Set<UUID> systems) {
+                               UUID icon, List<UUID> screenshots, Set<UUID> systems, String ageRating) {
         public Registration {
             name = text(name, 150, "name");
             title = text(title, 150, "title");
@@ -37,12 +38,25 @@ public final class PluginModels {
             systems = systems == null ? Set.of() : Set.copyOf(systems);
             if (screenshots.size() > 20 || systems.size() > 100)
                 throw new IllegalArgumentException("At most 20 screenshots and 100 systems per plugin");
+            ageRating = AgeRating.parse(ageRating).code();
+        }
+        public Registration(String name, String title, String description, String version,
+                            UUID icon, List<UUID> screenshots, Set<UUID> systems) {
+            this(name, title, description, version, icon, screenshots, systems, AgeRating.ALL);
         }
     }
 
     public record Plugin(UUID id, String name, String title, String description, String version,
-                         UUID icon, List<UUID> screenshots, Set<UUID> systems) {
-        public Plugin { screenshots = List.copyOf(screenshots); systems = Set.copyOf(systems); }
+                         UUID icon, List<UUID> screenshots, Set<UUID> systems, String ageRating) {
+        public Plugin {
+            screenshots = List.copyOf(screenshots);
+            systems = Set.copyOf(systems);
+            ageRating = AgeRating.parse(ageRating).code();
+        }
+        public Plugin(UUID id, String name, String title, String description, String version,
+                      UUID icon, List<UUID> screenshots, Set<UUID> systems) {
+            this(id, name, title, description, version, icon, screenshots, systems, AgeRating.ALL);
+        }
     }
     public record Installation(UUID id, UUID pluginId, UUID partyId) { }
 

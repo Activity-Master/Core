@@ -40,6 +40,7 @@ public final class PluginService {
     @Inject private IClassificationService<?> classes;
     @Inject private IArrangementsService<?> arrangements;
     @Inject private IEventService<?> events;
+    @Inject private AgeRestrictionService ages;
 
     private record Ctx(ISystems<?, ?> core, Identity identity, ISecurityToken<?, ?> credential,
                        ISecurityToken<?, ?> administrators, Set<UUID> tokens) { }
@@ -52,7 +53,7 @@ public final class PluginService {
             chain = chain.chain(() -> events.createEventType(session, type, core, token));
         Map<String, EnterpriseClassificationDataConcepts> roles = new LinkedHashMap<>();
         roles.put("PluginCatalogType", EnterpriseClassificationDataConcepts.ArrangementXArrangementType);
-        for (String name : List.of("PluginTitle", "PluginVersion", "PluginIdentity"))
+        for (String name : List.of("PluginTitle", "PluginVersion", "PluginIdentity", "PluginAgeRating"))
             roles.put(name, EnterpriseClassificationDataConcepts.ArrangementXClassification);
         for (String name : List.of("PluginIcon", "PluginScreenshot"))
             roles.put(name, EnterpriseClassificationDataConcepts.ArrangementXResourceItem);
@@ -67,12 +68,26 @@ public final class PluginService {
         return chain.replaceWithVoid();
     }
 
+    /** Bootstrap-only forward taxonomy for catalogue age ratings on enterprises provisioned before ratings. */
+    public Uni<Void> installAgeRatingTaxonomy(Mutiny.StatelessSession session, ISystems<?, ?> core, UUID token) {
+        return classes.create(session, "PluginAgeRating", "PluginAgeRating",
+                EnterpriseClassificationDataConcepts.ArrangementXClassification, core, token).replaceWithVoid();
+    }
+
+    /** Rating options for the verified user's profile country (or the default set). */
+    public Uni<List<String>> ageRatingOptions(Mutiny.StatelessSession session, ISystems<?, ?> system, Identity identity) {
+        return context(session, system, identity)
+                .chain(c -> ages.options(session, c.core().getEnterprise(), identity.partyId()));
+    }
+
     /** Administrator registration; creates a Plugin-typed identity and declares requested systems.
-     * This grants neither party installation nor user consent. Re-registration updates metadata. */
+     * This grants neither party installation nor user consent. Re-registration updates metadata.
+     * A numeric age rating must be one of the administrator's profile-country options. */
     public Uni<Plugin> register(Mutiny.StatelessSession session, ISystems<?, ?> system,
                                 Identity identity, Registration registration) {
         Objects.requireNonNull(registration, "registration");
         return context(session, system, identity).chain(c -> administrator(c)
+                .chain(() -> ages.assignable(session, c.core().getEnterprise(), identity.partyId(), registration.ageRating()))
                 .chain(() -> session.createNativeQuery("select systemid from dbo.systems where systemid=:id for update", UUID.class)
                         .setParameter("id", c.core().getId()).getSingleResult())
                 .chain(() -> validateResources(session, c, registration))
@@ -85,7 +100,8 @@ public final class PluginService {
                         .chain(() -> metadata(session, c, plugin.getId(), registration))
                         .chain(() -> declarations(session, c, plugin.getId(), registration.systems()))
                         .replaceWith(new Plugin(plugin.getId(), registration.name(), registration.title(), registration.description(),
-                                registration.version(), registration.icon(), registration.screenshots(), registration.systems()))));
+                                registration.version(), registration.icon(), registration.screenshots(), registration.systems(),
+                                registration.ageRating()))));
     }
 
     /** Enterprise updater only: register a built-in extension using the live core bootstrap credential.
@@ -137,7 +153,7 @@ public final class PluginService {
                                                         .chain(media -> metadata(session, c, plugin.getId(), new Registration(extension.getSystemName(),
                                                                 extension.getPluginTitle(), extension.getSystemDescription(), extension.getPluginVersion(),
                                                                 media.get("PluginIcon").stream().findFirst().orElse(null),
-                                                                media.get("PluginScreenshot"), dependencies)))
+                                                                media.get("PluginScreenshot"), dependencies, extension.getPluginAgeRating())))
                                                         .chain(() -> declarations(session, c, plugin.getId(), dependencies));
                                             })));
                 }));
@@ -199,7 +215,8 @@ public final class PluginService {
                 .chain(row -> catalogValues(session, c, plugin).chain(values -> resources(session, c, plugin)
                         .chain(media -> declaredSystems(session, c, plugin).map(declared -> new Plugin(plugin, (String) row[0],
                                 values.get("PluginTitle"), (String) row[1], values.get("PluginVersion"),
-                                media.get("PluginIcon").stream().findFirst().orElse(null), media.get("PluginScreenshot"), declared))))));
+                                media.get("PluginIcon").stream().findFirst().orElse(null), media.get("PluginScreenshot"), declared,
+                                values.get("PluginAgeRating")))))));
     }
 
     /** Installation management requires current write access to the installation party. */
@@ -230,7 +247,8 @@ public final class PluginService {
                 .chain(() -> party(session, c, invocation.installationPartyId(), false))
                 .chain(() -> requireState(session, c, INSTALLATION, key(invocation.pluginId(), invocation.installationPartyId())))
                 .chain(installation -> requireState(session, c, DECLARATION, key(invocation.pluginId(), targetSystem))
-                        .chain(declaration -> (enabled ? permitted(session, c, invocation, targetSystem) : Uni.createFrom().voidItem())
+                        .chain(declaration -> (enabled ? permitted(session, c, invocation, targetSystem)
+                                        .chain(() -> ageAllowed(session, c, invocation.pluginId())) : Uni.createFrom().voidItem())
                                 .chain(() -> writeState(session, c, invocation.pluginId(), CONSENT,
                                         key(installation.id(), declaration.id(), identity.partyId()), enabled, targetSystem,
                                         invocation.installationPartyId())))).replaceWithVoid());
@@ -263,7 +281,7 @@ public final class PluginService {
                                 .chain(() -> requireState(session, c, CONSENT,
                                         key(installation.id(), declaration.id(), identity.partyId())))
                                 .chain(consent -> new Event().setId(consent.id()).canRead(session, c.core(), identity.tokens()))
-                                .chain(readable -> readable ? Uni.createFrom().voidItem() : denied()))));
+                                .chain(readable -> readable ? ageAllowed(session, c, invocation.pluginId()) : denied()))));
     }
 
     /** Reusable delegation boundary for other Masters. The callback receives the same verified user.
@@ -276,6 +294,18 @@ public final class PluginService {
                 .chain(() -> work.apply(identity))
                 .call(_ -> operation == null ? Uni.createFrom().voidItem()
                         : audit(session, targetSystem, identity, invocation, operation));
+    }
+
+    /** Direct built-in domain write: admission covers its declared dependencies, rather than a self-declaration. */
+    public Uni<Void> auditBuiltIn(Mutiny.StatelessSession session, ISystems<?, ?> writer, Identity identity,
+                                  UUID installationParty, String operation) {
+        if (operation == null || operation.isBlank() || operation.length() > 150)
+            throw new IllegalArgumentException("Plugin operation required (maximum 150 characters)");
+        return checkBuiltIn(session, writer, identity, installationParty)
+                .chain(() -> context(session, writer, identity))
+                .chain(c -> newEvent(session, c, writer.getId(), INVOCATION, null, true,
+                        writer.getId(), installationParty, writer.getId())
+                        .chain(event -> eventValue(session, c, event, "PluginOperation", operation)));
     }
 
     /** Durable initiation audit. The writing system owns this Event's source ID; the plugin is a relationship. */
@@ -314,6 +344,12 @@ public final class PluginService {
 
     private Uni<Void> administrator(Ctx c) {
         return c.tokens().contains(c.administrators().getId()) ? Uni.createFrom().voidItem() : denied();
+    }
+    /** The verified user must satisfy the plugin's catalogue age rating; an unrated plugin is "All". */
+    private Uni<Void> ageAllowed(Mutiny.StatelessSession session, Ctx c, UUID plugin) {
+        return catalogValues(session, c, plugin)
+                .chain(values -> ages.require(session, c.core().getEnterprise(), c.identity().partyId(),
+                        AgeRating.parse(values.get("PluginAgeRating"))));
     }
     private Uni<Void> liveParty(Mutiny.StatelessSession session, Ctx c, UUID party) {
         return session.createNativeQuery("select 1 from party.involvedparty p where p.involvedpartyid=:id and " + live("p"), Integer.class)
@@ -396,7 +432,7 @@ public final class PluginService {
                 session.createNativeQuery("update arrangement.arrangementxclassification set activeflagid=:flag,effectivetodate=statement_timestamp(),"
                                 + "warehouselastupdatedtimestamp=statement_timestamp() where arrangementid=:id and " + live("arrangement.arrangementxclassification")
                                 + " and classificationid in (select classificationid from classification.classification where systemid=:core "
-                                + "and classificationname in ('PluginTitle','PluginVersion'))")
+                                + "and classificationname in ('PluginTitle','PluginVersion','PluginAgeRating'))")
                         .setParameter("id", plugin).setParameter("core", c.core().getId()).setParameter("enterprise", c.identity().enterpriseId())
                         .setParameter("flag", flag.getId()).executeUpdate()
                         .chain(() -> session.createNativeQuery("update arrangement.arrangementxresourceitem set activeflagid=:flag,effectivetodate=statement_timestamp(),"
@@ -410,6 +446,9 @@ public final class PluginService {
                         .setParameter("description", registration.description()).setParameter("id", plugin).setParameter("enterprise", c.identity().enterpriseId()).executeUpdate())
                 .chain(() -> catalogValue(session, c, new Arrangement().setId(plugin), "PluginTitle", registration.title()))
                 .chain(() -> catalogValue(session, c, new Arrangement().setId(plugin), "PluginVersion", registration.version()))
+                // Absent means "All", so unrated catalogues never depend on the forward age-rating taxonomy.
+                .chain(() -> AgeRating.ALL.equals(registration.ageRating()) ? Uni.createFrom().voidItem()
+                        : catalogValue(session, c, new Arrangement().setId(plugin), "PluginAgeRating", registration.ageRating()))
                 .chain(() -> media(session, c, plugin, "PluginIcon", registration.icon(), 0))
                 .chain(() -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();

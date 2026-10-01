@@ -504,6 +504,7 @@ public class EnterpriseService
                                                              .replaceWith(ent))
                                  .chain(ent -> sessionFactory.withStatelessTransaction(s4 -> installSystems(s4, allSystems, ent))
                                                              .replaceWith(ent))
+                                 .chain(ent -> sessionFactory.withStatelessTransaction(s5 -> installPlugins(s5, ent)).replaceWith(ent))
                                  .invoke(() -> {
                                      setCurrentTask(0);
                                      logProgress("System Configuration", "Done", 1);
@@ -537,6 +538,18 @@ public class EnterpriseService
     // ============================================================================================
     // Stateless install loop — mirrors the managed install methods but threads a Mutiny.StatelessSession.
     // ============================================================================================
+
+    private Uni<Void> installPlugins(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise) {
+        var plugins = new ArrayList<>(com.guicedee.activitymaster.fsdm.client.services.systems.IMasterPlugin.allPlugins());
+        plugins.sort(java.util.Comparator.comparing((com.guicedee.activitymaster.fsdm.client.services.systems.IMasterPlugin<?> p) -> p.sortOrder())
+                .thenComparing(p -> p.getSystemName()));
+        Uni<Void> work = Uni.createFrom().voidItem();
+        for (var plugin : plugins)
+            work = work.chain(() -> plugin.registerSystem(session, enterprise).replaceWithVoid());
+        for (var plugin : plugins)
+            work = work.chain(() -> plugin.createDefaults(session, enterprise));
+        return work;
+    }
 
     private Uni<Void> createBase(Mutiny.StatelessSession session, Set<IMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise)
     {

@@ -199,27 +199,51 @@ public class SystemsService implements ISystemsService<SystemsService> {
     public Uni<String> registerNewSystem(Mutiny.StatelessSession session,
                                          IEnterprise<?, ?> enterprise,
                                          ISystems<?, ?> newSystem) {
+        return registerIdentity(session, enterprise, newSystem, false);
+    }
+
+    @Override
+    public Uni<String> registerNewPlugin(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise,
+                                         ISystems<?, ?> plugin) {
+        return registerIdentity(session, enterprise, plugin, true);
+    }
+
+    private Uni<String> registerIdentity(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise,
+                                         ISystems<?, ?> newSystem, boolean plugin) {
+        String tokenType = plugin ? "Plugin" : UserGroupSecurityTokenClassifications.System.toString();
+        String folderName = plugin ? UserGroupSecurityTokenClassifications.Plugins.toString()
+                                   : UserGroupSecurityTokenClassifications.System.toString();
         log.info("(stateless) Registering new system: '{}' for enterprise: '{}'",
                  newSystem.getName(),
                  enterprise.getName());
 
         return getActivityMaster(session, enterprise)
+                .call(_ -> session.createNativeQuery("select 1 from security.securitytoken k "
+                                + "join classification.classification c on c.classificationid=k.securitytokenclassificationid "
+                                + "where k.enterpriseid=:enterprise and k.securitytokenfriendlyname=:name "
+                                + "and k.effectivefromdate<=statement_timestamp() and k.effectivetodate>statement_timestamp() "
+                                + "and c.classificationname<>:type", Integer.class)
+                        .setParameter("enterprise", enterprise.getId()).setParameter("name", newSystem.getName())
+                        .setParameter("type", tokenType).setMaxResults(1).getResultList()
+                        .chain(rows -> rows.isEmpty() ? Uni.createFrom().voidItem()
+                                : Uni.createFrom().failure(new SecurityException("Registration identity type conflict"))))
                 .chain(activityMasterSystem -> getSecurityIdentityToken(session, activityMasterSystem).chain(
                         activityMasterSystemUUID -> classificationService.find(session,
-                                                                               UserGroupSecurityTokenClassifications.System,
+                                                                               tokenType,
                                                                                activityMasterSystem,
                                                                                activityMasterSystemUUID)
                                                                          .chain(classification -> securityTokenService
                                                                                  .create(session,
-                                                                                         UserGroupSecurityTokenClassifications.System.toString(),
+                                                                                         tokenType,
                                                                                          newSystem.getName(),
                                                                                          newSystem.getDescription(),
                                                                                          activityMasterSystem)
                                                                                  .chain(newSystemsSecurityToken -> securityTokenService
                                                                                          .create(session,
-                                                                                                 UserGroupSecurityTokenClassifications.System.toString(),
-                                                                                                 UserGroupSecurityTokenClassifications.System.toString(),
-                                                                                                 UserGroupSecurityTokenClassifications.System.classificationDescription(),
+                                                                                                 tokenType,
+                                                                                                 folderName,
+                                                                                                 plugin ? UserGroupSecurityTokenClassifications.Plugins.classificationDescription()
+                                                                                                        : UserGroupSecurityTokenClassifications.System.classificationDescription(),
                                                                                                  activityMasterSystem)
                                                                                          .chain(systemsToken -> securityTokenService
                                                                                                  .link(session,
@@ -347,4 +371,3 @@ public class SystemsService implements ISystemsService<SystemsService> {
                                                                                                  .map(UUID::fromString));
     }
 }
-

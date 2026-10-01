@@ -15,7 +15,7 @@ CORE = pathlib.Path(__file__).resolve().parents[3]
 def run(*command):
     result = subprocess.run(command, text=True, encoding="utf-8", capture_output=True)
     if result.returncode:
-        raise RuntimeError(result.stdout[-4000:] + result.stderr[-4000:])
+        raise RuntimeError(result.stdout[-4000:] + result.stderr[:6000])
     return result.stdout.strip()
 
 
@@ -65,7 +65,7 @@ public class FsdmSchemaStartupAudit {
             Map<String,String> settings = Map.of("ENVIRONMENT", "test", "FSDM_SSL_MODE", "disable",
                     "FSDM_DBSERVER", "127.0.0.1", "FSDM_DBPORT", args[0], "FSDM_DBNAME", "postgres",
                     "FSDM_USER", "postgres", "FSDM_PASSWORD", "fixture-password", "FSDM_POOL_MAX_SIZE", "1",
-                    "FSDM_STATEMENT_TIMEOUT_MS", "4321");
+                    "FSDM_STATEMENT_TIMEOUT_MS", "250");
             Pool administrative = ActivityMasterPoolConfiguration.resolve(settings::get).open(vertx);
             try {
                 await(administrative.query("CREATE ROLE fsdm_install_owner LOGIN NOSUPERUSER NOCREATEROLE NOCREATEDB PASSWORD 'fixture-password'").execute());
@@ -84,11 +84,49 @@ public class FsdmSchemaStartupAudit {
                     Integer.toString(FsdmSchema.orderedScripts().size())), "All pending updates must be recorded");
             check(scalar(pool, "SELECT count(*) FROM pg_constraint WHERE contype='f'").equals("0"),
                     "Fresh runtime schema must have no foreign keys");
+            check(scalar(pool, "SELECT to_regclass('rules.rulesxrulestypesecuritytoken') IS NOT NULL").equals("true"),
+                    "Mapped RulesXRulesType security table must exist");
+            check(scalar(pool, "SELECT to_regclass('rules.rulesxrulestypessecuritytoken') IS NULL").equals("true"),
+                    "Legacy RulesXRulesType security table must be renamed");
+            check(scalar(pool, "SELECT count(*) FROM rules.rulesxrulestypesecuritytoken "
+                    + "WHERE rulesxrulestypesecuritytokenid IS NULL").equals("0"),
+                    "Mapped RulesXRulesType security ID column must exist");
+            // Resume at script 17 on a new checkout where setup is already tracked.
+            // Its DO statement must be able to outlive the runtime statement budget.
+            String completedSql = "SELECT string_agg(scriptname||checksum||appliedat::text, ',' ORDER BY scriptsequence) "
+                    + "FROM dbo.fsdmschemaupdate WHERE scriptsequence < 18";
+            String completed = scalar(pool, completedSql);
+            await(pool.query("CREATE FUNCTION dbo.slow_index_update() RETURNS trigger LANGUAGE plpgsql AS $$ "
+                    + "BEGIN IF NEW.scriptname = '17.foreign-key-indexes.sql' THEN "
+                    + "PERFORM pg_sleep(0.6); "
+                    + "IF current_setting('statement_timeout') <> '0' OR current_setting('lock_timeout') <> '0' THEN "
+                    + "RAISE EXCEPTION 'Migration must use its own timeout policy'; END IF; "
+                    + "END IF; RETURN NEW; END $$; "
+                    + "CREATE TRIGGER slow_index_update BEFORE INSERT ON dbo.fsdmschemaupdate "
+                    + "FOR EACH ROW EXECUTE FUNCTION dbo.slow_index_update()").execute());
+            await(pool.query("DELETE FROM dbo.fsdmschemaupdate WHERE scriptsequence >= 18; "
+                    + "DROP INDEX security.idx_securitytokenxsecuritytoken_parentsecuritytokenid").execute());
+            await(FsdmSchemaUpdates.installUpdates(pool));
+            check(completed.equals(scalar(pool, completedSql)), "Resume must preserve completed setup and history");
+            check(scalar(pool, "SELECT to_regclass('security.idx_securitytokenxsecuritytoken_parentsecuritytokenid') IS NOT NULL")
+                    .equals("true"), "Pending script 17 must rebuild its missing index");
+            check(scalar(pool, "SHOW statement_timeout").equals("250ms"), "Resume must restore runtime statement timeout");
+            check(scalar(pool, "SHOW lock_timeout").equals("1s"), "Resume must restore runtime lock timeout");
+            try {
+                await(pool.query("SELECT pg_sleep(0.6)").execute());
+                throw new AssertionError("Runtime statements must still time out");
+            } catch (java.util.concurrent.ExecutionException expected) {
+                check(expected.getCause() instanceof io.vertx.pgclient.PgException pg
+                        && "57014".equals(pg.getSqlState()), "Runtime must report statement timeout");
+            }
+            await(pool.query("DROP TRIGGER slow_index_update ON dbo.fsdmschemaupdate; "
+                    + "DROP FUNCTION dbo.slow_index_update()").execute());
+            System.out.println("PASS: skipped setup resumes slow index updates; runtime statement and lock budgets restored");
             String snapshotSql = "SELECT string_agg(scriptname||checksum||appliedat::text, ',' ORDER BY scriptsequence) FROM dbo.fsdmschemaupdate";
             String snapshot = scalar(pool, snapshotSql);
             await(FsdmSchemaUpdates.installUpdates(pool));
             check(snapshot.equals(scalar(pool, snapshotSql)), "Repeat startup must leave history unchanged");
-            check(scalar(pool, "SHOW statement_timeout").equals("4321ms"), "Migration settings must not leak into runtime");
+            check(scalar(pool, "SHOW statement_timeout").equals("250ms"), "Migration settings must not leak into runtime");
             System.out.println("PASS: actual reactive pool installs and skips completed SQL; session settings restored");
             String last = FsdmSchema.orderedScripts().getLast();
             String checksum = scalar(pool, "SELECT checksum FROM dbo.fsdmschemaupdate WHERE scriptname='"+last+"'");
@@ -102,7 +140,8 @@ public class FsdmSchemaStartupAudit {
             // With maxSize=1 this would fail/time out if the updater leaked its connection
             // or returned it while the transaction was still aborted.
             check(scalar(pool, "SELECT 1").equals("1"), "Pool must remain usable after migration failure");
-            check(scalar(pool, "SHOW statement_timeout").equals("4321ms"), "Failure must restore settings too");
+            check(scalar(pool, "SHOW statement_timeout").equals("250ms"), "Failure must restore settings too");
+            check(scalar(pool, "SHOW lock_timeout").equals("1s"), "Failure must restore runtime lock timeout too");
             await(pool.query("UPDATE dbo.fsdmschemaupdate SET checksum='"+checksum+"' WHERE scriptname='"+last+"'").execute());
             await(FsdmSchemaUpdates.installUpdates(pool));
             check(snapshot.equals(scalar(pool, snapshotSql)), "Retry must preserve completed history");

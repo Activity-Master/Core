@@ -12,6 +12,7 @@
         <project.scm.nameUrl>/Activity-Master/Core</project.scm.nameUrl>
     </properties>
 
+     <groupId>com.activity-master</groupId>
     <artifactId>activity-master</artifactId>
     <name>Activity Master</name>
     <description>Open-source implementation of the ActivityMaster Functional Service Data Model (FSDM) services with Vert.x and Hibernate Reactive.</description>
@@ -22,7 +23,6 @@
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-identity</artifactId>
-            <version>1.18.4</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -51,13 +51,11 @@
         <dependency>
             <groupId>com.guicedee.modules.services</groupId>
             <artifactId>jna-platform-bridge</artifactId>
-            <version>2.3.0</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-security-keyvault-keys</artifactId>
-            <version>4.10.6</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -92,8 +90,6 @@
                 <artifactId>scram-client</artifactId>
         </dependency>
 
-
-
         <dependency>
             <groupId>com.guicedee.modules.services</groupId>
             <artifactId>hibernate-jcache</artifactId>
@@ -125,23 +121,15 @@
             <artifactId>jakarta.inject-api</artifactId>
         </dependency>
 
-
-
-
-
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
 
-
-
-
         <dependency>
             <groupId>com.guicedee.modules.representations</groupId>
             <artifactId>xml-representation</artifactId>
         </dependency>
-
 
         <!-- MongoDB document store for JSON resource-item payloads -->
         <dependency>

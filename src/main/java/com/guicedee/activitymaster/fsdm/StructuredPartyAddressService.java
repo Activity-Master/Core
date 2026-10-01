@@ -253,7 +253,11 @@ public class StructuredPartyAddressService {
                     for (var link : links) chain = chain.chain(() -> link.canRead(session, system, tokens).chain(readable -> readable
                             ? session.fetch(link.getGeographyID()).invoke(geo -> {
                                 geographies.put(link.getValue(), geo.getId());
-                                labels.put(link.getValue(), link.getValue().equals("Country") && geo.getDescription() != null ? geo.getDescription() : geo.getName());
+                                String label = geo.getDescription() == null || geo.getDescription().isBlank()
+                                    ? geo.getName() : geo.getDescription().strip();
+                                if (link.getValue().equals("PostalArea") && !label.equals(geo.getName()))
+                                    label = geo.getName() + " — " + label;
+                                labels.put(link.getValue(), label);
                               }).replaceWithVoid()
                             : Uni.createFrom().voidItem()));
                     return chain;
