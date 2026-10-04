@@ -486,6 +486,27 @@ public class EnterpriseService
     }
 
     @Override
+    public Uni<IEnterprise<?, ?>> completeAdministratorSetup(Mutiny.StatelessSession session,
+                                                              String enterpriseName,
+                                                              String adminUserName,
+                                                              String adminPassword) {
+        return bootstrapScope(() -> {
+            ActivityMasterConfiguration.get().setSecurityEnabled(false);
+            ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+            IPasswordsService<?> passwordsService = IGuiceContext.get(IPasswordsService.class);
+            return getEnterprise(session, enterpriseName)
+                    .onItem().ifNull().failWith(() -> new IllegalStateException("Installed enterprise required"))
+                    .chain(enterprise -> sessionFactory.withStatelessTransaction(s ->
+                            systemsService.getActivityMaster(s, enterprise)
+                                    .chain(system -> passwordsService
+                                            .createAdminAndCreatorUserForEnterprise(s, system, adminUserName, adminPassword, null))
+                                    .replaceWith(enterprise)))
+                    .chain(enterprise -> sessionFactory.withStatelessTransaction(s -> performPostStartup(s, enterprise))
+                            .replaceWith(enterprise));
+        });
+    }
+
+    @Override
     public Uni<IEnterprise<?, ?>> createNewEnterprise(Mutiny.StatelessSession session, @NotNull IEnterprise<?, ?> enterprise)
     {
         // Genuine stateless lifecycle: every phase runs in its own stateless transaction (each commits

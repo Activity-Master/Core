@@ -636,8 +636,11 @@ public final class PluginService {
     }
     private static String live(String alias) {
         return alias + ".enterpriseid=:enterprise and " + alias + ".effectivefromdate<=statement_timestamp() and "
-                + alias + ".effectivetodate>statement_timestamp() and exists(select 1 from dbo.activeflag f where "
-                + "f.activeflagid=" + alias + ".activeflagid and f.enterpriseid=:enterprise and f.allowaccess=1)";
+                // ActiveFlagID is a primary key. A scalar lookup cannot be pulled up into a
+                // Cartesian product of independent flags before the secured rows are filtered.
+                + alias + ".effectivetodate>statement_timestamp() and coalesce((select plugin_live_flag.allowaccess=1 from dbo.activeflag plugin_live_flag where "
+                + "plugin_live_flag.activeflagid=" + alias + ".activeflagid and plugin_live_flag.enterpriseid=:enterprise "
+                + "and plugin_live_flag.effectivefromdate<=statement_timestamp() and plugin_live_flag.effectivetodate>statement_timestamp()),false)";
     }
     private static <T> Uni<T> denied() { return Uni.createFrom().failure(new SecurityException("Plugin access denied")); }
 }

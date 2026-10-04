@@ -29,24 +29,21 @@ public class InvolvedPartyQueryBuilder
             new InvolvedPartyXInvolvedPartyIdentificationType().builder(getEntityManagerStateless()) :
             new InvolvedPartyXInvolvedPartyIdentificationType().builder(getEntityManager());
 
-/*
-    InvolvedPartyIdentificationType type = (InvolvedPartyIdentificationType)
-                                               involvedPartyService.findInvolvedPartyIdentificationType(getEntityManager(), idType, system, identityTokens);
-*/
-
-    JoinExpression<?, ?, ?> xJoin = new JoinExpression<>();
-    var idTypeJoin = joinTableQueryBuilder.join(InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyIdentificationTypeID, JoinType.INNER, xJoin);
-    idTypeJoin.getFilters()
-        .add(xJoin.getFilter("name", Equals, idType));
+    // Bind to the final criteria join before creating predicates. Deferred builder
+    // joins reset the child root and discard direct type/encrypted-value filters.
+    JoinExpression<?, ?, ?> identityJoin = new JoinExpression<>();
+    join(InvolvedParty_.identities, JoinType.INNER, identityJoin);
+    joinTableQueryBuilder.reset(identityJoin.getGeneratedRoot());
+    joinTableQueryBuilder.withEnterprise(system.getEnterprise()).withType(idType, system, identityTokens);
 
     if (value != null)
     {
-      joinTableQueryBuilder.withEnterprise(system.getEnterprise()).withValue(value);
+      joinTableQueryBuilder.withValue(value);
     }
     joinTableQueryBuilder.inDateRange();
     joinTableQueryBuilder.inActiveRange();
 
-    join(InvolvedParty_.identities, joinTableQueryBuilder, JoinType.INNER);
+    getFilters().addAll(joinTableQueryBuilder.getFilters());
 
     inActiveRange();
     inDateRange();

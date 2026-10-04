@@ -72,6 +72,21 @@ public class AddressService
 
     @Inject private StructuredPartyAddressService structuredAddresses;
 
+    @Inject private PartyPhoneService partyPhones;
+
+    @Override public Uni<com.guicedee.activitymaster.fsdm.client.services.dto.PartyPhoneDTO> savePartyPhone(
+            Mutiny.StatelessSession session, IInvolvedParty<?, ?> party,
+            com.guicedee.activitymaster.fsdm.client.services.dto.PartyPhoneDTO phone, ISystems<?, ?> system, UUID... tokens) {
+        return partyPhones.save(session, party, phone, system, tokens);
+    }
+    @Override public Uni<java.util.List<com.guicedee.activitymaster.fsdm.client.services.dto.PartyPhoneDTO>> findPartyPhones(
+            Mutiny.StatelessSession session, IInvolvedParty<?, ?> party, ISystems<?, ?> system, UUID... tokens) {
+        return partyPhones.find(session, party, system, tokens);
+    }
+    @Override public Uni<Void> endPartyPhone(Mutiny.StatelessSession session, IInvolvedParty<?, ?> party, UUID id, ISystems<?, ?> system, UUID... tokens) {
+        return partyPhones.end(session, party, id, system, tokens);
+    }
+
     @Override
     public Uni<com.guicedee.activitymaster.fsdm.client.services.dto.PartyAddressDTO> savePartyAddress(
             Mutiny.StatelessSession session, IInvolvedParty<?, ?> party,
