@@ -43,6 +43,59 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.D
 public class EventsService
         implements IEventService<EventsService>
 {
+    @Override
+    public Uni<IEvent<?, ?>> createActorEvent(Mutiny.StatelessSession session, String title, IInvolvedParty<?, ?> actor,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> actorScope,
+            ISystems<?, ?> system, UUID... identityToken) {
+        Objects.requireNonNull(actor); Objects.requireNonNull(actorScope);
+        if (session.currentTransaction() == null) throw new IllegalStateException("Actor events require a caller-owned transaction");
+        if (title == null || title.isBlank() || title.length() > 150) throw new IllegalArgumentException("Event title required (maximum 150 characters)");
+        IClassificationService<?> classes = IGuiceContext.get(IClassificationService.class);
+        Event event = new Event();
+        return createEventType(session, title, system, identityToken)
+                .chain(type -> storeActorEventRow(session, event, actorScope, system, identityToken)
+                        .chain(() -> classes.create(session, "ActorEventType", "Private actor event type",
+                                com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.EventXEventType,
+                                system, identityToken))
+                        .chain(role -> {
+                            var link = new EventXEventType().setEventID(event).setEventTypeID(new EventType().setId(type.getId()))
+                                    .setClassificationID(new Classification().setId(role.getId()));
+                            link.setValue("1");
+                            return storeActorEventRow(session, link, actorScope, system, identityToken);
+                        })
+                        .chain(() -> classes.create(session, "CreatedBy", "Initiating actor",
+                                com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.EventXInvolvedParty,
+                                system, identityToken))
+                        .chain(role -> {
+                            var link = new EventXInvolvedParty().setEventID(event).setInvolvedPartyID(new InvolvedParty().setId(actor.getId()))
+                                    .setClassificationID(new Classification().setId(role.getId()));
+                            link.setValue("1");
+                            return storeActorEventRow(session, link, actorScope, system, identityToken);
+                        })).replaceWith(event);
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private Uni<Void> storeActorEventRow(Mutiny.StatelessSession session,
+            com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable row,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> actorScope,
+            ISystems<?, ?> system, UUID[] tokens) {
+        var now = java.time.OffsetDateTime.now(java.time.ZoneOffset.UTC);
+        row.setId(UUID.randomUUID()); row.setEnterpriseID(system.getEnterprise()); row.setSystemID(system);
+        row.setOriginalSourceSystemID(system.getId()); row.setOriginalSourceSystemUniqueID(new UUID(0, 0));
+        row.setWarehouseCreatedTimestamp(now); row.setWarehouseLastUpdatedTimestamp(now);
+        row.setEffectiveFromDate(now); row.setEffectiveToDate(java.time.OffsetDateTime.parse("2999-12-31T23:59:59Z"));
+        row.setWarehouseFromDate(now.toLocalDate());
+        IActiveFlagService<?> flags = IGuiceContext.get(IActiveFlagService.class);
+        com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService<?> security =
+                IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.class);
+        return flags.getActiveFlag(session, system.getEnterprise(), tokens).chain(flag -> {
+            row.setActiveFlagID(flag);
+            return session.insert(row).chain(() -> security.resolveDefaultGroupFolderTokens(session, system, tokens))
+                    .chain(groups -> row.createScopeRestrictedSecurity(session, system, system.getEnterprise(), flag, groups, actorScope, tokens))
+                    .replaceWithVoid();
+        });
+    }
+
     // Stateless detached-prepped reference-type cache (event type), keyed by enterpriseId → name.
     // Safe: detached scalar projection, stable install-time reference types; only cached on a real hit.
     private static final Map<UUID, Map<String, IEventType<?, ?>>> STATELESS_EVENT_TYPE_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
@@ -525,4 +578,3 @@ public class EventsService
                 });
     }
 }
-

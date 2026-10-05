@@ -75,6 +75,47 @@ public class AccountScopeSecurityIntegrationTest {
                 .replaceWith(c);
     }
 
+    @Test void actorEventAndBothRelationshipsArePrivateAndRollBackWithTheDomainTransaction() {
+        IEventService<?> eventService = IGuiceContext.get(IEventService.class);
+        UUID eventId = factory.withStatelessTransaction((session, tx) -> create(session)
+                .chain(c -> eventService.createActorEvent(session, "Profile updated: Private field " + UUID.randomUUID(),
+                        c.party, c.scope, c.system, c.systemIdentity)
+                        .chain(event -> session.createNativeQuery("select (extract(epoch from warehousecreatedtimestamp)*1000000)::bigint from event.event where eventid=:event", Long.class)
+                                .setParameter("event", event.getId()).getSingleResult()
+                                .invoke(micros -> assertTrue(micros > 0L))
+                                .chain(() -> session.createNativeQuery("""
+                                select count(*) from (
+                                  select s.securitytokenid from event.eventsecuritytoken s where s.eventsid=:event
+                                  union all
+                                  select s.securitytokenid from event.eventxeventtypesecuritytoken s
+                                    join event.eventxeventtype x on x.eventxeventtypeid=s.eventxeventtypeid where x.eventid=:event
+                                  union all
+                                  select s.securitytokenid from event.eventxinvolvedpartysecuritytoken s
+                                    join event.eventxinvolvedparty x on x.eventxinvolvedpartyid=s.eventxinvolvedpartyid where x.eventid=:event
+                                ) grants join security.securitytoken k on k.securitytokenid=grants.securitytokenid
+                                where k.securitytokenfriendlyname in ('Everyone','Everywhere','Guests')
+                                """, Long.class).setParameter("event", event.getId()).getSingleResult()
+                                .invoke(count -> assertEquals(0L, count))
+                                .chain(() -> ((IWarehouseCoreTable<?,?,?,?>) event).canRead(session, c.system, UUID.fromString(c.scope.getSecurityToken())))
+                                .invoke(allowed -> assertTrue(allowed))
+                                .chain(() -> ((IWarehouseCoreTable<?,?,?,?>) event).canRead(session, c.system, UUID.fromString(c.sibling.getSecurityToken())))
+                                .invoke(allowed -> assertFalse(allowed)).replaceWith((UUID) event.getId())))))
+                .await().atMost(TIMEOUT);
+        assertNotNull(eventId);
+        var rolledBack = new java.util.concurrent.atomic.AtomicReference<UUID>();
+        assertThrows(IllegalStateException.class, () -> factory.withStatelessTransaction((session, tx) -> create(session)
+                .chain(c -> eventService.createActorEvent(session, "Failed profile update " + UUID.randomUUID(),
+                        c.party, c.scope, c.system, c.systemIdentity))
+                .invoke(event -> rolledBack.set((UUID) event.getId()))
+                .chain(() -> Uni.createFrom().failure(new IllegalStateException("Reject domain write"))))
+                .await().atMost(TIMEOUT));
+        assertNotNull(rolledBack.get());
+        Long remaining = factory.withStatelessSession(session -> session.createNativeQuery(
+                "select count(*) from event.event where eventid=:event", Long.class)
+                .setParameter("event", rolledBack.get()).getSingleResult()).await().atMost(TIMEOUT);
+        assertEquals(0L, remaining);
+    }
+
     @Test void canonicalPartyAndOrganicSubtypeHaveExactlyRestrictedGrants() {
         Context c = factory.withStatelessTransaction((session, tx) -> create(session)).await().atMost(TIMEOUT);
         factory.withStatelessTransaction((session, tx) -> session.createNativeQuery("""
