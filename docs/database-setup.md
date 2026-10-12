@@ -211,6 +211,19 @@ It also resumes pending index updates after setup is skipped, using a migration
 fixture that exceeds the pool's statement limit, and verifies that runtime
 statements still time out after the connection is returned.
 
+Script 26 aligns the legacy RulesXRulesType security table and ID column with
+the entity mapping. If the mapped table already exists, script 11 may have
+created an empty legacy duplicate during an upgrade without tracking history.
+Script 26 locks and removes that empty duplicate, preserving the mapped table.
+If the legacy duplicate contains rows, the update stops for manual
+reconciliation rather than discarding security records. Failed updates do not
+record completion; restarting with the corrected resource retries script 26.
+Earlier scripts and their recorded checksums remain unchanged.
+
+`python src/test/scripts/fsdm_rules_security_audit.py` verifies populated legacy
+renames, preserved rows/grants/indexes, upgrades of untracked mapped databases,
+duplicate-table failure rollback and retry using disposable PostgreSQL 17.
+
 ## What this replaced
 
 Every module used to build its test database from `postgres_fsdm.sql` plus

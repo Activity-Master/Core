@@ -192,31 +192,47 @@ public final class PluginService {
 
     /** Every entry into a built-in plugin checks its installation and every declared dependency. */
     public Uni<Void> checkBuiltIn(Mutiny.StatelessSession session, ISystems<?, ?> plugin, Identity user, UUID party) {
-        Invocation invocation = new Invocation(plugin.getId(), party);
         return context(session, plugin, user).chain(c -> lockCatalog(session, c, plugin.getId(), false)
                 .chain(() -> declaredSystems(session, c, plugin.getId()))
-                .chain(dependencies -> {
-                    if (dependencies.isEmpty()) return denied();
-                    Uni<Void> chain = Uni.createFrom().voidItem();
-                    for (UUID dependency : dependencies)
-                        chain = chain.chain(() -> check(session,
-                                new com.guicedee.activitymaster.fsdm.db.entities.systems.Systems().setId(dependency)
-                                        .setEnterpriseID(plugin.getEnterprise()), user, invocation));
-                    return chain;
-                }));
+                .chain(dependencies -> checkDependencies(session, c, new Invocation(plugin.getId(), party), dependencies)));
+    }
+
+    private Uni<Void> checkDependencies(Mutiny.StatelessSession session, Ctx c, Invocation invocation, Set<UUID> dependencies) {
+        if (dependencies.isEmpty()) return denied();
+        Uni<Void> chain = Uni.createFrom().voidItem();
+        for (UUID dependency : new TreeSet<>(dependencies))
+            chain = chain.chain(() -> check(session, c, dependency, invocation));
+        return chain;
+    }
+
+    /** Display metadata and current admission, sharing context only inside this caller-owned transaction.
+     * No authorization result is cached across requests or used as a later invocation capability. */
+    public record CatalogEntry(Plugin plugin, boolean active) { }
+
+    public Uni<CatalogEntry> catalogEntry(Mutiny.StatelessSession session, ISystems<?, ?> writer,
+                                          Identity identity, UUID plugin, UUID party) {
+        Objects.requireNonNull(plugin, "plugin");
+        return context(session, writer, identity).chain(c -> find(session, c, plugin)
+                .chain(metadata -> checkDependencies(session, c, new Invocation(plugin, party), metadata.systems())
+                        .replaceWith(true).onFailure(SecurityException.class).recoverWithItem(false)
+                        .map(active -> new CatalogEntry(metadata, active))));
     }
 
     public Uni<Plugin> find(Mutiny.StatelessSession session, ISystems<?, ?> system, Identity identity, UUID plugin) {
         Objects.requireNonNull(plugin, "plugin");
-        return context(session, system, identity).chain(c -> lockCatalog(session, c, plugin, false)
+        return context(session, system, identity).chain(c -> find(session, c, plugin));
+    }
+
+    private Uni<Plugin> find(Mutiny.StatelessSession session, Ctx c, UUID plugin) {
+        return lockCatalog(session, c, plugin, false)
                 .chain(() -> session.createNativeQuery("select systemname,systemdesc from dbo.systems where systemid=:id "
                                 + "and " + live("dbo.systems"), Object[].class)
-                        .setParameter("id", plugin).setParameter("enterprise", identity.enterpriseId()).getSingleResult())
+                        .setParameter("id", plugin).setParameter("enterprise", c.identity().enterpriseId()).getSingleResult())
                 .chain(row -> catalogValues(session, c, plugin).chain(values -> resources(session, c, plugin)
                         .chain(media -> declaredSystems(session, c, plugin).map(declared -> new Plugin(plugin, (String) row[0],
                                 values.get("PluginTitle"), (String) row[1], values.get("PluginVersion"),
                                 media.get("PluginIcon").stream().findFirst().orElse(null), media.get("PluginScreenshot"), declared,
-                                values.get("PluginAgeRating")))))));
+                                values.get("PluginAgeRating"))))));
     }
 
     /** Installation management requires current write access to the installation party. */
@@ -273,15 +289,20 @@ public final class PluginService {
                            Identity identity, Invocation invocation) {
         Objects.requireNonNull(invocation, "invocation");
         return context(session, targetSystem, identity).chain(c -> lockCatalog(session, c, invocation.pluginId(), false)
-                .chain(() -> validateSystems(session, c, Set.of(targetSystem.getId())))
+                .chain(() -> check(session, c, targetSystem.getId(), invocation)));
+    }
+
+    /** The caller already owns the catalogue lock and verified context for this operation. */
+    private Uni<Void> check(Mutiny.StatelessSession session, Ctx c, UUID target, Invocation invocation) {
+        return validateSystems(session, c, Set.of(target))
                 .chain(() -> party(session, c, invocation.installationPartyId(), false))
                 .chain(() -> requireState(session, c, INSTALLATION, key(invocation.pluginId(), invocation.installationPartyId())))
-                .chain(installation -> requireState(session, c, DECLARATION, key(invocation.pluginId(), targetSystem.getId()))
-                        .chain(declaration -> permitted(session, c, invocation, targetSystem.getId())
+                .chain(installation -> requireState(session, c, DECLARATION, key(invocation.pluginId(), target))
+                        .chain(declaration -> permitted(session, c, invocation, target)
                                 .chain(() -> requireState(session, c, CONSENT,
-                                        key(installation.id(), declaration.id(), identity.partyId())))
-                                .chain(consent -> new Event().setId(consent.id()).canRead(session, c.core(), identity.tokens()))
-                                .chain(readable -> readable ? ageAllowed(session, c, invocation.pluginId()) : denied()))));
+                                        key(installation.id(), declaration.id(), c.identity().partyId())))
+                                .chain(consent -> new Event().setId(consent.id()).canRead(session, c.core(), c.identity().tokens()))
+                                .chain(readable -> readable ? ageAllowed(session, c, invocation.pluginId()) : denied())));
     }
 
     /** Reusable delegation boundary for other Masters. The callback receives the same verified user.

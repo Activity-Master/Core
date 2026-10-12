@@ -5,11 +5,19 @@ DO $$
 BEGIN
     IF to_regclass('rules.rulesxrulestypessecuritytoken') IS NOT NULL THEN
         IF to_regclass('rules.rulesxrulestypesecuritytoken') IS NOT NULL THEN
-            RAISE EXCEPTION 'Both RulesXRulesType security table names exist; manual reconciliation required';
+            -- Replaying script 11 on a Hibernate-created database can leave an
+            -- empty legacy table beside the populated mapped table. Lock before
+            -- checking so a concurrent insert cannot be discarded by the drop.
+            LOCK TABLE rules.rulesxrulestypessecuritytoken IN ACCESS EXCLUSIVE MODE;
+            IF EXISTS (SELECT 1 FROM rules.rulesxrulestypessecuritytoken) THEN
+                RAISE EXCEPTION 'Both RulesXRulesType security table names exist and the legacy table contains rows; manual reconciliation required';
+            END IF;
+            DROP TABLE rules.rulesxrulestypessecuritytoken;
+        ELSE
+            ALTER TABLE rules.rulesxrulestypessecuritytoken RENAME TO rulesxrulestypesecuritytoken;
+            ALTER TABLE rules.rulesxrulestypesecuritytoken
+                RENAME COLUMN rulesxrulestypessecuritytokenid TO rulesxrulestypesecuritytokenid;
         END IF;
-        ALTER TABLE rules.rulesxrulestypessecuritytoken RENAME TO rulesxrulestypesecuritytoken;
-        ALTER TABLE rules.rulesxrulestypesecuritytoken
-            RENAME COLUMN rulesxrulestypessecuritytokenid TO rulesxrulestypesecuritytokenid;
     END IF;
 
     IF to_regclass('rules.rulesxrulestypesecuritytoken') IS NULL THEN
