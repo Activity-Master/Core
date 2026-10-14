@@ -366,6 +366,22 @@ public final class PluginService {
     private Uni<Void> administrator(Ctx c) {
         return c.tokens().contains(c.administrators().getId()) ? Uni.createFrom().voidItem() : denied();
     }
+
+    /** Read-only current administrator guard for trusted catalogue review adapters.
+     * The host must bind the organic identity before calling; this never registers a plugin. */
+    public Uni<Void> requireAdministrator(Mutiny.StatelessSession session, ISystems<?, ?> system, Identity identity) {
+        return context(session, system, identity).chain(this::administrator);
+    }
+
+    /** Review mutation boundary: same exclusive catalogue lock used by consent/policy changes.
+     * The caller owns the transaction and must append its secured evidence and audit before commit. */
+    public Uni<Void> lockReviewCatalog(Mutiny.StatelessSession session, ISystems<?, ?> system,
+                                       Identity identity, UUID plugin) {
+        return context(session, system, identity).chain(c -> administrator(c)
+                .chain(() -> lockCatalog(session, c, plugin, true))
+                .chain(() -> new Arrangement().setId(plugin).canWrite(session, c.core(), identity.tokens()))
+                .chain(allowed -> allowed ? Uni.createFrom().voidItem() : denied()));
+    }
     /** The verified user must satisfy the plugin's catalogue age rating; an unrated plugin is "All". */
     private Uni<Void> ageAllowed(Mutiny.StatelessSession session, Ctx c, UUID plugin) {
         return catalogValues(session, c, plugin)
