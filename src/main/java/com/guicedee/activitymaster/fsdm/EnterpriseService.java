@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.fsdm;
 
+import com.guicedee.client.utils.ClassLoading;
+
 import com.google.inject.Singleton;
 import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
 import com.guicedee.activitymaster.fsdm.client.services.IPasswordsService;
@@ -290,7 +292,7 @@ public class EnterpriseService
                         }
 
                         @SuppressWarnings("unchecked")
-                        Class<? extends ISystemUpdate> clazz = (Class<? extends ISystemUpdate>) classInfo.loadClass();
+                        Class<? extends ISystemUpdate> clazz = (Class<? extends ISystemUpdate>) ClassLoading.loadClass(classInfo);
                         SortedUpdate du = clazz.getAnnotation(SortedUpdate.class);
                         availableUpdates.put(du.sortOrder(), clazz);
                     }
@@ -333,7 +335,7 @@ public class EnterpriseService
             }
 
             @SuppressWarnings("unchecked")
-            Class<? extends ISystemUpdate> clazz = (Class<? extends ISystemUpdate>) classInfo.loadClass();
+            Class<? extends ISystemUpdate> clazz = (Class<? extends ISystemUpdate>) ClassLoading.loadClass(classInfo);
             SortedUpdate du = clazz.getAnnotation(SortedUpdate.class);
             availableUpdates.put(du.sortOrder(), clazz);
         }
