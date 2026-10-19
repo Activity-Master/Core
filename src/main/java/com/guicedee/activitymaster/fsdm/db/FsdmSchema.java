@@ -66,7 +66,7 @@ public final class FsdmSchema
 			"25.forum-notification-query-indexes.sql",
 			"26.rules-type-security-table.sql");
 
-	// The only historical SQL compatibility exception: the original setup had no index reset.
+	// Historical SQL compatibility: setup index reset and conflict-safe time reference seeds.
     // Its existing history remains truthful; update 26 performs the reset and rebuild atomically.
     private static final String ORIGINAL_SETUP_CHECKSUM = "121fc5eaa313dbd1e062dd11f1445e665a1b90540efb0a8e8223f1f539248e84";
     private static final String INDEX_RESET_SETUP_CHECKSUM = "31813865bd0213702157748f3e757d5d0b499fb00be1bf61f868ed6e15f79c30";
@@ -225,6 +225,9 @@ public final class FsdmSchema
 
     private static String compatibleChecksum(String script, String checksum)
     {
+        // Seed conflict handling changes no existing data; retain truthful applied history.
+        if ("15.time.sql".equals(script) && "4d993ee4bc6346b2544bd2278f98443e5f50bda5e3bebba5c05ddcb239e86133".equals(checksum))
+            return "c48319759a456cd825c08d38ce63447c28a575cd04f09dcba5fb327b707e537f";
         return ORDERED.get(1).equals(script) && INDEX_RESET_SETUP_CHECKSUM.equals(checksum)
                 ? ORIGINAL_SETUP_CHECKSUM : checksum;
     }
