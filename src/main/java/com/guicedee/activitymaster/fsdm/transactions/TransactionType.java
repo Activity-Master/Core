@@ -13,9 +13,9 @@ import java.util.UUID;
 public class TransactionType extends WarehouseSCDTable<TransactionType, TransactionType.Builder, UUID, TransactionTypeSecurityToken> {
     @Id @Column(name = "transaction_type_id", nullable = false)
     private UUID id;
-    @Column(name = "code", nullable = false)
+    @Column(name = "code", length = 255, nullable = false)
     private String code;
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", length = 255, nullable = false)
     private String description;
     @Column(name = "direction", nullable = false)
     private short direction;

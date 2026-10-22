@@ -9,6 +9,7 @@ import pathlib
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
 import uuid
@@ -34,7 +35,8 @@ def main():
         run("javac", "-d", str(scratch), str(SOURCE))
         shutil.copytree(CORE / "src/main/resources/db", scratch / "db")
         history = "00.0.schema-update-history.sql"
-        scripts = [history] + re.findall(r'"([\w.\-]+\.sql)"', SOURCE.read_text())[1:]
+        ordered = SOURCE.read_text().split("ORDERED = List.of(", 1)[1].split(");", 1)[0]
+        scripts = [history] + re.findall(r'"([\w.\-]+\.sql)"', ordered)
         assert len(scripts) == len(set(scripts))
         for script in scripts:
             resource = (scratch / "db" / script).read_text()
@@ -42,10 +44,11 @@ def main():
             for declaration in re.finditer(r"CREATE\s+(?:UNIQUE\s+)?(?:TABLE|INDEX|SCHEMA)\b", resource, re.I):
                 assert re.match(r"\s+IF\s+NOT\s+EXISTS\b", resource[declaration.end():], re.I), script
             for schema in re.finditer(r'CREATE SCHEMA IF NOT EXISTS ("?\w+"?);', resource):
-                name = schema.group(1).strip('"')
-                assert f"FROM pg_catalog.pg_namespace WHERE nspname = '{name}'" in resource[:schema.start()], script
+                schema_name = schema.group(1).strip('"')
+                assert f"FROM pg_catalog.pg_namespace WHERE nspname = '{schema_name}'" in resource[:schema.start()], script
             assert not re.search(r"\bREFERENCES\s+[\w\"]|\bFOREIGN\s+KEY\s*\(", resource, re.I), script
-        assert (CORE / "docs/sql/structured-party-addresses.sql").read_text() == (scratch / "db/19.structured-party-addresses.sql").read_text()
+        if not {"--transaction-unit-only", "--time-seeds-only"}.intersection(sys.argv):
+            assert (CORE / "docs/sql/structured-party-addresses.sql").read_text() == (scratch / "db/19.structured-party-addresses.sql").read_text()
         updates = scratch / "updates.sql"
 
         def bundle():
@@ -80,6 +83,22 @@ def main():
             assert int(sql("SELECT count(*) FROM dbo.fsdmschemaupdate")) == len(scripts)
             assert sql("SELECT scriptname FROM dbo.fsdmschemaupdate ORDER BY scriptsequence DESC LIMIT 1") == scripts[-1]
             assert sql("SELECT count(*) FROM pg_constraint WHERE contype='f'") == "0"
+            unit_type = "SELECT data_type || ':' || coalesce(character_maximum_length::text,'') FROM information_schema.columns WHERE table_schema='transactions' AND table_name='entry' AND column_name='unit'"
+            assert sql(unit_type) == "character varying:255"
+            type_column = "SELECT data_type || ':' || coalesce(character_maximum_length::text,'') FROM information_schema.columns WHERE table_schema='transactions' AND table_name='transaction_type' AND column_name="
+            assert sql(type_column + "'code'") == "character varying:255"
+            assert sql(type_column + "'description'") == "character varying:255"
+            sql("INSERT INTO transactions.transaction_type(transaction_type_id,enterprise_id,code,direction,description) VALUES ('11111111-1111-1111-1111-111111111111','22222222-2222-2222-2222-222222222222','wallet.credit',1,repeat('x',255))")
+            sql("UPDATE transactions.transaction_type SET description=repeat('x',256)", expected_error="value too long for type character varying(255)")
+            assert sql("SELECT length(description) FROM transactions.transaction_type") == "255"
+            sql("UPDATE transactions.transaction_type SET code='INVALID'", expected_error="violates check constraint")
+            recorded_before_replay = history_snapshot()
+            sql(complete)
+            assert history_snapshot() == recorded_before_replay
+            assert sql(type_column + "'description'") == "character varying:255"
+            print("PASS: canonical unit, code and description varchar(255); 255 accepted, 256 rejected without truncation; replay unchanged", flush=True)
+            if "--transaction-unit-only" in sys.argv:
+                return
             before = history_snapshot()
             recorded = dict(row.split("|") for row in sql("SELECT scriptname,trim(checksum) FROM dbo.fsdmschemaupdate").splitlines())
             for script in scripts:
@@ -130,6 +149,27 @@ def main():
             assert int(sql("SELECT count(*) FROM dbo.fsdmschemaupdate", "untracked_existing")) == len(scripts)
             assert sql("SELECT count(*) FROM dbo.enterprise WHERE enterpriseid='11111111-1111-1111-1111-111111111111'", "untracked_existing") == "1"
             print("PASS: existing schema/tables without history still execute all pending files and preserve data", flush=True)
+
+            # Both published time-seed forms remain valid history after the legacy fix.
+            current_time_checksum = hashlib.sha256((scratch / "db/15.time.sql").read_text().encode()).hexdigest()
+            for historical in ("c48319759a456cd825c08d38ce63447c28a575cd04f09dcba5fb327b707e537f",
+                               "4d993ee4bc6346b2544bd2278f98443e5f50bda5e3bebba5c05ddcb239e86133"):
+                sql(f"UPDATE dbo.fsdmschemaupdate SET checksum='{historical}' WHERE scriptname='15.time.sql'")
+                historical_history = history_snapshot()
+                sql(complete)
+                assert history_snapshot() == historical_history
+            sql(f"UPDATE dbo.fsdmschemaupdate SET checksum='{current_time_checksum}' WHERE scriptname='15.time.sql'")
+            assert history_snapshot() == before
+            print("PASS: both historical time-seed checksums remain unchanged on replay", flush=True)
+
+            if "--time-seeds-only" in sys.argv:
+                time_resource = scratch / "db/15.time.sql"
+                original_time = time_resource.read_text()
+                time_resource.write_text(original_time + "\nSELECT 1;\n", encoding="utf-8")
+                sql(bundle(), expected_error="changed after application")
+                assert history_snapshot() == before
+                print("PASS: unrecognized time-seed checksum changes remain rejected", flush=True)
+                return
 
             # Raw resources must also replay, independently of the history guard.
             sql("INSERT INTO dbo.enterprise(enterpriseid,enterprisedesc,enterprisename) "

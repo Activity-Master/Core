@@ -64,7 +64,9 @@ public final class FsdmSchema
 			"23.document-query-indexes.sql",
 			"24.domain-query-indexes.sql",
 			"25.forum-notification-query-indexes.sql",
-			"26.rules-type-security-table.sql");
+			"26.rules-type-security-table.sql",
+			"27.transaction-unit-varchar.sql",
+			"28.transaction-type-code-varchar.sql");
 
 	// Historical SQL compatibility: setup index reset and conflict-safe time reference seeds.
     // Its existing history remains truthful; update 26 performs the reset and rebuild atomically.
@@ -172,7 +174,7 @@ public final class FsdmSchema
 				    IF recorded_sequence <> %d THEN
 				      RAISE EXCEPTION 'FSDM update sequence changed for %%; append updates at the end', %s;
 				    END IF;
-				    IF recorded_checksum <> %s AND recorded_checksum <> %s THEN
+				    IF recorded_checksum <> %s AND recorded_checksum NOT IN (%s) THEN
 				      RAISE EXCEPTION 'FSDM script %% changed after application; append a new update instead', %s;
 				    END IF;
 				  ELSE
@@ -189,7 +191,7 @@ public final class FsdmSchema
 				  END IF;
 				END;
 				""".formatted(literal(script), sequence, literal(script), literal(checksum),
-                        literal(compatibleChecksum(script, checksum)), literal(script),
+                        compatibleChecksum(script, checksum), literal(script),
 				previous, previous, sequence - 1, literal(script), sequence, literal(script),
 				dollarQuote(body), literal(script), sequence, literal(checksum))) + ";\nCOMMIT;\n";
 	}
@@ -226,10 +228,11 @@ public final class FsdmSchema
     private static String compatibleChecksum(String script, String checksum)
     {
         // Seed conflict handling changes no existing data; retain truthful applied history.
-        if ("15.time.sql".equals(script) && "4d993ee4bc6346b2544bd2278f98443e5f50bda5e3bebba5c05ddcb239e86133".equals(checksum))
-            return "c48319759a456cd825c08d38ce63447c28a575cd04f09dcba5fb327b707e537f";
-        return ORDERED.get(1).equals(script) && INDEX_RESET_SETUP_CHECKSUM.equals(checksum)
-                ? ORIGINAL_SETUP_CHECKSUM : checksum;
+        if ("15.time.sql".equals(script) && "43ef090c8e30580f3065902ce0e7b78ea987017c5c3dbb6d27ec85f280f8107c".equals(checksum))
+            return literal("c48319759a456cd825c08d38ce63447c28a575cd04f09dcba5fb327b707e537f") + ", "
+                    + literal("4d993ee4bc6346b2544bd2278f98443e5f50bda5e3bebba5c05ddcb239e86133");
+        return literal(ORDERED.get(1).equals(script) && INDEX_RESET_SETUP_CHECKSUM.equals(checksum)
+                ? ORIGINAL_SETUP_CHECKSUM : checksum);
     }
 
 	private static String transactionStart()

@@ -22,6 +22,12 @@ another. A deposit credits a wallet and debits a clearing Arrangement; a
 withdrawal reverses those signs. Reversals create a new Event and entries.
 Posted entries reject update/delete and later additions to a committed Event.
 
+`transactions.entry.unit`, `transactions.transaction_type.code` and
+`transactions.transaction_type.description` are declared as `varchar(255)` in
+canonical `db/16.transactions.sql`, with matching explicit entity lengths.
+The existing unit and code format constraints remain unchanged. No new schema
+migration is added for this correction; keep schema validation enabled.
+
 Transactions also have classified, secured relationships to InvolvedParty,
 ResourceItem, Arrangement, Event, Product, Address, Geography, Rules, other
 Transactions, and Classifications. For example, an involved party can be the

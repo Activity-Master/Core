@@ -61,6 +61,21 @@ def main():
                 assert sql(f'SELECT {name} FROM "time".{table} WHERE {key}=2') == "Retained value"
                 assert sql(f'SELECT count(*) FROM "time".{table} WHERE {key}=3') == "1"
             print("PASS: fresh seeds, unchanged replay, partial-data repair and existing-value preservation")
+            # Existing installations can have time tables created without primary keys.
+            # Preserve even duplicate legacy rows; this migration only fills missing IDs.
+            for table, key, name, _ in tables:
+                sql(f'ALTER TABLE "time".{table} DROP CONSTRAINT {table}_pkey; '
+                    f'INSERT INTO "time".{table} SELECT * FROM "time".{table} WHERE {key}=2; '
+                    f'DELETE FROM "time".{table} WHERE {key}=3;')
+            sql(seed)
+            for table, key, name, count in tables:
+                assert sql(f'SELECT count(*) FROM "time".{table}') == str(count + 1)
+                assert sql(f'SELECT count(*) FROM "time".{table} WHERE {key}=2 AND {name}=\'Retained value\'') == "2"
+                assert sql(f'SELECT count(*) FROM "time".{table} WHERE {key}=3') == "1"
+            before = [snapshot(table, key) for table, key, _, _ in tables]
+            sql(seed)
+            assert before == [snapshot(table, key) for table, key, _, _ in tables]
+            print("PASS: legacy tables without unique constraints, duplicate preservation and replay")
         finally:
             run(str(binaries / "pg_ctl"), "-D", str(cluster), "-m", "fast", "-w", "stop")
 

@@ -179,10 +179,11 @@ CREATE TABLE IF NOT EXISTS "time".years
     yearname     character varying(10)  NOT NULL
 );
 
--- Preserve existing reference rows and fill gaps when setup is rerun.
+-- Preserve existing reference rows, including legacy tables without primary keys.
+-- Tracked updates serialize writers with the FSDM advisory transaction lock.
 INSERT INTO "time".monthofyear (monthofyearid, monthofyearabbreviation, monthofyearname, monthofyearshortname,
                                 monthinyearnumber)
-VALUES (1, 'J', 'January', 'Jan', 0),
+SELECT seed.* FROM (VALUES (1, 'J', 'January', 'Jan', 0),
        (2, 'F', 'February', 'Feb', 1),
        (3, 'M', 'March', 'Mar', 2),
        (4, 'A', 'April', 'Apr', 3),
@@ -193,12 +194,14 @@ VALUES (1, 'J', 'January', 'Jan', 0),
        (9, 'S', 'September', 'Sep', 8),
        (10, 'O', 'October', 'Oct', 9),
        (11, 'N', 'November', 'Nov', 10),
-       (12, 'D', 'December', 'Dec', 11)
-ON CONFLICT (monthofyearid) DO NOTHING;
+       (12, 'D', 'December', 'Dec', 11)) AS seed (monthofyearid, monthofyearabbreviation, monthofyearname, monthofyearshortname,
+                                monthinyearnumber)
+WHERE NOT EXISTS (SELECT 1 FROM "time".monthofyear existing WHERE existing.monthofyearid = seed.monthofyearid)
+ON CONFLICT DO NOTHING;
 
 -- Batch insert data into the "time".dayparts table
 INSERT INTO "time".dayparts (daypartid, daypartdescription, daypartname, daypartsortorder)
-VALUES (2, 'Between 3.30am and 6.30 am', 'Early Morning', 2),
+SELECT seed.* FROM (VALUES (2, 'Between 3.30am and 6.30 am', 'Early Morning', 2),
        (3, 'Between 6.30am and 9am', 'Morning', 3),
        (4, 'Between 9am and 10.30am', 'Late Morning', 4),
        (5, 'Between 10.30 and 12pm', 'Early Afternoon', 5),
@@ -208,20 +211,23 @@ VALUES (2, 'Between 3.30am and 6.30 am', 'Early Morning', 2),
        (9, 'Between 4.30pm and 7pm', 'Evening', 9),
        (10, 'Between 7pm and 9.30pm', 'Late Evening', 10),
        (11, 'Between 9.30pm and 12am', 'Midnight Evening', 11),
-       (12, 'Between 12am and 3.30am', 'Midnight Morning', 1)
-ON CONFLICT (daypartid) DO NOTHING;
+       (12, 'Between 12am and 3.30am', 'Midnight Morning', 1)) AS seed (daypartid, daypartdescription, daypartname, daypartsortorder)
+WHERE NOT EXISTS (SELECT 1 FROM "time".dayparts existing WHERE existing.daypartid = seed.daypartid)
+ON CONFLICT DO NOTHING;
 
 -- Batch insert data into the "time".daynames table
 INSERT INTO "time".daynames (daynameid, dayabbreviation, daybusinessdayclassification, dayisbusinessday,
                              daylongabbreviation, dayname, dayshortname, daysortorder)
-VALUES (1, 'S', 'Weekend', 0, 'Su', 'Sunday', 'Sun', 0),
+SELECT seed.* FROM (VALUES (1, 'S', 'Weekend', 0, 'Su', 'Sunday', 'Sun', 0),
        (2, 'M', 'Weekday', 1, 'Mo', 'Monday', 'Mon', 1),
        (3, 'T', 'Weekday', 1, 'Tu', 'Tuesday', 'Tue', 2),
        (4, 'W', 'Weekday', 1, 'We', 'Wednesday', 'Wed', 3),
        (5, 'T', 'Weekday', 1, 'Th', 'Thursday', 'Thur', 4),
        (6, 'F', 'Weekday', 1, 'Fr', 'Friday', 'Fri', 5),
-       (7, 'S', 'Weekend', 0, 'Sa', 'Saturday', 'Sat', 6)
-ON CONFLICT (daynameid) DO NOTHING;
+       (7, 'S', 'Weekend', 0, 'Sa', 'Saturday', 'Sat', 6)) AS seed (daynameid, dayabbreviation, daybusinessdayclassification, dayisbusinessday,
+                             daylongabbreviation, dayname, dayshortname, daysortorder)
+WHERE NOT EXISTS (SELECT 1 FROM "time".daynames existing WHERE existing.daynameid = seed.daynameid)
+ON CONFLICT DO NOTHING;
 
 
 

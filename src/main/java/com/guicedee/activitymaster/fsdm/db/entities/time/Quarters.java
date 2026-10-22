@@ -81,7 +81,7 @@ public class Quarters
 	        nullable = false,
 	        length = 50)
 	private String quarterQQMMDescription;
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "quarterID", fetch = FetchType.LAZY)
 	private List<Months> lUMonthsList = new ArrayList<>();
 	@JoinColumn(name = "YearID",
 	            referencedColumnName = "YearID",

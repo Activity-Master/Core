@@ -35,7 +35,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.reactive.mutiny.Mutiny;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -131,8 +130,11 @@ public class InvolvedParty
     @Override
     public Uni<UUID> getSecurityIdentity(Mutiny.StatelessSession session)
     {
-        return this.findInvolvedPartyIdentificationType(session, NoClassification, IdentificationTypes.IdentificationTypeUUID, null, getSystemID(), true, true,
-                        get(InvolvedPartySystem.class).getSystemToken(session, getEnterprise()).await().atMost(Duration.ofSeconds(50)))
+        return session.fetch(getEnterprise())
+                       .chain(enterprise -> get(InvolvedPartySystem.class).getSystemToken(session, enterprise))
+                       .chain(token -> session.fetch(getSystemID()).chain(system ->
+                               this.findInvolvedPartyIdentificationType(session, NoClassification, IdentificationTypes.IdentificationTypeUUID,
+                                       null, system, true, true, token)))
                        .map(IRelationshipValue::getValue)
                        .map(UUID::fromString);
     }

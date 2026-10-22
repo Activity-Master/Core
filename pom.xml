@@ -228,6 +228,17 @@
                         <arg>org.hibernate.orm.core=com.guicedee.activitymaster.fsdm</arg>
                     </compilerArgs>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <configuration>
+                            <compilerArgs combine.children="append">
+                                <arg>--add-exports</arg>
+                                <arg>org.hibernate.orm.core/org.hibernate.mapping=activity.master.test</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
                 <dependencies>
                     <dependency>
                         <groupId>org.projectlombok</groupId>
@@ -250,6 +261,7 @@
                     <argLine>
                         --add-reads org.jboss.logging=org.hibernate.reactive
                         --add-reads org.hibernate.orm.core=com.guicedee.activitymaster.fsdm
+                        --add-exports org.hibernate.orm.core/org.hibernate.mapping=activity.master.test
                     </argLine>
                 </configuration>
             </plugin>

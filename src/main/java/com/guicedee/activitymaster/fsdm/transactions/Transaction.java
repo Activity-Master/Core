@@ -38,7 +38,7 @@ public class Transaction extends WarehouseSCDTable<Transaction, Transaction.Buil
     private short direction;
     @Column(name = "amount", nullable = false, precision = 38, scale = 8, updatable = false)
     private BigDecimal amount;
-    @Column(name = "unit", nullable = false, updatable = false)
+    @Column(name = "unit", length = 255, nullable = false, updatable = false)
     private String unit;
     @OneToMany(mappedBy = "base")
     private List<TransactionSecurityToken> securities;
