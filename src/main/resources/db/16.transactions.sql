@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS transactions.transaction_type
 (
     transaction_type_id uuid PRIMARY KEY,
     enterprise_id       uuid     NOT NULL,
-    code                varchar(255) NOT NULL CHECK (code ~ '^[a-z][a-z0-9_.-]{0,79}$'),
+    code                text     NOT NULL CHECK (code ~ '^[a-z][a-z0-9_.-]{0,79}$'),
     direction           smallint NOT NULL CHECK (direction IN (-1, 1)),
     active              boolean  NOT NULL DEFAULT true,
     UNIQUE (enterprise_id, code),
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS transactions.entry
     transaction_type_id uuid           NOT NULL,
     direction           smallint       NOT NULL,
     amount              numeric(38, 8) NOT NULL CHECK (amount > 0),
-    unit                varchar(255)   NOT NULL CHECK (unit ~ '^[A-Z][A-Z0-9_]{0,15}$'),
+    unit                text           NOT NULL CHECK (unit ~ '^[A-Z][A-Z0-9_]{0,15}$'),
     signed_amount       numeric(39, 8) GENERATED ALWAYS AS (amount * direction) STORED,
     created_at          timestamptz    NOT NULL DEFAULT now(),
     UNIQUE (event_id, line_no),
@@ -44,7 +44,7 @@ CREATE INDEX IF NOT EXISTS transaction_entry_arrangement_unit
 -- FSDM warehouse metadata for the ActivityMaster/EntityAssist mappings. These
 -- columns match the other ActivityMaster warehouse domains.
 ALTER TABLE transactions.transaction_type
-    ADD COLUMN IF NOT EXISTS description                   varchar(255) NOT NULL DEFAULT '',
+    ADD COLUMN IF NOT EXISTS description                   text NOT NULL DEFAULT '',
     ADD COLUMN IF NOT EXISTS effectivefromdate             timestamptz,
     ADD COLUMN IF NOT EXISTS effectivetodate               timestamptz,
     ADD COLUMN IF NOT EXISTS warehousecreatedtimestamp     timestamptz,

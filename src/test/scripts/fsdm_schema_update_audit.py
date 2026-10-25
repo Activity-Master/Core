@@ -97,6 +97,39 @@ def main():
             assert history_snapshot() == recorded_before_replay
             assert sql(type_column + "'description'") == "character varying:255"
             print("PASS: canonical unit, code and description varchar(255); 255 accepted, 256 rejected without truncation; replay unchanged", flush=True)
+            # Reproduce installations from before and after the accidental edit to script 16.
+            transaction_script = scratch / "db/16.transactions.sql"
+            original_transaction_sql = transaction_script.read_text(encoding="utf-8")
+            changed_transaction_sql = original_transaction_sql.replace("code                text     NOT NULL", "code                varchar(255) NOT NULL")
+            changed_transaction_sql = changed_transaction_sql.replace("unit                text           NOT NULL", "unit                varchar(255)   NOT NULL")
+            changed_transaction_sql = changed_transaction_sql.replace("description                   text NOT NULL", "description                   varchar(255) NOT NULL")
+            for index, (historical_sql, expected_hash) in enumerate([
+                (original_transaction_sql, "75946ecd0c5507f2dfc34ec18b3b4d05eeb204701cd1bef2abca269a618e0a10"),
+                (changed_transaction_sql, "4bd1239628785983b4b27a87006d4f1e7eff3cea3d609c8c7e7550c5c2fb4b81")
+            ]):
+                assert hashlib.sha256(historical_sql.encode()).hexdigest() == expected_hash
+                database = f"transaction_upgrade_{index}"
+                sql(f"CREATE DATABASE {database}")
+                transaction_script.write_text(historical_sql, encoding="utf-8")
+                historical_bundle = bundle()
+                # Omit updates 27-29 to exercise the actual pending ALTER statements.
+                sql("\nCOMMIT;\n".join(historical_bundle.split("\nCOMMIT;\n")[:-4]) + "\nCOMMIT;\n", database)
+                history_query = "SELECT checksum FROM dbo.fsdmschemaupdate WHERE scriptname='16.transactions.sql'"
+                assert sql(history_query, database) == expected_hash
+                sql("INSERT INTO transactions.transaction_type(transaction_type_id,enterprise_id,code,direction,description) VALUES ('11111111-1111-1111-1111-111111111111','22222222-2222-2222-2222-222222222222','wallet.credit',1,'Existing description')", database)
+                transaction_script.write_text(original_transaction_sql, encoding="utf-8")
+                sql(complete, database)
+                assert sql(history_query, database) == expected_hash
+                assert sql(type_column + "'description'", database) == "character varying:255"
+                assert sql(type_column + "'code'", database) == "character varying:255"
+                assert sql(unit_type, database) == "character varying:255"
+                assert sql("SELECT description FROM transactions.transaction_type", database) == "Existing description"
+                before_upgrade_replay = history_snapshot(database)
+                sql(complete, database)
+                assert history_snapshot(database) == before_upgrade_replay
+                sql("UPDATE dbo.fsdmschemaupdate SET checksum=repeat('0',64) WHERE scriptname='16.transactions.sql'", database)
+                sql(complete, database, expected_error="16.transactions.sql changed after application")
+            print("PASS: both released transaction histories upgrade without data/history loss; unknown drift rejected", flush=True)
             if "--transaction-unit-only" in sys.argv:
                 return
             before = history_snapshot()

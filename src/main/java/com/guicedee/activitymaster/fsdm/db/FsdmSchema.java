@@ -66,7 +66,8 @@ public final class FsdmSchema
 			"25.forum-notification-query-indexes.sql",
 			"26.rules-type-security-table.sql",
 			"27.transaction-unit-varchar.sql",
-			"28.transaction-type-code-varchar.sql");
+			"28.transaction-type-code-varchar.sql",
+			"29.transaction-type-description-varchar.sql");
 
 	// Historical SQL compatibility: setup index reset and conflict-safe time reference seeds.
     // Its existing history remains truthful; update 26 performs the reset and rebuild atomically.
@@ -227,6 +228,10 @@ public final class FsdmSchema
 
     private static String compatibleChecksum(String script, String checksum)
     {
+        // The released varchar variant of 16 is also safe to skip: updates 27-29
+        // converge both known installations without rewriting their applied history.
+        if ("16.transactions.sql".equals(script) && "75946ecd0c5507f2dfc34ec18b3b4d05eeb204701cd1bef2abca269a618e0a10".equals(checksum))
+            return literal("4bd1239628785983b4b27a87006d4f1e7eff3cea3d609c8c7e7550c5c2fb4b81");
         // Seed conflict handling changes no existing data; retain truthful applied history.
         if ("15.time.sql".equals(script) && "43ef090c8e30580f3065902ce0e7b78ea987017c5c3dbb6d27ec85f280f8107c".equals(checksum))
             return literal("c48319759a456cd825c08d38ce63447c28a575cd04f09dcba5fb327b707e537f") + ", "
