@@ -238,7 +238,8 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     // ============================================================================================
 
     @Override
-    @CacheResult(cacheName = "InvolvedPartyIdentificationTypeFindByNameStateless")
+    // Caller transactions may observe newly created taxonomy that later rolls back.
+    // Resolve current rows rather than publishing uncommitted identities into a shared cache.
     public Uni<IInvolvedPartyIdentificationType<?, ?>> findInvolvedPartyIdentificationType(Mutiny.StatelessSession session,
                                                                                            @CacheKey String idType,
                                                                                            @CacheKey ISystems<?, ?> system,
@@ -314,10 +315,22 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                                                                 String name,
                                                                                 String description,
                                                                                 UUID... identityToken) {
+        return createIdentificationTypeInternal(session,system,name,description,null,identityToken);
+    }
+
+    @Override
+    public Uni<IInvolvedPartyIdentificationType<?, ?>> createIdentificationTypeWithId(Mutiny.StatelessSession session,
+            ISystems<?, ?> system, String name, String description, UUID id, UUID... identityToken) {
+        return createIdentificationTypeInternal(session,system,name,description,java.util.Objects.requireNonNull(id),identityToken);
+    }
+
+    private Uni<IInvolvedPartyIdentificationType<?, ?>> createIdentificationTypeInternal(Mutiny.StatelessSession session,
+            ISystems<?, ?> system, String name, String description, UUID explicitId, UUID... identityToken) {
         var enterprise = system.getEnterprise();
-        return findInvolvedPartyIdentificationType(session, name, system, identityToken).onFailure()
+        return findInvolvedPartyIdentificationType(session, name, system, identityToken).onFailure(failureToRecover -> !com.guicedee.activitymaster.fsdm.client.services.SessionUtils.isSerializationFailure((Throwable)failureToRecover))
                                                                                         .recoverWithUni(err -> {
                                                                                             InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
+                                                                                            if(explicitId!=null)xr.setId(explicitId);
                                                                                             xr.setName(name);
                                                                                             xr.setDescription(
                                                                                                     description);
@@ -354,7 +367,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                                                                                                                 enterprise,
                                                                                                                                 activeFlag,
                                                                                                                                 tokens))
-                                                                                                                        .onFailure()
+                                                                                                                        .onFailure(failureToRecover -> !com.guicedee.activitymaster.fsdm.client.services.SessionUtils.isSerializationFailure((Throwable)failureToRecover))
                                                                                                                         .recoverWithItem(
                                                                                                                                 0L)
                                                                                                                         .replaceWith(
@@ -370,7 +383,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                                             ISystems<?, ?> system,
                                                             UUID... identityToken) {
         var enterprise = system.getEnterprise();
-        return findInvolvedPartyNameType(session, name, system, identityToken).onFailure().recoverWithUni(err -> {
+        return findInvolvedPartyNameType(session, name, system, identityToken).onFailure(failureToRecover -> !com.guicedee.activitymaster.fsdm.client.services.SessionUtils.isSerializationFailure((Throwable)failureToRecover)).recoverWithUni(err -> {
             InvolvedPartyNameType xr = new InvolvedPartyNameType();
             xr.setName(name);
             xr.setDescription(description);
@@ -387,7 +400,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                                                                           system,
                                                                                           enterprise,
                                                                                           activeFlag,
-                                                                                          tokens)).onFailure()
+                                                                                          tokens)).onFailure(failureToRecover -> !com.guicedee.activitymaster.fsdm.client.services.SessionUtils.isSerializationFailure((Throwable)failureToRecover))
                                                 .recoverWithItem(0L).replaceWith((IInvolvedPartyNameType<?, ?>) xr));
             });
         });
@@ -400,7 +413,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                                     String description,
                                                     UUID... identityToken) {
         var enterprise = system.getEnterprise();
-        return findType(session, name, system, identityToken).onFailure().recoverWithUni(err -> {
+        return findType(session, name, system, identityToken).onFailure(failureToRecover -> !com.guicedee.activitymaster.fsdm.client.services.SessionUtils.isSerializationFailure((Throwable)failureToRecover)).recoverWithUni(err -> {
             InvolvedPartyType xr = new InvolvedPartyType();
             xr.setName(name);
             xr.setDescription(description);
@@ -417,7 +430,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                                                                           system,
                                                                                           enterprise,
                                                                                           activeFlag,
-                                                                                          tokens)).onFailure()
+                                                                                          tokens)).onFailure(failureToRecover -> !com.guicedee.activitymaster.fsdm.client.services.SessionUtils.isSerializationFailure((Throwable)failureToRecover))
                                                 .recoverWithItem(0L).replaceWith((IInvolvedPartyType<?, ?>) xr));
             });
         });

@@ -122,7 +122,7 @@ public class ClassificationService
                 .invoke(existing ->
                         log.trace("✅ Found existing classification: '{}' with ID: {}", existing.getName(), existing.getId())
                 )
-                .onFailure()
+                .onFailure(failureToRecover -> !com.guicedee.activitymaster.fsdm.client.services.SessionUtils.isSerializationFailure((Throwable)failureToRecover))
                 .recoverWithUni(error -> {
                     log.info("📋 Classification '{}' not found, creating new one", name);
 
@@ -183,7 +183,7 @@ public class ClassificationService
                                 return securityFn.apply(rootCl)
                                         .onItem()
                                         .invoke(result -> log.trace("🛡️ Security setup completed successfully for classification '{}'", name))
-                                        .onFailure()
+                                        .onFailure(failureToRecover -> !com.guicedee.activitymaster.fsdm.client.services.SessionUtils.isSerializationFailure((Throwable)failureToRecover))
                                         .recoverWithItem(securityError -> {
                                             log.warn("⚠️ Security creation failed for classification '{}': {}", name, securityError.getMessage());
                                             return null;
@@ -193,7 +193,7 @@ public class ClassificationService
                                                     .equals(name)) {
                                                 log.trace("👶 Setting up parent-child relationship for classification '{}' with parent '{}'", name, parent.getName());
                                                 return find(session, parent.getName(), system, identityToken)
-                                                        .onFailure()
+                                                        .onFailure(failureToRecover -> !com.guicedee.activitymaster.fsdm.client.services.SessionUtils.isSerializationFailure((Throwable)failureToRecover))
                                                         .recoverWithItem(e -> {
                                                             log.warn("⚠️ Error finding parent classification '{}': {}", parent.getName(), e.getMessage());
                                                             return null;
@@ -284,7 +284,7 @@ public class ClassificationService
     // ---------------------------------------------------------------------------------------------
 
     @Override
-    @CacheResult(cacheName = "ClassificationFindWithSimpleStringStateless")
+    // Transaction-local lookups must not publish rolled-back or expired classifications.
     public Uni<IClassification<?, ?>> find(Mutiny.StatelessSession session, @CacheKey String name, @CacheKey ISystems<?, ?> system, UUID... identityToken) {
         var enterprise = system.getEnterprise();
         return new Classification()
@@ -446,13 +446,28 @@ public class ClassificationService
                                              Integer sequenceNumber, IClassification<?, ?> parent,
                                              com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
                                              boolean restricted, UUID... identityToken) {
+        return createStatelessInternalWithId(session,name,description,concept,system,sequenceNumber,parent,scopeToken,restricted,null,identityToken);
+    }
+
+    @Override
+    public Uni<IClassification<?, ?>> createWithId(Mutiny.StatelessSession session,String name,String description,
+            EnterpriseClassificationDataConcepts concept,ISystems<?, ?> system,UUID id,UUID... identityToken) {
+        return createStatelessInternalWithId(session,name,description,concept==null?null:concept.classificationValue(),system,null,null,null,false,java.util.Objects.requireNonNull(id),identityToken);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Uni<IClassification<?, ?>> createStatelessInternalWithId(Mutiny.StatelessSession session, String name, String description,
+            String concept, ISystems<?, ?> system, Integer sequenceNumber, IClassification<?, ?> parent,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+            boolean restricted, UUID explicitId, UUID... identityToken) {
         var enterprise = system.getEnterprise();
         // Resolve the data-concept name to project/prep: the supplied concept, or the default "NoClassification".
         String conceptName = concept != null ? concept : "NoClassification";
         return findInConcept(session, name, conceptName, system, identityToken)
-                .onFailure()
+                .onFailure(failureToRecover -> !com.guicedee.activitymaster.fsdm.client.services.SessionUtils.isSerializationFailure((Throwable)failureToRecover))
                 .recoverWithUni(err -> {
                     Classification rootCl = new Classification();
+                    if(explicitId!=null)rootCl.setId(explicitId);
                     rootCl.setName(name);
                     rootCl.setDescription(description);
                     rootCl.setClassificationSequenceNumber(sequenceNumber == null ? 1 : sequenceNumber);
@@ -479,7 +494,7 @@ public class ClassificationService
                                                 .chain(tokens -> restricted
                                                         ? rootCl.createScopeRestrictedSecurity(session, system, enterprise, activeFlag, tokens, scopeToken, identityToken)
                                                         : rootCl.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
-                                                .onFailure()
+                                                .onFailure(failureToRecover -> !com.guicedee.activitymaster.fsdm.client.services.SessionUtils.isSerializationFailure((Throwable)failureToRecover))
                                                 .recoverWithItem(0L)
                                                 .replaceWith((IClassification<?, ?>) rootCl));
                             });

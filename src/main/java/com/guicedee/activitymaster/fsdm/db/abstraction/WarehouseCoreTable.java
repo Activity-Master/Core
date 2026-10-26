@@ -260,6 +260,9 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
         if (groupFolderTokens == null || grants.stream().anyMatch(grant -> groupFolderTokens.get(grant.key()) == null)) {
             return Uni.createFrom().failure(new IllegalStateException("Required restricted security folders unavailable"));
         }
+        if (Boolean.getBoolean("ne1.profile.party-bulk-security") && scopeToken == null
+                && this instanceof com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyXInvolvedPartyIdentificationType)
+            return insertProtectedIdentificationGrantsTogether(session,system,enterprise,activeFlag,groupFolderTokens);
         for (Grant grant : grants) {
             com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> token =
                     groupFolderTokens.get(grant.key());
@@ -275,6 +278,35 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                     .map(perRow -> total + perRow));
         }
         return chain;
+    }
+
+    /** Prototype only for the existing four-grant protected identification relation. */
+    private Uni<Long> insertProtectedIdentificationGrantsTogether(Mutiny.StatelessSession session,ISystems<?, ?> system,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?> enterprise,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag<?, ?> activeFlag,
+            java.util.Map<String,com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?>> groups) {
+        var keys=List.of(SECURITY_ADMINISTRATORS,SECURITY_SYSTEMS,SECURITY_APPLICATIONS,SECURITY_PLUGINS);
+        var sql=new StringBuilder("insert into party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken "
+                +"(involvedpartyxinvolvedpartyidentificationtypesecuritytokenid,involvedpartyxinvolvedpartyidentificationtypeid,activeflagid,enterpriseid,systemid,originalsourcesystemid,originalsourcesystemuniqueid,securitytokenid,createallowed,updateallowed,deleteallowed,readallowed,effectivefromdate,effectivetodate,warehousecreatedtimestamp,warehouselastupdatedtimestamp,warehousefromdate) values ");
+        for(int i=0;i<keys.size();i++) {
+            if(i>0)sql.append(',');
+            sql.append("(:id").append(i).append(",:base,:flag,:enterprise,:system,:system,:origin,:principal").append(i)
+                    .append(",1,1,").append(i==0?1:0).append(",1,:from").append(i).append(",:to").append(i)
+                    .append(",:created").append(i).append(",:updated").append(i).append(",:date").append(i).append(')');
+        }
+        var query=session.createNativeQuery(sql.toString()).setParameter("base",getId()).setParameter("flag",activeFlag.getId())
+                .setParameter("enterprise",enterprise.getId()).setParameter("system",system.getId()).setParameter("origin",new UUID(0,0));
+        for(int i=0;i<keys.size();i++) {
+            var defaults=new com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken();
+            query.setParameter("id"+i,defaults.getId()).setParameter("principal"+i,groups.get(keys.get(i)).getId())
+                    .setParameter("from"+i,defaults.getEffectiveFromDate()).setParameter("to"+i,defaults.getEffectiveToDate())
+                    .setParameter("created"+i,defaults.getWarehouseCreatedTimestamp()).setParameter("updated"+i,defaults.getWarehouseLastUpdatedTimestamp())
+                    .setParameter("date"+i,defaults.getWarehouseFromDate());
+        }
+        return query.executeUpdate().map(count -> {
+            if(count!=keys.size())throw new IllegalStateException("Protected identification grant insert was incomplete");
+            return (long)count;
+        });
     }
 
     /**
