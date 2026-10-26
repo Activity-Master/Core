@@ -726,3 +726,7 @@ Before this page is considered final:
 - [ ] Sensitive concepts have policy and security guidance approved.
 - [ ] Spelling and terminology review is complete for seed values.
 
+
+## Restricted identification grants
+
+A caller may explicitly request grouped insertion for a protected identification relation. ActivityMaster uses it only when its own eligibility rules permit it (a supported identification relation with no scope token); otherwise it uses the canonical restricted-grant path. Both paths require the same token matrix and caller-owned stateless transaction. The default remains canonical.

@@ -47,7 +47,7 @@ public class EventsService
     public Uni<IEvent<?, ?>> createActorEvent(Mutiny.StatelessSession session, String title, IInvolvedParty<?, ?> actor,
             com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> actorScope,
             ISystems<?, ?> system, UUID... identityToken) {
-        return createActorEventInternal(session,title,actor,actorScope,system,null,null,null,identityToken);
+        return createActorEventInternal(session,title,actor,actorScope,system,null,null,null,false,identityToken);
     }
 
     @Override
@@ -55,12 +55,27 @@ public class EventsService
             com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> actorScope,
             ISystems<?, ?> system,UUID typeId,UUID eventRoleId,UUID actorRoleId,UUID... identityToken) {
         Objects.requireNonNull(typeId);Objects.requireNonNull(eventRoleId);Objects.requireNonNull(actorRoleId);
-        return createActorEventInternal(session,title,actor,actorScope,system,typeId,eventRoleId,actorRoleId,identityToken);
+        return createActorEventInternal(session,title,actor,actorScope,system,typeId,eventRoleId,actorRoleId,false,identityToken);
+    }
+
+    @Override
+    public Uni<IEvent<?, ?>> createActorEventGrouped(Mutiny.StatelessSession session, String title, IInvolvedParty<?, ?> actor,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> actorScope,
+            ISystems<?, ?> system, UUID... identityToken) {
+        return createActorEventInternal(session,title,actor,actorScope,system,null,null,null,true,identityToken);
+    }
+
+    @Override
+    public Uni<IEvent<?, ?>> createActorEventWithIdsGrouped(Mutiny.StatelessSession session, String title, IInvolvedParty<?, ?> actor,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> actorScope,
+            ISystems<?, ?> system, UUID typeId, UUID eventRoleId, UUID actorRoleId, UUID... identityToken) {
+        Objects.requireNonNull(typeId); Objects.requireNonNull(eventRoleId); Objects.requireNonNull(actorRoleId);
+        return createActorEventInternal(session,title,actor,actorScope,system,typeId,eventRoleId,actorRoleId,true,identityToken);
     }
 
     private Uni<IEvent<?, ?>> createActorEventInternal(Mutiny.StatelessSession session,String title,IInvolvedParty<?, ?> actor,
             com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> actorScope,
-            ISystems<?, ?> system,UUID typeId,UUID eventRoleId,UUID actorRoleId,UUID[] identityToken) {
+            ISystems<?, ?> system,UUID typeId,UUID eventRoleId,UUID actorRoleId,boolean grouped,UUID[] identityToken) {
         Objects.requireNonNull(actor); Objects.requireNonNull(actorScope);
         if (session.currentTransaction() == null) throw new IllegalStateException("Actor events require a caller-owned transaction");
         if (title == null || title.isBlank() || title.length() > 150) throw new IllegalArgumentException("Event title required (maximum 150 characters)");
@@ -68,9 +83,7 @@ public class EventsService
         Event event = new Event();
         return (typeId==null ? createEventType(session,title,system,identityToken)
                 : createEventTypeWithId(session,title,typeId,system,identityToken))
-                .chain(type -> Boolean.getBoolean("ne1.profile.event-procedure") && typeId!=null
-                        ? createActorEventByProcedure(session,event,actor,actorScope,system,type.getId(),eventRoleId,actorRoleId,identityToken)
-                        : storeActorEventRow(session, event, actorScope, system, identityToken)
+                .chain(type -> storeActorEventRow(session, event, actorScope, system, grouped, identityToken)
                         .chain(() -> eventRoleId==null ? classes.create(session,"ActorEventType","Private actor event type",
                                 com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.EventXEventType,system,identityToken)
                                 : classes.createWithId(session,"ActorEventType","Private actor event type",
@@ -79,7 +92,7 @@ public class EventsService
                             var link = new EventXEventType().setEventID(event).setEventTypeID(new EventType().setId(type.getId()))
                                     .setClassificationID(new Classification().setId(role.getId()));
                             link.setValue("1");
-                            return storeActorEventRow(session, link, actorScope, system, identityToken);
+                            return storeActorEventRow(session, link, actorScope, system, grouped, identityToken);
                         })
                         .chain(() -> actorRoleId==null ? classes.create(session,"CreatedBy","Initiating actor",
                                 com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.EventXInvolvedParty,system,identityToken)
@@ -89,47 +102,15 @@ public class EventsService
                             var link = new EventXInvolvedParty().setEventID(event).setInvolvedPartyID(new InvolvedParty().setId(actor.getId()))
                                     .setClassificationID(new Classification().setId(role.getId()));
                             link.setValue("1");
-                            return storeActorEventRow(session, link, actorScope, system, identityToken);
+                            return storeActorEventRow(session, link, actorScope, system, grouped, identityToken);
                         })).replaceWith(event);
-    }
-
-    /** Disposable-fixture procedure experiment; authorization stays with the calling service. */
-    private Uni<Void> createActorEventByProcedure(Mutiny.StatelessSession session,Event event,IInvolvedParty<?, ?> actor,
-            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scope,
-            ISystems<?, ?> system,UUID type,UUID eventRoleId,UUID actorRoleId,UUID[] tokens) {
-        IClassificationService<?> classes=IGuiceContext.get(IClassificationService.class);
-        IActiveFlagService<?> flags=IGuiceContext.get(IActiveFlagService.class);
-        com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService<?> security=IGuiceContext.get(com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.class);
-        return classes.createWithId(session,"ActorEventType","Private actor event type",
-                com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.EventXEventType,system,eventRoleId,tokens)
-                .chain(eventRole -> classes.createWithId(session,"CreatedBy","Initiating actor",
-                        com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.EventXInvolvedParty,system,actorRoleId,tokens)
-                .chain(actorRole -> flags.getActiveFlag(session,system.getEnterprise(),tokens)
-                .chain(flag -> security.resolveDefaultGroupFolderTokens(session,system,tokens).chain(groups -> {
-                    var keys=List.of("administrators","systems","applications","plugins");
-                    if(groups==null || keys.stream().anyMatch(key -> groups.get(key)==null))
-                        return Uni.createFrom().failure(new IllegalStateException("Required restricted security folders unavailable"));
-                    var now=java.time.OffsetDateTime.now(java.time.ZoneOffset.UTC);
-                    event.setEnterpriseID(system.getEnterprise());event.setSystemID(system);event.setActiveFlagID(flag);
-                    event.setOriginalSourceSystemID(system.getId());event.setOriginalSourceSystemUniqueID(new UUID(0,0));
-                    event.setWarehouseCreatedTimestamp(now);event.setWarehouseLastUpdatedTimestamp(now);
-                    event.setEffectiveFromDate(now);event.setEffectiveToDate(java.time.OffsetDateTime.parse("2999-12-31T23:59:59Z"));event.setWarehouseFromDate(now.toLocalDate());
-                    return session.createNativeQuery("call event.ne1_profile_private_event_prototype(:event,:eventlink,:actorlink,:enterprise,:system,:active,:actor,:scope,:type,:eventrole,:actorrole,:admin,:systems,:apps,:plugins)")
-                            .setParameter("event",event.getId()).setParameter("eventlink",UUID.randomUUID()).setParameter("actorlink",UUID.randomUUID())
-                            .setParameter("enterprise",system.getEnterprise().getId()).setParameter("system",system.getId()).setParameter("active",flag.getId())
-                            .setParameter("actor",actor.getId()).setParameter("scope",scope.getId()).setParameter("type",type)
-                            .setParameter("eventrole",eventRole.getId()).setParameter("actorrole",actorRole.getId())
-                            .setParameter("admin",groups.get("administrators").getId()).setParameter("systems",groups.get("systems").getId())
-                            .setParameter("apps",groups.get("applications").getId()).setParameter("plugins",groups.get("plugins").getId())
-                            .executeUpdate().replaceWithVoid();
-                }))));
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private Uni<Void> storeActorEventRow(Mutiny.StatelessSession session,
             com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable row,
             com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> actorScope,
-            ISystems<?, ?> system, UUID[] tokens) {
+            ISystems<?, ?> system, boolean grouped, UUID[] tokens) {
         var now = java.time.OffsetDateTime.now(java.time.ZoneOffset.UTC);
         row.setId(UUID.randomUUID()); row.setEnterpriseID(system.getEnterprise()); row.setSystemID(system);
         row.setOriginalSourceSystemID(system.getId()); row.setOriginalSourceSystemUniqueID(new UUID(0, 0));
@@ -142,7 +123,7 @@ public class EventsService
         return flags.getActiveFlag(session, system.getEnterprise(), tokens).chain(flag -> {
             row.setActiveFlagID(flag);
             return session.insert(row).chain(() -> security.resolveDefaultGroupFolderTokens(session, system, tokens))
-                    .chain(groups -> Boolean.getBoolean("ne1.profile.event-bulk-security")
+                    .chain(groups -> grouped
                             ? insertActorGrantsTogether(session,row,system,flag,groups,actorScope)
                             : row.createScopeRestrictedSecurity(session, system, system.getEnterprise(), flag, groups, actorScope, tokens))
                     .replaceWithVoid();

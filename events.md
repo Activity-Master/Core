@@ -760,3 +760,7 @@ They tell us:
 - why it failed, paused, completed, or was cancelled.
 
 ActivityMaster keeps the Event model broad enough to support a full FSDM-style activity history, while using the `EventX...` + `ClassificationID` + `Value` pattern to avoid rebuilding every small relationship type as a separate physical table. 🧾✨
+
+## Private actor events
+
+Callers may explicitly request grouped grant insertion for private actor-event records. The canonical operation remains the default. Both use the same caller-owned stateless transaction, actor scope and required grant matrix; failures propagate. Application-specific persistence experiments belong to the application.

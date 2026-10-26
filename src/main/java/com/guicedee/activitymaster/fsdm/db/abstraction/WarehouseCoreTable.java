@@ -260,9 +260,6 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
         if (groupFolderTokens == null || grants.stream().anyMatch(grant -> groupFolderTokens.get(grant.key()) == null)) {
             return Uni.createFrom().failure(new IllegalStateException("Required restricted security folders unavailable"));
         }
-        if (Boolean.getBoolean("ne1.profile.party-bulk-security") && scopeToken == null
-                && this instanceof com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyXInvolvedPartyIdentificationType)
-            return insertProtectedIdentificationGrantsTogether(session,system,enterprise,activeFlag,groupFolderTokens);
         for (Grant grant : grants) {
             com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> token =
                     groupFolderTokens.get(grant.key());
@@ -280,7 +277,23 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
         return chain;
     }
 
-    /** Prototype only for the existing four-grant protected identification relation. */
+    /** Grouped grants are supported only for an unscoped protected identification relation. */
+    @Override
+    public Uni<Long> createScopeRestrictedSecurityGrouped(Mutiny.StatelessSession session, ISystems<?, ?> system,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?> enterprise,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag<?, ?> activeFlag,
+            java.util.Map<String, com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?>> groupFolderTokens,
+            com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken<?, ?> scopeToken,
+            UUID... identityToken) {
+        if (scopeToken != null || !(this instanceof com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyXInvolvedPartyIdentificationType))
+            return createScopeRestrictedSecurity(session, system, enterprise, activeFlag, groupFolderTokens, scopeToken, identityToken);
+        if (groupFolderTokens == null || java.util.List.of(SECURITY_ADMINISTRATORS, SECURITY_SYSTEMS, SECURITY_APPLICATIONS, SECURITY_PLUGINS)
+                .stream().anyMatch(key -> groupFolderTokens.get(key) == null))
+            return Uni.createFrom().failure(new IllegalStateException("Required restricted security folders unavailable"));
+        return insertProtectedIdentificationGrantsTogether(session, system, enterprise, activeFlag, groupFolderTokens);
+    }
+
+    /** Grouped form of the existing four-grant protected identification relation. */
     private Uni<Long> insertProtectedIdentificationGrantsTogether(Mutiny.StatelessSession session,ISystems<?, ?> system,
             com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise<?, ?> enterprise,
             com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag<?, ?> activeFlag,
