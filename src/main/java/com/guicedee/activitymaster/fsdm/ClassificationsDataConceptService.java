@@ -26,10 +26,6 @@ public class ClassificationsDataConceptService
         implements IClassificationDataConceptService<ClassificationsDataConceptService> {
     // Using shared NameIdCache via IClassificationDataConceptService.resolveCdcIdByName; no separate local cache needed
 
-    // Stateless detached-prepped reference cache (data concept), keyed by enterpriseId → name.
-    // Safe: detached scalar projection, stable install-time concepts; only cached on a real hit.
-    private static final java.util.Map<UUID, java.util.Map<String, IClassificationDataConcept<?, ?>>> STATELESS_CONCEPT_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
-
     @Inject
     private ActiveFlagService activeFlagService;
 
@@ -64,13 +60,9 @@ public class ClassificationsDataConceptService
      */
     public Uni<IClassificationDataConcept<?, ?>> find(Mutiny.StatelessSession session, String name, ISystems<?, ?> system, UUID... identityToken) {
         var enterprise = system.getEnterprise();
-        UUID enterpriseId = enterprise.getId();
-        java.util.Map<String, IClassificationDataConcept<?, ?>> byName = STATELESS_CONCEPT_CACHE.computeIfAbsent(enterpriseId, k -> new java.util.concurrent.ConcurrentHashMap<>());
-        IClassificationDataConcept<?, ?> hit = byName.get(name);
-        if (hit != null) {
-            return Uni.createFrom().item((IClassificationDataConcept<?, ?>) hit);
-        }
-        Uni<IClassificationDataConcept<?, ?>> resolved = new ClassificationDataConcept().builder(session)
+        // A transaction can see concepts it just inserted. A shared cache must not expose
+        // those uncommitted IDs to other transactions or retain them after rollback.
+        return new ClassificationDataConcept().builder(session)
                 .withEnterprise(enterprise)
                 .inActiveRange()
                 .inDateRange()
@@ -86,7 +78,6 @@ public class ClassificationsDataConceptService
                     prepped.setFake(false);
                     return (IClassificationDataConcept<?, ?>) prepped;
                 });
-        return resolved.onItem().invoke(t -> { if (t != null && t.getId() != null) byName.put(name, t); });
     }
 
     @Override
@@ -111,7 +102,7 @@ public class ClassificationsDataConceptService
                                                                        ISystems<?, ?> system, UUID... identityToken) {
         var enterprise = system.getEnterprise();
         return find(session, name, system, identityToken)
-                .onFailure()
+                .onFailure(failure -> !com.guicedee.activitymaster.fsdm.client.services.SessionUtils.isSerializationFailure(failure))
                 .recoverWithUni(err -> {
                     ClassificationDataConcept newConcept = new ClassificationDataConcept();
                     newConcept.setDescription(description);
@@ -127,7 +118,7 @@ public class ClassificationsDataConceptService
                                 return newConcept.builder(session).persist(newConcept)
                                         .chain(persisted -> sts.resolveDefaultGroupFolderTokens(session, system, identityToken)
                                                 .chain(tokens -> newConcept.createDefaultSecurity(session, system, enterprise, activeFlag, tokens))
-                                                .onFailure().recoverWithItem(0L)
+                                                .onFailure(failure -> !com.guicedee.activitymaster.fsdm.client.services.SessionUtils.isSerializationFailure(failure)).recoverWithItem(0L)
                                                 .replaceWith((IClassificationDataConcept<?, ?>) newConcept));
                             });
                 });
