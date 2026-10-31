@@ -35,6 +35,11 @@ public final class ActivityMasterPoolConfiguration {
                     .setDatabase(value(settings,"FSDM_DBNAME","fsdm"))
                     .setUser(value(settings,"FSDM_USER","fsdm"))
                     .setPassword(value(settings,"FSDM_PASSWORD",""))
+                    // Reuse parsed statements, never rows or authorization decisions. The canonical
+                    // admission SQL exceeds Vert.x's default 2 KiB admission limit.
+                    .setCachePreparedStatements(true)
+                    .setPreparedStatementCacheMaxSize(128)
+                    .setPreparedStatementCacheSqlLimit(131072)
                     .setPipeliningLimit(1)
                     .setProperties(Map.of("application_name","activity-master", "options",
                             "-c statement_timeout="+integer(settings,"FSDM_STATEMENT_TIMEOUT_MS",30000,1,600000)

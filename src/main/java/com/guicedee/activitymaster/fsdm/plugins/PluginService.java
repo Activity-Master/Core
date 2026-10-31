@@ -356,22 +356,24 @@ public final class PluginService {
         return "with requested_systems as materialized (select s.systemid,s.enterpriseid,s.activeflagid,s.effectivefromdate,s.effectivetodate from dbo.systems s where s.systemid in (" + targets + ") and " + live("s") + "), "
                 + "authority_keys as materialized (select k.eventid,k.classificationid,k.systemid,k.enterpriseid,k.activeflagid,k.effectivefromdate,k.effectivetodate,k.value from event.eventxclassification k where k.value in (" + keys + ") "
                 + "and k.systemid=:core and " + live("k") + "), "
-                + "states as materialized (select t.eventtypename as kind,k.value as statekey,e.eventid,enabled.value as enabled"
-                + stateFrom("authority_keys") + " where e.systemid=:core and t.eventtypename in ('Plugin Installation','Plugin System Declaration','Plugin System Policy') "
-                + "and k.value in (" + keys + ") and " + stateLive() + "), "
+                + "authority_events as materialized (" + typedEvents("authority_keys") + "), "
+                + "states as materialized (select e.eventtypename as kind,k.value as statekey,e.eventid,enabled.value as enabled"
+                + typedStateFrom("authority_events","authority_keys") + " where e.eventtypename in ('Plugin Installation','Plugin System Declaration','Plugin System Policy') "
+                + "and k.value in (" + keys + ") and " + stateRolesLive() + "), "
                 + "consent_keys as materialized (select k.eventid,k.classificationid,k.systemid,k.enterpriseid,k.activeflagid,k.effectivefromdate,k.effectivetodate,k.value from event.eventxclassification k where k.systemid=:core and " + live("k")
                 + " and k.value in (select cast(installation.eventid as text)||':'||cast(declaration.eventid as text)||':'||:actor "
                 + "from states installation join states declaration on declaration.kind='Plugin System Declaration' and declaration.enabled='1' "
-                + "where installation.kind='Plugin Installation' and installation.statekey=:installation and installation.enabled='1')) "
+                + "where installation.kind='Plugin Installation' and installation.statekey=:installation and installation.enabled='1')), "
+                + "consent_events as materialized (" + typedEvents("consent_keys") + ") "
                 + "select 'state',kind,statekey,cast(eventid as text),enabled,cast(null as text) from states "
-                + "union all select 'consent',t.eventtypename,k.value,cast(e.eventid as text),enabled.value,cast(exists(select 1 from event.eventsecuritytoken g "
+                + "union all select 'consent',e.eventtypename,k.value,cast(e.eventid as text),enabled.value,cast(exists(select 1 from event.eventsecuritytoken g "
                 + "where g.eventsid=e.eventid and g.enterpriseid=:enterprise and g.securitytokenid in (" + tokens + ") and g.readallowed=1 "
                 + "and g.effectivefromdate<=statement_timestamp() and g.effectivetodate>statement_timestamp()) as text)"
-                + stateFrom("consent_keys")
+                + typedStateFrom("consent_events","consent_keys")
                 + " join states installation on installation.kind='Plugin Installation' and installation.statekey=:installation and installation.enabled='1' "
                 + "join states declaration on declaration.kind='Plugin System Declaration' and declaration.enabled='1' "
-                + "where t.eventtypename='Plugin User Consent' and e.systemid=:core "
-                + "and k.value=cast(installation.eventid as text)||':'||cast(declaration.eventid as text)||':'||:actor and " + stateLive()
+                + "where e.eventtypename='Plugin User Consent' "
+                + "and k.value=cast(installation.eventid as text)||':'||cast(declaration.eventid as text)||':'||:actor and " + stateRolesLive()
                 + " union all select 'target',cast(s.systemid as text),cast(null as text),cast(null as text),cast(null as text),cast(null as text) "
                 + "from requested_systems s where true "
                 + "and exists(select 1 from states where kind='Plugin Installation' and statekey=:installation and enabled='1') and " + live("s")
@@ -385,6 +387,33 @@ public final class PluginService {
                 + " and exists(select 1 from party.involvedpartysecuritytoken g where g.involvedpartyid=p.involvedpartyid "
                 + "and g.enterpriseid=:enterprise and g.securitytokenid in (" + tokens + ") and g.readallowed=1 "
                 + "and g.effectivefromdate<=statement_timestamp() and g.effectivetodate>statement_timestamp())";
+    }
+
+    /** Scope typed events to the exact authority/consent keys before joining role rows. */
+    private static String typedEvents(String keys) {
+        return "select e.eventid,t.eventtypename from event.event e "
+                + "join event.eventxeventtype xt on xt.eventid=e.eventid "
+                + "join event.eventtype t on t.eventtypeid=xt.eventtypeid "
+                + "where e.eventid in (select eventid from " + keys + ") "
+                + "and e.systemid=:core and xt.systemid=:core and t.systemid=:core and "
+                + live("e") + " and " + live("xt") + " and " + live("t");
+    }
+    private static String typedStateFrom(String events, String keys) {
+        return " from " + events + " e join " + keys + " k on k.eventid=e.eventid "
+                + "join event.eventxclassification enabled on enabled.eventid=e.eventid ";
+    }
+    private static String stateRolesLive() {
+        return "k.classificationid=" + classificationIds("PluginStateKey",true)
+                + " and enabled.classificationid=" + classificationIds("PluginEnabled",true)
+                + " and k.systemid=:core and enabled.systemid=:core "
+                + "and " + live("k") + " and " + live("enabled");
+    }
+    /** A classification primary key can match only one role row. Statement-local ID membership
+     * preserves that join's semantics without expanding the authority join search space. */
+    private static String classificationIds(String name, boolean core) {
+        return "any(array(select role.classificationid from classification.classification role where "
+                + "role.classificationname='" + name + "' " + (core ? "and role.systemid=:core " : "")
+                + "and " + live("role") + "))";
     }
 
     private static void verifyAdmission(ActorContext c, Invocation invocation, Set<UUID> targets, List<Object[]> rows) {
@@ -638,24 +667,29 @@ public final class PluginService {
     }
     private Uni<Void> lockCatalog(Mutiny.StatelessSession session, ActorContext c, UUID plugin, boolean write) {
         Objects.requireNonNull(plugin, "plugin");
+        // Bound the credential join graph before planning the separately locked catalogue row.
+        // Keep duplicates: ambiguous identity rows must still fail the existing two-row check.
         var query = session.createNativeQuery("""
-                select a.arrangementid from arrangement.arrangement a
-                join dbo.systems s on s.systemid=a.arrangementid
-                join arrangement.arrangementxarrangementtype x on x.arrangementid=a.arrangementid
-                join arrangement.arrangementtype t on t.arrangementtypeid=x.arrangementtypeid
-                join arrangement.arrangementxclassification i on i.arrangementid=a.arrangementid
+                with plugin_credentials as materialized (
+                select i.arrangementid from arrangement.arrangementxclassification i
                 join classification.classification ci on ci.classificationid=i.classificationid
                 join security.securitytoken k on k.securitytoken=i.value
                 join classification.classification ck on ck.classificationid=k.securitytokenclassificationid
                 join security.securitytokenxsecuritytoken h on h.childsecuritytokenid=k.securitytokenid
                 join security.securitytoken f on f.securitytokenid=h.parentsecuritytokenid
-                where a.arrangementid=:id and a.systemid=:core and x.systemid=:core and t.systemid=:core
-                  and i.systemid=:core and ci.systemid=:core and ci.classificationname='PluginIdentity'
-                  and t.arrangementtypename='Plugin Catalog' and ck.classificationname='Plugin'
+                where i.arrangementid=:id and i.systemid=:core and ci.systemid=:core
+                  and ci.classificationname='PluginIdentity' and ck.classificationname='Plugin'
                   and f.securitytokenfriendlyname='Plugins'
+                """ + " and " + live("i") + " and " + live("ci") + " and " + live("k") + " and " + live("ck")
+                + " and " + live("h") + " and " + live("f") + ") " + """
+                select a.arrangementid from arrangement.arrangement a
+                join dbo.systems s on s.systemid=a.arrangementid
+                join arrangement.arrangementxarrangementtype x on x.arrangementid=a.arrangementid
+                join arrangement.arrangementtype t on t.arrangementtypeid=x.arrangementtypeid
+                join plugin_credentials credential on credential.arrangementid=a.arrangementid
+                where a.arrangementid=:id and a.systemid=:core and x.systemid=:core and t.systemid=:core
+                  and t.arrangementtypename='Plugin Catalog'
                 """ + " and " + live("a") + " and " + live("s") + " and " + live("x") + " and " + live("t")
-                + " and " + live("i") + " and " + live("ci") + " and " + live("k") + " and " + live("ck")
-                + " and " + live("h") + " and " + live("f")
                 + (c instanceof ReadContext ? " and exists(" + actorSql() + ")" : "") + (write ? " for update of a" : " for share of a"), UUID.class)
                 .setParameter("id", plugin).setParameter("core", c.core().getId()).setParameter("enterprise", c.identity().enterpriseId())
                 .setMaxResults(2);
@@ -736,16 +770,13 @@ public final class PluginService {
     }
     private static String declarationRows() {
         return " from declarations d join event.eventxclassification k on k.eventid=d.eventid "
-                + "join classification.classification ck on ck.classificationid=k.classificationid "
                 + "join event.eventxclassification enabled on enabled.eventid=d.eventid "
-                + "join classification.classification ce on ce.classificationid=enabled.classificationid "
                 + "join event.eventxclassification v on v.eventid=d.eventid "
-                + "join classification.classification cv on cv.classificationid=v.classificationid "
-                + "where ck.classificationname='PluginStateKey' and ce.classificationname='PluginEnabled' and enabled.value='1' "
-                + "and cv.classificationname='PluginTargetSystem' and k.systemid=:core and ck.systemid=:core "
-                + "and enabled.systemid=:core and ce.systemid=:core "
-                + "and " + live("k") + " and " + live("ck") + " and " + live("enabled") + " and " + live("ce")
-                + " and " + live("v") + " and " + live("cv");
+                + "where k.classificationid=" + classificationIds("PluginStateKey",true)
+                + " and enabled.classificationid=" + classificationIds("PluginEnabled",true) + " and enabled.value='1' "
+                + "and v.classificationid=" + classificationIds("PluginTargetSystem",false)
+                + " and k.systemid=:core and enabled.systemid=:core "
+                + "and " + live("k") + " and " + live("enabled") + " and " + live("v");
     }
     private Uni<Set<UUID>> declaredSystems(Mutiny.StatelessSession session, ActorContext c, UUID plugin) {
         return session.createNativeQuery(declarationScope() + "select v.value" + declarationRows(), String.class)
@@ -890,11 +921,12 @@ public final class PluginService {
     }
     private static String live(String alias) {
         return alias + ".enterpriseid=:enterprise and " + alias + ".effectivefromdate<=statement_timestamp() and "
-                // ActiveFlagID is a primary key. A scalar lookup cannot be pulled up into a
-                // Cartesian product of independent flags before the secured rows are filtered.
-                + alias + ".effectivetodate>statement_timestamp() and coalesce((select plugin_live_flag.allowaccess=1 from dbo.activeflag plugin_live_flag where "
-                + "plugin_live_flag.activeflagid=" + alias + ".activeflagid and plugin_live_flag.enterpriseid=:enterprise "
-                + "and plugin_live_flag.effectivefromdate<=statement_timestamp() and plugin_live_flag.effectivetodate>statement_timestamp()),false)";
+                // Evaluate each live-flag lookup once per statement, rather than per candidate
+                // joined row. This is an InitPlan, not a result cache or another join in the
+                // authority graph. The same statement snapshot and fail-closed predicates apply.
+                + alias + ".effectivetodate>statement_timestamp() and " + alias + ".activeflagid=any(array(select plugin_live_flag.activeflagid from dbo.activeflag plugin_live_flag where "
+                + "plugin_live_flag.allowaccess=1 and plugin_live_flag.enterpriseid=:enterprise "
+                + "and plugin_live_flag.effectivefromdate<=statement_timestamp() and plugin_live_flag.effectivetodate>statement_timestamp()))";
     }
     private static <T> Uni<T> denied() { return Uni.createFrom().failure(new SecurityException("Plugin access denied")); }
 }

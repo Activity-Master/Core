@@ -40,72 +40,44 @@ public final class FsdmBehaviorAuthority {
         boolean grant = behavior != null;
         String extra = grant ? """
                 join event.eventxclassification b on b.eventid=e.eventid and b.enterpriseid=e.enterpriseid and b.systemid=e.systemid
-                join dbo.activeflag fb on fb.activeflagid=b.activeflagid and fb.allowaccess=1
-                join classification.classification cb on cb.classificationid=b.classificationid and cb.enterpriseid=e.enterpriseid
-                    and cb.systemid=e.systemid and cb.classificationname=:behaviorRole
-                join dbo.activeflag fcb on fcb.activeflagid=cb.activeflagid and fcb.allowaccess=1
-                join classification.classificationdataconcept db on db.classificationdataconceptid=cb.classificationdataconceptid
-                    and db.classificationdataconceptname='EventXClassification'
                 join event.eventxinvolvedparty a on a.eventid=e.eventid and a.enterpriseid=e.enterpriseid
                     and a.systemid=e.systemid and a.involvedpartyid=:actor
-                join dbo.activeflag fa on fa.activeflagid=a.activeflagid and fa.allowaccess=1
-                join classification.classification ca on ca.classificationid=a.classificationid and ca.enterpriseid=e.enterpriseid
-                    and ca.systemid=e.systemid and ca.classificationname=:actorRole
-                join dbo.activeflag fca on fca.activeflagid=ca.activeflagid and fca.allowaccess=1
-                join classification.classificationdataconcept da on da.classificationdataconceptid=ca.classificationdataconceptid
-                    and da.classificationdataconceptname='EventXInvolvedParty'
                 """ : "";
-        String grantCondition = grant ? """
-                and b.value=:behavior and b.effectivefromdate<=statement_timestamp() and b.effectivetodate>statement_timestamp()
-                and cb.effectivefromdate<=statement_timestamp() and cb.effectivetodate>statement_timestamp()
-                and a.effectivefromdate<=statement_timestamp() and a.effectivetodate>statement_timestamp()
-                and ca.effectivefromdate<=statement_timestamp() and ca.effectivetodate>statement_timestamp()
-                """ : "";
+        String grantCondition = grant ? " and b.value=:behavior and " + current("b") + " and " + current("a")
+                + " and b.classificationid=" + roleIds("behaviorRole","EventXClassification")
+                + " and a.classificationid=" + roleIds("actorRole","EventXInvolvedParty") : "";
+        // Preserve exactly the original row-lock set. Metadata/flag IDs only constrain
+        // those rows; they do not replace either lock read or the fresh token read below.
         String locks = grant ? "for share of e,f,xt,t,p,r,o,b,a" : "for share of e,f,xt,t,p,r,o";
         var query = session.createNativeQuery("""
+                with roles as materialized (
+                  select c.classificationid,c.classificationname,d.classificationdataconceptname
+                  from classification.classification c
+                  join classification.classificationdataconcept d on d.classificationdataconceptid=c.classificationdataconceptid
+                  where c.enterpriseid=:enterprise and c.systemid=:system
+                    and c.classificationname in (:providerRole,:realmRole,:ownerRole%s)
+                    and %s
+                )
                 select e.eventid from event.event e
                 join dbo.activeflag f on f.activeflagid=e.activeflagid and f.allowaccess=1
                 join event.eventxeventtype xt on xt.eventid=e.eventid and xt.enterpriseid=e.enterpriseid and xt.systemid=e.systemid
-                join dbo.activeflag fxt on fxt.activeflagid=xt.activeflagid and fxt.allowaccess=1
                 join event.eventtype t on t.eventtypeid=xt.eventtypeid and t.enterpriseid=e.enterpriseid
                     and t.systemid=e.systemid and t.eventtypename=:type
-                join dbo.activeflag ft on ft.activeflagid=t.activeflagid and ft.allowaccess=1
                 join event.eventxclassification p on p.eventid=e.eventid and p.enterpriseid=e.enterpriseid and p.systemid=e.systemid
-                join dbo.activeflag fp on fp.activeflagid=p.activeflagid and fp.allowaccess=1
-                join classification.classification cp on cp.classificationid=p.classificationid and cp.enterpriseid=e.enterpriseid
-                    and cp.systemid=e.systemid and cp.classificationname=:providerRole
-                join dbo.activeflag fcp on fcp.activeflagid=cp.activeflagid and fcp.allowaccess=1
-                join classification.classificationdataconcept dp on dp.classificationdataconceptid=cp.classificationdataconceptid
-                    and dp.classificationdataconceptname='EventXClassification'
                 join event.eventxclassification r on r.eventid=e.eventid and r.enterpriseid=e.enterpriseid and r.systemid=e.systemid
-                join dbo.activeflag fr on fr.activeflagid=r.activeflagid and fr.allowaccess=1
-                join classification.classification cr on cr.classificationid=r.classificationid and cr.enterpriseid=e.enterpriseid
-                    and cr.systemid=e.systemid and cr.classificationname=:realmRole
-                join dbo.activeflag fcr on fcr.activeflagid=cr.activeflagid and fcr.allowaccess=1
-                join classification.classificationdataconcept dr on dr.classificationdataconceptid=cr.classificationdataconceptid
-                    and dr.classificationdataconceptname='EventXClassification'
                 join event.eventxclassification o on o.eventid=e.eventid and o.enterpriseid=e.enterpriseid and o.systemid=e.systemid
-                join dbo.activeflag fo on fo.activeflagid=o.activeflagid and fo.allowaccess=1
-                join classification.classification co on co.classificationid=o.classificationid and co.enterpriseid=e.enterpriseid
-                    and co.systemid=e.systemid and co.classificationname=:ownerRole
-                join dbo.activeflag fco on fco.activeflagid=co.activeflagid and fco.allowaccess=1
-                join classification.classificationdataconcept do_ on do_.classificationdataconceptid=co.classificationdataconceptid
-                    and do_.classificationdataconceptname='EventXClassification'
                 %s
                 where e.enterpriseid=:enterprise and e.systemid=:system and p.value=:provider
                   and r.value=:realm and o.value=:owner
                   and e.effectivefromdate<=statement_timestamp() and e.effectivetodate>statement_timestamp()
-                  and xt.effectivefromdate<=statement_timestamp() and xt.effectivetodate>statement_timestamp()
-                  and t.effectivefromdate<=statement_timestamp() and t.effectivetodate>statement_timestamp()
-                  and p.effectivefromdate<=statement_timestamp() and p.effectivetodate>statement_timestamp()
-                  and cp.effectivefromdate<=statement_timestamp() and cp.effectivetodate>statement_timestamp()
-                  and r.effectivefromdate<=statement_timestamp() and r.effectivetodate>statement_timestamp()
-                  and cr.effectivefromdate<=statement_timestamp() and cr.effectivetodate>statement_timestamp()
-                  and o.effectivefromdate<=statement_timestamp() and o.effectivetodate>statement_timestamp()
-                  and co.effectivefromdate<=statement_timestamp() and co.effectivetodate>statement_timestamp()
+                  and %s and %s and %s and %s and %s
+                  and p.classificationid=%s and r.classificationid=%s and o.classificationid=%s
                 %s
                 %s
-                """.formatted(extra, grantCondition, locks), UUID.class)
+                """.formatted(grant ? ",:behaviorRole,:actorRole" : "", current("c"), extra,
+                        current("xt"),current("t"),current("p"),current("r"),current("o"),
+                        roleIds("providerRole","EventXClassification"),roleIds("realmRole","EventXClassification"),
+                        roleIds("ownerRole","EventXClassification"),grantCondition,locks), UUID.class)
                 .setParameter("type", type(system,type)).setParameter("enterprise", enterprise).setParameter("system", system)
                 .setParameter("providerRole", role(system,"ScopedProvider"))
                 .setParameter("realmRole", role(system,"ScopedRealm"))
@@ -117,6 +89,16 @@ public final class FsdmBehaviorAuthority {
                 .setParameter("actorRole", role(system,"ScopedActor"));
         return query.getResultList().chain(rows -> rows.isEmpty()
                 ? denied() : Uni.createFrom().item(rows.stream().distinct().toList()));
+    }
+
+    private static String roleIds(String parameter, String concept) {
+        return "any(array(select classificationid from roles where classificationname=:" + parameter
+                + " and classificationdataconceptname='" + concept + "'))";
+    }
+    private static String current(String alias) {
+        // Match the existing flag predicate exactly; the event's f row remains explicitly locked.
+        return alias + ".effectivefromdate<=statement_timestamp() and " + alias + ".effectivetodate>statement_timestamp()"
+                + " and " + alias + ".activeflagid=any(array(select activeflagid from dbo.activeflag where allowaccess=1))";
     }
 
     private Uni<Void> readableAuthority(Mutiny.StatelessSession session, UUID system, UUID enterprise,
