@@ -17,6 +17,9 @@ public interface IAgeProfileProvider {
         public static final AgeProfile EMPTY = new AgeProfile(null, null);
     }
 
-    /** Returns the profile, or {@link AgeProfile#EMPTY} (never null) when no data is available. */
-    Uni<AgeProfile> find(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID partyId);
+    /** Reads only the canonical birth date; missing or invalid values return null. */
+    Uni<LocalDate> dateOfBirth(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID partyId);
+
+    /** Reads only the canonical residential country, with the profile country fallback. */
+    Uni<String> country(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID partyId);
 }

@@ -42,8 +42,13 @@ public final class PluginService {
     @Inject private IEventService<?> events;
     @Inject private AgeRestrictionService ages;
 
+    private interface ActorContext {
+        ISystems<?, ?> core();
+        Identity identity();
+    }
+    private record ReadContext(ISystems<?, ?> core, Identity identity) implements ActorContext { }
     private record Ctx(ISystems<?, ?> core, Identity identity, ISecurityToken<?, ?> credential,
-                       ISecurityToken<?, ?> administrators, Set<UUID> tokens) { }
+                       ISecurityToken<?, ?> administrators, Set<UUID> tokens) implements ActorContext { }
     private record State(UUID id, boolean enabled) { }
 
     /** Bootstrap-only taxonomy provisioning, called by the ordered update with the core credential. */
@@ -192,47 +197,230 @@ public final class PluginService {
 
     /** Every entry into a built-in plugin checks its installation and every declared dependency. */
     public Uni<Void> checkBuiltIn(Mutiny.StatelessSession session, ISystems<?, ?> plugin, Identity user, UUID party) {
-        return context(session, plugin, user).chain(c -> lockCatalog(session, c, plugin.getId(), false)
-                .chain(() -> declaredSystems(session, c, plugin.getId()))
-                .chain(dependencies -> checkDependencies(session, c, new Invocation(plugin.getId(), party), dependencies)));
+        return readEntry(session,plugin,user,plugin.getId(),party,true).replaceWithVoid();
     }
 
-    private Uni<Void> checkDependencies(Mutiny.StatelessSession session, Ctx c, Invocation invocation, Set<UUID> dependencies) {
-        if (dependencies.isEmpty()) return denied();
-        Uni<Void> chain = Uni.createFrom().voidItem();
-        for (UUID dependency : new TreeSet<>(dependencies))
-            chain = chain.chain(() -> check(session, c, dependency, invocation));
-        return chain;
+    private Uni<Void> checkDependencies(Mutiny.StatelessSession session, ActorContext c, Invocation invocation, Set<UUID> dependencies) {
+        return admission(session, c, invocation, dependencies)
+                .chain(() -> ageAllowed(session, c, invocation.pluginId()));
     }
 
     /** Display metadata and current admission, sharing context only inside this caller-owned transaction.
      * No authorization result is cached across requests or used as a later invocation capability. */
-    public record CatalogEntry(Plugin plugin, boolean active) { }
+    public record CatalogEntry(Plugin plugin, boolean active, Set<UUID> pluginDependencies) {
+        public CatalogEntry { pluginDependencies = Set.copyOf(pluginDependencies); }
+    }
 
     public Uni<CatalogEntry> catalogEntry(Mutiny.StatelessSession session, ISystems<?, ?> writer,
                                           Identity identity, UUID plugin, UUID party) {
+        return readEntry(session,writer,identity,plugin,party,false);
+    }
+
+    private Uni<CatalogEntry> readEntry(Mutiny.StatelessSession session, ISystems<?, ?> writer,
+                                        Identity identity, UUID plugin, UUID party, boolean enforce) {
         Objects.requireNonNull(plugin, "plugin");
-        return context(session, writer, identity).chain(c -> find(session, c, plugin)
-                .chain(metadata -> checkDependencies(session, c, new Invocation(plugin, party), metadata.systems())
-                        .replaceWith(true).onFailure(SecurityException.class).recoverWithItem(false)
-                        .map(active -> new CatalogEntry(metadata, active))));
+        return readContext(session, writer, identity).chain(c -> lockCatalog(session,c,plugin,false)
+                .chain(() -> com.guicedee.activitymaster.fsdm.client.services.ApplicableTokenQuery.prepare(session,c.core(),identity.tokens()))
+                .chain(tokens -> catalogAdmission(session,c,new Invocation(plugin,party),tokens,enforce)));
+    }
+
+    private Uni<CatalogEntry> catalogAdmission(Mutiny.StatelessSession session, ActorContext c, Invocation invocation, com.guicedee.activitymaster.fsdm.client.services.ApplicableTokenQuery tokens, boolean enforce) {
+        // No list-wide snapshot: this statement follows this entry's lock and token refresh.
+        // Metadata and the exact authority keys are derived from the same declaration set.
+        String sql = tokens.cte() + ", " + declarationScope().substring(5) + ", metadata(kind,name,value,extra) as materialized (" + metadataRows() + "), "
+                + "wanted(statekey) as (select cast(:installation as text) union select :pluginText||':'||name from metadata where kind='target' "
+                + "union select :pluginText||':'||name||':'||:zero from metadata where kind='target' "
+                + "union select :pluginText||':'||name||':'||:partyText from metadata where kind='target'), "
+                + admissionSql("select statekey from wanted", "select cast(name as uuid) from metadata where kind='target'", "select securitytokenid from applicable").substring(5)
+                + " union all select 'metadata',kind,name,value,extra,cast(null as text) from metadata"
+                + " union all select 'dependency',cast(s.systemid as text),cast(null as text),cast(null as text),cast(null as text),cast(null as text) "
+                + "from dbo.systems s join arrangement.arrangement a on a.arrangementid=s.systemid and a.enterpriseid=s.enterpriseid "
+                + "join arrangement.arrangementxarrangementtype x on x.arrangementid=a.arrangementid and x.enterpriseid=a.enterpriseid and x.systemid=a.systemid "
+                + "join arrangement.arrangementtype t on t.arrangementtypeid=x.arrangementtypeid and t.enterpriseid=x.enterpriseid and t.systemid=x.systemid "
+                + "where s.systemid in (select cast(name as uuid) from metadata where kind='target') and t.arrangementtypename='Plugin Catalog' "
+                + "and " + live("s") + " and " + live("a") + " and " + live("x") + " and " + live("t")
+                + " union all select 'verifiedActor',cast(null as text),cast(null as text),cast(null as text),cast(null as text),cast(null as text) "
+                + "where exists(" + actorSql().replace(":actor",":actorId") + ")";
+        var query = session.createNativeQuery(sql,Object[].class)
+                .setParameter("plugin",invocation.pluginId()).setParameter("pluginText",invocation.pluginId().toString())
+                .setParameter("type",DECLARATION).setParameter("core",c.core().getId()).setParameter("enterprise",c.identity().enterpriseId())
+                .setParameter("installation",key(invocation.pluginId(),invocation.installationPartyId()))
+                .setParameter("party",invocation.installationPartyId()).setParameter("partyText",invocation.installationPartyId().toString())
+                .setParameter("actor",c.identity().partyId().toString()).setParameter("zero",ZERO.toString())
+                .setParameter("actorId",c.identity().partyId()).setParameter("credential",c.identity().identityToken().toString());
+        return tokens.bind(query).getResultList().chain(rows -> {
+                    List<Object[]> metadataRows = new ArrayList<>(), authorityRows = new ArrayList<>();
+                    Set<UUID> dependencies = new HashSet<>();
+                    boolean ambiguousDependency = false, verifiedActor = false;
+                    for(var row:rows) {
+                        if("metadata".equals(row[0])) metadataRows.add(new Object[]{row[1],row[2],row[3],row[4]});
+                        else if("dependency".equals(row[0])) {
+                            if(!dependencies.add(UUID.fromString((String)row[1]))) ambiguousDependency=true;
+                        } else if("verifiedActor".equals(row[0])) verifiedActor=true;
+                        else authorityRows.add(row);
+                    }
+                    Plugin plugin = metadata(invocation.pluginId(),metadataRows);
+                    try {
+                        if(ambiguousDependency || !verifiedActor) throw new SecurityException("Plugin credential or dependency denied");
+                        verifyAdmission(c,invocation,plugin.systems(),authorityRows);
+                    } catch(SecurityException denied) {
+                        return enforce ? Uni.createFrom().failure(denied) : Uni.createFrom().item(new CatalogEntry(plugin,false,dependencies));
+                    }
+                    if(enforce) return ages.require(session,c.core().getEnterprise(),c.identity().partyId(),AgeRating.parse(plugin.ageRating()))
+                            .replaceWith(new CatalogEntry(plugin,true,dependencies));
+                    return ages.require(session,c.core().getEnterprise(),c.identity().partyId(),AgeRating.parse(plugin.ageRating()))
+                            .replaceWith(true).onFailure(SecurityException.class).recoverWithItem(false)
+                            .map(active -> new CatalogEntry(plugin,active,dependencies));
+                });
     }
 
     public Uni<Plugin> find(Mutiny.StatelessSession session, ISystems<?, ?> system, Identity identity, UUID plugin) {
         Objects.requireNonNull(plugin, "plugin");
-        return context(session, system, identity).chain(c -> find(session, c, plugin));
+        return readContext(session, system, identity).chain(c -> find(session, c, plugin));
     }
 
-    private Uni<Plugin> find(Mutiny.StatelessSession session, Ctx c, UUID plugin) {
-        return lockCatalog(session, c, plugin, false)
-                .chain(() -> session.createNativeQuery("select systemname,systemdesc from dbo.systems where systemid=:id "
-                                + "and " + live("dbo.systems"), Object[].class)
-                        .setParameter("id", plugin).setParameter("enterprise", c.identity().enterpriseId()).getSingleResult())
-                .chain(row -> catalogValues(session, c, plugin).chain(values -> resources(session, c, plugin)
-                        .chain(media -> declaredSystems(session, c, plugin).map(declared -> new Plugin(plugin, (String) row[0],
-                                values.get("PluginTitle"), (String) row[1], values.get("PluginVersion"),
-                                media.get("PluginIcon").stream().findFirst().orElse(null), media.get("PluginScreenshot"), declared,
-                                values.get("PluginAgeRating"))))));
+    private Uni<Plugin> find(Mutiny.StatelessSession session, ActorContext c, UUID plugin) {
+        return lockCatalog(session, c, plugin, false).chain(() -> catalogSnapshot(session, c, plugin));
+    }
+
+    /** One canonical metadata read after the existing per-plugin catalogue lock. */
+    private Uni<Plugin> catalogSnapshot(Mutiny.StatelessSession session, ActorContext c, UUID plugin) {
+        String sql = declarationScope() + metadataRows();
+        return session.createNativeQuery(sql, Object[].class).setParameter("plugin", plugin).setParameter("core", c.core().getId())
+                .setParameter("enterprise", c.identity().enterpriseId()).setParameter("type", DECLARATION).getResultList().map(rows -> metadata(plugin, rows));
+    }
+
+    private static String metadataRows() {
+        return "select 'system',s.systemname,s.systemdesc,cast(null as text) from dbo.systems s where s.systemid=:plugin and " + live("s")
+                + " union all select 'value',c.classificationname,x.value,cast(null as text) from arrangement.arrangementxclassification x "
+                + "join classification.classification c on c.classificationid=x.classificationid where x.arrangementid=:plugin "
+                + "and x.systemid=:core and c.systemid=:core and " + live("x") + " and " + live("c")
+                + " union all select 'media',c.classificationname,cast(x.resourceitemid as text),x.value from arrangement.arrangementxresourceitem x "
+                + "join classification.classification c on c.classificationid=x.classificationid join resource.resourceitem r on r.resourceitemid=x.resourceitemid "
+                + "where x.arrangementid=:plugin and x.systemid=:core and c.systemid=:core and c.classificationname in ('PluginIcon','PluginScreenshot') "
+                + "and " + live("x") + " and " + live("c") + " and " + live("r")
+                + " union all select 'target',v.value,cast(null as text),cast(null as text)" + declarationRows();
+    }
+
+    private static Plugin metadata(UUID plugin, List<Object[]> rows) {
+
+        Object[] system = null;
+        Map<String,String> values = new HashMap<>();
+        Set<UUID> targets = new HashSet<>();
+        List<Object[]> media = new ArrayList<>();
+        for (Object[] row : rows) switch ((String)row[0]) {
+            case "system" -> { if(system != null) throw new SecurityException("Ambiguous plugin metadata"); system = row; }
+            case "value" -> values.put((String)row[1], (String)row[2]);
+            case "target" -> targets.add(UUID.fromString((String)row[1]));
+            case "media" -> media.add(row);
+            default -> throw new IllegalStateException("Unknown catalogue row");
+        }
+        if(system == null) throw new SecurityException("Plugin unavailable");
+        media.sort(Comparator.comparingInt(row -> Integer.parseInt((String)row[3])));
+        UUID icon = media.stream().filter(row -> "PluginIcon".equals(row[1])).map(row -> UUID.fromString((String)row[2])).findFirst().orElse(null);
+        List<UUID> screenshots = media.stream().filter(row -> "PluginScreenshot".equals(row[1])).map(row -> UUID.fromString((String)row[2])).toList();
+        return new Plugin(plugin, (String)system[1], values.get("PluginTitle"), (String)system[2], values.get("PluginVersion"),
+                icon, screenshots, Set.copyOf(targets), values.get("PluginAgeRating"));
+    }
+
+    private record StateKey(String type, String key) { }
+
+    /** Read the exact installation/declaration/policy/consent set together. No result outlives this
+     * transaction; catalogue locks and normal domain authorization remain with their callers. */
+    private Uni<Void> admission(Mutiny.StatelessSession session, ActorContext c, Invocation invocation, Set<UUID> targets) {
+        if (targets.isEmpty()) return denied();
+        // Refresh after acquiring the catalogue lock: a blocked admission must not reuse
+        // the token expansion captured before a concurrent credential/group revocation.
+        return com.guicedee.activitymaster.fsdm.client.services.ApplicableTokenQuery.prepare(session,c.core(),c.identity().tokens())
+                .chain(tokens -> admissionRows(session,c,invocation,targets,tokens));
+    }
+
+    private Uni<Void> admissionRows(Mutiny.StatelessSession session, ActorContext c, Invocation invocation,
+                                    Set<UUID> targets, com.guicedee.activitymaster.fsdm.client.services.ApplicableTokenQuery tokens) {
+        Set<String> keys = new HashSet<>();
+        String installationKey = key(invocation.pluginId(), invocation.installationPartyId());
+        keys.add(installationKey);
+        for(UUID target : targets) {
+            keys.add(key(invocation.pluginId(), target));
+            keys.add(key(invocation.pluginId(), target, ZERO));
+            keys.add(key(invocation.pluginId(), target, invocation.installationPartyId()));
+        }
+        String sql = tokens.cte() + ", " + admissionSql(":keys", ":targets", "select securitytokenid from applicable").substring(5);
+        var query = session.createNativeQuery(sql, Object[].class).setParameter("core", c.core().getId()).setParameter("enterprise", c.identity().enterpriseId())
+                .setParameter("keys", keys).setParameter("installation", installationKey)
+                .setParameter("actor", c.identity().partyId().toString()).setParameter("targets", targets).setParameter("party", invocation.installationPartyId());
+        return tokens.bind(query).getResultList().invoke(rows -> verifyAdmission(c, invocation, targets, rows)).replaceWithVoid();
+    }
+
+    private static String admissionSql(String keys, String targets, String tokens) {
+        return "with requested_systems as materialized (select s.systemid,s.enterpriseid,s.activeflagid,s.effectivefromdate,s.effectivetodate from dbo.systems s where s.systemid in (" + targets + ") and " + live("s") + "), "
+                + "authority_keys as materialized (select k.eventid,k.classificationid,k.systemid,k.enterpriseid,k.activeflagid,k.effectivefromdate,k.effectivetodate,k.value from event.eventxclassification k where k.value in (" + keys + ") "
+                + "and k.systemid=:core and " + live("k") + "), "
+                + "states as materialized (select t.eventtypename as kind,k.value as statekey,e.eventid,enabled.value as enabled"
+                + stateFrom("authority_keys") + " where e.systemid=:core and t.eventtypename in ('Plugin Installation','Plugin System Declaration','Plugin System Policy') "
+                + "and k.value in (" + keys + ") and " + stateLive() + "), "
+                + "consent_keys as materialized (select k.eventid,k.classificationid,k.systemid,k.enterpriseid,k.activeflagid,k.effectivefromdate,k.effectivetodate,k.value from event.eventxclassification k where k.systemid=:core and " + live("k")
+                + " and k.value in (select cast(installation.eventid as text)||':'||cast(declaration.eventid as text)||':'||:actor "
+                + "from states installation join states declaration on declaration.kind='Plugin System Declaration' and declaration.enabled='1' "
+                + "where installation.kind='Plugin Installation' and installation.statekey=:installation and installation.enabled='1')) "
+                + "select 'state',kind,statekey,cast(eventid as text),enabled,cast(null as text) from states "
+                + "union all select 'consent',t.eventtypename,k.value,cast(e.eventid as text),enabled.value,cast(exists(select 1 from event.eventsecuritytoken g "
+                + "where g.eventsid=e.eventid and g.enterpriseid=:enterprise and g.securitytokenid in (" + tokens + ") and g.readallowed=1 "
+                + "and g.effectivefromdate<=statement_timestamp() and g.effectivetodate>statement_timestamp()) as text)"
+                + stateFrom("consent_keys")
+                + " join states installation on installation.kind='Plugin Installation' and installation.statekey=:installation and installation.enabled='1' "
+                + "join states declaration on declaration.kind='Plugin System Declaration' and declaration.enabled='1' "
+                + "where t.eventtypename='Plugin User Consent' and e.systemid=:core "
+                + "and k.value=cast(installation.eventid as text)||':'||cast(declaration.eventid as text)||':'||:actor and " + stateLive()
+                + " union all select 'target',cast(s.systemid as text),cast(null as text),cast(null as text),cast(null as text),cast(null as text) "
+                + "from requested_systems s where true "
+                + "and exists(select 1 from states where kind='Plugin Installation' and statekey=:installation and enabled='1') and " + live("s")
+                + " and exists(select 1 from dbo.systemxclassification x join classification.classification c on c.classificationid=x.classificationid "
+                + "join security.securitytoken k on k.securitytoken=x.value join classification.classification kt on kt.classificationid=k.securitytokenclassificationid "
+                + "where x.systemid=s.systemid and c.classificationname='SystemIdentity' and kt.classificationname in ('System','Plugin') "
+                + "and " + live("x") + " and " + live("c") + " and " + live("k") + " and " + live("kt") + ")"
+                + " union all select 'party',cast(p.involvedpartyid as text),cast(null as text),cast(null as text),cast(null as text),cast(null as text) "
+                + "from party.involvedparty p where p.involvedpartyid=:party "
+                + "and exists(select 1 from states where kind='Plugin Installation' and statekey=:installation and enabled='1') and " + live("p")
+                + " and exists(select 1 from party.involvedpartysecuritytoken g where g.involvedpartyid=p.involvedpartyid "
+                + "and g.enterpriseid=:enterprise and g.securitytokenid in (" + tokens + ") and g.readallowed=1 "
+                + "and g.effectivefromdate<=statement_timestamp() and g.effectivetodate>statement_timestamp())";
+    }
+
+    private static void verifyAdmission(ActorContext c, Invocation invocation, Set<UUID> targets, List<Object[]> rows) {
+
+        if(targets.isEmpty()) throw new SecurityException("Plugin has no declared targets");
+        String installationKey = key(invocation.pluginId(), invocation.installationPartyId());
+        Map<StateKey,State> states = new HashMap<>();
+        Set<UUID> validTargets = new HashSet<>();
+        Set<UUID> readable = new HashSet<>();
+        boolean party = false;
+        for(Object[] row : rows) {
+            String kind = (String)row[0];
+            if("target".equals(kind)) { validTargets.add(UUID.fromString((String)row[1])); continue; }
+            if("party".equals(kind)) { party = true; continue; }
+            State state = new State(UUID.fromString((String)row[3]), "1".equals(row[4]));
+            if(states.putIfAbsent(new StateKey((String)row[1], (String)row[2]), state) != null)
+                throw new SecurityException("Ambiguous plugin authority");
+            if("consent".equals(kind) && "true".equals(row[5])) readable.add(state.id());
+        }
+        if(!party || !validTargets.equals(targets)) throw new SecurityException("Plugin target or party denied");
+        State installation = required(states, INSTALLATION, installationKey);
+        for(UUID target : targets) {
+            State declaration = required(states, DECLARATION, key(invocation.pluginId(), target));
+            for(UUID scope : List.of(ZERO, invocation.installationPartyId())) {
+                State policy = states.get(new StateKey(POLICY, key(invocation.pluginId(), target, scope)));
+                if(policy != null && !policy.enabled()) throw new SecurityException("Plugin policy denied");
+            }
+            State consent = required(states, CONSENT, key(installation.id(), declaration.id(), c.identity().partyId()));
+            if(!readable.contains(consent.id())) throw new SecurityException("Plugin consent row denied");
+        }
+    }
+
+    private static State required(Map<StateKey,State> states, String type, String key) {
+        State state = states.get(new StateKey(type, key));
+        if(state == null || !state.enabled()) throw new SecurityException("Plugin access denied");
+        return state;
     }
 
     /** Installation management requires current write access to the installation party. */
@@ -288,21 +476,13 @@ public final class PluginService {
     public Uni<Void> check(Mutiny.StatelessSession session, ISystems<?, ?> targetSystem,
                            Identity identity, Invocation invocation) {
         Objects.requireNonNull(invocation, "invocation");
-        return context(session, targetSystem, identity).chain(c -> lockCatalog(session, c, invocation.pluginId(), false)
+        return readContext(session, targetSystem, identity).chain(c -> lockCatalog(session, c, invocation.pluginId(), false)
                 .chain(() -> check(session, c, targetSystem.getId(), invocation)));
     }
 
     /** The caller already owns the catalogue lock and verified context for this operation. */
-    private Uni<Void> check(Mutiny.StatelessSession session, Ctx c, UUID target, Invocation invocation) {
-        return validateSystems(session, c, Set.of(target))
-                .chain(() -> party(session, c, invocation.installationPartyId(), false))
-                .chain(() -> requireState(session, c, INSTALLATION, key(invocation.pluginId(), invocation.installationPartyId())))
-                .chain(installation -> requireState(session, c, DECLARATION, key(invocation.pluginId(), target))
-                        .chain(declaration -> permitted(session, c, invocation, target)
-                                .chain(() -> requireState(session, c, CONSENT,
-                                        key(installation.id(), declaration.id(), c.identity().partyId())))
-                                .chain(consent -> new Event().setId(consent.id()).canRead(session, c.core(), c.identity().tokens()))
-                                .chain(readable -> readable ? ageAllowed(session, c, invocation.pluginId()) : denied())));
+    private Uni<Void> check(Mutiny.StatelessSession session, ActorContext c, UUID target, Invocation invocation) {
+        return checkDependencies(session, c, invocation, Set.of(target));
     }
 
     /** Reusable delegation boundary for other Masters. The callback receives the same verified user.
@@ -341,22 +521,38 @@ public final class PluginService {
                         .chain(event -> eventValue(session, c, event, "PluginOperation", operation)));
     }
 
-    private Uni<Ctx> context(Mutiny.StatelessSession session, ISystems<?, ?> system, Identity identity) {
+    private Uni<ISystems<?, ?>> verifiedCore(Mutiny.StatelessSession session, ISystems<?, ?> system, Identity identity) {
         Objects.requireNonNull(session, "session");
         Objects.requireNonNull(identity, "identity");
         if (session.currentTransaction() == null) throw new IllegalStateException("Plugin operations require a caller-owned transaction");
         if (system == null || system.getEnterprise() == null || !identity.enterpriseId().equals(system.getEnterprise().getId()))
             return denied();
         // A library/system/plugin credential cannot be substituted for an authenticated user.
-        return session.createNativeQuery("select 1 from security.securitytoken k "
-                        + "join classification.classification c on c.classificationid=k.securitytokenclassificationid "
-                        + "join party.involvedpartyorganic p on p.involvedpartyorganicid=:actor "
-                        + "where k.securitytoken=:credential and c.classificationname in ('User','Identity') "
-                        + "and " + live("k") + " and " + live("c") + " and " + live("p"), Integer.class)
+        return session.createNativeQuery(actorSql(), Integer.class)
                 .setParameter("actor", identity.partyId()).setParameter("credential", identity.identityToken().toString())
                 .setParameter("enterprise", identity.enterpriseId()).setMaxResults(1).getResultList()
                 .chain(rows -> rows.isEmpty() ? PluginService.<ISystems<?, ?>>denied()
-                        : systems.getActivityMaster(session, system.getEnterprise(), identity.tokens()))
+                        : systems.getActivityMaster(session, system.getEnterprise(), identity.tokens()));
+    }
+
+    private static String actorSql() {
+        return "select 1 from security.securitytoken k "
+                        + "join classification.classification c on c.classificationid=k.securitytokenclassificationid "
+                        + "join party.involvedpartyorganic p on p.involvedpartyorganicid=:actor "
+                        + "where k.securitytoken=:credential and c.classificationname in ('User','Identity') "
+                        + "and " + live("k") + " and " + live("c") + " and " + live("p");
+    }
+
+    private Uni<ReadContext> readContext(Mutiny.StatelessSession session, ISystems<?, ?> system, Identity identity) {
+        Objects.requireNonNull(session, "session");
+        Objects.requireNonNull(identity, "identity");
+        if(session.currentTransaction()==null) throw new IllegalStateException("Plugin operations require a caller-owned transaction");
+        if(system==null || system.getEnterprise()==null || !identity.enterpriseId().equals(system.getEnterprise().getId())) return denied();
+        return systems.getActivityMaster(session,system.getEnterprise(),identity.tokens()).map(core -> new ReadContext(core,identity));
+    }
+
+    private Uni<Ctx> context(Mutiny.StatelessSession session, ISystems<?, ?> system, Identity identity) {
+        return verifiedCore(session, system, identity)
                 .chain(core -> security.getSecurityToken(session, identity.identityToken(), core, identity.tokens())
                         .chain(credential -> security.getAdministratorsFolder(session, core, identity.tokens())
                                 .chain(admin -> security.getApplicableSecurityTokenIds(session, core, identity.tokens())
@@ -383,7 +579,7 @@ public final class PluginService {
                 .chain(allowed -> allowed ? Uni.createFrom().voidItem() : denied()));
     }
     /** The verified user must satisfy the plugin's catalogue age rating; an unrated plugin is "All". */
-    private Uni<Void> ageAllowed(Mutiny.StatelessSession session, Ctx c, UUID plugin) {
+    private Uni<Void> ageAllowed(Mutiny.StatelessSession session, ActorContext c, UUID plugin) {
         return catalogValues(session, c, plugin)
                 .chain(values -> ages.require(session, c.core().getEnterprise(), c.identity().partyId(),
                         AgeRating.parse(values.get("PluginAgeRating"))));
@@ -440,9 +636,9 @@ public final class PluginService {
                                 .setType(new ArrangementType().setId(type)).setClassificationID(classification), "1"), null)))
                 .chain(() -> catalogValue(session, c, row, "PluginIdentity", credential));
     }
-    private Uni<Void> lockCatalog(Mutiny.StatelessSession session, Ctx c, UUID plugin, boolean write) {
+    private Uni<Void> lockCatalog(Mutiny.StatelessSession session, ActorContext c, UUID plugin, boolean write) {
         Objects.requireNonNull(plugin, "plugin");
-        return session.createNativeQuery("""
+        var query = session.createNativeQuery("""
                 select a.arrangementid from arrangement.arrangement a
                 join dbo.systems s on s.systemid=a.arrangementid
                 join arrangement.arrangementxarrangementtype x on x.arrangementid=a.arrangementid
@@ -459,9 +655,13 @@ public final class PluginService {
                   and f.securitytokenfriendlyname='Plugins'
                 """ + " and " + live("a") + " and " + live("s") + " and " + live("x") + " and " + live("t")
                 + " and " + live("i") + " and " + live("ci") + " and " + live("k") + " and " + live("ck")
-                + " and " + live("h") + " and " + live("f") + (write ? " for update of a" : " for share of a"), UUID.class)
+                + " and " + live("h") + " and " + live("f")
+                + (c instanceof ReadContext ? " and exists(" + actorSql() + ")" : "") + (write ? " for update of a" : " for share of a"), UUID.class)
                 .setParameter("id", plugin).setParameter("core", c.core().getId()).setParameter("enterprise", c.identity().enterpriseId())
-                .setMaxResults(2).getResultList().chain(rows -> rows.size() == 1 ? Uni.createFrom().voidItem() : denied());
+                .setMaxResults(2);
+        if(c instanceof ReadContext) query.setParameter("actor",c.identity().partyId())
+                .setParameter("credential",c.identity().identityToken().toString());
+        return query.getResultList().chain(rows -> rows.size() == 1 ? Uni.createFrom().voidItem() : denied());
     }
 
     private Uni<Void> metadata(Mutiny.StatelessSession session, Ctx c, UUID plugin, Registration registration) {
@@ -506,7 +706,7 @@ public final class PluginService {
         return role(session, c, name, "ArrangementXClassification").chain(classification -> store(session, c,
                 valued(new ArrangementXClassification().setArrangementID(catalog).setClassificationID(classification), value), null));
     }
-    private Uni<Map<String,String>> catalogValues(Mutiny.StatelessSession session, Ctx c, UUID plugin) {
+    private Uni<Map<String,String>> catalogValues(Mutiny.StatelessSession session, ActorContext c, UUID plugin) {
         return session.createNativeQuery("select c.classificationname,x.value from arrangement.arrangementxclassification x "
                         + "join classification.classification c on c.classificationid=x.classificationid where x.arrangementid=:id "
                         + "and x.systemid=:core and c.systemid=:core and " + live("x") + " and " + live("c"), Object[].class)
@@ -526,13 +726,29 @@ public final class PluginService {
                     result.put("PluginIcon", new ArrayList<>()); result.put("PluginScreenshot", new ArrayList<>());
                     for (Object[] row : rows) result.get((String)row[0]).add((UUID)row[1]); return result; });
     }
-    private Uni<Set<UUID>> declaredSystems(Mutiny.StatelessSession session, Ctx c, UUID plugin) {
-        return session.createNativeQuery("select v.value" + stateFrom()
-                        + " join event.eventxclassification v on v.eventid=e.eventid "
-                        + "join classification.classification cv on cv.classificationid=v.classificationid "
-                        + "join event.eventxarrangement a on a.eventid=e.eventid where a.arrangementid=:plugin "
-                        + "and t.eventtypename=:type and enabled.value='1' and cv.classificationname='PluginTargetSystem' "
-                        + "and e.systemid=:core and " + stateLive() + " and " + live("v") + " and " + live("cv") + " and " + live("a"), String.class)
+    /** Restrict the event IDs before joining their role rows; avoid a catalogue-wide classification join. */
+    private static String declarationScope() {
+        return "with declarations as materialized (select e.eventid from event.event e "
+                + "join event.eventxarrangement a on a.eventid=e.eventid "
+                + "join event.eventxeventtype xt on xt.eventid=e.eventid join event.eventtype t on t.eventtypeid=xt.eventtypeid "
+                + "where a.arrangementid=:plugin and t.eventtypename=:type and e.systemid=:core and xt.systemid=:core and t.systemid=:core "
+                + "and " + live("e") + " and " + live("a") + " and " + live("xt") + " and " + live("t") + ") ";
+    }
+    private static String declarationRows() {
+        return " from declarations d join event.eventxclassification k on k.eventid=d.eventid "
+                + "join classification.classification ck on ck.classificationid=k.classificationid "
+                + "join event.eventxclassification enabled on enabled.eventid=d.eventid "
+                + "join classification.classification ce on ce.classificationid=enabled.classificationid "
+                + "join event.eventxclassification v on v.eventid=d.eventid "
+                + "join classification.classification cv on cv.classificationid=v.classificationid "
+                + "where ck.classificationname='PluginStateKey' and ce.classificationname='PluginEnabled' and enabled.value='1' "
+                + "and cv.classificationname='PluginTargetSystem' and k.systemid=:core and ck.systemid=:core "
+                + "and enabled.systemid=:core and ce.systemid=:core "
+                + "and " + live("k") + " and " + live("ck") + " and " + live("enabled") + " and " + live("ce")
+                + " and " + live("v") + " and " + live("cv");
+    }
+    private Uni<Set<UUID>> declaredSystems(Mutiny.StatelessSession session, ActorContext c, UUID plugin) {
+        return session.createNativeQuery(declarationScope() + "select v.value" + declarationRows(), String.class)
                 .setParameter("plugin", plugin).setParameter("type", DECLARATION).setParameter("core", c.core().getId())
                 .setParameter("enterprise", c.identity().enterpriseId()).getResultList()
                 .map(rows -> { Set<UUID> result = new HashSet<>(); rows.forEach(value -> result.add(UUID.fromString(value))); return Set.copyOf(result); });
@@ -567,10 +783,11 @@ public final class PluginService {
                     return rows.isEmpty() ? null : new State((UUID) rows.getFirst()[0], "1".equals(rows.getFirst()[1]));
                 });
     }
-    private static String stateFrom() {
+    private static String stateFrom() { return stateFrom("event.eventxclassification"); }
+    private static String stateFrom(String keys) {
         return " from event.event e join event.eventxeventtype xt on xt.eventid=e.eventid "
                 + "join event.eventtype t on t.eventtypeid=xt.eventtypeid "
-                + "join event.eventxclassification k on k.eventid=e.eventid "
+                + "join " + keys + " k on k.eventid=e.eventid "
                 + "join classification.classification ck on ck.classificationid=k.classificationid "
                 + "join event.eventxclassification enabled on enabled.eventid=e.eventid "
                 + "join classification.classification ce on ce.classificationid=enabled.classificationid ";

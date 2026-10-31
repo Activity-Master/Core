@@ -19,21 +19,33 @@ public final class AgeRestrictionService {
 
     /** Merges the first date of birth and first country reported by the discovered providers. */
     public Uni<AgeProfile> profile(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID partyId) {
+        return dateOfBirth(session, enterprise, partyId).chain(date -> country(session, enterprise, partyId)
+                .map(country -> new AgeProfile(date, country)));
+    }
+
+    public Uni<LocalDate> dateOfBirth(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID partyId) {
         Objects.requireNonNull(session, "session");
-        if (enterprise == null || partyId == null) return Uni.createFrom().item(AgeProfile.EMPTY);
-        Uni<AgeProfile> merged = Uni.createFrom().item(AgeProfile.EMPTY);
+        if (enterprise == null || partyId == null) return Uni.createFrom().nullItem();
+        Uni<LocalDate> result = Uni.createFrom().nullItem();
         for (IAgeProfileProvider provider : providers())
-            merged = merged.chain(current -> current.dateOfBirth() != null && current.countryCode() != null
-                    ? Uni.createFrom().item(current)
-                    : provider.find(session, enterprise, partyId).map(found -> found == null ? current : new AgeProfile(
-                            current.dateOfBirth() != null ? current.dateOfBirth() : found.dateOfBirth(),
-                            current.countryCode() != null ? current.countryCode() : normalizeCountry(found.countryCode()))));
-        return merged;
+            result = result.chain(current -> current != null ? Uni.createFrom().item(current)
+                    : provider.dateOfBirth(session, enterprise, partyId));
+        return result;
+    }
+
+    public Uni<String> country(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID partyId) {
+        Objects.requireNonNull(session, "session");
+        if (enterprise == null || partyId == null) return Uni.createFrom().nullItem();
+        Uni<String> result = Uni.createFrom().nullItem();
+        for (IAgeProfileProvider provider : providers())
+            result = result.chain(current -> current != null ? Uni.createFrom().item(current)
+                    : provider.country(session, enterprise, partyId).map(AgeRestrictionService::normalizeCountry));
+        return result;
     }
 
     /** All, Family Friendly, Parental Guidance and the numeric ratings for the actor's profile country. */
     public Uni<List<String>> options(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID partyId) {
-        return profile(session, enterprise, partyId).map(profile -> AgeRating.options(profile.countryCode()));
+        return country(session, enterprise, partyId).map(AgeRating::options);
     }
 
     /** Validates a rating assigned by the actor against the options for their profile country. */
@@ -52,10 +64,10 @@ public final class AgeRestrictionService {
     /** Succeeds when the actor satisfies the rating; otherwise fails with a SecurityException. */
     public Uni<Void> require(Mutiny.StatelessSession session, IEnterprise<?, ?> enterprise, UUID partyId, AgeRating rating) {
         if (rating == null || !rating.requiresDateOfBirth()) return Uni.createFrom().voidItem();
-        return profile(session, enterprise, partyId).chain(profile -> {
-            if (profile.dateOfBirth() == null)
+        return dateOfBirth(session, enterprise, partyId).chain(date -> {
+            if (date == null)
                 return Uni.createFrom().failure(new SecurityException("Age restricted: a profile date of birth is required"));
-            return rating.permits(profile.dateOfBirth(), today()) ? Uni.createFrom().voidItem()
+            return rating.permits(date, today()) ? Uni.createFrom().voidItem()
                     : Uni.createFrom().failure(new SecurityException("Age restricted: " + rating.code()));
         });
     }

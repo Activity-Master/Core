@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.fsdm.transactions;
 
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
-import com.guicedee.activitymaster.fsdm.db.entities.events.Event;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.activitymaster.fsdm.transactions.ActivityScope.Actor;
 import com.guicedee.activitymaster.fsdm.transactions.ActivityScope.Context;
@@ -31,10 +30,9 @@ public final class FsdmBehaviorAuthority {
                 : !actor.partyId().equals(context.ownerId())) return denied();
         String behavior = system + ":" + action;
         return find(session, system, enterprise, actor, context, provider, null, INSTALLATION)
-                .chain(installations -> installations.size() == 1
-                        ? readableAny(session, system, enterprise, credential, installations) : denied())
-                .chain(() -> find(session, system, enterprise, actor, context, provider, behavior, GRANT))
-                .chain(grants -> readableAny(session, system, enterprise, credential, grants));
+                .chain(installations -> installations.size()!=1 ? denied()
+                        : find(session,system,enterprise,actor,context,provider,behavior,GRANT)
+                                .chain(grants -> readableAuthority(session,system,enterprise,credential,installations.getFirst(),grants)));
     }
 
     private Uni<List<UUID>> find(Mutiny.StatelessSession session, UUID system, UUID enterprise,
@@ -121,16 +119,22 @@ public final class FsdmBehaviorAuthority {
                 ? denied() : Uni.createFrom().item(rows.stream().distinct().toList()));
     }
 
-    private Uni<Void> readableAny(Mutiny.StatelessSession session, UUID system, UUID enterprise,
-                                  UUID credential, List<UUID> eventIds) {
+    private Uni<Void> readableAuthority(Mutiny.StatelessSession session, UUID system, UUID enterprise,
+                                         UUID credential, UUID installation, List<UUID> grants) {
         Systems owner = new Systems().setId(system).setEnterpriseID(new Enterprise().setId(enterprise));
-        Uni<Boolean> allowed = Uni.createFrom().item(false);
-        for (UUID eventId : eventIds) {
-            allowed = allowed.chain(previous -> previous ? Uni.createFrom().item(true)
-                    : new Event().setId(eventId).canRead(session, owner, credential));
-        }
-        return allowed
-                .chain(permitted -> permitted ? Uni.createFrom().voidItem() : denied());
+        // Both event-lock reads completed: expand current tokens now, then read only
+        // their row grants. No entity hydration or per-event token expansion.
+        return com.guicedee.activitymaster.fsdm.client.services.ApplicableTokenQuery.prepare(session,owner,credential)
+                .chain(tokens -> {
+                    var events = new java.util.HashSet<>(grants); events.add(installation);
+                    var query = session.createNativeQuery(tokens.cte() + "select distinct g.eventsid from event.eventsecuritytoken g "
+                                    + "where g.eventsid in (:events) and g.enterpriseid=:enterprise "
+                                    + "and g.securitytokenid in (select securitytokenid from applicable) "
+                                    + "and g.readallowed=1 and g.effectivefromdate<=statement_timestamp() and g.effectivetodate>statement_timestamp()",UUID.class)
+                            .setParameter("events",events).setParameter("enterprise",enterprise);
+                    return tokens.bind(query).getResultList().chain(readable -> readable.contains(installation) && grants.stream().anyMatch(readable::contains)
+                                    ? Uni.createFrom().voidItem() : denied());
+                });
     }
 
     private static <T> Uni<T> denied() {
