@@ -219,7 +219,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
 
     @Override
     public IInvolvedParty<?, ?> get() {
-        log.debug("Getting new InvolvedParty instance");
+      //  log.debug("Getting new InvolvedParty instance");
         return new InvolvedParty();
     }
 
@@ -594,7 +594,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                                             String name,
                                                             String description,
                                                             UUID... identityToken) {
-        log.debug("Creating InvolvedPartyOrganicType: name={}, description={}", name, description);
+     //   log.debug("Creating InvolvedPartyOrganicType: name={}, description={}", name, description);
 
         var enterprise = system.getEnterprise();
 
@@ -686,7 +686,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                                       java.util.function.Function<IWarehouseCoreTable<?, ?, ?, ?>, Uni<?>> securityFn,
                                                       ISystems<?, ?> system,
                                                       UUID... identityToken) {
-        log.debug("Setting up InvolvedParty organic status: isOrganic={}, id={}", isOrganic, ip.getId());
+       // log.debug("Setting up InvolvedParty organic status: isOrganic={}, id={}", isOrganic, ip.getId());
 
         var enterprise = system.getEnterprise();
 

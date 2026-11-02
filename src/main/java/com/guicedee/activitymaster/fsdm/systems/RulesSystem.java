@@ -8,6 +8,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IMasterSystem;
 import io.smallrye.mutiny.Uni;
+import jakarta.persistence.NoResultException;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
@@ -97,34 +98,19 @@ public class RulesSystem
     log.debug("📋 Beginning postStartup operations for enterprise: '{}' with session: {}",
         enterprise.getName(), session.hashCode());
 
-    // Create a reactive chain for the postStartup operations
-    // Get the system
     return systemsService.findSystem(session, enterprise, getSystemName())
-               .onItem()
-               .invoke(system -> log.debug("✅ Found system: '{}'", system.getName()))
-               .onItem()
-               .ifNull()
-               .failWith(() -> new RuntimeException("System not found: " + getSystemName()))
-               .onFailure()
-               .invoke(error -> log.error("❌ Failed to find system: {}", error.getMessage(), error))
-               .chain(system -> {
-                 log.debug("🔍 Retrieving security token for system: '{}'", system.getName());
-                 // Get the security token
-                 return systemsService.getSecurityIdentityToken(session, system)
-                            .onItem()
-                            .invoke(token -> log.debug("🔑 Found security token for system: '{}'", system.getName()))
-                            .onItem()
-                            .ifNull()
-                            .failWith(() -> new RuntimeException("Security token not found for system: " + system.getName()))
-                            .onFailure()
-                            .invoke(error -> log.error("❌ Failed to retrieve security token: {}", error.getMessage(), error))
-                            .map(token -> {
-                              log.debug("✅ Successfully completed postStartup for Rules System");
-                              return null; // Return Void
-                            });
+               .onItem().ifNull().failWith(() -> new NoResultException("System not found: " + getSystemName()))
+               .onFailure(NoResultException.class).recoverWithUni(missing -> {
+                 log.warn("Rules System is missing for enterprise '{}'; registering it", enterprise.getName());
+                 return registerSystem(session, enterprise)
+                            .chain(ignored -> systemsService.findSystem(session, enterprise, getSystemName()))
+                            .onItem().ifNull().failWith(() -> new NoResultException("Rules System was not found after registration"));
                })
-               .replaceWith(Uni.createFrom()
-                                .voidItem());
+               .chain(system -> systemsService.getSecurityIdentityToken(session, system)
+                   .onItem().ifNull().failWith(() -> new NoResultException("Security token not found for system: " + system.getName()))
+                   .replaceWithVoid())
+               .invoke(() -> log.debug("✅ Successfully completed postStartup for Rules System"))
+               .onFailure().invoke(error -> log.error("Rules System startup failed for enterprise '{}'", enterprise.getName(), error));
   }
 
   @Override

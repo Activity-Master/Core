@@ -317,7 +317,7 @@ public class SystemsService implements ISystemsService<SystemsService> {
                                       String historyName,
                                       UUID... identityToken) {
         // Stateless find-or-create: prepped existence check, else a lean insert of the Systems row.
-        return findSystem(session, enterprise, systemName, identityToken).onFailure().recoverWithUni(err -> {
+        return findSystem(session, enterprise, systemName, identityToken).onFailure(NoResultException.class).recoverWithUni(err -> {
             Systems newSystem = new Systems();
             newSystem.setName(systemName);
             newSystem.setDescription(systemDesc);
