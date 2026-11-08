@@ -45,11 +45,13 @@ withdraws that user's consent. Removing/reinstalling a plugin or withdrawing and
 reintroducing a system declaration requires fresh consent. Version/metadata
 updates that retain a declaration do not themselves invalidate consent.
 
-State changes archive the previous Event and create a current Event. Checks hold
-a shared lock on the plugin catalogue Arrangement in the caller's transaction;
-management changes take an exclusive lock on that same row. Revocation waits for
-already authorized transactions, then blocks later checks. Callers must keep
-transactions short and run domain work in that same transaction.
+State changes archive the previous Event and create a current Event. Admission
+checks use ordinary database snapshot reads in the caller's transaction, without
+explicit shared catalogue locks or catalogue UPDATE privileges. Management changes
+retain their exclusive catalogue lock. Committed revocation affects subsequent
+authorization snapshots; it does not wait for or cancel already authorized work.
+Callers must keep transactions short, recheck authorization for each operation,
+and run domain work in that same transaction.
 
 ## Host and Master integration
 

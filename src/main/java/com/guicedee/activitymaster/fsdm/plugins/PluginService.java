@@ -667,7 +667,9 @@ public final class PluginService {
     }
     private Uni<Void> lockCatalog(Mutiny.StatelessSession session, ActorContext c, UUID plugin, boolean write) {
         Objects.requireNonNull(plugin, "plugin");
-        // Bound the credential join graph before planning the separately locked catalogue row.
+        // Admission uses the database snapshot without requiring catalogue UPDATE privileges.
+        // Management writes retain their exclusive lock; reads do not wait for revocation.
+        // Bound the credential join graph before planning the catalogue row.
         // Keep duplicates: ambiguous identity rows must still fail the existing two-row check.
         var query = session.createNativeQuery("""
                 with plugin_credentials as materialized (
@@ -690,7 +692,7 @@ public final class PluginService {
                 where a.arrangementid=:id and a.systemid=:core and x.systemid=:core and t.systemid=:core
                   and t.arrangementtypename='Plugin Catalog'
                 """ + " and " + live("a") + " and " + live("s") + " and " + live("x") + " and " + live("t")
-                + (c instanceof ReadContext ? " and exists(" + actorSql() + ")" : "") + (write ? " for update of a" : " for share of a"), UUID.class)
+                + (c instanceof ReadContext ? " and exists(" + actorSql() + ")" : "") + (write ? " for update of a" : ""), UUID.class)
                 .setParameter("id", plugin).setParameter("core", c.core().getId()).setParameter("enterprise", c.identity().enterpriseId())
                 .setMaxResults(2);
         if(c instanceof ReadContext) query.setParameter("actor",c.identity().partyId())
