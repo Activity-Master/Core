@@ -21,6 +21,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.guicedee.modules.representations</groupId>
+            <artifactId>json-representation</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-identity</artifactId>
             <optional>true</optional>

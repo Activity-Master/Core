@@ -13,7 +13,7 @@ import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 
-import static com.guicedee.client.implementations.ObjectBinderKeys.*;
+import static com.guicedee.modules.services.jsonrepresentation.ObjectBinderKeys.*;
 
 @Log4j2
 public class ActivityMasterPostStartup implements IGuicePostStartup<ActivityMasterPostStartup> {

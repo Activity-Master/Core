@@ -12,6 +12,7 @@ import com.guicedee.client.services.lifecycle.IGuicePostStartup;
 import com.guicedee.client.services.config.IGuiceScanModuleInclusions;
 
 module com.guicedee.activitymaster.fsdm {
+    requires com.guicedee.jsonrepresentation;
     requires static com.azure.core;
     requires static com.azure.identity;
     requires static com.azure.security.keyvault.keys;

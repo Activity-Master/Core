@@ -32,7 +32,7 @@ import java.util.logging.Level;
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
-import static com.guicedee.client.implementations.ObjectBinderKeys.*;
+import static com.guicedee.modules.services.jsonrepresentation.ObjectBinderKeys.*;
 import static com.guicedee.client.IGuiceContext.get;
 
 @Log
