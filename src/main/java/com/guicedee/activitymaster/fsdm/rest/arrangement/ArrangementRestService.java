@@ -599,7 +599,7 @@ public class ArrangementRestService {
                 return arrangementsService.find(s, arrangementId, sys, token).chain(arrangement -> {
                     Uni<Void> chain = Uni.createFrom().voidItem();
                     chain = chainAddOrUpdate(chain, dto.types, (name, value) ->
-                            arrangement.addOrUpdateArrangementType(s, name, null, null, value, sys, token).replaceWithVoid());
+                            updateArrangementTypeValue(s, arrangement, name, value, sys, token));
                     chain = chainDeleteByExpire(chain, dto.types, s, arrangement, ArrangementXArrangementType.class,
                             ArrangementXArrangementType_.arrangement, ArrangementXArrangementType::getType,
                             type -> type != null ? type.getName() : null);
@@ -712,6 +712,16 @@ public class ArrangementRestService {
                 });
             }), label + " childArrangements");
         }
+    }
+
+    Uni<Void> updateArrangementTypeValue(Mutiny.StatelessSession session, IArrangement<?, ?> arrangement,
+                                         String typeName, String value, ISystems<?, ?> system, UUID... token) {
+        // The REST map is keyed by type name, not by relationship classification.
+        return arrangementsService.findArrangementType(session, typeName, system, token)
+                .chain(type -> arrangement.addOrUpdateArrangementType(session,
+                        com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification.toString(),
+                        type, null, value, system, token))
+                .replaceWithVoid();
     }
 
     // ──────────────────────────────────────────────────────────────────────────

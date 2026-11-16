@@ -151,7 +151,7 @@ module com.guicedee.activitymaster.fsdm {
 
     //opens com.guicedee.activitymaster.fsdm.rest to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy,com.guicedee.rest;
 
-    opens com.guicedee.activitymaster.fsdm.rest.arrangement to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy,com.guicedee.rest;
+    opens com.guicedee.activitymaster.fsdm.rest.arrangement to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy,com.guicedee.rest, activity.master.test;
     opens com.guicedee.activitymaster.fsdm.rest.resourceitem to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy,com.guicedee.rest;
     opens com.guicedee.activitymaster.fsdm.rest.event to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy,com.guicedee.rest;
     opens com.guicedee.activitymaster.fsdm.rest.party to com.google.guice, org.hibernate.orm.core, org.hibernate.reactive, com.entityassist, tools.jackson.databind, net.bytebuddy,com.guicedee.rest;
